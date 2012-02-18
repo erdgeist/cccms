@@ -3,5 +3,5 @@
   <div class="author_and_date">
     <%= date_for_page page %>, <%= author_for_page page %>
   </div>
-  <p class="excerpt"><%= page.abstract %></p>
+  <p class="excerpt"><%= page.abstract %> <%= link_to_path t(:more), page.node.unique_name %></p>
 </div>
