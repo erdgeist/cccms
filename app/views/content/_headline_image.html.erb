@@ -3,6 +3,12 @@
   ("galleries/" + @page.node.unique_name)
 ) %>
 
+<% if 1 < @images.length %>
+  <div class="right">
+    <%= "#{@images.length} #{t(:images)}" %>
+  </div>
+<% end %>
+
 <div class="shadowbox_images" style="display: none">
   <% @images.each do |image| %>
     <%= link_to "hallo", image.upload.url, :class => "shadowbox_image" %>

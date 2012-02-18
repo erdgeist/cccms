@@ -29,6 +29,10 @@ pre {
   overflow: auto;
 }
 
+.right {
+  text-align: right;
+}
+
 /*------------------links-------------------*/
 
 a {
