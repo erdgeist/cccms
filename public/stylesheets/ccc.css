@@ -23,6 +23,7 @@ div#wrapper {
   width: 909px;
   margin-left: 90px;
   text-align: left;
+  min-height: 600px;
 }
 
 pre {
@@ -260,7 +261,6 @@ div#footer {
   position: relative;
   width: 1024px;
   height: 240px;
-  margin-left: -304px;
   background-image: url(/images/footer.png);
   background-repeat: no-repeat;
 }
