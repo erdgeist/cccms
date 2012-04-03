@@ -194,7 +194,7 @@ div#center_column {
   width: 460px;
   padding-left: 15px;
   padding-right: 15px;
-  padding-bottom: 40px;
+  padding-bottom: 0px;
 }
 
 div#right_column {
@@ -254,4 +254,12 @@ div#search input[type=text] {
   padding-right: 5px;
   margin-right: 5px;
   background-position: top top;
+}
+
+div#footer {
+  width: 1024px;
+  height: 240px;
+  margin-left: -304px;
+  background-image: url(/images/footer.png);
+  background-repeat: no-repeat;
 }
