@@ -257,9 +257,17 @@ div#search input[type=text] {
 }
 
 div#footer {
+  position: relative;
   width: 1024px;
   height: 240px;
   margin-left: -304px;
   background-image: url(/images/footer.png);
   background-repeat: no-repeat;
+}
+
+p#quote {
+  position: absolute;
+  left: 320px;
+  top: 90px;
+  width: 465px;
 }
