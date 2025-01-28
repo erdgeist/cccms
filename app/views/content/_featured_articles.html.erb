@@ -1,10 +1,26 @@
 <div id="featured_articles">
   <h2>Featured</h2>
+
+  <!-- %= link_to(
+        image_tag( '34c3-tuwat.1e4e25c.png' ),
+        "https://events.ccc.de/congress/2017/wiki/Main_Page",
+        :id => "34C3_icon",
+        :size => "155x90",
+        :title => "Chaos Communication Congress 2017"
+  )% -->
+
   <%= link_to(
         image_tag( 'chaosradio.png' ),
         "http://chaosradio.ccc.de/",
         :id => "chaosradio_icon",
         :title => "Chaosradio"
+  )%>
+
+  <%= link_to(
+        image_tag( 'media-ccc-de-banner.svg', :size => '155x45' ),
+        "https://media.ccc.de",
+        :id => "media_ccc_de_icon",
+        :title => "Media Dot CCC Dot de"
   )%>
 
   <%= link_to(
@@ -22,10 +38,19 @@
   )%>
 
   <%= link_to(
-        image_tag( 'twitter.png' ),
-        "https://twitter.com/chaosupdates",
-        :id => "twitter_icon",
-        :title => "Twitter"
+        image_tag( 'Fediverse.svg', :size => '64x64' ),
+        "https://social.bau-ha.us/@ccc",
+        :rel => 'me',
+        :id => "fediverse_icon",
+        :title => "Fediverse"
   )%>
+
+  <%= link_to(
+        image_tag( 'Bluesky_Logo.svg', :size => '64x64' ),
+        "https://bsky.app/profile/ccc.de",
+        :id => "bluesky_icon",
+        :title => "bsky"
+  )%>
+
 </div>
 

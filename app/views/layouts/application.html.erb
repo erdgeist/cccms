@@ -4,6 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung.">
+
+    <meta property="og:image" content="https://www.ccc.de/images/chaosknoten.svg" />
+    <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
 
     <title><%= page_title %></title>
     <%= stylesheet_link_tag "ccc" %>
@@ -16,7 +21,7 @@
     <%= auto_discovery_link_tag(:rss,  {:locale => :de, :controller => "rss", :action => "updates", :format => :rdf}) %>
   </head>
 
-  <body>
+  <body lang="<%= @page.effective_lang %>">
     <div id="wrapper">
       <div id="header">
         <%= link_to_path(image_tag("header.png"), "/home") %>
@@ -27,22 +32,16 @@
       <div id="left_column">
         <%= main_menu %>
 
-        <%= language_selector %>
         <% if current_user && @page.node %>
           <%= link_to "Edit", node_path(:id => @page.node) %>
         <% end %>
 
-        <%= calendar %>
+  	<%= calendar %>
       </div>
       <div id="center_column">
         <%= yield :layout %>
 
         <div id="footer">
-          <br />
-          <br />
-          <p style="text-align: center">
-            <%= link_to t(:sponsors), content_path("sponsors") %>
-          </p>
         </div>
       </div>
       <div id="right_column">

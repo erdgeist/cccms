@@ -9,13 +9,13 @@ module ContentHelper
   end
 
   def calendar
-    occurrences = Occurrence.find_in_range(Time.now, (Time.now+14.days))
+    occurrences = Occurrence.find_in_range(Time.now, (Time.now+6.weeks))
 
     if occurrences.empty?
       occurrences = Occurrence.find_next
     end
 
-    occurrences = occurrences.reject { |o| o.node.head.nil? }
+    occurrences = occurrences.reject { |o| o.node.nil? || o.node.head.nil? }
 
     render(
       :partial  => 'content/front_page_calendar',
@@ -75,6 +75,8 @@ module ContentHelper
   def aggregate? content
     options = {}
 
+    cccms_attributes = ActionView::Base.sanitized_allowed_attributes + [ 'lang' ]
+
     begin
       if content =~ /<aggregate([^<>]*)>/
         tag = $~.to_s
@@ -87,13 +89,13 @@ module ContentHelper
 
         options[:partial] = select_partial( options[:partial] )
 
-        sanitize( content.sub(tag, render_collection(options)) )
+        sanitize( content.sub(tag, render_collection(options)), :attributes => cccms_attributes )
       else
-        sanitize( content )
+        sanitize( content, :attributes => cccms_attributes )
       end
 
     rescue
-      sanitize( content )
+      sanitize( content, :atttributes => cccms_attributes )
     end
   end
 

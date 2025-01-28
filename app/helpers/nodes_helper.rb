@@ -4,6 +4,10 @@ module NodesHelper
     if node.head
       node.head.title
     else
+      if not node.draft or not node.draft.title
+        logger.error "Missing title in node #{node.id}"
+        return "NO TITLE"
+      end
       node.draft.title
     end
   end

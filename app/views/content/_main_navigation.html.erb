@@ -3,5 +3,11 @@
     <% menu_items.each do |item| %>
     <li><%= link_to_path item.title, item.path %></li>
     <% end %>
+    <li>
+      <%= language_selector %>
+    </li>
+    <li id="light-mode-li">
+      <input id="light-mode" type="checkbox" /><label for="light-mode">lights on</label>
+    </li>
   </ul>
 </div>

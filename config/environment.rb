@@ -1,10 +1,32 @@
 # Be sure to restart your server when you modify this file
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.3.11' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.3.15' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
+
+# monkey patch for 2.0. Will ignore vendor gems.
+if RUBY_VERSION >= "2.0.0"
+  module Gem
+    def self.source_index
+      sources
+    end
+
+    def self.cache
+      sources
+    end
+
+    SourceIndex = Specification
+
+    class SourceList
+      # If you want vendor gems, this is where to start writing code.
+      def search( *args ); []; end
+      def each( &block ); end
+      include Enumerable
+    end
+  end
+end
 
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
@@ -23,7 +45,7 @@ Rails::Initializer.run do |config|
   # config.gem "rake",           :version => ">= 0.8.3"
   # config.gem "rack",           :version => ">= 0.9.1"
   config.gem "pg"
-  config.gem "thinking-sphinx", :lib => 'thinking_sphinx', :version => '1.4.3'
+  config.gem "thinking-sphinx", :lib => 'thinking_sphinx', :version => '1.5.0'
   config.gem "libxml-ruby", :lib => 'xml'
   config.gem "erdgeist-chaos_calendar", :lib => "chaos_calendar", :source => "http://gems.github.com"
 
@@ -55,9 +77,10 @@ Rails::Initializer.run do |config|
   # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
   # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
   config.i18n.default_locale = :de
+
 end
 
 require 'awesome_patch'
 
-ExceptionNotifier.exception_recipients = %w(hukl@berlin.ccc.de)
-ExceptionNotifier.sender_address = %("CCCMS Error" <error@ccc.de>)
+ExceptionNotifier.exception_recipients = %w(erdgeist@ccc.de)
+ExceptionNotifier.sender_address = %("CCCMS Error" <error@www.ccc.de>)

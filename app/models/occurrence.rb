@@ -16,7 +16,8 @@ class Occurrence < ActiveRecord::Base
       :include => :node, 
       :conditions => [
         "start_time > ? AND end_time < ?", start_time, end_time 
-      ]
+      ],
+      :order => "start_time"
     )
   end
   

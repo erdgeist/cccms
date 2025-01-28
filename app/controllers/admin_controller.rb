@@ -20,13 +20,17 @@ class AdminController < ApplicationController
   end
   
   def search
-    @results = Node.search params[:search_term]
+    @results = Node.search params[:search_term], :per_page => 1000
     
     respond_to do |format|
-      format.html
+      format.html do
+        render :template => 'admin/search_results.html'
+      end
       format.js do 
         render( :json => @results.map do |node| 
-          {:id => node.id, :title => node.title, :edit_path => node_path(node)} 
+            if node
+              {:id => node.id, :title => node.title, :edit_path => node_path(node)}
+            end
           end
         )
         
@@ -45,7 +49,6 @@ class AdminController < ApplicationController
       format.html do
         render :partial => 'admin/menu_search_results'
       end
-      
       
       format.js do 
         render( :json => @results.map do |node| 

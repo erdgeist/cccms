@@ -17,14 +17,14 @@ module RoutingFilter
     def around_recognize(path, env, &block)
       locale = nil
       path.sub! %r(^/([a-zA-Z]{2})(?=/|$)) do locale = $1; '' end
-      returning yield do |params|
+      yield.tap do |params|
         params[:locale] = locale if locale
       end
     end
     
     def around_generate(*args, &block)
       locale = args.extract_options!.delete(:locale) || I18n.locale
-      returning yield do |result|
+      yield.tap do |result|
         if locale.to_sym != @@default_locale
           target = result.is_a?(Array) ? result.first : result
           target.sub!(%r(^(http.?://[^/]*)?(.*))){ "#{$1}/#{locale}#{$2}" }

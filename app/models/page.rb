@@ -149,6 +149,16 @@ class Page < ActiveRecord::Base
     published_at.nil? ? true : published_at < Time.now
   end
 
+  def effective_lang
+    if translated_locales.empty?
+      return 'de'
+    elsif translated_locales.include?(I18n.locale)
+      return I18n.locale
+    else
+      return translated_locales.first
+    end
+  end
+
   # Returns true if a page has translations where one of them is significantly
   # older than the other.
   # Takes the I18n.default locale and a second :locale to test if the
