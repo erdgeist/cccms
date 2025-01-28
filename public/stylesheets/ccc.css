@@ -29,19 +29,23 @@ pre {
   overflow: auto;
 }
 
+.right {
+  text-align: right;
+}
+
 /*------------------links-------------------*/
 
 a {
-  color: #535353;
-  text-decoration: underline;
+  color: #F8921E;
+  text-decoration: none;
 }
 
 a:visited {
-  color: #535353;
+  color: #5b8ca7;
 }
 
 a:hover {
-  color: #F8921E;
+  color: #5b8ca7;
 }
 
 /*------------------headlines-------------------*/
@@ -106,13 +110,11 @@ div.main_navigation a.inactive:hover {
 div.main_navigation a.active {
   color: #000000;
   text-decoration: none;
-  text-transform: lowercase;
   font-size: 13px;
 }
 
 div.main_navigation a.inactive {
   color: #aeadad;
-  text-transform: lowercase;
   font-size: 13px;
 }
 
