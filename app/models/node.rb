@@ -17,9 +17,9 @@ class Node < ActiveRecord::Base
 
   # Validations
   validates_length_of     :slug, :within => 1..255,    :unless => "parent_id.nil?"
-  validates_presence_of   :slug,                       :unless => "parent_id.nil?"
+  validates               :slug, presence: true,       :unless => "parent_id.nil?"
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => "parent_id.nil?"
-  validates_presence_of   :parent_id,                  :unless => "Node.root.nil?"
+  validates               :parent_id, presence: true,  :unless => "Node.root.nil?"
 
   validate :borders       # This should never ever happen.
 

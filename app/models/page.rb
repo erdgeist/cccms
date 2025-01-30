@@ -3,18 +3,20 @@ require 'xml'
 class Page < ActiveRecord::Base
 
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
-  FULL_PUBLIC_TEMPLATE_PATH = File.join(RAILS_ROOT, 'app', 'views', PUBLIC_TEMPLATE_PATH)
+  FULL_PUBLIC_TEMPLATE_PATH = File.join(Rails.root, 'app', 'views', PUBLIC_TEMPLATE_PATH)
 
   # named scopes
+  #
+  # https://web.archive.org/web/20100416150019/http://m.onkey.org/2010/1/22/active-record-query-interface 
 
-  named_scope(
+  scope(
     :drafts,
     :joins => :node,
     :include => [:translations],
     :conditions => ["nodes.draft_id = pages.id"]
   )
 
-  named_scope(
+  scope(
     :heads,
     :joins => :node,
     :include => [:translations],

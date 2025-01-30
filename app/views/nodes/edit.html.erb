@@ -1,4 +1,4 @@
-<% content_for :subnavigation do %>
+<%= content_for :subnavigation do %>
   <%= link_to 'metadata', '#', :id => 'button', :class => "unselected" %>
   <%= link_to 'Show', @node %>
   <%= link_to 'Preview', preview_page_path(@draft) %>
@@ -7,7 +7,7 @@
 <% end %>
 
 <div id="page_editor">
-<% form_for(@node) do |f| %>
+<%= form_for(@node) do |f| %>
   <%= f.error_messages %>
   
   <div id="metadata">
@@ -41,7 +41,7 @@
         </td>
       </tr>
       
-      <% fields_for @draft do |d| %>
+      <%= fields_for @draft do |d| %>
       <tr>
         <td class="description">Tags - comma seperated</td>
         <td><%= text_field_tag :tag_list, @draft.tag_list %></td>

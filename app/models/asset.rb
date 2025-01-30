@@ -12,7 +12,7 @@ class Asset < ActiveRecord::Base
     }
   )
   
-  named_scope :images, :conditions => {
+  scope :images, :conditions => {
     :upload_content_type => [
       "image/gif",
       "image/jpeg",
@@ -20,7 +20,7 @@ class Asset < ActiveRecord::Base
     ]
   }
   
-  named_scope :documents, :conditions => {
+  scope :documents, :conditions => {
     :upload_content_type => [
       "application/pdf",
       "text/plain",
@@ -28,7 +28,7 @@ class Asset < ActiveRecord::Base
     ]
   }
   
-  named_scope :audio, :conditions => {
+  scope :audio, :conditions => {
     :upload_content_type => [
       "audio/mpeg",
       "audio/x-m4a",

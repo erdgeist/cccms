@@ -4,7 +4,7 @@
 
 <h2>Revisions for Node: <%= @node.unique_name %></h2>
 
-<% form_tag diff_node_revisions_path(@node) do %>
+<%= form_tag diff_node_revisions_path(@node) do %>
 <table id="revisions">
   <tr class="header">
     <th>First</th>
