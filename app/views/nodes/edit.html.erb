@@ -90,7 +90,7 @@
     </tr>
     <tr>
       <td class="description">Title</td>
-      <td><%= d.text_field :title %></td>
+      <td><%= d.text_field :title, :pattern => "(?:[^<>&amp;]|&amp;amp;|&amp;lt;|&amp;gt;)*", :title => "Warning: Unescaped HTML entities detected! Use &amp;lt;, &amp;gt;, &amp;amp; instead of <, >, &." %></td>
     </tr>
     <tr>
       <td class="description">Abstract</td>
