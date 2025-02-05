@@ -17,6 +17,13 @@ class AdminController < ApplicationController
         "updated_at < ? AND updated_at > ? AND parent_id IS NOT NULL", Time.now, Time.now-14.days
       ]
     )
+
+    all_nodes = Node.root.self_and_descendants
+    @sitemap_depth = {}
+    Node.each_with_level(all_nodes) do |node, level|
+      @sitemap_depth[node.id] = level
+    end
+    @sitemap = all_nodes.to_a.sort! { |node1,node2| node1.lft <=> node2.lft }.delete_if { |node| node.update? }
   end
   
   def search

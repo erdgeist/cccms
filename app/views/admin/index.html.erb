@@ -1,6 +1,7 @@
 <p id="overview_toggle">
   <a href="#" id="recent_changes_toggle" class="button">recent changes</a>
   <a href="#" id="current_drafts_toggle" class="button">current drafts</a>
+  <a href="#" id="admin_sitemap_toggle" class="button">site map</a>
 </p>
 
 <div id="recent_changes_table">
@@ -64,9 +65,41 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= node.draft ? node.draft.revision : ( node.head ? node.head.revision : "EMPTY" ) %>
       </td>
     </tr>
+    <% end %>
+  </table>
+</div>
+
+<div id="admin_sitemap_table">
+
+  <h1>Sitemap</h1>
+
+  <table class="node_table">
+    <tr class="header">
+      <th class="node_id">ID</th>
+      <th class="title">Title</th>
+      <th class="actions">Actions</th>
+      <th class="editor">Locked by</th>
+    </tr>
+    <% @sitemap.each do |node| %>
+    <% if !node.nil? %>
+      <tr class="<%= cycle("even", "odd") %>">
+      <td class="node_id" style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;"><%= node.id %></td>
+      <td class="title"  style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;">
+        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
+        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
+      </td>
+      <td class="actions">
+        <%= link_to 'show',      node_path(node) %>
+        <%= link_to 'Revisions', node_revisions_path(node) %>
+      </td>
+      <td>
+        <%= node.lock_owner.login if node.lock_owner %>
+      </td>
+    </tr>
+    <% end %>
     <% end %>
   </table>
 </div>

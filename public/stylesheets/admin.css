@@ -170,6 +170,10 @@ table.node_table .actions {
   text-transform: lowercase;
 }
 
+#admin_sitemap_table .node_id:before {
+  content: "• ";
+}
+
 /* Revisions */
 
 table#revisions {
