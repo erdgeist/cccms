@@ -160,6 +160,10 @@ parent_search = {
       $("#parent_search_field").hide();
     });
 
+    $("#kind_press_release").bind("change", function(){
+      $("#parent_search_field").hide();
+    });
+
     $("#kind_generic").bind("change", function(){
       $("#parent_search_field").show();
     });

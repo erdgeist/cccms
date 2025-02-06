@@ -6,12 +6,15 @@ class AdminController < ApplicationController
 
   def index
     @drafts = Node.all(
-      :limit => 20,
+      :limit => 50,
       :order => "updated_at desc",
       :conditions => ["draft_id IS NOT NULL"]
     )
+    @drafts_count = Node.count(
+      :conditions => ["draft_id IS NOT NULL"]
+    )
     @recent_changes = Node.all(
-      :limit => 20,
+      :limit => 50,
       :order => "updated_at desc",
       :conditions => [ 
         "updated_at < ? AND updated_at > ? AND parent_id IS NOT NULL", Time.now, Time.now-14.days
@@ -24,6 +27,17 @@ class AdminController < ApplicationController
       @sitemap_depth[node.id] = level
     end
     @sitemap = all_nodes.to_a.sort! { |node1,node2| node1.lft <=> node2.lft }.delete_if { |node| node.update? }
+
+    @mypages = Page.all(
+      :conditions => [ "user_id = ? or editor_id = ?", @current_user, @current_user]
+    )
+
+    @mynodes = Node.all(
+      :order => "updated_at desc",
+      :joins => :pages,
+      :conditions => [ "pages.user_id = ? or pages.editor_id = ?", @current_user, @current_user ]
+    ).uniq.first(50)
+
   end
   
   def search

@@ -25,6 +25,10 @@ class NodesController < ApplicationController
 
   def new
     @node = Node.new params[:node]
+    if params.has_key?(:parent_id)
+      @parent_id = params[:parent_id]
+      @parent_name = Node.find(@parent_id).title
+    end
   end
   
   def create
@@ -33,9 +37,16 @@ class NodesController < ApplicationController
     @node = Node.new
     @node.parent_id = find_parent
     @node.slug = params[:title].parameterize.to_s
-    
+   
     if @node.save
       @node.draft.update_attributes(:title => params[:title])
+      case params[:kind]
+        when "update"
+          @node.draft.tag_list.add("update")
+        when "press_release"
+          @node.draft.tag_list.add("update", "pressemitteilung")
+      end
+      @node.draft.save!
       redirect_to(edit_node_path(@node))
     else
       render :new
@@ -106,6 +117,8 @@ class NodesController < ApplicationController
       when "top_level"
         Node.root.id
       when "update"
+        Update.find_or_create_parent.id
+      when "press_release"
         Update.find_or_create_parent.id
       when "generic"
         if params[:parent_id] && Node.find(params[:parent_id])
