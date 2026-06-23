@@ -8,3 +8,7 @@ en:
   hello: "Hello world"
   show_tag_headline: "Pages tagged with:"
   old_ccc_de: the old ccc.de
+
+  time:
+    formats:
+      ccc: "%d %B, %Y %H:%M"

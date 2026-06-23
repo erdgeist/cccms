@@ -55,6 +55,7 @@ class NodesController < ApplicationController
   
   def show
     node = Node.find(params[:id])
+    node.wipe_draft!
     @page = node.draft || node.head
   end
 

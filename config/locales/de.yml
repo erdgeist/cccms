@@ -24,6 +24,7 @@ de:
     formats:
       default: "%A, %e. %B %Y, %H:%M Uhr"
       short: "%e. %B, %H:%M Uhr"
+      ccc: "%e. %B %Y, %H:%M Uhr"
       long: "%A, %e. %B %Y, %H:%M Uhr"
       time: "%H:%M"
 

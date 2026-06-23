@@ -64,7 +64,7 @@ class Page < ActiveRecord::Base
 
     Page.heads.paginate(
       find_options_for_find_tagged_with(
-        options[:tags].gsub(/\s/, ","), :match_all => true
+        options[:tags].gsub(/\s/, ","), :match_all => true, :conditions => options[:conditions]
       ).merge(
         :page     => page,
         :per_page => options[:limit],
@@ -92,6 +92,19 @@ class Page < ActiveRecord::Base
     Page.all(:include => :translations).select do |page|
       page.outdated_translations? options
     end
+  end
+
+  # Is used to compare a node's head with the node's draft
+
+  def has_changes_to? draft
+    return true unless node == draft.node
+    return true unless assets == draft.assets
+    return true unless tag_list == draft.tag_list
+    return true unless template_name == draft.template_name
+    return true unless translated_locales.sort_by(&:to_s) == draft.translated_locales.sort_by(&:to_s)
+    changed = false
+    translated_locales.each { |locale| I18n.with_locale(locale) { changed = true unless title == draft.title && abstract == draft.abstract && body == draft.body } }
+    return changed
   end
 
   # Instance Methods

@@ -1,14 +1,14 @@
 <div id="admin_wizard">
-  <%= link_to 'Create Update or Pressemitteilung', new_node_path, :only_path => false %>
-  <a href="#" id="admin_wizard_my_work" class="admin_wizard_button button">Continue my work</a>
-  <a href="#" id="admin_wizard_create_page" class="admin_wizard_button button">Add a page in the page tree</a>
-  <%= link_to("Upload a new asset", new_asset_path, :only_path => false) %>
+  <div class="admin_wizard_button"><%= link_to 'Create Update or Pressemitteilung', new_node_path, :only_path => false %></div>
+  <div class="admin_wizard_button"><a href="#" id="admin_wizard_my_work" class="button">Continue my work</a></div>
+  <div class="admin_wizard_button"><a href="#" id="admin_wizard_create_page" class="button">Add a page in the page tree</a></div>
+  <div class="admin_wizard_button"><%= link_to("Upload a new asset", new_asset_path, :only_path => false) %></div>
 </div>
 
 <p id="overview_toggle">
   <a href="#" id="recent_changes_toggle" class="button">recent changes</a>
   <a href="#" id="my_work_toggle" class="button">my work</a>
-  <a href="#" id="current_drafts_toggle" class="button">current drafts</a>
+  <a href="#" id="current_drafts_toggle" class="button">current drafts (<%= @drafts_count %>)</a>
   <a href="#" id="admin_sitemap_toggle" class="button">site map</a>
 </p>
 
@@ -39,7 +39,7 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
       </td>
     </tr>
     <% end %>
@@ -73,7 +73,7 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
       </td>
     </tr>
     <% end %>
@@ -107,7 +107,7 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : ( node.head ? node.head.revision : "EMPTY" ) %>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
       </td>
     </tr>
     <% end %>
@@ -135,7 +135,7 @@
       </td>
       <td class="actions">
         <%= link_to 'create subpage', new_node_path(:parent_id => node.id) %>
-        <%= link_to ':: Revisions',    node_revisions_path(node) %>
+        <%= link_to 'Revisions',      node_revisions_path(node) %>
       </td>
       <td>
         <%= node.lock_owner.login if node.lock_owner %>

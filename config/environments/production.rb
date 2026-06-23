@@ -9,7 +9,7 @@ config.action_controller.consider_all_requests_local = false
 config.action_controller.perform_caching             = true
 
 # See everything in the log (default is :info)
-# config.log_level = :debug
+config.log_level = :info
 
 # Use a different logger for distributed setups
 # config.logger = SyslogLogger.new

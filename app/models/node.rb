@@ -3,11 +3,11 @@ class Node < ActiveRecord::Base
   acts_as_nested_set
 
   # Associations
-  has_many    :pages, :order => "revision ASC"
-  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id
-  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id
-  has_many    :permissions
-  has_one     :event
+  has_many    :pages, :order => "revision ASC", :dependent => :destroy
+  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy
+  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy
+  has_many    :permissions, :dependent => :destroy
+  has_one     :event, :dependent => :destroy
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id
 
   # Callbacks
@@ -60,6 +60,7 @@ class Node < ActiveRecord::Base
   # Instance Methods
 
   def find_or_create_draft current_user
+    self.wipe_draft!
     if draft && self.lock_owner == current_user
       draft
     elsif draft && self.lock_owner.nil?
@@ -113,6 +114,24 @@ class Node < ActiveRecord::Base
       self.unlock!
       self
     end
+  end
+
+  # removes a draft and the lock if it is older than a day and still
+  # identical to head
+  def wipe_draft!
+    unless self.draft
+      self.unlock!
+      return
+    end
+    return unless self.head
+    return unless self.draft.updated_at < 1.day.ago
+    return if Page.find(self.head).has_changes_to? self.draft
+
+    self.draft.destroy
+    self.draft_id = nil
+    self.unlock!
+    self.save!
+    self.reload
   end
 
   def restore_revision! revision

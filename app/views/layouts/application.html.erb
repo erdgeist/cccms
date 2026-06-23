@@ -1,11 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung.">
+    <meta name="description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung."/>
 
     <meta property="og:image" content="https://www.ccc.de/images/chaosknoten.svg" />
     <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
@@ -19,21 +18,45 @@
 
     <%= auto_discovery_link_tag(:atom, {:locale => :de, :controller => "rss", :action => "updates", :format => :xml}) %>
     <%= auto_discovery_link_tag(:rss,  {:locale => :de, :controller => "rss", :action => "updates", :format => :rdf}) %>
+
+    <script>
+      (function() { document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('override-prefers-color-scheme', false))
+          document.getElementById("light-mode").checked = true;
+      }); })();
+    </script>
+
   </head>
 
   <body lang="<%= @page.effective_lang %>">
     <div id="wrapper">
       <div id="header">
-        <%= link_to_path(image_tag("header.png"), "/home") %>
+        <%= image_tag("header.png") %>
+        <!-- <%= link_to_path(image_tag("header.png"), "/home") %> -->
       </div>
-      <div id="search">
-        <%= render :partial => "content/search" %>
+      <div id="toolbox">
+        <div id="search">
+          <%= render :partial => "content/search" %>
+        </div>
+        <div id="light-mode-div">
+          <input id="light-mode" type="checkbox" aria-label="Switch between dark and light mode" /><label for="light-mode"><span class="hide-me">lights</span></label>
+        </div>
+        <div id="burger-div">
+          <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+          <label for="menu-toggle" class="burger-menu"><span></span><span></span><span></span></label>
+        </div>
       </div>
       <div id="left_column">
         <%= main_menu %>
 
         <% if current_user && @page.node %>
-          <%= link_to "Edit", node_path(:id => @page.node) %>
+          <div class="main_navigation">
+            <h2>Admin</h2>
+            <ul>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'),:controller => :admin, :action => 'index' %></li>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), node_path(:id => @page.node) %></li>
+            </ul>
+          </div>
         <% end %>
 
   	<%= calendar %>
@@ -42,9 +65,11 @@
         <%= yield :layout %>
         <div id="footer">
           <br />
-          <br />
           <p style="text-align: center">
-            <%= link_to t(:sponsors), content_path("sponsors") %>
+            <%= link_to "Impressum", content_path("imprint") %>
+            <%= link_to "Datenschutz", content_path("datenschutz") %>
+            <%= language_selector %>
+            <!-- %= link_to t(:sponsors), content_path("sponsors") % -->
           </p>
         </div>
       </div>
