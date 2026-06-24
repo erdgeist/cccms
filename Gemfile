@@ -5,7 +5,7 @@ gem 'rails', '3.2.22.5'
 gem 'pg', '~> 0.17.0'
 
 # from your vendor/plugins, now as gems:
-gem 'acts-as-taggable-on', '~> 2.4'
+gem 'acts-as-taggable-on', '~> 3.5'
 gem 'awesome_nested_set', '~> 2.1'
 gem 'acts_as_list'
 gem 'globalize3', '~> 0.3.0'
@@ -25,7 +25,7 @@ group :assets do
 end
 
 group :test do
-  gem 'test-unit', '~> 3.0'
+  gem 'test-unit', '~> 3.5'
 end
 
 gem 'chaos_calendar', :git => 'https://github.com/erdgeist/chaoscalendar.git', :require => 'chaos_calendar', :branch => 'erdgeist-ruby1.9'

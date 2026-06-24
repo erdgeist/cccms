@@ -56,5 +56,6 @@ module Cccms
     config.i18n.default_locale = :de
 
     config.filter_parameters += [:password, :password_confirmation]
+    config.serve_static_assets = true
   end
 end
