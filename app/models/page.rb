@@ -39,8 +39,8 @@ class Page < ActiveRecord::Base
   # partially or entirely overwritten by the options hash. Afterwards the merged
   # parameters are used to query the DB for Pages matching these parameters.
   # The aggregation only takes published pages into account.
-  def self.aggregate options, page=1
 
+  def self.aggregate options, page=1
     defaults = {
       :tags             => "",
       :limit            => 25,
@@ -52,10 +52,18 @@ class Page < ActiveRecord::Base
 
     scope = Page.heads
     unless options[:tags].blank?
-      scope = scope.tagged_with(
-        options[:tags].gsub(/\s/, ",").split(",").map(&:strip),
-        :match_all => true
-      )
+      tag_names = options[:tags].gsub(/\s/, ",").split(",").map(&:strip).map(&:downcase).uniq.reject(&:blank?)
+
+      unless tag_names.empty?
+        scope = scope
+          .joins("JOIN taggings ON taggings.taggable_id = pages.id
+                  AND taggings.taggable_type = 'Page'
+                  AND taggings.context = 'tags'")
+          .joins("JOIN tags ON tags.id = taggings.tag_id")
+          .where("LOWER(tags.name) IN (?)", tag_names)
+          .group("pages.id")
+          .having("COUNT(DISTINCT tags.id) = ?", tag_names.length)
+      end
     end
 
     scope.order("#{options[:order_by]} #{options[:order_direction]}")

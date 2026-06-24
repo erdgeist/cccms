@@ -2,9 +2,11 @@ class Asset < ActiveRecord::Base
   
   has_many :related_assets, :dependent => :destroy
   has_many :pages, :through => :related_assets
-  
+
   has_attached_file(
     :upload,
+    :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
+    :url  => "/system/:attachment/:id/:style/:filename",
     :styles => {
       :medium   => "300x300",
       :thumb    => "100x100",

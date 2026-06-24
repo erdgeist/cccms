@@ -146,7 +146,7 @@ class Node < ActiveRecord::Base
 
   # returns an array with all parts of a unique_name rather than a string
   def unique_path
-    unique_name.split("/") rescue [unique_name]
+    unique_name.to_s
   end
 
   # returns array with pages up to root excluding root

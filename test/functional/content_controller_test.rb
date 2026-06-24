@@ -32,25 +32,28 @@ class ContentControllerTest < ActionController::TestCase
     assert_response :success
     assert_equal "layouts/application", @controller.active_layout.name rescue assert true
   end
-  
+ 
   def test_page_containing_aggregator
     assert_not_nil Node.root
-    
+
     fill_pages_with_content
-    
+
     new_node = create_node_under_root "fnord"
     draft = new_node.find_or_create_draft @user1
     draft.body = '<aggregate tags="update" limit="20" />'
     draft.save
     new_node.publish_draft!
-    
+
     get :render_page, :locale => 'de', :page_path => ["fnord"]
     assert_response :success
-    
-    assert_select("h2", "one")
-    assert_select("h2", "two")
+
+    # The aggregator renders into div.body > div.article_partial.
+    # Without a working aggregator this will be empty.
+    assert_select "div.body div.article_partial", :minimum => 2
+    assert_select "div.body div.article_partial h2.headline a", :text => "one"
+    assert_select "div.body div.article_partial h2.headline a", :text => "two"
   end
-  
+
   def test_page_containing_aggregator_with_custom_template
     fill_pages_with_content
     
@@ -90,6 +93,18 @@ class ContentControllerTest < ActionController::TestCase
     assert_response :success
     assert_template "custom/page_templates/public/no_date_and_author"
   end
+
+  def test_aggregator_without_fill
+    new_node = create_node_under_root "fnord"
+    draft = new_node.find_or_create_draft @user1
+    draft.body = '<aggregate tags="xyzzy_unique_test_tag" limit="20" />'
+    draft.save
+    new_node.publish_draft!
+
+    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    assert_response :success
+    File.write("/tmp/no_fill_response.html", @response.body)
+  end
   
   protected
   
@@ -97,8 +112,8 @@ class ContentControllerTest < ActionController::TestCase
       node = Node.root.children.create! :slug => slug
       node
     end
-  
-    def fill_pages_with_content 
+
+    def fill_pages_with_content
       d1 = @first_child.find_or_create_draft @user1
       d1.title = "one"
       d1.tag_list = "update"
@@ -111,4 +126,5 @@ class ContentControllerTest < ActionController::TestCase
       d2.save
       @second_child.publish_draft!
     end
+
 end

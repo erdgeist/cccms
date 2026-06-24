@@ -7,10 +7,15 @@ class RssController < ApplicationController
     expires_in 31.minutes, :public => true
     
     I18n.locale = :de
-   
-    @items = Page.heads.tagged_with("update")
+  
+    @items = Page.heads
+      .joins("JOIN taggings ON taggings.taggable_id = pages.id
+            AND taggings.taggable_type = 'Page'
+            AND taggings.context = 'tags'")
+      .joins("JOIN tags ON tags.id = taggings.tag_id")
+      .where("LOWER(tags.name) = ?", "update")
       .order("published_at DESC").limit(20)
-    
+
     respond_to do |format|
       format.xml {}
       format.rdf {}
