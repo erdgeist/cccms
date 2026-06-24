@@ -24,12 +24,12 @@ class Node < ActiveRecord::Base
   validate :borders       # This should never ever happen.
 
   # Index for Fulltext Search
-  define_index do
-    indexes head.translations.title
-    indexes slug
-    indexes unique_name
-    indexes head.translations.body
-  end
+  # define_index do
+  #   indexes head.translations.title
+  #   indexes slug
+  #   indexes unique_name
+  #   indexes head.translations.body
+  # end
 
   # Class methods
 
@@ -39,8 +39,8 @@ class Node < ActiveRecord::Base
   # revision with -1. It raises an Argument error if the revision is not a
   # Fixnum
   def self.find_page path, revision = -1
-    unless revision.class == Fixnum
-      raise ArgumentError, "revision must be a Fixnum"
+    unless revision.is_a?(Integer)
+      raise ArgumentError, "revision must be a Integer"
     end
 
     node = Node.find_by_unique_name(path)
@@ -111,6 +111,7 @@ class Node < ActiveRecord::Base
       end
 
       self.save!
+      self.update_unique_name
       self.unlock!
       self
     end

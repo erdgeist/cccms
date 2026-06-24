@@ -41,6 +41,5 @@ fourth_child:
   lft: 8
   rgt: 9
   parent_id: 1
-  draft_id: 103
   slug: fourth_child
   unique_name: fourth_child

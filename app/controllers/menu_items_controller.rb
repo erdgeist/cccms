@@ -7,7 +7,7 @@ class MenuItemsController < ApplicationController
   layout 'admin'
   
   def index
-    @menu_items = MenuItem.all(:order => "position ASC")
+    @menu_items = MenuItem.order("position ASC").all
   end
 
   def show

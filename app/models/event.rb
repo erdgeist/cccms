@@ -12,14 +12,12 @@ class Event < ActiveRecord::Base
   # Instance Methods
   
   def occurrences_in_range start_time, end_time
-    self.occurrences.find(
-      :all, :conditions => [
-        "start_time > ? AND end_time < ?", 
-        start_time, end_time
-      ]
+    self.occurrences.where(
+      "start_time > ? AND end_time < ?",
+      start_time, end_time
     )
-  end
-  
+  end 
+
   private
     def generate_occurences
       Occurrence.generate self

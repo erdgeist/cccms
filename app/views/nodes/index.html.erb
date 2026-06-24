@@ -27,7 +27,7 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY") %>
       </td>
     </tr>
     <% end %>

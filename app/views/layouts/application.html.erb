@@ -28,7 +28,7 @@
 
   </head>
 
-  <body lang="<%= @page.effective_lang %>">
+  <body lang="<%= @page ? @page.effective_lang : 'de' %>">
     <div id="wrapper">
       <div id="header">
         <%= image_tag("header.png") %>

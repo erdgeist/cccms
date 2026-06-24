@@ -7,12 +7,9 @@ class RssController < ApplicationController
     expires_in 31.minutes, :public => true
     
     I18n.locale = :de
-    
-    @items = Page.heads.find_tagged_with(
-      "update",
-      :order => "published_at DESC",
-      :limit => 20
-    )
+   
+    @items = Page.heads.tagged_with("update")
+      .order("published_at DESC").limit(20)
     
     respond_to do |format|
       format.xml {}
@@ -21,13 +18,9 @@ class RssController < ApplicationController
   end
 
   def recent_changes
-    @items = Page.all(
-      :limit => 20,
-      :order => "updated_at desc",
-      :conditions => [ 
-        "updated_at < ? AND updated_at > ?", Time.now, Time.now-14.days
-      ]
-    )
+    @items = Page.where(
+      "updated_at < ? AND updated_at > ?", Time.now, Time.now - 14.days
+    ).limit(20).order("updated_at desc")
   end
   
   protected

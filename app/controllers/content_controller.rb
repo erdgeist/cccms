@@ -20,7 +20,7 @@ class ContentController < ApplicationController
       )
     else
       render(
-        :file => File.join(RAILS_ROOT, 'public', '404.html'),
+        :file => Rails.root.join('public', '404.html'),
         :status => 404
       )
     end
@@ -38,7 +38,7 @@ class ContentController < ApplicationController
 
   private
     def find_page
-      path = params[:page_path].join('/')
+      path = params[:page_path].is_a?(Array) ? params[:page_path].join('/') : params[:page_path]
       if path =~ /^[a-zA-Z\:\/\/\.\-\d_]+$/
         @page = Node.find_page(path)
       else

@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   layout 'admin'
 
   def index
-    @users = User.all(:order => "login ASC").group_by do |user|
+    @users = User.order("login ASC").all.group_by do |user|
       user.admin? ? :admin : :user
     end
   end

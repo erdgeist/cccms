@@ -5,7 +5,7 @@ class TagsController < ApplicationController
   def index
     @page = Page.new :title => "Tags"
 
-    @tags = Tag.all(:limit => 500)
+    @tags = Tag.limit(500).all
   end
 
   def show
@@ -16,14 +16,12 @@ class TagsController < ApplicationController
       @tag  = @tag ? @tag.name : tag_name
       @page = Page.new
 
-      params[:page] = ( params[:page].is_a?(Fixnum) ? params[:page] : 1 )
+      params[:page] = (params[:page].is_a?(Integer) ? params[:page] : 1)
 
-      @pages = Page.heads.paginate(
-        Page.find_options_for_find_tagged_with(@tag).merge(
-          :order => 'published_at DESC',
-          :page=>params[:page],
-          :per_page => 23
-        )
+      @pages = Page.heads.tagged_with(@tag).paginate(
+        :order    => 'published_at DESC',
+        :page     => params[:page],
+        :per_page => 23
       )
 
       respond_to do |format|

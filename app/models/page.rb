@@ -3,23 +3,11 @@ require 'xml'
 class Page < ActiveRecord::Base
 
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
-  FULL_PUBLIC_TEMPLATE_PATH = File.join(RAILS_ROOT, 'app', 'views', PUBLIC_TEMPLATE_PATH)
+  FULL_PUBLIC_TEMPLATE_PATH = Rails.root.join('app', 'views', PUBLIC_TEMPLATE_PATH)
 
   # named scopes
-
-  named_scope(
-    :drafts,
-    :joins => :node,
-    :include => [:translations],
-    :conditions => ["nodes.draft_id = pages.id"]
-  )
-
-  named_scope(
-    :heads,
-    :joins => :node,
-    :include => [:translations],
-    :conditions => ["nodes.head_id = pages.id"]
-  )
+  scope :drafts, joins(:node).includes(:translations).where("nodes.draft_id = pages.id")
+  scope :heads,  joins(:node).includes(:translations).where("nodes.head_id = pages.id")
 
   # Mixins and Plugins
   acts_as_taggable
@@ -62,15 +50,16 @@ class Page < ActiveRecord::Base
 
     options = defaults.merge options
 
-    Page.heads.paginate(
-      find_options_for_find_tagged_with(
-        options[:tags].gsub(/\s/, ","), :match_all => true, :conditions => options[:conditions]
-      ).merge(
-        :page     => page,
-        :per_page => options[:limit],
-        :order    => "#{options[:order_by]} #{options[:order_direction]}"
+    scope = Page.heads
+    unless options[:tags].blank?
+      scope = scope.tagged_with(
+        options[:tags].gsub(/\s/, ",").split(",").map(&:strip),
+        :match_all => true
       )
-    )
+    end
+
+    scope.order("#{options[:order_by]} #{options[:order_direction]}")
+      .paginate(:page => page, :per_page => options[:limit])
   end
 
   def self.custom_templates

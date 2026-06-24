@@ -4,7 +4,7 @@
 
 <h2>Revisions for Node: <%= @node.unique_name %></h2>
 
-<% form_tag diff_node_revisions_path(@node) do %>
+<%= form_tag diff_node_revisions_path(@node) do %>
 <table id="revisions">
   <tr class="header">
     <th>First</th>
@@ -15,7 +15,7 @@
     <th>Date</th>
     <th></th>
   </tr>
-<% @node.pages.reverse.each do |page| %>
+<% (@pages || @node.pages.all).reverse.each do |page| %>
   <tr>
     <td><%= radio_button_tag :start_revision, page.revision %></td>
     <td><%= radio_button_tag :end_revision, page.revision %></td>

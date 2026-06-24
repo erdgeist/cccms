@@ -8,6 +8,7 @@ class RevisionsController < ApplicationController
   
   def index
     @node = Node.find(params[:node_id])
+    @pages = @node.pages.all
   end
 
   def diff

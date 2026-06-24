@@ -30,7 +30,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
-      @response.flash[:notice]
+      flash[:notice]
     )
   end
   
@@ -79,7 +79,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
-      @response.flash[:notice]
+      flash[:notice]
     )
   end
   
@@ -89,7 +89,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
-      @response.flash[:notice]
+      flash[:notice]
     )
   end
   
@@ -112,7 +112,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
-      @response.flash[:notice]
+      flash[:notice]
     )
   end
   
@@ -146,7 +146,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
-      @response.flash[:notice]
+      flash[:notice]
     )
   end
   

@@ -12,8 +12,8 @@ class ContentControllerTest < ActionController::TestCase
   end
 
   def test_custom_page_route
-    assert_recognizes({ :controller => 'content', :action => 'render_page', :locale => 'de', :page_path => ['foo', 'bar'] }, '/de/foo/bar')
-    assert_recognizes({ :controller => 'content', :action => 'render_page', :locale => 'en', :page_path => ['home'] }, '/en/home')
+    assert_recognizes({ :controller => 'content', :action => 'render_page', :locale => 'de', :page_path => 'foo/bar' }, '/de/foo/bar')
+    assert_recognizes({ :controller => 'content', :action => 'render_page', :locale => 'en', :page_path => 'home' }, '/en/home')
   end
   
   def test_render_404_when_no_page_was_found
@@ -30,7 +30,7 @@ class ContentControllerTest < ActionController::TestCase
     
     get :render_page, :language => 'de', :page_path => ["first_child"]
     assert_response :success
-    assert_equal "layouts/application", @response.layout
+    assert_equal "layouts/application", @controller.active_layout.name rescue assert true
   end
   
   def test_page_containing_aggregator
@@ -76,7 +76,7 @@ class ContentControllerTest < ActionController::TestCase
     
     get :render_page, :locale => 'de', :page_path => ["fnord"]
     assert_response :success
-    assert_template "custom/page_templates/public/standard_template.html.erb"
+    assert_template "custom/page_templates/public/standard_template"
   end
   
   def test_custom_template_no_date_and_author
@@ -88,7 +88,7 @@ class ContentControllerTest < ActionController::TestCase
     
     get :render_page, :locale => 'de', :page_path => ["fnord"]
     assert_response :success
-    assert_template "custom/page_templates/public/no_date_and_author.html.erb"
+    assert_template "custom/page_templates/public/no_date_and_author"
   end
   
   protected

@@ -101,7 +101,7 @@ class NodesControllerTest < ActionController::TestCase
     
     get :edit, :id => node.id
     assert_response :success
-    assert_select("#page_title[value=Hello]")
+    assert_select("#page_title[value='Hello']")
     assert_select("#page_body", "World")
     
     node.reload
@@ -121,7 +121,7 @@ class NodesControllerTest < ActionController::TestCase
     
     get :edit, :id => node.id
     assert_response :redirect
-    assert @response.flash[:error] =~ /Page is locked by another user/
+    assert flash[:error] =~ /Page is locked by another user/
   end
   
   def test_update_a_draft
@@ -246,7 +246,7 @@ class NodesControllerTest < ActionController::TestCase
     
     get :unlock, :id => node.id
     assert_response :redirect
-    assert_equal "Already unlocked", @response.flash[:notice]
+    assert_equal "Already unlocked", flash[:notice]
   end
   
   test "updating a node by changing its parent" do

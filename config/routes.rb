@@ -1,38 +1,57 @@
-ActionController::Routing::Routes.draw do |map|
+Cccms::Application.routes.draw do
+  filter :locale
 
-  map.filter :locale
-  
-  map.root( 
-    :locale => 'de',
-    :controller => 'content', 
-    :action => 'render_page',
-    :page_path => ['home']
-  )
-  map.resources :assets
-  map.resources :tags
-  map.resources :occurrences
-  map.resources :events
-  map.resources :pages,     :member => {:preview => :get, :sort_images => :put}
-  map.resources :nodes,     :member => {:publish => :put, :unlock => :put} do |node|
-    node.resources :revisions, :member => {:restore => :put}, :collection => {:diff => :post}
+  root :to => 'content#render_page', :page_path => ['home'], :locale => 'de'
+
+  resources :assets
+  resources :tags
+  resources :occurrences
+  resources :events
+
+  resources :pages do
+    member do
+      get :preview
+      put :sort_images
+    end
   end
-  map.logout    '/logout',  :controller => 'sessions', :action => 'destroy'
-  map.login     '/login',   :controller => 'sessions', :action => 'new'
-  map.admin_search 'admin/search', :controller => 'admin', :action => 'search'
-  map.search    'search',   :controller => "search", :action => 'index' 
-  map.resources :users
-  map.resources :menu_items, :member => {:sort => :post}
-  map.resource  :session
-  
-  map.rss       'rss/:action',         :controller => 'rss'
-  map.rss       'rss/:action.:format', :controller => 'rss'
-  
-  map.connect   ':controller/:action/:id'
-  map.connect   ':controller/:action/:id.:format'
-  
-  map.connect   'galleries/*page_path',
-                :controller => 'content', :action => 'render_gallery'
-  
-  map.content   '/*page_path',
-                :controller => 'content', :action => 'render_page'
+
+  resources :nodes do
+    member do
+      put :unlock
+      put :publish
+    end
+
+    resources :revisions do
+      collection do
+        post :diff
+      end
+      member do
+        put :restore
+      end
+    end
+  end
+
+  match '/logout'      => 'sessions#destroy', :as => :logout
+  match '/login'       => 'sessions#new',     :as => :login
+  match 'admin/search' => 'admin#search',     :as => :admin_search
+  match 'search'       => 'search#index',     :as => :search
+
+  resources :users
+
+  resources :menu_items do
+    member do
+      post :sort
+    end
+  end
+
+  resource :session
+
+  match 'rss/:action'          => 'rss#index', :as => :rss
+  match 'rss/:action.:format'  => 'rss#index'
+
+  match '/:controller(/:action(/:id))'
+  match '/:controller(/:action(/:id.:format))'
+
+  match 'galleries/*page_path' => 'content#render_gallery'
+  match '/*page_path'          => 'content#render_page', :as => :content
 end

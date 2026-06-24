@@ -6,8 +6,8 @@
 
 <h1>Editing event</h1>
 
-<% form_for(@event) do |f| %>
-  <%= f.error_messages %>
+<%= form_for(@event) do |f| %>
+  <%= form_error_messages(f) %>
 
   <p>
     <%= f.label :start_time %><br />

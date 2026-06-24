@@ -1,6 +1,6 @@
 class MenuItem < ActiveRecord::Base
-  
-  default_scope :conditions => {:type => "MenuItem"}
+ 
+  default_scope where(:type => "MenuItem")
   
   translates    :title
   
@@ -24,5 +24,5 @@ end
 
 
 class FeaturedArticle < MenuItem
-  default_scope :conditions => {:type => "FeaturedArticle"}
+  default_scope where(:type => "FeaturedArticle")
 end

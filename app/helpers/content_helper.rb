@@ -1,7 +1,7 @@
 module ContentHelper
 
   def main_menu
-    menu_items = MenuItem.all(:order => "position ASC")
+    menu_items = MenuItem.order("position ASC").all
     render(
       :partial => 'content/main_navigation',
       :locals => {:menu_items => menu_items}
@@ -51,7 +51,7 @@ module ContentHelper
   end
 
   def page_title
-    if @page.title && @page.title != ""
+    if @page && @page.title && @page.title != ""
       "CCC | #{@page.title}"
     else
       "CCC | Chaos Computer Club"
@@ -75,7 +75,7 @@ module ContentHelper
   def aggregate? content
     options = {}
 
-    cccms_attributes = ActionView::Base.sanitized_allowed_attributes + [ 'lang' ]
+    cccms_attributes = ActionView::Base.sanitized_allowed_attributes + ['lang']
 
     begin
       if content =~ /<aggregate([^<>]*)>/
@@ -126,9 +126,7 @@ module ContentHelper
   # Check if a custom partial exists in the proper location
   def partial_exists? partial
     File.exist?(
-      File.join(
-        RAILS_ROOT, 'app', 'views', 'custom', 'partials', "_#{partial}.html.erb"
-      )
+      Rails.root.join('app', 'views', 'custom', 'partials', "_#{partial}.html.erb")
     )
   end
 
