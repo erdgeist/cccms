@@ -14,28 +14,26 @@ module LinkHelper
   end
   
   def link_to_path title, path, html_options = {}
+    return "" if path.nil?
+
     if params[:page_path]
       page_path = params[:page_path].is_a?(Array) ? params[:page_path].join("/") : params[:page_path]
       active = (page_path == path.sub(/^\//, ""))
     end
-    
+
     active_class = active ? {:class => 'active'} : {:class => 'inactive'}
-    
+
     html_options = html_options.merge(active_class)
-    
-    params[:locale] ||= I18n.locale
-    
-    link_to( 
-      title, {
-        :controller => :content,
-        :action => :render_page,
-        :locale => params[:locale],
-        :page_path => (path.sub(/^\//, "") rescue "")
-      },
+
+    locale = params[:locale] || I18n.locale
+
+    link_to(
+      title,
+      content_path(path.sub(/^\//, ""), :locale => locale),
       html_options
     )
   end
-  
+
   def selected? controller_name
     if params[:controller] == controller_name
       return :class => "selected"
@@ -48,7 +46,7 @@ module LinkHelper
               "Last modified #{@page.updated_at.to_s(:db)}"
     
     link_to(
-      'Unlock', unlock_node_path(@node), :method => :put, :confirm => message
+      'Unlock', unlock_node_path(@node), :method => :put, :data => { :confirm => message }
     )
   end
   

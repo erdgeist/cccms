@@ -31,7 +31,7 @@
             'restore', 
             restore_node_revision_path(@node, page), 
             :method => :put, 
-            :confirm => "Restore this revision?"
+            :data => { :confirm => "Restore this revision?" }
           ) %>
     </td>
   </tr>

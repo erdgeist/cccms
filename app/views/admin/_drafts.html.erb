@@ -17,7 +17,7 @@
       <td class="actions">
         <%= link_to 'Show', node_path(draft.node) %>
         <%= link_to "Revisions", revision_path(draft.node.id) %>
-        <%= link_to "Publish", publish_node_path(draft.node), :method => :put, :confirm => "Do you really want to publish?" %>
+        <%= link_to "Publish", publish_node_path(draft.node), :method => :put, :data => { :confirm => "Do you really want to publish?" } %>
       </td>
     </tr>
     <% end %>

@@ -12,7 +12,7 @@
     <td><%=h page.title %></td>
     <td><%= link_to 'Show', content_path(:page_path => page.node.unique_path) %></td>
     <td><%= link_to 'Edit', edit_page_path(page) %></td>
-    <td><%= link_to 'Destroy', page, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', page, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>
