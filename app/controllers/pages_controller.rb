@@ -22,6 +22,6 @@ class PagesController < ApplicationController
     page = Page.find(params[:id])
     page.update_assets(params[:images])
     
-    render :nothing => true, :status => 200
+    head :ok
   end
 end

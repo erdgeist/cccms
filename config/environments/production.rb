@@ -13,7 +13,7 @@ Cccms::Application.configure do
   config.log_level = :info
 
   config.active_support.deprecation = :notify
-  config.eager_load = false
+  config.eager_load = true
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
@@ -30,11 +30,11 @@ Cccms::Application.configure do
   # Enable threaded mode
   # config.threadsafe!
 
-  ActionMailer::Base.delivery_method = :sendmail
-  ActionMailer::Base.sendmail_settings = {
-    :location => '/usr/sbin/sendmail',
-    :arguments => '-i -t'
+  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.sendmail_settings = {
+    location: '/usr/sbin/sendmail',
+    arguments: '-i -t'
   }
-  ActionMailer::Base.perform_deliveries = true
-  ActionMailer::Base.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
 end

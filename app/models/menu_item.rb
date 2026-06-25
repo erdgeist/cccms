@@ -1,4 +1,4 @@
-class MenuItem < ActiveRecord::Base
+class MenuItem < ApplicationRecord
  
   default_scope -> { where(:type => "MenuItem") }
   

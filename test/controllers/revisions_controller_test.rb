@@ -12,7 +12,7 @@ class RevisionsControllerTest < ActionController::TestCase
     @node.publish_draft!
     @node.find_or_create_draft @user
     draft = @node.draft
-    draft.update_attributes(:body => "second")
+    draft.update(:body => "second")
     @node.publish_draft!
   end
   

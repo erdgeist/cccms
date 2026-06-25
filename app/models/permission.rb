@@ -1,4 +1,4 @@
-class Permission < ActiveRecord::Base
+class Permission < ApplicationRecord
   # Validations
   validates_presence_of   :user_id, :node_id, :granted
   validates_inclusion_of  :granted, :in => [true, false]

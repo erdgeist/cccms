@@ -1,28 +1,26 @@
 source 'https://rubygems.org'
 
-gem 'rails', '5.2.8.1'
+gem 'rails', '6.1.7.10'
+gem 'concurrent-ruby', '1.3.4'
 
 gem 'pg', '~> 1.0'
 
-gem 'acts-as-taggable-on', '~> 6.0'
+gem 'acts-as-taggable-on', '~> 7.0'
 gem 'awesome_nested_set', '~> 3.4.0'
 gem 'acts_as_list'
-gem 'globalize', '~> 5.2.0'
-gem 'routing-filter', '~> 0.6'
-gem 'paperclip', '~> 3.5'
+gem 'globalize', '~> 6.0'
+gem 'routing-filter', '~> 0.7.0'
 gem 'will_paginate', '~> 3.0'
 gem 'exception_notification', '~> 4.5'
 gem 'libxml-ruby', '~> 3.2', :require => 'xml'
 
-gem 'nokogiri', '~> 1.10.10'
-gem 'loofah', '~> 2.20.0'
-gem 'rails-html-sanitizer', '~> 1.4.4'
+gem 'nokogiri', '~> 1.13'
 gem 'jquery-rails'
 
 gem 'unicorn', '~> 1.1'
 
 group :assets do
-  gem 'sass-rails',   '~> 5.0'
+  gem 'sass-rails', '~> 6.0'
   gem 'coffee-rails', '~> 4.0'
   gem 'uglifier', '>= 1.0.3'
 end

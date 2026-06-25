@@ -1,4 +1,4 @@
-class Node < ActiveRecord::Base
+class Node < ApplicationRecord
   # Mixins and Plugins
   acts_as_nested_set
 

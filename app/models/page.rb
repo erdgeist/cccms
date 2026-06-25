@@ -1,6 +1,6 @@
 require 'xml'
 
-class Page < ActiveRecord::Base
+class Page < ApplicationRecord
 
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
   FULL_PUBLIC_TEMPLATE_PATH = Rails.root.join('app', 'views', PUBLIC_TEMPLATE_PATH)

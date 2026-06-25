@@ -7,10 +7,9 @@ class AssetsController < ApplicationController
   layout 'admin'
   
   def index
-    @assets = Asset.all.paginate(
-      :page => params[:page], 
-      :per_page => 20,
-      :order => 'id DESC'
+    @assets = Asset.order('id DESC').paginate(
+      :page     => params[:page],
+      :per_page => 20
     )
   end
 
@@ -44,7 +43,7 @@ class AssetsController < ApplicationController
   # POST /assets
   # POST /assets.xml
   def create
-    @asset = Asset.new(params[:asset])
+    @asset = Asset.new(asset_params)
 
     respond_to do |format|
       if @asset.save
@@ -64,7 +63,7 @@ class AssetsController < ApplicationController
     @asset = Asset.find(params[:id])
 
     respond_to do |format|
-      if @asset.update_attributes(params[:asset])
+      if @asset.update(asset_params)
         flash[:notice] = 'Asset was successfully updated.'
         format.html { redirect_to(@asset) }
         format.xml  { head :ok }
@@ -86,4 +85,10 @@ class AssetsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  private
+
+    def asset_params
+      params.require(:asset).permit(:name, :upload)
+    end
 end

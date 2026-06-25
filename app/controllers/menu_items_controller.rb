@@ -14,11 +14,11 @@ class MenuItemsController < ApplicationController
   end
 
   def new
-    @menu_item = MenuItem.new params[:menu_item]
+    @menu_item = MenuItem.new menu_item_params
   end
 
   def create
-    if MenuItem.create( params[:menu_item] )
+    if MenuItem.create( menu_item_params )
       redirect_to menu_items_path
     else
       render :new
@@ -32,7 +32,7 @@ class MenuItemsController < ApplicationController
   def update
     @menu_item = MenuItem.find( params[:id] )
     
-    if @menu_item.update_attributes( params[:menu_item] )
+    if @menu_item.update( menu_item_params )
       redirect_to menu_items_path
     else
       render :edit
@@ -48,10 +48,15 @@ class MenuItemsController < ApplicationController
   def sort
     params[:menu_items].each_with_index do |item_id, index|
       menu_item = MenuItem.find(item_id)
-      menu_item.update_attributes(:position => index + 1)
+      menu_item.update(:position => index + 1)
     end
     
-    render :nothing => true
+    head :ok
   end
 
+  private
+
+    def menu_item_params
+      params.require(:menu_item).permit(:node_id, :path, :position, :type, :type_id)
+    end
 end

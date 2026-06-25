@@ -15,13 +15,14 @@ class ContentController < ApplicationController
 
     if @page and @page.public?
       render(
-        :file => @page.valid_template,
+        :template => @page.valid_template,
         :layout => true
       )
     else
       render(
-        :file => Rails.root.join('public', '404.html'),
-        :status => 404
+        :file => Rails.root.join('public', '404.html').to_s,
+        :status => 404,
+        :layout => false
       )
     end
 
@@ -32,7 +33,7 @@ class ContentController < ApplicationController
       @images = @page.assets.images
       render :file => "content/gallery"
     else
-      render :nothing => true, :status => 404
+      head :not_found
     end
   end
 

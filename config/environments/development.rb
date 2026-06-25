@@ -7,7 +7,6 @@ Cccms::Application.configure do
   config.cache_classes = false
 
   # Log error messages when you accidentally call methods on nil.
-  config.whiny_nils = true
 
   # Show full error reports and disable caching
   config.action_controller.consider_all_requests_local = true
@@ -17,6 +16,10 @@ Cccms::Application.configure do
   config.action_mailer.raise_delivery_errors = false
 
   config.active_support.deprecation = :log
-  config.serve_static_files = true
+  config.public_file_server.enabled = true
   config.eager_load = false
+
+  config.hosts.clear
+
+  config.middleware.delete ExceptionNotification::Rack
 end

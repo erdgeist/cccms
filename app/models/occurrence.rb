@@ -1,7 +1,7 @@
 # TODO Make a gem out of the c wrapper
 require 'chaos_calendar'
 
-class Occurrence < ActiveRecord::Base
+class Occurrence < ApplicationRecord
   
   # Associations
   

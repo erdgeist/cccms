@@ -16,8 +16,8 @@
     <%= stylesheet_link_tag "shadowbox" %>
     <%= javascript_include_tag 'public' %>
 
-    <%= auto_discovery_link_tag(:atom, {:locale => :de, :controller => "rss", :action => "updates", :format => :xml}) %>
-    <%= auto_discovery_link_tag(:rss,  {:locale => :de, :controller => "rss", :action => "updates", :format => :rdf}) %>
+    <%= auto_discovery_link_tag(:atom, '/rss/updates.xml', title: "ATOM") %>
+    <%= auto_discovery_link_tag(:rss,  '/rss/updates.rdf', title: "RSS") %>
 
     <script>
       (function() { document.addEventListener("DOMContentLoaded", function() {
@@ -32,7 +32,6 @@
     <div id="wrapper">
       <div id="header">
         <%= image_tag("header.png") %>
-        <!-- <%= link_to_path(image_tag("header.png"), "/home") %> -->
       </div>
       <div id="toolbox">
         <div id="search">
@@ -53,8 +52,8 @@
           <div class="main_navigation">
             <h2>Admin</h2>
             <ul>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'),:controller => :admin, :action => 'index' %></li>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), node_path(:id => @page.node) %></li>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'), safe_path(:admin_path) %></li>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), safe_path(:node_path, @page.node) %></li>
             </ul>
           </div>
         <% end %>

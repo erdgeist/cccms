@@ -36,7 +36,7 @@ class NodesController < ApplicationController
     @node.slug = params[:title].parameterize.to_s
    
     if @node.save
-      @node.draft.update_attributes(:title => params[:title])
+      @node.draft.update(:title => params[:title])
       case params[:kind]
         when "update"
           @node.draft.tag_list.add("update")
@@ -70,10 +70,10 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node.update_attributes(node_params)
+    @node.update(node_params)
     @draft = @node.find_or_create_draft current_user
     @draft.tag_list = params[:tag_list]
-    if @draft.update_attributes( page_params )
+    if @draft.update( page_params )
       flash[:notice] = "Draft has been saved: #{Time.now}"
       respond_to do |format|
         format.html { redirect_to edit_node_path(@node) }

@@ -1,4 +1,4 @@
-class RelatedAsset < ActiveRecord::Base
+class RelatedAsset < ApplicationRecord
   belongs_to :page
   belongs_to :asset
   

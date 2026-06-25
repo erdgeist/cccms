@@ -45,7 +45,7 @@ class OccurrencesController < ApplicationController
   # POST /occurrences
   # POST /occurrences.xml
   def create
-    @occurrence = Occurrence.new(params[:occurrence])
+    @occurrence = Occurrence.new(occurrence_params)
 
     respond_to do |format|
       if @occurrence.save
@@ -65,7 +65,7 @@ class OccurrencesController < ApplicationController
     @occurrence = Occurrence.find(params[:id])
 
     respond_to do |format|
-      if @occurrence.update_attributes(params[:occurrence])
+      if @occurrence.update(occurrence_params)
         flash[:notice] = 'Occurrence was successfully updated.'
         format.html { redirect_to(@occurrence) }
         format.xml  { head :ok }
@@ -87,4 +87,11 @@ class OccurrencesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  private
+
+    def occurrence_params
+      params.require(:occurrence).permit(:start_time, :end_time, :node_id, :event_id)
+    end
+
 end

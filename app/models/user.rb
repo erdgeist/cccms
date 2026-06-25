@@ -1,6 +1,6 @@
 require 'digest/sha1'
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   # Mixins and Plugins
   include Authentication
   include Authentication::ByPassword

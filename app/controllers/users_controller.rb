@@ -36,7 +36,7 @@ class UsersController < ApplicationController
     permitted = user_params
     permitted.delete(:admin) unless current_user.is_admin?
             
-    if @user.update_attributes(permitted)
+    if @user.update(permitted)
       flash[:notice] = "Updated user #{@user.login}"
       redirect_to user_path(@user)
     else

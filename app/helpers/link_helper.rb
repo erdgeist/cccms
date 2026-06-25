@@ -45,9 +45,28 @@ module LinkHelper
               "Locked by #{@node.lock_owner.login}\n" +
               "Last modified #{@page.updated_at.to_s(:db)}"
     
-    link_to(
-      'Unlock', unlock_node_path(@node), :method => :put, :data => { :confirm => message }
+    link_to 'Unlock', safe_path(:unlock_node_path, @node), :method => :put, :data => { :confirm => message }
+  end
+
+  # Rails 6.1 workaround: content_path named helper returns RouteWithParams
+  # when called from within a catch-all glob route request context.
+  # Rails 6.1 workaround: named route helpers return RouteWithParams when called
+  # from within a catch-all glob route request context.
+  # Remove this method when upgrading to Rails 7.0+, where this is fixed.
+  def safe_path(name, *args)
+    Rails.application.routes.url_helpers.send(name, *args)
+  end
+
+  def content_path(page_path = nil, options = {})
+    if page_path.is_a?(Hash)
+      options = page_path
+      page_path = options.delete(:page_path)
+    end
+    options[:locale] ||= params[:locale] || I18n.locale
+    Rails.application.routes.url_helpers.content_path(
+      Array(page_path).join("/").sub(/^\//, ""),
+      options
     )
   end
-  
+
 end
