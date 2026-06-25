@@ -13,8 +13,9 @@ class Asset < ActiveRecord::Base
       :headline => "460x250#"
     }
   )
- 
-  scope :images,    where(:upload_content_type => ["image/gif", "image/jpeg", "image/png"])
-  scope :documents, where(:upload_content_type => ["application/pdf", "text/plain", "text/rtf"])
-  scope :audio,     where(:upload_content_type => ["audio/mpeg", "audio/x-m4a", "audio/wav", "audio/x-wav"])
+
+  scope :images,    -> { where(:upload_content_type => ["image/gif", "image/jpeg", "image/png"]) }
+  scope :documents, -> { where(:upload_content_type => ["application/pdf", "text/plain", "text/rtf"]) }
+  scope :audio,     -> { where(:upload_content_type => ["audio/mpeg", "audio/x-m4a", "audio/wav", "audio/x-wav"]) }
+
 end

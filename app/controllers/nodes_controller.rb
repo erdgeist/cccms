@@ -21,7 +21,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node = Node.new params[:node]
+    @node = Node.new node_params
     if params.has_key?(:parent_id)
       @parent_id = params[:parent_id]
       @parent_name = Node.find(@parent_id).title
@@ -62,7 +62,7 @@ class NodesController < ApplicationController
     rescue LockedByAnotherUser => e
       flash[:error] = e.message
       if request.referer
-        redirect_to :back
+        redirect_to request.referer || node_path(@node)
       else
         redirect_to node_path(@node)
       end
@@ -70,10 +70,10 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node.update_attributes(params[:node])
+    @node.update_attributes(node_params)
     @draft = @node.find_or_create_draft current_user
     @draft.tag_list = params[:tag_list]
-    if @draft.update_attributes( params[:page] )
+    if @draft.update_attributes( page_params )
       flash[:notice] = "Draft has been saved: #{Time.now}"
       respond_to do |format|
         format.html { redirect_to edit_node_path(@node) }
@@ -91,7 +91,7 @@ class NodesController < ApplicationController
   def publish
     @node.publish_draft!
     flash[:notice] = "Draft has been published"
-    redirect_to node_path
+    redirect_to node_path(@node)
   end
   
   def unlock
@@ -105,6 +105,14 @@ class NodesController < ApplicationController
   end
   
   private
+
+    def node_params
+      params.fetch(:node, {}).permit(:slug, :parent_id)
+    end
+
+    def page_params
+      params.fetch(:page, {}).permit(:title, :abstract, :body, :template_name, :published_at, :user_id)
+    end
   
     def find_node
       @node = Node.find(params[:id])

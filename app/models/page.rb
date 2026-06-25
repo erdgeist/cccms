@@ -5,10 +5,6 @@ class Page < ActiveRecord::Base
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
   FULL_PUBLIC_TEMPLATE_PATH = Rails.root.join('app', 'views', PUBLIC_TEMPLATE_PATH)
 
-  # named scopes
-  scope :drafts, joins(:node).includes(:translations).where("nodes.draft_id = pages.id")
-  scope :heads,  joins(:node).includes(:translations).where("nodes.head_id = pages.id")
-
   # Mixins and Plugins
   acts_as_taggable
   acts_as_list :column => :revision, :scope => :node_id
@@ -20,15 +16,16 @@ class Page < ActiveRecord::Base
   belongs_to :user
   belongs_to :editor, :class_name => "User"
   has_many   :related_assets
-  has_many   :assets, :through => :related_assets, :order => "position ASC"
+  has_many   :assets, -> { order("position ASC") }, :through => :related_assets
+
+  # Named scopes
+  scope :drafts, -> { joins(:node).includes(:translations).where("nodes.draft_id = pages.id") }
+  scope :heads,  -> { joins(:node).includes(:translations).where("nodes.head_id = pages.id") }
 
   # Filter
   before_create :set_page_title
   before_create :set_template
   before_save   :rewrite_links_in_body
-
-  # Security
-  attr_accessible :title, :abstract, :body, :template_name, :published_at, :user_id
 
   # Class Methods
 
@@ -146,7 +143,7 @@ class Page < ActiveRecord::Base
 
     # Clone translated attributes
     page.translations.each do |translation|
-      self.translations.create!(translation.attributes)
+      self.translations.create!(translation.attributes.except("id", "page_id", "created_at", "updated_at"))
     end
 
     # Clone asset references
