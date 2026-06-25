@@ -15,9 +15,8 @@ Cccms::Application.configure do
   config.active_support.deprecation = :log
   config.active_support.test_order  = :sorted
 
-  config.active_record.raise_in_transactional_callbacks = true
-
   config.eager_load = false
   config.serve_static_files = true
   config.static_cache_control = "public, max-age=3600"
+  config.assets.compile = true
 end
