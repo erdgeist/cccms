@@ -31,10 +31,11 @@ Cccms::Application.routes.draw do
     end
   end
 
-  match '/logout'      => 'sessions#destroy', :as => :logout
-  match '/login'       => 'sessions#new',     :as => :login
-  match 'admin/search' => 'admin#search',     :as => :admin_search
-  match 'search'       => 'search#index',     :as => :search
+  match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete
+  match '/login'       => 'sessions#new',     :as => :login,        :via => :get
+  match 'admin'        => 'admin#index',      :as => :admin,        :via => :get
+  match 'admin/search' => 'admin#search',     :as => :admin_search, :via => :get
+  match 'search'       => 'search#index',     :as => :search,       :via => :get
 
   resources :users
 
@@ -46,12 +47,9 @@ Cccms::Application.routes.draw do
 
   resource :session
 
-  match 'rss/:action'          => 'rss#index', :as => :rss
-  match 'rss/:action.:format'  => 'rss#index'
+  match 'rss/:action'          => 'rss#index', :as => :rss, :via => [:get, :post]
+  match 'rss/:action.:format'  => 'rss#index',              :via => [:get, :post]
 
-  match '/:controller(/:action(/:id))'
-  match '/:controller(/:action(/:id.:format))'
-
-  match 'galleries/*page_path' => 'content#render_gallery'
-  match '/*page_path'          => 'content#render_page', :as => :content
+  match 'galleries/*page_path' => 'content#render_gallery', :via => :get
+  match '/*page_path' => 'content#render_page', :as => :content, :via => :get
 end

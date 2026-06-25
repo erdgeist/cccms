@@ -13,6 +13,7 @@ Cccms::Application.configure do
   config.log_level = :info
 
   config.active_support.deprecation = :notify
+  config.eager_load = false
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new

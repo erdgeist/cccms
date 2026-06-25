@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'rails/test_help'
 
 module ActiveRecord
-  class Fixtures
+  class FixtureSet
     class << self
       alias_method :original_create_fixtures, :create_fixtures
       def create_fixtures(*args)
