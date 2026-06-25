@@ -14,30 +14,30 @@ class OccurrencesControllerTest < ActionController::TestCase
   # 
   # test "should create occurrence" do
   #   assert_difference('Occurrence.count') do
-  #     post :create, :occurrence => { }
+  #     post :create, params: { :occurrence => { } }
   #   end
   # 
   #   assert_redirected_to occurrence_path(assigns(:occurrence))
   # end
   # 
   # test "should show occurrence" do
-  #   get :show, :id => occurrences(:one).to_param
+  #   get :show, params: { :id => occurrences(:one).to_param }
   #   assert_response :success
   # end
   # 
   # test "should get edit" do
-  #   get :edit, :id => occurrences(:one).to_param
+  #   get :edit, params: { :id => occurrences(:one).to_param }
   #   assert_response :success
   # end
   # 
   # test "should update occurrence" do
-  #   put :update, :id => occurrences(:one).to_param, :occurrence => { }
+  #   put :update, params: { :id => occurrences(:one).to_param, :occurrence => { } }
   #   assert_redirected_to occurrence_path(assigns(:occurrence))
   # end
   # 
   # test "should destroy occurrence" do
   #   assert_difference('Occurrence.count', -1) do
-  #     delete :destroy, :id => occurrences(:one).to_param
+  #     delete params: { :destroy, :id => occurrences(:one).to_param }
   #   end
   # 
   #   assert_redirected_to occurrences_path

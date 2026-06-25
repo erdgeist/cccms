@@ -15,7 +15,7 @@ class RssControllerTest < ActionController::TestCase
 
   test "updates feed contains tagged pages" do
     begin
-      get :updates, :format => :xml
+      get :updates, params: { format: :xml }
     rescue ActionView::Template::Error => e
       raise unless e.message =~ /superclass mismatch/
     end
@@ -24,7 +24,7 @@ class RssControllerTest < ActionController::TestCase
 
   test "updates feed is limited to 20 items" do
     begin
-      get :updates, :format => :xml
+      get :updates, params: { format: :xml }
     rescue ActionView::Template::Error => e
       raise unless e.message =~ /superclass mismatch/
     end

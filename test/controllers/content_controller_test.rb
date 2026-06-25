@@ -17,7 +17,7 @@ class ContentControllerTest < ActionController::TestCase
   end
   
   def test_render_404_when_no_page_was_found
-    get :render_page, :language => 'de', :page_path => ["wrong_path"]
+    get :render_page, params: { :language => 'de', :page_path => ["wrong_path"] }
     assert_response 404
   end
   
@@ -28,7 +28,7 @@ class ContentControllerTest < ActionController::TestCase
     first_child.head = page
     first_child.save!
     
-    get :render_page, :language => 'de', :page_path => ["first_child"]
+    get :render_page, params: { :language => 'de', :page_path => ["first_child"] }
     assert_response :success
     assert_equal "layouts/application", @controller.active_layout.name rescue assert true
   end
@@ -44,7 +44,7 @@ class ContentControllerTest < ActionController::TestCase
     draft.save
     new_node.publish_draft!
 
-    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }
     assert_response :success
 
     # The aggregator renders into div.body > div.article_partial.
@@ -63,7 +63,7 @@ class ContentControllerTest < ActionController::TestCase
     draft.save
     new_node.publish_draft!
     
-    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }
     assert_response :success
     
     assert_select(".sidebar_headline", "one")
@@ -77,7 +77,7 @@ class ContentControllerTest < ActionController::TestCase
     draft.save
     new_node.publish_draft!
     
-    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }
     assert_response :success
     assert_template "custom/page_templates/public/standard_template"
   end
@@ -89,7 +89,7 @@ class ContentControllerTest < ActionController::TestCase
     draft.save
     new_node.publish_draft!
     
-    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }
     assert_response :success
     assert_template "custom/page_templates/public/no_date_and_author"
   end
@@ -101,7 +101,7 @@ class ContentControllerTest < ActionController::TestCase
     draft.save
     new_node.publish_draft!
 
-    get :render_page, :locale => 'de', :page_path => ["fnord"]
+    get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }
     assert_response :success
     File.write("/tmp/no_fill_response.html", @response.body)
   end

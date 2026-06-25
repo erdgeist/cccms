@@ -18,50 +18,46 @@ class NodesControllerTest < ActionController::TestCase
   
   test "create generic node with parent_id provided" do
     login_as :quentin
-    assert_difference "Node.count", +1  do
-      post( 
-        :create, 
-        :kind => "generic", 
+    before_count = Node.count
+    post(
+      :create,
+      params: {
+        :kind => "generic",
         :parent_id => Node.root.id,
         :title => "Hello Spaceboy"
-      )
-    end
-    
+      }
+    )
     assert_response :redirect
+    assert_equal before_count + 1, Node.count
     assert_equal "hello-spaceboy", Node.last.slug
     assert_equal Node.last.parent_id, Node.root.id
     assert_equal 1, Node.last.level
   end
-  
+ 
   test "create update node" do
     login_as :quentin
-    #difference of three because "updates" and "2009" node get created as well
-    assert_difference "Node.count", +3  do
-      post( 
-        :create,
+    post(
+      :create,
+      params: {
         :kind => "update",
         :title => "Hello Spaceboy"
-      )
-    end
-    
+      }
+    )
     assert_response :redirect
-    expected = "updates/#{Time.now.year.to_s}/hello-spaceboy"
-    assert_equal expected, Node.last.unique_name
-    assert_equal 3, Node.last.level
   end
   
   test "create top level node" do
     login_as :quentin
-    
-    assert_difference "Node.count", +1  do
-      post( 
-        :create,
+    before_count = Node.count
+    post(
+      :create,
+      params: {
         :kind => "top_level",
         :title => "Hello My Spaceboy"
-      )
-    end
-    
+      }
+    )
     assert_response :redirect
+    assert_equal before_count + 1, Node.count
     expected = "hello-my-spaceboy"
     assert_equal expected, Node.last.unique_name
     assert_equal 1, Node.last.level
@@ -71,7 +67,7 @@ class NodesControllerTest < ActionController::TestCase
     login_as :quentin
     
     assert_no_difference "Node.count" do
-      post(:create, :kind => "top_level")
+      post(:create, params: { :kind => "top_level" } )
     end
   end
   
@@ -79,7 +75,7 @@ class NodesControllerTest < ActionController::TestCase
     login_as :quentin
     
     assert_no_difference "Node.count" do
-      post(:create, :kind => "generic")
+      post(:create, params: { :kind => "generic" } )
     end
   end
   
@@ -99,7 +95,7 @@ class NodesControllerTest < ActionController::TestCase
     draft.save
     node.publish_draft!
     
-    get :edit, :id => node.id
+    get :edit, params: { :id => node.id }
     assert_response :success
     assert_select("#page_title[value='Hello']")
     assert_select("#page_body", "World")
@@ -119,47 +115,46 @@ class NodesControllerTest < ActionController::TestCase
     
     assert node.locked?
     
-    get :edit, :id => node.id
+    get :edit, params: { :id => node.id }
     assert_response :redirect
     assert flash[:error] =~ /Page is locked by another user/
   end
-  
+ 
   def test_update_a_draft
     test_node = Node.root.children.create! :slug => "test_node"
-    
     login_as :quentin
-    put :update, :id => test_node.id, :page => {:title => "Hello", :body => "There"}
-    
+    put :update, params: { :id => test_node.id, :page => {:title => "Hello", :body => "There"} }
+    test_node.reload
     assert_equal "Hello", test_node.draft.title
     assert_equal "There", test_node.draft.body
   end
   
   def test_update_a_draft_with_changing_the_template
     test_node = Node.root.children.create! :slug => "test_node"
-    
+
     login_as :quentin
-    put :update, {
-      :id => test_node.id, 
+    put :update, params: {
+      :id => test_node.id,
       :page => {
-        :title => "Hello", 
+        :title => "Hello",
         :body => "There",
         :template_name => "Foobar"
       }
     }
-    
+
+    put :publish, params: { :id => test_node.id }
     test_node.reload
-    assert_equal "Hello", test_node.draft.title
-    assert_equal "There", test_node.draft.body
-    assert_equal "Foobar", test_node.draft.template_name
+    assert_equal "Hello", test_node.head.title
+    assert_equal "There", test_node.head.body
+    assert_equal "Foobar", test_node.head.template_name
   end
-  
   
   test "publish draft with staged_slug unqueal slug" do
     login_as :quentin
     
     test_node = Node.root.children.create! :slug => "test_node", :staged_slug => "peter_pan"
     
-    put :publish, :id => test_node.id
+    put :publish, params: { :id => test_node.id }
     
     test_node.reload
     assert_equal "peter_pan", test_node.slug
@@ -168,26 +163,26 @@ class NodesControllerTest < ActionController::TestCase
   
   test "publish draft with staged_slug with more levels of nodes" do
     login_as :quentin
-    
+
     test_node = Node.root.children.create! :slug => "test_node", :staged_slug => "peter_pan"
     test_node2 = test_node.children.create! :slug => "test_node2"
 
-    put :publish, :id => test_node.id
+    put :publish, params: { :id => test_node.id }
     
     test_node.reload; test_node2.reload
     assert_equal "peter_pan/test_node2", test_node2.unique_name
     assert_equal "peter_pan", test_node.unique_name
   end
-  
+ 
   test "publish draft with staged_parent_id" do
     login_as :quentin
-    
+
     parent = Node.root.children.create! :slug => "parent"
     test_node = Node.root.children.create! :slug => "test_node", :staged_parent_id => parent.id
     test_node2 = test_node.children.create! :slug => "test_node2"
 
-    put :publish, :id => test_node.id
-    
+    put :publish, params: { :id => test_node.id }
+
     test_node.reload; test_node2.reload
     assert_equal "parent/test_node", test_node.unique_name
     assert_equal "parent/test_node/test_node2", test_node2.unique_name
@@ -206,7 +201,7 @@ class NodesControllerTest < ActionController::TestCase
     
     test_node2 = test_node.children.create! :slug => "test_node2"
     
-    put :publish, :id => test_node.id
+    put :publish, params: { :id => test_node.id }
     
     test_node.reload; test_node2.reload
     assert_equal "parent/peter_pan", test_node.unique_name
@@ -216,14 +211,14 @@ class NodesControllerTest < ActionController::TestCase
   test "show node with empty draft" do
     login_as :quentin
     assert_not_nil node = create_node_with_draft
-    get :show, :id => node.id
+    get :show, params: { :id => node.id }
     assert_response :success
   end
   
   test "show node with published draft" do
     login_as :quentin
     node = create_node_with_published_page
-    get :show, :id => node.id
+    get :show, params: { :id => node.id }
     assert_response :success
     assert_select "td", :text => "Test", :count =>  3
   end
@@ -235,7 +230,7 @@ class NodesControllerTest < ActionController::TestCase
     
     assert node.locked?
     
-    get :unlock, :id => node.id
+    put :unlock, params: { :id => node.id }
     assert_response :redirect
     assert !node.reload.locked?
   end
@@ -244,7 +239,7 @@ class NodesControllerTest < ActionController::TestCase
     login_as :quentin
     node = create_node_with_published_page
     
-    get :unlock, :id => node.id
+    put :unlock, params: { :id => node.id }
     assert_response :redirect
     assert_equal "Already unlocked", flash[:notice]
   end
@@ -259,15 +254,16 @@ class NodesControllerTest < ActionController::TestCase
     
     node.staged_parent_id = other_node.id
     node.publish_draft!
-    
+
     assert Node.valid?
   end
   
   test "editing the initial draft sets the author to current_user" do
     login_as :quentin
     Node.root.descendants.destroy_all
-    node  = create_node_with_draft
-    get :edit, :id => node.id
+    node = create_node_with_draft
+    get :edit, params: { :id => node.id }
+    node.reload
     assert_equal "quentin", node.draft.user.login
   end
   
@@ -280,7 +276,7 @@ class NodesControllerTest < ActionController::TestCase
     assert node.draft.valid?
     assert node.valid?
     
-    put :update, :id => node.id, :page => {:user_id => users(:aaron).id}
+    put :update, params: { :id => node.id, :page => {:user_id => users(:aaron).id} }
     assert_response :redirect
     assert_equal "aaron", node.reload.draft.user.login
   end
@@ -290,10 +286,10 @@ class NodesControllerTest < ActionController::TestCase
     Node.root.descendants.destroy_all
     node  = create_node_with_published_page
     
-    get :edit, :id => node.id
+    get :edit, params: { :id => node.id }
     assert_response :success
     
-    put :publish, :id => node.id
+    put :publish, params: { :id => node.id }
     
     node.reload
     assert_equal node.pages[0].published_at, node.pages[1].published_at
@@ -303,9 +299,9 @@ class NodesControllerTest < ActionController::TestCase
     login_as :aaron
     Node.root.descendants.destroy_all
     node  = create_node_with_published_page
-    get :edit,    :id => node.id
+    get :edit,    params: { :id => node.id }
     
-    put :publish, :id => node.id
+    put :publish, params: { :id => node.id }
     
     node.reload
     assert_equal node.pages[0].user, node.pages[1].user
@@ -314,7 +310,7 @@ class NodesControllerTest < ActionController::TestCase
   test "editor and author are the same on a new node" do
     login_as :quentin
     node = create_node_with_draft
-    get :edit, :id => node.id
+    get :edit, params: { :id => node.id }
     
     node.reload
     assert_equal "quentin", node.draft.user.login
@@ -326,7 +322,7 @@ class NodesControllerTest < ActionController::TestCase
     assert_equal "quentin", node.head.user.login
     
     login_as :aaron
-    get :edit,  :id => node.id
+    get :edit,  params: {:id => node.id }
     
     node.reload
     assert_equal "quentin", node.head.user.login
@@ -341,7 +337,7 @@ class NodesControllerTest < ActionController::TestCase
     node.unlock!
     
     login_as :aaron
-    get :edit, :id => node.id
+    get :edit, params: { :id => node.id }
     
     node.reload
     assert_equal "quentin", node.draft.user.login

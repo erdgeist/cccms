@@ -37,11 +37,13 @@ class UsersControllerTest < ActionController::TestCase
   test "creating new users being logged in as admin" do
     login_as :aaron
     assert_difference "User.count", +1 do
-      post :create, :user => {
-        :login                  => "peter",
-        :email                  => "foo@bar.com",
-        :password               => "xxxzzz",
-        :password_confirmation  => "xxxzzz"
+      post :create, params: {
+        :user => {
+          :login                  => "peter",
+          :email                  => "foo@bar.com",
+          :password               => "xxxzzz",
+          :password_confirmation  => "xxxzzz"
+        }
       }
     end
     
@@ -52,12 +54,14 @@ class UsersControllerTest < ActionController::TestCase
   test "creating new admin users being logged in as admin" do
     login_as :aaron
     assert_difference "User.count", +1 do
-      post :create, :user => {
-        :login                  => "peter",
-        :email                  => "foo@bar.com",
-        :password               => "xxxzzz",
-        :password_confirmation  => "xxxzzz",
-        :admin                  => true
+      post :create, params: {
+        :user => {
+          :login                  => "peter",
+          :email                  => "foo@bar.com",
+          :password               => "xxxzzz",
+          :password_confirmation  => "xxxzzz",
+          :admin                  => true
+        }
       }
     end
     
@@ -68,11 +72,13 @@ class UsersControllerTest < ActionController::TestCase
   test "creating new users not being logged as regular user wont work" do
     login_as :quentin
     assert_no_difference "User.count" do
-      post :create, :user => {
-        :login                  => "peter",
-        :email                  => "foo@bar.com",
-        :password               => "xxxzzz",
-        :password_confirmation  => "xxxzzz"
+      post :create, params: {
+        :user => {
+          :login                  => "peter",
+          :email                  => "foo@bar.com",
+          :password               => "xxxzzz",
+          :password_confirmation  => "xxxzzz"
+        }
       }
     end
     
@@ -85,7 +91,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "get edit of another user being logged in as regular user wont work" do
     login_as :quentin
-    get :edit, :id => User.find_by_login("aaron").id
+    get :edit, params: { :id => User.find_by_login("aaron").id }
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
@@ -95,20 +101,20 @@ class UsersControllerTest < ActionController::TestCase
   
   test "get edit of another user being logged in as admin user" do
     login_as :aaron
-    get :edit, :id => User.find_by_login("quentin").id
+    get :edit, params: { :id => User.find_by_login("quentin").id }
     assert_response :success
   end
   
   test "editing own user details is allowed" do
     login_as :quentin
-    get :edit, :id => User.find_by_login("quentin").id
+    get :edit, params: { :id => User.find_by_login("quentin").id }
     assert_response :success
   end
   
   test "updating an user when being logged in as regular user wont work" do
     user = User.find_by_login("aaron")
     login_as :quentin
-    put :update, :id => user.id, :user => {:login => "random"}
+    put :update, params: { :id => user.id, :user => {:login => "random"} }
     assert_redirected_to users_path
     assert_equal(
       "Sorry, you need to be an admin for this action", 
@@ -119,7 +125,7 @@ class UsersControllerTest < ActionController::TestCase
   test "updating an user when being login in as admin user" do
     user = User.find_by_login("quentin")
     login_as :aaron
-    put :update, :id => user.id, :user => {:login => "random"}
+    put :update, params: { :id => user.id, :user => {:login => "random"} }
     assert_redirected_to user_path(user)
     assert_equal "random", user.reload.login
   end
@@ -127,21 +133,21 @@ class UsersControllerTest < ActionController::TestCase
   test "updating own user details is allowd" do
     user = User.find_by_login("quentin")
     login_as :quentin
-    put :update, :id => user.id, :user => {:login => "random"}
+    put :update, params: { :id => user.id, :user => {:login => "random"} }
     assert_redirected_to user_path(user)
     assert_equal "random", user.reload.login
   end
   
   test "showing a user" do
     login_as :quentin
-    get :show, :id => User.find_by_login("aaron").id
+    get :show, params: { :id => User.find_by_login("aaron").id }
     assert_response :success
   end
   
   test "destroying an user being logged in as regular user wont work" do
     login_as :quentin
     assert_no_difference "User.count" do
-      delete :destroy, :id => User.find_by_login("aaron").id
+      delete :destroy, params: { :id => User.find_by_login("aaron").id }
     end
     assert_redirected_to users_path
     assert_equal(
@@ -153,7 +159,7 @@ class UsersControllerTest < ActionController::TestCase
   test "destroying an user being logged in as admin user" do
     login_as :aaron
     assert_difference "User.count", -1 do
-      delete :destroy, :id => User.find_by_login("quentin").id
+      delete :destroy, params: { :id => User.find_by_login("quentin").id }
     end
     assert_redirected_to users_path
   end
@@ -161,7 +167,7 @@ class UsersControllerTest < ActionController::TestCase
   test "admin user can promote regular users to admins" do
     login_as :aaron
     user = users(:quentin)
-    put :update, :id => user.id, :user => {:admin => true}
+    put :update, params: { :id => user.id, :user => {:admin => true} }
     
     user.reload
     assert_equal true, user.is_admin?
@@ -170,7 +176,7 @@ class UsersControllerTest < ActionController::TestCase
   test "regular users cannot promote themselves to admins" do
     login_as :quentin
     user = users(:quentin)
-    put :update, :id => user.id, :user => {:admin => true}
+    put :update, params: { :id => user.id, :user => {:admin => true} }
     
     user.reload
     assert_equal false, user.is_admin?
