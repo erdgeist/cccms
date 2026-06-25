@@ -83,7 +83,7 @@ class Page < ActiveRecord::Base
   # outdated_translations? for more information.
   # Takes :locale => <locale> and :delta_time => 12.hours as options
   def self.find_with_outdated_translations options = {}
-    Page.all(:include => :translations).select do |page|
+    Page.includes(:translations).select do |page|
       page.outdated_translations? options
     end
   end
@@ -182,8 +182,8 @@ class Page < ActiveRecord::Base
 
     translations = self.translations
 
-    default = *(translations.select {|x| x.locale == I18n.default_locale})
-    custom  = *(translations.select {|x| x.locale == options[:locale]})
+    default = translations.find {|x| x.locale.to_s == I18n.default_locale.to_s }
+    custom  = translations.find {|x| x.locale.to_s == options[:locale].to_s }
 
     if translations.size > 1 && default && custom
       difference = (default.updated_at - custom.updated_at).to_i.abs

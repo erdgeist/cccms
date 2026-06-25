@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   
   # Private
   
-  before_filter :login_required
+  before_action :login_required
   
   def preview
     @page = Page.find(params[:id])

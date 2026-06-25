@@ -26,7 +26,7 @@ class Occurrence < ActiveRecord::Base
   # variables are set to save repetitive queries. The occurrences of the given
   # event are then calculated and created.
   def self.generate event
-    self.delete_all(:event_id => event.id)
+    self.where(:event_id => event.id).delete_all
     
     node        = event.node
     duration    = (event.end_time - event.start_time)

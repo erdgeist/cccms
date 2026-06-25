@@ -35,7 +35,7 @@ class TagsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :nothing => true, :status => 400 }
+        format.html { head :bad_request }
       end
     end
 

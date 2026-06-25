@@ -16,10 +16,10 @@ class Node < ActiveRecord::Base
   after_save    :update_unique_names_of_children
 
   # Validations
-  validates_length_of     :slug, :within => 1..255,    :unless => "parent_id.nil?"
-  validates_presence_of   :slug,                       :unless => "parent_id.nil?"
-  validates_uniqueness_of :slug, :scope => :parent_id, :unless => "parent_id.nil?"
-  validates_presence_of   :parent_id,                  :unless => "Node.root.nil?"
+  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? }
+  validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
+  validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
+  validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
 
   validate :borders       # This should never ever happen.
 
@@ -95,26 +95,37 @@ class Node < ActiveRecord::Base
   end
 
   def publish_draft!
+    # Return nil if nothing to publish and no staged changes
+    return nil unless self.draft || staged_slug || staged_parent_id
+
     if self.draft
       self.head = self.draft
       self.head.published_at ||= Time.now
       self.head.save!
-
       self.draft = nil
-
-      if staged_slug && (staged_slug != slug)
-        self.slug = staged_slug
-      end
-
-      if staged_parent_id && (staged_parent_id != parent_id)
-        self.parent_id = staged_parent_id
-      end
-
-      self.save!
-      self.update_unique_name
-      self.unlock!
-      self
     end
+
+    if staged_slug && (staged_slug != slug)
+      self.slug = staged_slug
+      self.staged_slug = nil
+    end
+
+    if staged_parent_id && (staged_parent_id != parent_id)
+      new_parent = Node.find(staged_parent_id)
+      self.staged_parent_id = nil
+      self.save!
+      self.move_to_child_of(new_parent)
+    else
+      unless self.save
+        raise ActiveRecord::RecordInvalid.new(self)
+      end
+    end
+
+    self.reload
+    self.update_unique_name
+    self.send(:update_unique_names_of_children)
+    self.unlock!
+    self
   end
 
   # removes a draft and the lock if it is older than a day and still
@@ -146,7 +157,7 @@ class Node < ActiveRecord::Base
 
   # returns an array with all parts of a unique_name rather than a string
   def unique_path
-    unique_name.to_s
+    unique_name.to_s.split("/")
   end
 
   # returns array with pages up to root excluding root
@@ -228,8 +239,12 @@ class Node < ActiveRecord::Base
     # Hopefully until no childrens occur
     def update_unique_names_of_children
       unless root?
-        self.descendants.each do |descendant|
-          descendant.update_unique_name
+        # Use parent_id-based traversal instead of lft/rgt descendants
+        # due to awesome_nested_set not refreshing parent lft/rgt in memory
+        Node.where(:parent_id => self.id).each do |child|
+          child.reload
+          child.update_unique_name
+          child.send(:update_unique_names_of_children)
         end
       end
     end

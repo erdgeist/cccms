@@ -2,9 +2,9 @@ class UsersController < ApplicationController
 
   # Private
 
-  before_filter :login_required
-  before_filter :find_user,     :only => [:show, :edit, :update, :destroy]
-  before_filter :verify_status, :except => [:index, :show]
+  before_action :login_required
+  before_action :find_user,     :only => [:show, :edit, :update, :destroy]
+  before_action :verify_status, :except => [:index, :show]
 
   layout 'admin'
 

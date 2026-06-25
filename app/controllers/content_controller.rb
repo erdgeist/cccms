@@ -2,7 +2,7 @@ class ContentController < ApplicationController
 
   # Public
 
-  before_filter :find_page
+  before_action :find_page
 
   # This is the method that renders most of the the public content. It recieves
   # a :locale and a :page_path parameter through the params hash. It looks up

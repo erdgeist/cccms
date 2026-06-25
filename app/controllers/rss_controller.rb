@@ -1,7 +1,7 @@
 class RssController < ApplicationController
   
-  before_filter :authenticate, :only => :recent_changes
-  before_filter :get_host
+  before_action :authenticate, :only => :recent_changes
+  before_action :get_host
   
   def updates
     expires_in 31.minutes, :public => true

@@ -4,8 +4,8 @@ class NodesController < ApplicationController
   
   layout 'admin'
   
-  before_filter :login_required
-  before_filter :find_node, :only => [
+  before_action :login_required
+  before_action :find_node, :only => [
                               :show, 
                               :edit, 
                               :update, 
