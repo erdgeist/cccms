@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# PROVIDE: cccms
+# REQUIRE: LOGIN postgresql
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="cccms"
+rcvar="cccms_enable"
+desc="CCC CMS unicorn server"
+
+cccms_dir="${cccms_dir:-/usr/local/www/cccms}"
+cccms_unicorn_config="${cccms_unicorn_config:-/usr/local/etc/unicorn.rb}"
+
+command="/usr/local/rvm/gems/ruby-3.2.11@rails7-upgrade/wrappers/unicorn"
+command_args="-c ${cccms_unicorn_config} -E production -D"
+cccms_chdir="${cccms_dir}"
+
+pidfile="${cccms_pidfile:-${cccms_dir}/tmp/pids/unicorn.pid}"
+procname="ruby"
+
+required_dirs="${cccms_dir}"
+
+extra_commands="reload"
+sig_reload="USR2"
+
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+export RAILS_ENV=production
+export HOME=/root
+
+load_rc_config "${name}"
+: ${cccms_enable:="NO"}
+
+run_rc_command "$1"
