@@ -29,12 +29,12 @@ group :assets do
   gem 'sass-rails', '~> 6.0'
   gem 'coffee-rails', '~> 4.0'
   gem 'uglifier', '>= 1.0.3'
-  gem 'minitest', '~> 5.25'
 end
 
 group :test do
   gem 'test-unit', '~> 3.5'
   gem 'rails-controller-testing'
+  gem 'minitest', '~> 5.25'
 end
 
 gem 'chaos_calendar', :git => 'https://github.com/erdgeist/chaoscalendar.git',
