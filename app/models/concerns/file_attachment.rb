@@ -73,7 +73,7 @@ module FileAttachment
     STYLES.each do |style, options|
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
-      system("convert", original_path, "-resize", options[:geometry], dest_path)
+      system("magick", original_path, "-resize", options[:geometry], dest_path)
     end
   end
 
