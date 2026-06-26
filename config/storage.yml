@@ -1,0 +1,6 @@
+# Active Storage is not used by this application.
+# This file exists only to satisfy the Active Storage engine initializer.
+# File uploads are handled by the custom FileAttachment concern.
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
