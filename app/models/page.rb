@@ -112,7 +112,7 @@ class Page < ApplicationRecord
   end
 
   def template_exists?
-    File.exists? "#{full_public_template_path}.html.erb"
+    File.exist? "#{full_public_template_path}.html.erb"
   end
 
   def valid_template
