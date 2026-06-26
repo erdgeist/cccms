@@ -13,7 +13,7 @@
       <td><%= truncated_title_for_node node %></td>
       <td><%= node.unique_name %></td>
       <td><%= node.draft.user.login rescue "" %></td>
-      <td><%= node.updated_at.to_s(:db) %></td>
+      <td><%= node.updated_at.to_fs(:db) %></td>
       <td class="actions">
         <%= link_to 'Show', node_path(node) %>
         <%= link_to "Revisions", revision_path(:id => node.id) %>

@@ -73,7 +73,7 @@ class Node < ApplicationRecord
       raise(
         LockedByAnotherUser,
         "Page is locked by another user who is working on it! " \
-        "Last modification: #{draft.updated_at.to_s(:db)}"
+        "Last modification: #{draft.updated_at.to_fs(:db)}"
       )
     else
       lock_for! current_user
@@ -211,6 +211,13 @@ class Node < ApplicationRecord
     self.created_at < new_id_format_date ? unique_path : id
   end
 
+  # TODO: restore full-text search once PostgreSQL is upgraded.
+  # The tsvector/plpgsql approach requires PostgreSQL 10+ with plpgsql available.
+  # For now, search is disabled to unblock the Rails 7.2 upgrade.
+  def self.search(term, _ = {})
+    none
+  end
+
   protected
     def lock_for! current_user
       self.lock_owner = current_user
@@ -255,7 +262,3 @@ class Node < ApplicationRecord
       end
     end
 end
-
-class LockedByAnotherUser < StandardError; end
-
-

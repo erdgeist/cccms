@@ -52,8 +52,8 @@
           <div class="main_navigation">
             <h2>Admin</h2>
             <ul>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'), safe_path(:admin_path) %></li>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), safe_path(:node_path, @page.node) %></li>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'), admin_path %></li>
+              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), node_path(@page.node) %></li>
             </ul>
           </div>
         <% end %>
