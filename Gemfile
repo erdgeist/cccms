@@ -7,7 +7,7 @@ gem 'concurrent-ruby', '~> 1.3'
 gem 'sprockets-rails'
 gem 'puma'
 
-gem 'pg', '~> 1.4.6'
+gem 'pg', '~> 1.5'
 
 gem 'acts-as-taggable-on', '~> 12.0'
 gem 'awesome_nested_set', '~> 3.7.0'
