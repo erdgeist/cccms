@@ -137,7 +137,7 @@ class Node < ApplicationRecord
     end
     return unless self.head
     return unless self.draft.updated_at < 1.day.ago
-    return if Page.find(self.head).has_changes_to? self.draft
+    return if self.head.has_changes_to? self.draft
 
     self.draft.destroy
     self.draft_id = nil
