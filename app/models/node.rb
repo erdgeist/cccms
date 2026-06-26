@@ -211,11 +211,13 @@ class Node < ApplicationRecord
     self.created_at < new_id_format_date ? unique_path : id
   end
 
-  # TODO: restore full-text search once PostgreSQL is upgraded.
-  # The tsvector/plpgsql approach requires PostgreSQL 10+ with plpgsql available.
-  # For now, search is disabled to unblock the Rails 7.2 upgrade.
+  # Full-text search across all locale translations using PostgreSQL tsvector.
+  # Uses 'simple' dictionary (no stemming, no stopwords) so queries work
+  # across German and English content without language detection.
   def self.search(term, _ = {})
-    none
+    joins(head: :translations)
+      .where("page_translations.search_vector @@ plainto_tsquery('simple', ?)", term)
+      .distinct
   end
 
   protected
