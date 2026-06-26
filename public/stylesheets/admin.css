@@ -116,6 +116,28 @@ input[type=submit],
   text-transform: lowercase;
 }
 
+/* button_to forms: render submit inputs as plain links */
+form.button_to {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+form.button_to input[type="submit"] {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+form.button_to input[type="submit"]:hover {
+  color: inherit;
+}
+
 #admin_wizard {
   margin-bottom: 2rem;
 }

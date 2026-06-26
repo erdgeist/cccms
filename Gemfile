@@ -4,6 +4,7 @@ ruby '3.2.11'
 
 gem 'rails', '~> 7.2.3'
 gem 'concurrent-ruby', '~> 1.3'
+gem 'sprockets-rails'
 gem 'puma'
 
 gem 'pg', '~> 1.4.6'
@@ -17,8 +18,10 @@ gem 'will_paginate', '~> 3.0'
 gem 'exception_notification', '~> 4.5'
 gem 'libxml-ruby', '~> 5.0', :require => 'xml'
 
-gem 'nokogiri', '~> 1.18'
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
+
+gem 'nokogiri', '~> 1.18'
 
 gem 'unicorn', '~> 6.1'
 

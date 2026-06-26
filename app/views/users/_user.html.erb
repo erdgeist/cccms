@@ -7,12 +7,9 @@
     <%= link_to "edit", edit_user_path(user) %>
   </td>
   <td>
-    <%= link_to(
-          "destroy",
-          user_path(user),
-          :method => :delete,
-          :data => { :confirm => "Do you really want to delete user #{user.login}?" }
-        ) %>
+    <%= button_to "destroy", user_path(user),
+          method: :delete,
+          form: { data: { confirm: "Do you really want to delete user #{user.login}?" } } %>
   </td>
   <% end %>
 </tr>

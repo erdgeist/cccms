@@ -15,7 +15,7 @@
     <td><%= asset.upload.content_type %></td>
     <td><%= link_to 'Show', asset %></td>
     <td><%= link_to 'Edit', edit_asset_path(asset) %></td>
-    <td><%= link_to 'Destroy', asset, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
+    <td><%= button_to 'Destroy', asset, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
   </tr>
 <% end %>
 </table>

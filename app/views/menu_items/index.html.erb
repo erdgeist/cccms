@@ -14,12 +14,9 @@
     <td class="menu_item_title"><%= menu_item.title %></td>
     <td><%= link_to "Edit", edit_menu_item_path(menu_item) %></td>
     <td>
-      <%= link_to( 
-            "Delete", 
-            menu_item_path(menu_item),
-            :method => :delete,
-            :data => { :confirm => "Are you sure?" }
-          ) %>
+      <%= button_to "Delete", menu_item_path(menu_item),
+            method: :delete,
+            form: { data: { confirm: "Are you sure?" } } %>
     </td>
   </tr>
   <% end %>

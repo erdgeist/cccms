@@ -22,4 +22,7 @@ Cccms::Application.configure do
   config.hosts.clear
 
   config.middleware.delete ExceptionNotification::Rack
+
+  config.assets.debug = false
+  config.assets.digest = true
 end

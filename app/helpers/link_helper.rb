@@ -39,11 +39,11 @@ module LinkHelper
   end
 
   def unlock_link
-    message = "Are you sure you want to unlock?\n" +
-              "Locked by #{@node.lock_owner.login}\n" +
-              "Last modified #{@page.updated_at.to_fs(:db)}"
-
-    link_to 'Unlock', unlock_node_path(@node), :method => :put, :data => { :confirm => message }
+    message = "Are you sure you want to unlock?\n" \
+      "Locked by #{@node.lock_owner.login}\n" \
+      "Last modified #{@page.updated_at.to_fs(:db)}"
+    button_to 'Unlock', unlock_node_path(@node),
+      method: :put,
+      form: { data: { confirm: message } }
   end
-
 end
