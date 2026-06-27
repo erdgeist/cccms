@@ -8,13 +8,13 @@ class UsersControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "a", { :count => 0, :text => "Destroy" }
   end
-  
+
   test "get index as admin user renders admin partial" do
     login_as :aaron
     get :index
     assert_response :success
-    assert_select "a", "destroy"
-    assert_select "a", "show", "Show Link is missing"
+    assert_select "input[type=submit][value=destroy]"
+    assert_select "a", "show"
   end
   
   test "get new when logged in as admin" do

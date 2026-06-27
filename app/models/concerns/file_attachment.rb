@@ -60,6 +60,9 @@ module FileAttachment
     uploaded_file = @pending_upload
     @pending_upload = nil
 
+    old_dir = Rails.root.join("public", "system", "uploads", id.to_s)
+    FileUtils.rm_rf(old_dir) if Dir.exist?(old_dir)
+
     original_path = file_path(:original)
     FileUtils.mkdir_p(File.dirname(original_path))
     FileUtils.cp(uploaded_file.tempfile.path, original_path)

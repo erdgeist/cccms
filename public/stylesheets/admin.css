@@ -131,11 +131,12 @@ form.button_to input[type="submit"] {
   font: inherit;
   color: inherit;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none
 }
 
 form.button_to input[type="submit"]:hover {
-  color: inherit;
+  color: #ffffff;
+  background-color: #ff9600;
 }
 
 #admin_wizard {

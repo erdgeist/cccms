@@ -47,6 +47,10 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
 
+  setup do
+    I18n.locale = I18n.default_locale
+  end
+
   def create_node_with_published_page
     node = create_node_with_draft
     draft = node.draft
