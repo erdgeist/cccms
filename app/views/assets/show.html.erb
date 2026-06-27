@@ -6,7 +6,7 @@
 <table>
   <tr>
     <td>Thumbnail</td>
-    <td><%= image_tag @asset.upload.url(:medium) %></td>
+    <td><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></td>
   </tr>
   <tr>
     <td>Public Path</td>

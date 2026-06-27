@@ -107,7 +107,7 @@ class NodesController < ApplicationController
   private
 
     def node_params
-      params.fetch(:node, {}).permit(:slug, :parent_id)
+      params.fetch(:node, {}).permit(:slug, :parent_id, :staged_slug, :staged_parent_id)
     end
 
     def page_params

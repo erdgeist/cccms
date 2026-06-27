@@ -28,7 +28,9 @@ module FileAttachment
     headline: { geometry: "460x250!",  format: nil }
   }.freeze
 
-  IMAGE_CONTENT_TYPES = %w[image/jpeg image/gif image/png image/webp].freeze
+  IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
+  VECTOR_CONTENT_TYPES   = %w[image/svg+xml].freeze
+  DISPLAYABLE_AS_IMAGE   = IMAGE_CONTENT_TYPES + VECTOR_CONTENT_TYPES
 
   included do
     attr_reader :upload
@@ -69,6 +71,8 @@ module FileAttachment
 
     if IMAGE_CONTENT_TYPES.include?(upload_content_type)
       generate_variants(original_path)
+    elsif VECTOR_CONTENT_TYPES.include?(upload_content_type)
+      generate_svg_variants(original_path)
     end
   end
 
@@ -77,6 +81,14 @@ module FileAttachment
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
       system("magick", original_path, "-resize", options[:geometry], dest_path)
+    end
+  end
+
+  def generate_svg_variants(original_path)
+    STYLES.each do |style, _|
+      dest_path = file_path(style)
+      FileUtils.mkdir_p(File.dirname(dest_path))
+      FileUtils.cp(original_path, dest_path)
     end
   end
 

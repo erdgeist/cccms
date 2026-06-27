@@ -10,7 +10,7 @@
   </tr>
 <% @assets.each do |asset| %>
   <tr>
-    <td><%= image_tag asset.upload.url(:thumb) %></td>
+    <td><%= image_tag asset.upload.url(:thumb), style: "max-width: 100px; max-height: 100px;" %></td>
     <td><%= link_to asset.name, asset.upload.url %></td>
     <td><%= asset.upload.content_type %></td>
     <td><%= link_to 'Show', asset %></td>
