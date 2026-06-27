@@ -1,9 +1,23 @@
 Cccms::Application.routes.draw do
 
-  # Provides the locale prefix url scheme
-  scope '(:locale)', locale: ->(v) { I18n.available_locales.map(&:to_s).include?(v) } do
+  # Handles bare locale root paths: /de and /en (without trailing slash).
+  # Must live outside and before the scope because the scope's /*page_path
+  # catch-all would otherwise consume these before the locale segment is
+  # recognised. Replaces routing-filter's around_recognize hook which
+  # handled this transparently.
+  get '/:locale', to: 'content#render_page',
+      defaults: { page_path: ['home'] },
+      constraints: { locale: /de|en/ }
 
-    root :to => 'content#render_page', :page_path => ['home'], :locale => 'de'
+  # All application routes are scoped under an optional two-letter locale
+  # prefix: /de/... and /en/... Both forms are valid; the prefix is omitted
+  # for the default locale (:de) in generated URLs via default_url_options
+  # in ApplicationController. This replaces the routing-filter gem.
+  #
+  # The locale regex must be kept in sync with config/application.rb
+  # (config.i18n.available_locales) and ApplicationController#set_locale.
+  # Adding a new locale requires updating all three locations.
+  scope '(:locale)', locale: /de|en/ do
 
     resources :tags
     resources :occurrences
@@ -59,6 +73,14 @@ Cccms::Application.routes.draw do
 
     match 'galleries/*page_path' => 'content#render_gallery', :via => :get
     match '/*page_path'          => 'content#render_page', :as => :content, :via => :get
+
+    # Handles /de/ and /en/ (locale root with trailing slash).
+    # The bare-slash case inside the scope is distinct from the /:locale
+    # route above due to trailing slash handling in Rack/Rails routing.
+    get '/', to: 'content#render_page', defaults: { page_path: ['home'] }
+
+    # Handles / (no locale prefix — default locale :de).
+    root to: 'content#render_page', defaults: { page_path: ['home'] }
 
   end
 

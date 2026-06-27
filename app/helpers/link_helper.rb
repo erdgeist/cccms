@@ -4,7 +4,7 @@ module LinkHelper
     url_for(
       :controller => :content,
       :action => :render_page,
-      :locale => params[:locale] || I18n.locale,
+      :locale => (params[:locale] || I18n.locale).to_sym == I18n.default_locale ? nil : (params[:locale] || I18n.locale),
       :page_path => path_array
     )
   end
@@ -23,7 +23,7 @@ module LinkHelper
 
     active_class = active ? {:class => 'active'} : {:class => 'inactive'}
     html_options = html_options.merge(active_class)
-    locale = params[:locale] || I18n.locale
+    locale = (params[:locale] || I18n.locale).to_sym == I18n.default_locale ? nil : (params[:locale] || I18n.locale)
 
     link_to(
       title,
@@ -45,5 +45,18 @@ module LinkHelper
     button_to 'Unlock', unlock_node_path(@node),
       method: :put,
       form: { data: { confirm: message } }
+  end
+
+  def content_path(page_path = nil, options = {})
+    if page_path.is_a?(Hash)
+      options = page_path
+      page_path = options.delete(:page_path)
+    end
+    locale = options[:locale] || params[:locale] || I18n.locale
+    options[:locale] = (locale.to_sym == I18n.default_locale) ? nil : locale
+    Rails.application.routes.url_helpers.content_path(
+      Array(page_path).join("/").sub(/^\//, ""),
+      options
+    )
   end
 end
