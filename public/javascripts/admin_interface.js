@@ -13,27 +13,21 @@ function hide_all() {
 $(document).ready(function () {
   admin_search.initialize();
   
-  $(".with_editor").tinymce({
-    script_url : '/javascripts/tiny_mce/tiny_mce.js',
-    theme: "advanced",
-    mode : "specific_textareas",
-    editor_selector : "with_editor",
-    plugins : "safari, paste",
-    paste_auto_cleanup_on_paste : true,
-    paste_strip_class_attributes : true,
-    paste_remove_spans : true,
-    paste_remove_styles : true,
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold, italic, underline, bullist, numlist, link, unlink, formatselect, code",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    extended_valid_elements : "aggregate[tags|limit|order_by|order_direction|partial|conditions]",
-    relative_urls : false,
-    entity_encoding : "raw",
-    oninit : cccms.setup_autosave()
-  });
-  
+  tinymce.init({
+    selector: 'textarea.with_editor',
+    license_key: 'gpl',
+    plugins: 'paste',
+    toolbar: 'bold italic underline | bullist numlist | link unlink | blocks | code',
+    extended_valid_elements: 'aggregate[tags|limit|order_by|order_direction|partial|conditions]',
+    relative_urls: false,
+    entity_encoding: 'raw',
+    setup: function(editor) {
+      editor.on('init', function() {
+        cccms.setup_autosave();
+      });
+    }
+  }); 
+
   if ($("#menu_search_term").length != 0) {
     menu_items.initialize_search();
   }

@@ -1,2 +1,5 @@
-require File.expand_path('../application', __FILE__)
-Cccms::Application.initialize!
+# Load the Rails application.
+require_relative "application"
+
+# Initialize the Rails application.
+Rails.application.initialize!

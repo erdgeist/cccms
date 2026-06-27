@@ -10,11 +10,11 @@
     <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
 
     <title><%= page_title %></title>
-    <%= stylesheet_link_tag "ccc" %>
-    <%= javascript_include_tag 'jquery-1.3.2.min' %>
-    <%= javascript_include_tag 'shadowbox/shadowbox' %>
-    <%= stylesheet_link_tag "shadowbox" %>
-    <%= javascript_include_tag 'public' %>
+    <link rel="stylesheet" href="/stylesheets/ccc.css">
+    <script src="/javascripts/jquery-1.3.2.min.js"></script>
+    <script src="/javascripts/shadowbox/shadowbox.js"></script>
+    <link rel="stylesheet" href="/stylesheets/shadowbox.css">
+    <script src="/javascripts/public.js"></script>
 
     <%= auto_discovery_link_tag(:atom, '/rss/updates.xml', title: "ATOM") %>
     <%= auto_discovery_link_tag(:rss,  '/rss/updates.rdf', title: "RSS") %>
@@ -31,7 +31,7 @@
   <body lang="<%= @page ? @page.effective_lang : 'de' %>">
     <div id="wrapper">
       <div id="header">
-        <%= image_tag("header.png") %>
+        <img src="/images/header.png" alt="">
       </div>
       <div id="toolbox">
         <div id="search">

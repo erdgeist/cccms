@@ -4,11 +4,11 @@ class Node < ApplicationRecord
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
-  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy
-  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy
+  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy, optional: true
+  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy, optional: true
   has_many    :permissions, :dependent => :destroy
   has_one     :event, :dependent => :destroy
-  belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id
+  belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
 
   # Callbacks
   after_create  :initialize_empty_page

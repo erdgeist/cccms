@@ -12,9 +12,9 @@ class Page < ApplicationRecord
   translates :title, :abstract, :body # Globalize2
 
   # Associations
-  belongs_to :node
-  belongs_to :user
-  belongs_to :editor, :class_name => "User"
+  belongs_to :node, optional: true
+  belongs_to :user, optional: true
+  belongs_to :editor, :class_name => "User", optional: true
   has_many   :related_assets
   has_many   :assets, -> { order("position ASC") }, :through => :related_assets
 

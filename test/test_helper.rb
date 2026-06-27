@@ -63,6 +63,8 @@ class ActiveSupport::TestCase
   end
   
   def create_node_with_draft
-    Node.root.children.create :slug => "test_node"
+    node = Node.root.children.create! :slug => "test_node"
+    node.reload
+    node
   end
 end

@@ -13,7 +13,7 @@ class UsersControllerTest < ActionController::TestCase
     login_as :aaron
     get :index
     assert_response :success
-    assert_select "input[type=submit][value=destroy]"
+    assert_select "button[type=submit]", "destroy"
     assert_select "a", "show"
   end
   

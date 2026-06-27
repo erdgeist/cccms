@@ -1,26 +1,38 @@
-# Settings specified here will take precedence over those in config/environment.rb
+require "active_support/core_ext/integer/time"
 
-Cccms::Application.configure do
-  # In the development environment your application's code is reloaded on
-  # every request.  This slows down response time but is perfect for development
-  # since you don't have to restart the webserver when you make code changes.
+Rails.application.configure do
   config.enable_reloading = true
-
-  # Log error messages when you accidentally call methods on nil.
-
-  # Show full error reports and disable caching
-  config.action_controller.consider_all_requests_local = true
-  config.action_controller.perform_caching             = false
-
-  # Don't care if the mailer can't send
-  config.action_mailer.raise_delivery_errors = false
-
-  config.active_support.deprecation = :log
-  config.public_file_server.enabled = true
   config.eager_load = false
 
-  config.hosts.clear
+  config.consider_all_requests_local = true
+  config.server_timing = true
 
+  if Rails.root.join("tmp/caching-dev.txt").exist?
+    config.action_controller.perform_caching = true
+    config.action_controller.enable_fragment_cache_logging = true
+    config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
+  else
+    config.action_controller.perform_caching = false
+  end
+
+  config.cache_store = :memory_store
+
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.perform_caching = false
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
+  config.active_support.deprecation = :log
+
+  config.active_record.migration_error = :page_load
+  config.active_record.verbose_query_logs = true
+  config.active_record.query_log_tags_enabled = true
+
+  config.active_job.verbose_enqueue_logs = true
+  config.action_dispatch.verbose_redirect_logs = true
+  config.action_view.annotate_rendered_view_with_filenames = true
+  config.action_controller.raise_on_missing_callback_actions = true
+
+  config.hosts.clear
   config.middleware.delete ExceptionNotification::Rack
 
   config.assets.debug = false

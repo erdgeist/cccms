@@ -1,0 +1,1 @@
+pt_PT-4d831e21757daac3ed1b59fec195ec28fbf1bd85450717ca1f519d2ecc14b5d3.js

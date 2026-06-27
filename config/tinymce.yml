@@ -1,0 +1,7 @@
+license_key: gpl
+plugins:
+  - paste
+toolbar: bold italic underline | bullist numlist | link unlink | blocks | code
+extended_valid_elements: "aggregate[tags|limit|order_by|order_direction|partial|conditions]"
+relative_urls: false
+entity_encoding: raw
