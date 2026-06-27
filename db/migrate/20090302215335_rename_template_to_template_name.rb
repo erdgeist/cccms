@@ -1,4 +1,4 @@
-class RenameTemplateToTemplateName < ActiveRecord::Migration
+class RenameTemplateToTemplateName < ActiveRecord::Migration[4.2]
   def self.up
     rename_column :pages, :template, :template_name
   end

@@ -1,4 +1,4 @@
-class AddJoinTableForFlagsPages < ActiveRecord::Migration
+class AddJoinTableForFlagsPages < ActiveRecord::Migration[4.2]
   def self.up
     create_table :flags_pages, :id => false do |t|
       t.integer :flag_id

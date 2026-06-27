@@ -1,4 +1,4 @@
-class UpgradeTaggingsForActsAsTaggableOn < ActiveRecord::Migration
+class UpgradeTaggingsForActsAsTaggableOn < ActiveRecord::Migration[4.2]
   def up
     add_column :taggings, :context,     :string
     add_column :taggings, :tagger_id,   :integer
