@@ -13,7 +13,8 @@ desc="CCC CMS unicorn server"
 cccms_dir="${cccms_dir:-/usr/local/www/cccms}"
 cccms_unicorn_config="${cccms_unicorn_config:-/usr/local/etc/unicorn.rb}"
 
-command="/usr/local/rvm/gems/ruby-3.2.11@rails7-upgrade/wrappers/unicorn"
+# command="/usr/local/rvm/gems/ruby-3.2.11@rails7-upgrade/wrappers/unicorn"
+command="/usr/local/rvm/gems/ruby-3.2.11@rails8-upgrade/wrappers/unicorn"
 command_args="-c ${cccms_unicorn_config} -E production -D"
 cccms_chdir="${cccms_dir}"
 
@@ -25,6 +26,7 @@ required_dirs="${cccms_dir}"
 extra_commands="reload"
 sig_reload="USR2"
 
+start_precmd="cccms_prestart"
 cccms_prestart()
 {
     mkdir -p /usr/local/www/cccms/tmp/pids /var/log
