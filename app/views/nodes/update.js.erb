@@ -1,3 +1,5 @@
-$("#flash").html(
-  "<span><%= escape_javascript(flash.delete(:notice)) %></span>"
-);
+<% if flash[:notice] %>
+  $("#flash").html(
+    "<span><%= escape_javascript(flash.delete(:notice)) %></span>"
+  );
+<% end %>
