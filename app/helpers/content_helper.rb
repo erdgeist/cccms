@@ -59,43 +59,43 @@ module ContentHelper
   end
 
   # This method is an output filter for templates. It accepts any kind of text
-  # and checks for an <aggregate /> tag within it. If such a tag is found, its
-  # attributes are parsed and converted into parameters for the
-  # render_collection method. The <aggregate /> tag will then be replaced
+  # and checks for an [aggregate short code within it. If such a code is found,
+  # its # attributes are parsed and converted into parameters for the
+  # render_collection method. The [aggregate ] short code will then be replaced
   # entirely with the output of the render_collection method.
   #
-  # Syntax of the <aggregate /> tag:
+  # Syntax of the [aggregate ] short code:
   #
-  # <aggregate
+  # [aggregate
   #   flags="update, pressemitteilung"
   #   limit="20"
   #   order_by="published_at"
   #   order_direction="DESC"
-  # />
+  # ]
   def aggregate? content
     options = {}
 
     cccms_attributes = ActionView::Base.sanitized_allowed_attributes + ['lang']
 
     begin
-      if content =~ /<aggregate([^<>]*)>/
+      if content =~ /\[aggregate([^\]]*)\]/
         tag = $~.to_s
-        matched_data = $1.scan(/\w+\=\"[a-zA-Z\s\/_\d,.=]*\"/)
+        matched_data = $1.scan(/\w+\="[a-zA-Z\s\/_\d,.=]*"/)
 
         matched_data.each do |data|
           splitted_data = data.split("=", 2)
-          options[splitted_data[0].to_sym] = splitted_data[1].gsub(/\"/, "")
+          options[splitted_data[0].to_sym] = splitted_data[1].gsub(/"/, "")
         end
 
-        options[:partial] = select_partial( options[:partial] )
+        options[:partial] = select_partial(options[:partial])
 
-        sanitize( content.sub(tag, render_collection(options)), :attributes => cccms_attributes )
+        sanitize(content.sub(tag, render_collection(options)), :attributes => cccms_attributes)
       else
-        sanitize( content, :attributes => cccms_attributes )
+        sanitize(content, :attributes => cccms_attributes)
       end
 
     rescue
-      sanitize( content, :atttributes => cccms_attributes )
+      sanitize(content, :attributes => cccms_attributes)
     end
   end
 

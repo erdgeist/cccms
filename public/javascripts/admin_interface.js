@@ -16,7 +16,9 @@ $(document).ready(function () {
   tinymce.init({
     selector: 'textarea.with_editor',
     license_key: 'gpl',
-    plugins: 'paste',
+    promotion: false,
+    menubar: false,
+    plugins: 'code',
     toolbar: 'bold italic underline | bullist numlist | link unlink | blocks | code',
     extended_valid_elements: 'aggregate[tags|limit|order_by|order_direction|partial|conditions]',
     relative_urls: false,

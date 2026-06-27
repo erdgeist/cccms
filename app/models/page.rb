@@ -232,11 +232,6 @@ class Page < ApplicationRecord
           links       = links.reject { |l| l[:href] =~ /system\/uploads/ }
           locales     = I18n.available_locales.reject {|l| l == :root}
 
-          if xml_doc.find("//p/aggregate")[0]
-            aggregate_tags   = xml_doc.find("//aggregate")
-            aggregate_tags[0].parent.replace_with aggregate_tags[0]
-          end
-
           links.each do |link|
             unless locales.include? link[:href].slice(1,2).to_sym
               unless link[:href] =~ /sytem\/uploads/
