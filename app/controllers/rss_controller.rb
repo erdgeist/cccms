@@ -22,6 +22,24 @@ class RssController < ApplicationController
     end
   end
 
+  def tag_updates
+    expires_in 31.minutes, :public => true
+
+    I18n.locale = I18n.default_locale
+    @tag  = params[:tag]
+    @items = Page.heads
+      .joins("JOIN taggings ON taggings.taggable_id = pages.id
+          AND taggings.taggable_type = 'Page'
+          AND taggings.context = 'tags'")
+      .joins("JOIN tags ON tags.id = taggings.tag_id")
+      .where("LOWER(tags.name) = ?", @tag.downcase)
+      .order("published_at DESC").limit(20)
+
+    respond_to do |format|
+      format.xml {}
+    end
+  end
+
   def recent_changes
     @items = Page.where(
       "updated_at < ? AND updated_at > ?", Time.now, Time.now - 14.days

@@ -1,5 +1,11 @@
 <h2><%= t(:show_tag_headline) %> »<%=h @tag %>«</h2>
 
+<p class="feed_link">
+  <%= link_to "Subscribe to updates tagged »#{@tag}«",
+        rss_tag_url(:tag => @tag, :format => :xml),
+        :type => "application/atom+xml" %>
+</p>
+
 <%= 
     render(
       :partial => 'custom/partials/no_date_and_author',
