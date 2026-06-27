@@ -76,7 +76,7 @@
   
   <div id="content">
     <div class="node_description">Title</div>
-    <div class="node_content"><%= d.text_field :title, :pattern => "(?:[^<>&amp;]|&amp;amp;|&amp;lt;|&amp;gt;)*", :title => "Warning: Unescaped HTML entities detected! Use &amp;lt;, &amp;gt;, &amp;amp; instead of <, >, &." %></div>
+    <div class="node_content"><%= d.text_field :title %></div>
 
     <div class="node_description">Abstract</div>
     <div class="node_content"><%= d.text_area :abstract %></div>

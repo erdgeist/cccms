@@ -17,9 +17,9 @@ xml.tag!("rdf:RDF", "xmlns:rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 
   @items.each do |item|
     xml.item("rdf:about" => content_url(:page_path => item.node.unique_path)) do
-      xml.title(item.title)
+      xml.title(CGI.escapeHTML(item.title.to_s))
       xml.link(content_url(:page_path => item.node.unique_path))
-      xml.description(item.abstract)
+      xml.description(CGI.escapeHTML(item.abstract.to_s))
       xml.tag!("dc:creator", (item.user ? item.user.login : "CCC"))
       xml.tag!("dc:date", item.published_at.xmlschema)
     end

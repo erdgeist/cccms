@@ -12,7 +12,7 @@ xml.feed(:xmlns => "http://www.w3.org/2005/Atom", "xml:base" => @host) do
   
   @items.each do |item|
     xml.entry do
-      xml.title(item.title)
+      xml.title(CGI.escapeHTML(item.title.to_s))
       xml.link(
         :href => content_url(:page_path => item.node.unique_path),
         :rel  => "alternate",
@@ -21,7 +21,7 @@ xml.feed(:xmlns => "http://www.w3.org/2005/Atom", "xml:base" => @host) do
       xml.id(content_url(:page_path => item.node.feed_id))
       xml.updated(item.updated_at.xmlschema)
       xml.published(item.published_at.xmlschema)
-      xml.summary(item.abstract)
+      xml.summary(CGI.escapeHTML(item.abstract.to_s))
       xml.content(:type => "xhtml") do
         xml.div(item.body, :xmlns => "http://www.w3.org/1999/xhtml")
       end
