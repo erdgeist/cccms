@@ -1,7 +1,7 @@
 module ContentHelper
 
   def main_menu
-    menu_items = MenuItem.all(:order => "position ASC")
+    menu_items = MenuItem.order("position ASC").all
     render(
       :partial => 'content/main_navigation',
       :locals => {:menu_items => menu_items}
@@ -9,13 +9,13 @@ module ContentHelper
   end
 
   def calendar
-    occurrences = Occurrence.find_in_range(Time.now, (Time.now+14.days))
+    occurrences = Occurrence.find_in_range(Time.now, (Time.now+6.weeks))
 
     if occurrences.empty?
       occurrences = Occurrence.find_next
     end
 
-    occurrences = occurrences.reject { |o| o.node.head.nil? }
+    occurrences = occurrences.reject { |o| o.node.nil? || o.node.head.nil? }
 
     render(
       :partial  => 'content/front_page_calendar',
@@ -43,7 +43,7 @@ module ContentHelper
   # Returns the published_at attribute of a page if it is not nil, otherwise
   # it returns the auto-filled value of the created_at attribute
   def date_for_page page
-    page.published_at.to_s(:db) rescue page.created_at.to_s(:db)
+    I18n.l(page.published_at, :format => :ccc) rescue I18n.l(page.created_at, :format => :ccc)
   end
 
   def author_for_page page
@@ -51,7 +51,7 @@ module ContentHelper
   end
 
   def page_title
-    if @page.title && @page.title != ""
+    if @page && @page.title && @page.title != ""
       "CCC | #{@page.title}"
     else
       "CCC | Chaos Computer Club"
@@ -59,41 +59,43 @@ module ContentHelper
   end
 
   # This method is an output filter for templates. It accepts any kind of text
-  # and checks for an <aggregate /> tag within it. If such a tag is found, its
-  # attributes are parsed and converted into parameters for the
-  # render_collection method. The <aggregate /> tag will then be replaced
+  # and checks for an [aggregate short code within it. If such a code is found,
+  # its # attributes are parsed and converted into parameters for the
+  # render_collection method. The [aggregate ] short code will then be replaced
   # entirely with the output of the render_collection method.
   #
-  # Syntax of the <aggregate /> tag:
+  # Syntax of the [aggregate ] short code:
   #
-  # <aggregate
+  # [aggregate
   #   flags="update, pressemitteilung"
   #   limit="20"
   #   order_by="published_at"
   #   order_direction="DESC"
-  # />
+  # ]
   def aggregate? content
     options = {}
 
+    cccms_attributes = ActionView::Base.sanitized_allowed_attributes + ['lang']
+
     begin
-      if content =~ /<aggregate([^<>]*)>/
+      if content =~ /\[aggregate([^\]]*)\]/
         tag = $~.to_s
-        matched_data = $1.scan(/\w+\=\"[a-zA-Z\s\/_\d,]*\"/)
+        matched_data = $1.scan(/\w+\="[a-zA-Z\s\/_\d,.=]*"/)
 
         matched_data.each do |data|
-          splitted_data = data.split("=")
-          options[splitted_data[0].to_sym] = splitted_data[1].gsub(/\"/, "")
+          splitted_data = data.split("=", 2)
+          options[splitted_data[0].to_sym] = splitted_data[1].gsub(/"/, "")
         end
 
-        options[:partial] = select_partial( options[:partial] )
+        options[:partial] = select_partial(options[:partial])
 
-        sanitize( content.sub(tag, render_collection(options)) )
+        sanitize(content.sub(tag, render_collection(options)), :attributes => cccms_attributes)
       else
-        sanitize( content )
+        sanitize(content, :attributes => cccms_attributes)
       end
 
     rescue
-      sanitize( content )
+      sanitize(content, :attributes => cccms_attributes)
     end
   end
 
@@ -124,9 +126,7 @@ module ContentHelper
   # Check if a custom partial exists in the proper location
   def partial_exists? partial
     File.exist?(
-      File.join(
-        RAILS_ROOT, 'app', 'views', 'custom', 'partials', "_#{partial}.html.erb"
-      )
+      Rails.root.join('app', 'views', 'custom', 'partials', "_#{partial}.html.erb")
     )
   end
 

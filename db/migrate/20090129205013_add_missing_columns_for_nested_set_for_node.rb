@@ -1,4 +1,4 @@
-class AddMissingColumnsForNestedSetForNode < ActiveRecord::Migration
+class AddMissingColumnsForNestedSetForNode < ActiveRecord::Migration[4.2]
   def self.up
     add_column :nodes, :lft, :integer
     add_column :nodes, :rgt, :integer

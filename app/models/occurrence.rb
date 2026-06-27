@@ -1,7 +1,7 @@
 # TODO Make a gem out of the c wrapper
 require 'chaos_calendar'
 
-class Occurrence < ActiveRecord::Base
+class Occurrence < ApplicationRecord
   
   # Associations
   
@@ -11,29 +11,22 @@ class Occurrence < ActiveRecord::Base
   # Class Methods
   
   def self.find_in_range start_time, end_time
-    find(
-      :all,
-      :include => :node, 
-      :conditions => [
-        "start_time > ? AND end_time < ?", start_time, end_time 
-      ]
-    )
+    includes(:node)
+      .where("start_time > ? AND end_time < ?", start_time, end_time)
+      .order("start_time")
   end
-  
+
   def self.find_next
-    find(
-      :all,
-      :limit => 1,
-      :include => :node,
-      :conditions => ["start_time > ?", Time.now]
-    )
+    includes(:node)
+      .where("start_time > ?", Time.now)
+      .limit(1)
   end
-  
+
   # Deletes all Occurrences which belong to the given event. Afterwards a few
   # variables are set to save repetitive queries. The occurrences of the given
   # event are then calculated and created.
   def self.generate event
-    self.delete_all(:event_id => event.id)
+    self.where(:event_id => event.id).delete_all
     
     node        = event.node
     duration    = (event.end_time - event.start_time)

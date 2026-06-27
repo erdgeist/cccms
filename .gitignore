@@ -17,4 +17,9 @@ public/system
 vendor/plugins/paperclip/tmp
 db/sphinx
 config/*.sphinx.conf
-tmp
+tmpconfig/database.yml
+config/database.yml
+config/initializers/secret_token.rb
+tmp/
+config/secrets.yml
+config/ci.rb

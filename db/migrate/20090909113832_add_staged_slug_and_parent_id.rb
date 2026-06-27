@@ -1,4 +1,4 @@
-class AddStagedSlugAndParentId < ActiveRecord::Migration
+class AddStagedSlugAndParentId < ActiveRecord::Migration[4.2]
   def self.up
     add_column :nodes, :staged_slug,      :string
     add_column :nodes, :staged_parent_id, :integer

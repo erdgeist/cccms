@@ -1,31 +1,56 @@
 <div id="featured_articles">
   <h2>Featured</h2>
+
+  <!-- %= link_to(
+        image_tag( '34c3-tuwat.1e4e25c.png' ),
+        "https://events.ccc.de/congress/2017/wiki/Main_Page",
+        :id => "34C3_icon",
+        :size => "155x90",
+        :title => "Chaos Communication Congress 2017"
+  )% -->
+
   <%= link_to(
-        image_tag( 'chaosradio.png' ),
-        "http://chaosradio.ccc.de/",
+        '<img src="/images/chaosradio.png" alt="Chaosradio">'.html_safe,
+        "https://chaosradio.ccc.de/",
         :id => "chaosradio_icon",
         :title => "Chaosradio"
   )%>
 
   <%= link_to(
-        image_tag( 'ds.png' ),
-        "http://ds.ccc.de/",
+        '<img src="/images/media-ccc-de-banner.svg" width="155" height="45" alt="Media Dot CCC Dot de">'.html_safe,
+        "https://media.ccc.de",
+        :id => "media_ccc_de_icon",
+        :title => "Media Dot CCC Dot de"
+  )%>
+
+  <%= link_to(
+        '<img src="/images/ds.png" alt="Datenschleuder">'.html_safe,
+        "https://ds.ccc.de/",
         :id => "ds_icon",
         :title => "Datenschleuder"
   )%>
 
   <%= link_to(
-        image_tag( 'events.png' ),
-        "http://events.ccc.de/",
+        '<img src="/images/events.png" alt="Events-Blog">'.html_safe,
+        "https://events.ccc.de/",
         :id => "events_icon",
-        :title => "Events Blog"
+        :title => "Events-Blog"
   )%>
 
   <%= link_to(
-        image_tag( 'twitter.png' ),
-        "https://twitter.com/chaosupdates",
-        :id => "twitter_icon",
-        :title => "Twitter"
+        '<img src="/images/Fediverse.svg" width="64" height="64" alt="Fediverse">'.html_safe,
+        "https://social.bau-ha.us/@ccc",
+        :rel => 'me',
+        :id => "fediverse_icon",
+        :title => "Fediverse"
   )%>
+
+  <%= link_to(
+        '<img src="/images/Bluesky_Logo.svg" width="64" height="64" alt="bsky">'.html_safe,
+        "https://bsky.app/profile/ccc.de",
+        :id => "bluesky_icon",
+        :title => "bsky"
+  )%>
+
 </div>
 

@@ -1,26 +1,21 @@
-# Filters added to this controller apply to all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
-  
-  include ExceptionNotifiable
   include AuthenticatedSystem
-    
-  helper :all # include all helpers, all the time
-  protect_from_forgery # See ActionController::RequestForgeryProtection for details
 
-  # Scrub sensitive parameters from your log
-  filter_parameter_logging :password, :password_confirmation
-  
-  before_filter :set_locale
-  
+  protect_from_forgery
+
+  before_action :set_locale
+
   protected
-  
-    def set_locale
-      if params[:locale] && I18n.available_locales.include?(params[:locale].to_sym)
-        I18n.locale = params[:locale].to_sym
-      else
-        params.delete(:locale)
-      end
+
+  def set_locale
+    if params[:locale] && I18n.available_locales.include?(params[:locale].to_sym)
+      I18n.locale = params[:locale].to_sym
+    else
+      I18n.locale = I18n.default_locale
     end
+  end
+
+  def default_url_options
+    { locale: I18n.locale == I18n.default_locale ? nil : I18n.locale }
+  end
 end

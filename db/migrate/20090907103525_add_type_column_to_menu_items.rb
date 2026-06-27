@@ -1,4 +1,4 @@
-class AddTypeColumnToMenuItems < ActiveRecord::Migration
+class AddTypeColumnToMenuItems < ActiveRecord::Migration[4.2]
   def self.up
     add_column :menu_items, :type, :string
   end

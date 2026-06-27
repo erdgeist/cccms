@@ -1,11 +1,14 @@
 <h1>Create new node</h1>
 
-<%= error_messages_for( :node ).gsub("Slug", "Title") %>
-
+<% if @node.errors.any? %>
+  <div class="error_messages">
+    <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg.to_s.gsub("Slug", "Title") %></li><% end %></ul>
+  </div>
+<% end %>
 
 <p>What kind of node do you want to create?</p>
 
-<% form_tag nodes_path do %>
+<%= form_tag nodes_path do %>
 <table id="new_node">
   <tr>
     <td class="description">Type</td>
@@ -20,7 +23,11 @@
       </p>
       <p>
         <%= radio_button_tag :kind, "update" %>
-        Update / Press release ( is automatically created in /updates )
+        Update ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tag "update" )
+      </p>
+      <p>
+        <%= radio_button_tag :kind, "press_release" %>
+        Pressemitteilung ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tags "update, pressemitteilung" )
       </p>
     </td>
   </tr>
@@ -31,8 +38,8 @@
   <tr id="parent_search_field">
     <td class="description">Parent</td>
     <td>
-      <%= text_field_tag :parent_search_term %>
-      <%= hidden_field_tag :parent_id %>
+      <%= text_field_tag :parent_search_term, @parent_name %>
+      <%= hidden_field_tag :parent_id, @parent_id %>
       <div id="search_results">
 
       </div>

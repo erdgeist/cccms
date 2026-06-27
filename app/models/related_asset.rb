@@ -1,8 +1,8 @@
-class RelatedAsset < ActiveRecord::Base
+class RelatedAsset < ApplicationRecord
   belongs_to :page
   belongs_to :asset
   
   acts_as_list :scope => :page_id
-  
-  default_scope :order => "position ASC"
+
+  default_scope -> { order("position ASC") }
 end

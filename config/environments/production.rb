@@ -1,35 +1,33 @@
-# Settings specified here will take precedence over those in config/environment.rb
+require "active_support/core_ext/integer/time"
 
-# The production environment is meant for finished, "live" apps.
-# Code is not reloaded between requests
-config.cache_classes = true
+Rails.application.configure do
+  config.enable_reloading = false
+  config.eager_load = true
+  config.assume_ssl = true
 
-# Full error reports are disabled and caching is turned on
-config.action_controller.consider_all_requests_local = false
-config.action_controller.perform_caching             = true
+  config.consider_all_requests_local = false
+  config.action_controller.perform_caching = true
 
-# See everything in the log (default is :info)
-# config.log_level = :debug
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
-# Use a different logger for distributed setups
-# config.logger = SyslogLogger.new
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
-# Use a different cache store in production
-# config.cache_store = :mem_cache_store
+  config.active_support.report_deprecations = false
 
-# Enable serving of images, stylesheets, and javascripts from an asset server
-# config.action_controller.asset_host = "http://assets.example.com"
+  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.sendmail_settings = {
+    location: '/usr/sbin/sendmail',
+    arguments: '-i -t'
+  }
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: "ccc.de" }
 
-# Disable delivery errors, bad email addresses will be ignored
-# config.action_mailer.raise_delivery_errors = false
+  config.i18n.fallbacks = true
 
-# Enable threaded mode
-# config.threadsafe!
-
-ActionMailer::Base.delivery_method = :sendmail
-ActionMailer::Base.sendmail_settings = {
-  :location => '/usr/sbin/sendmail',
-  :arguments => '-i -t'
-}
-ActionMailer::Base.perform_deliveries = true
-ActionMailer::Base.raise_delivery_errors = true
+  config.assets.css_compressor = nil
+  config.active_record.dump_schema_after_migration = false
+  config.active_record.attributes_for_inspect = [ :id ]
+end

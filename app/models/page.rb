@@ -1,25 +1,9 @@
 require 'xml'
 
-class Page < ActiveRecord::Base
+class Page < ApplicationRecord
 
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
-  FULL_PUBLIC_TEMPLATE_PATH = File.join(RAILS_ROOT, 'app', 'views', PUBLIC_TEMPLATE_PATH)
-
-  # named scopes
-
-  named_scope(
-    :drafts,
-    :joins => :node,
-    :include => [:translations],
-    :conditions => ["nodes.draft_id = pages.id"]
-  )
-
-  named_scope(
-    :heads,
-    :joins => :node,
-    :include => [:translations],
-    :conditions => ["nodes.head_id = pages.id"]
-  )
+  FULL_PUBLIC_TEMPLATE_PATH = Rails.root.join('app', 'views', PUBLIC_TEMPLATE_PATH)
 
   # Mixins and Plugins
   acts_as_taggable
@@ -28,19 +12,20 @@ class Page < ActiveRecord::Base
   translates :title, :abstract, :body # Globalize2
 
   # Associations
-  belongs_to :node
-  belongs_to :user
-  belongs_to :editor, :class_name => "User"
+  belongs_to :node, optional: true
+  belongs_to :user, optional: true
+  belongs_to :editor, :class_name => "User", optional: true
   has_many   :related_assets
-  has_many   :assets, :through => :related_assets, :order => "position ASC"
+  has_many   :assets, -> { order("position ASC") }, :through => :related_assets
+
+  # Named scopes
+  scope :drafts, -> { joins(:node).includes(:translations).where("nodes.draft_id = pages.id") }
+  scope :heads,  -> { joins(:node).includes(:translations).where("nodes.head_id = pages.id") }
 
   # Filter
   before_create :set_page_title
   before_create :set_template
   before_save   :rewrite_links_in_body
-
-  # Security
-  attr_accessible :title, :abstract, :body, :template_name, :published_at, :user_id
 
   # Class Methods
 
@@ -51,8 +36,8 @@ class Page < ActiveRecord::Base
   # partially or entirely overwritten by the options hash. Afterwards the merged
   # parameters are used to query the DB for Pages matching these parameters.
   # The aggregation only takes published pages into account.
-  def self.aggregate options, page=1
 
+  def self.aggregate options, page=1
     defaults = {
       :tags             => "",
       :limit            => 25,
@@ -62,15 +47,24 @@ class Page < ActiveRecord::Base
 
     options = defaults.merge options
 
-    Page.heads.paginate(
-      find_options_for_find_tagged_with(
-        options[:tags].gsub(/\s/, ","), :match_all => true
-      ).merge(
-        :page     => page,
-        :per_page => options[:limit],
-        :order    => "#{options[:order_by]} #{options[:order_direction]}"
-      )
-    )
+    scope = Page.heads
+    unless options[:tags].blank?
+      tag_names = options[:tags].gsub(/\s/, ",").split(",").map(&:strip).map(&:downcase).uniq.reject(&:blank?)
+
+      unless tag_names.empty?
+        scope = scope
+          .joins("JOIN taggings ON taggings.taggable_id = pages.id
+                  AND taggings.taggable_type = 'Page'
+                  AND taggings.context = 'tags'")
+          .joins("JOIN tags ON tags.id = taggings.tag_id")
+          .where("LOWER(tags.name) IN (?)", tag_names)
+          .group("pages.id")
+          .having("COUNT(DISTINCT tags.id) = ?", tag_names.length)
+      end
+    end
+
+    scope.order("#{options[:order_by]} #{options[:order_direction]}")
+      .paginate(:page => page, :per_page => options[:limit])
   end
 
   def self.custom_templates
@@ -89,9 +83,22 @@ class Page < ActiveRecord::Base
   # outdated_translations? for more information.
   # Takes :locale => <locale> and :delta_time => 12.hours as options
   def self.find_with_outdated_translations options = {}
-    Page.all(:include => :translations).select do |page|
+    Page.includes(:translations).select do |page|
       page.outdated_translations? options
     end
+  end
+
+  # Is used to compare a node's head with the node's draft
+
+  def has_changes_to? draft
+    return true unless node == draft.node
+    return true unless assets == draft.assets
+    return true unless tag_list == draft.tag_list
+    return true unless template_name == draft.template_name
+    return true unless translated_locales.sort_by(&:to_s) == draft.translated_locales.sort_by(&:to_s)
+    changed = false
+    translated_locales.each { |locale| I18n.with_locale(locale) { changed = true unless title == draft.title && abstract == draft.abstract && body == draft.body } }
+    return changed
   end
 
   # Instance Methods
@@ -105,7 +112,7 @@ class Page < ActiveRecord::Base
   end
 
   def template_exists?
-    File.exists? "#{full_public_template_path}.html.erb"
+    File.exist? "#{full_public_template_path}.html.erb"
   end
 
   def valid_template
@@ -136,7 +143,7 @@ class Page < ActiveRecord::Base
 
     # Clone translated attributes
     page.translations.each do |translation|
-      self.translations.create!(translation.attributes)
+      self.translations.create!(translation.attributes.except("id", "page_id", "created_at", "updated_at"))
     end
 
     # Clone asset references
@@ -147,6 +154,16 @@ class Page < ActiveRecord::Base
 
   def public?
     published_at.nil? ? true : published_at < Time.now
+  end
+
+  def effective_lang
+    if translated_locales.empty?
+      return 'de'
+    elsif translated_locales.include?(I18n.locale)
+      return I18n.locale
+    else
+      return translated_locales.first
+    end
   end
 
   # Returns true if a page has translations where one of them is significantly
@@ -165,8 +182,8 @@ class Page < ActiveRecord::Base
 
     translations = self.translations
 
-    default = *(translations.select {|x| x.locale == I18n.default_locale})
-    custom  = *(translations.select {|x| x.locale == options[:locale]})
+    default = translations.find {|x| x.locale.to_s == I18n.default_locale.to_s }
+    custom  = translations.find {|x| x.locale.to_s == options[:locale].to_s }
 
     if translations.size > 1 && default && custom
       difference = (default.updated_at - custom.updated_at).to_i.abs
@@ -214,11 +231,6 @@ class Page < ActiveRecord::Base
           links       = xml_doc.find("//a[not(starts-with(@href, 'http://'))]")
           links       = links.reject { |l| l[:href] =~ /system\/uploads/ }
           locales     = I18n.available_locales.reject {|l| l == :root}
-
-          if xml_doc.find("//p/aggregate")[0]
-            aggregate_tags   = xml_doc.find("//aggregate")
-            aggregate_tags[0].parent.replace_with aggregate_tags[0]
-          end
 
           links.each do |link|
             unless locales.include? link[:href].slice(1,2).to_sym

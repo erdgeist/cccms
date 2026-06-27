@@ -1,4 +1,4 @@
-class AddTypeIdToMenuItems < ActiveRecord::Migration
+class AddTypeIdToMenuItems < ActiveRecord::Migration[4.2]
   def self.up
     add_column :menu_items, :type_id, :integer
   end

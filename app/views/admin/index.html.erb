@@ -1,6 +1,15 @@
+<div id="admin_wizard">
+  <div class="admin_wizard_button"><%= link_to 'Create Update or Pressemitteilung', new_node_path, :only_path => false %></div>
+  <div class="admin_wizard_button"><a href="#" id="admin_wizard_my_work" class="button">Continue my work</a></div>
+  <div class="admin_wizard_button"><a href="#" id="admin_wizard_create_page" class="button">Add a page in the page tree</a></div>
+  <div class="admin_wizard_button"><%= link_to("Upload a new asset", new_asset_path, :only_path => false) %></div>
+</div>
+
 <p id="overview_toggle">
   <a href="#" id="recent_changes_toggle" class="button">recent changes</a>
-  <a href="#" id="current_drafts_toggle" class="button">current drafts</a>
+  <a href="#" id="my_work_toggle" class="button">my work</a>
+  <a href="#" id="current_drafts_toggle" class="button">current drafts (<%= @drafts_count %>)</a>
+  <a href="#" id="admin_sitemap_toggle" class="button">site map</a>
 </p>
 
 <div id="recent_changes_table">
@@ -30,7 +39,41 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+</div>
+
+<div id="my_work_table">
+  
+  <h1>My Work</h1>
+
+  <table class="node_table">
+    <tr class="header">
+      <th class="node_id">ID</th>
+      <th class="title">Title</th>
+      <th class="actions">Actions</th>
+      <th class="editor">Locked by</th>
+      <th class="revision">Rev.</th>
+    </tr>
+    <% @mynodes.each do |node| %>
+    <tr class="<%= cycle("even", "odd") %>">
+      <td class="node_id"><%= node.id %></td>
+      <td class="title">
+        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
+        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
+      </td>
+      <td class="actions">
+        <%= link_to 'show',      node_path(node) %>
+        <%= link_to 'Revisions', node_revisions_path(node) %>
+      </td>
+      <td>
+        <%= node.lock_owner.login if node.lock_owner %>
+      </td>
+      <td>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
       </td>
     </tr>
     <% end %>
@@ -39,7 +82,7 @@
 
 <div id="current_drafts_table">
   
-  <h1>Current Drafts</h1>
+  <h1>Current Drafts (<%= @drafts_count %>)</h1>
   
   <table class="node_table">
     <tr class="header">
@@ -64,9 +107,41 @@
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
-        <%= node.draft ? node.draft.revision : node.head.revision %>
+        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
       </td>
     </tr>
+    <% end %>
+  </table>
+</div>
+
+<div id="admin_sitemap_table">
+
+  <h1>Sitemap</h1>
+
+  <table class="node_table">
+    <tr class="header">
+      <th class="node_id">ID</th>
+      <th class="title">Title</th>
+      <th class="actions">Actions</th>
+      <th class="editor">Locked by</th>
+    </tr>
+    <% @sitemap.each do |node| %>
+    <% if !node.nil? %>
+      <tr class="<%= cycle("even", "odd") %>">
+      <td class="node_id" style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;"><%= node.id %></td>
+      <td class="title"  style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;">
+        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
+        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
+      </td>
+      <td class="actions">
+        <%= link_to 'create subpage', new_node_path(:parent_id => node.id) %>
+        <%= link_to 'Revisions',      node_revisions_path(node) %>
+      </td>
+      <td>
+        <%= node.lock_owner.login if node.lock_owner %>
+      </td>
+    </tr>
+    <% end %>
     <% end %>
   </table>
 </div>

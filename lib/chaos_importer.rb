@@ -148,7 +148,7 @@ class ChaosImporter
       :body     => extract_body(html)
     }
     
-    draft.update_attributes options
+    draft.update options
     draft
   end
   
@@ -215,7 +215,7 @@ class ChaosImporter
     unless tmp_event = node.event
       tmp_event = Event.create! event_options.merge({:node_id => node.id})
     else
-      tmp_event.update_attributes event_options
+      tmp_event.update event_options
     end
   end
   

@@ -1,4 +1,4 @@
-class CreateRelatedAssets < ActiveRecord::Migration
+class CreateRelatedAssets < ActiveRecord::Migration[4.2]
   def self.up
     create_table :related_assets do |t|
       t.integer :asset_id

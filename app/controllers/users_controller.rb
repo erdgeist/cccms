@@ -2,24 +2,24 @@ class UsersController < ApplicationController
 
   # Private
 
-  before_filter :login_required
-  before_filter :find_user,     :only => [:show, :edit, :update, :destroy]
-  before_filter :verify_status, :except => [:index, :show]
+  before_action :login_required
+  before_action :find_user,     :only => [:show, :edit, :update, :destroy]
+  before_action :verify_status, :except => [:index, :show]
 
   layout 'admin'
 
   def index
-    @users = User.all(:order => "login ASC").group_by do |user|
+    @users = User.order("login ASC").all.group_by do |user|
       user.admin? ? :admin : :user
     end
   end
 
   def new
-    @user = User.new( params[:user] )
+    @user = User.new
   end
 
   def create
-    @user = User.new params[:user]
+    @user = User.new user_params
 
     if @user.save
       flash[:notice] = "User created #{@user.login}"
@@ -33,8 +33,10 @@ class UsersController < ApplicationController
   end
 
   def update
-    params[:user].delete(:admin) unless current_user.is_admin?
-    if @user.update_attributes(params[:user])
+    permitted = user_params
+    permitted.delete(:admin) unless current_user.is_admin?
+            
+    if @user.update(permitted)
       flash[:notice] = "Updated user #{@user.login}"
       redirect_to user_path(@user)
     else
@@ -51,6 +53,11 @@ class UsersController < ApplicationController
   end
 
   private
+
+    def user_params
+      params.fetch(:user, {}).permit(:login, :email, :password, :password_confirmation, :admin)
+    end
+
     def find_user
       @user = User.find(params[:id])
     end

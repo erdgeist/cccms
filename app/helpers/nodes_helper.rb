@@ -4,6 +4,10 @@ module NodesHelper
     if node.head
       node.head.title
     else
+      if not node.draft or not node.draft.title
+        logger.error "Missing title in node #{node.id}"
+        return "NO TITLE"
+      end
       node.draft.title
     end
   end
@@ -24,14 +28,20 @@ module NodesHelper
   def user_list
     User.all.map {|u| [u.login, u.id]}
   end
-  
+
   def event_information
     if @node.event
-      "#{@node.event.start_time.to_s(:db)} - #{@node.event.end_time.to_s(:db)} > " \
-      "#{link_to 'show', event_path(@node.event)} " \
-      "#{link_to 'edit', edit_event_path(@node.event)}"
+      safe_join([
+        "#{@node.event.start_time.to_fs(:db)} - #{@node.event.end_time.to_fs(:db)} > ",
+        link_to('show', event_path(@node.event)),
+        ' ',
+        link_to('edit', edit_event_path(@node.event))
+      ])
     else
-      "no event attached > #{link_to 'add', new_event_path(:node_id => @node.id)}"
+      safe_join([
+        'no event attached > ',
+        link_to('add', new_event_path(:node_id => @node.id))
+      ])
     end
   end
 end

@@ -1,4 +1,4 @@
-class MigrateTaggingTables < ActiveRecord::Migration
+class MigrateTaggingTables < ActiveRecord::Migration[4.2]
   def self.up
     add_column :tags,     :taggings_count, :integer, :default => 0, :null => false
     add_column :taggings, :user_id, :integer

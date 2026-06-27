@@ -4,7 +4,6 @@
 
 <h2>Revisions for Node: <%= @node.unique_name %></h2>
 
-<% form_tag diff_node_revisions_path(@node) do %>
 <table id="revisions">
   <tr class="header">
     <th>First</th>
@@ -14,8 +13,9 @@
     <th>Editor</th>
     <th>Date</th>
     <th></th>
+    <th></th>
   </tr>
-<% @node.pages.reverse.each do |page| %>
+<% (@pages || @node.pages.all).reverse.each do |page| %>
   <tr>
     <td><%= radio_button_tag :start_revision, page.revision %></td>
     <td><%= radio_button_tag :end_revision, page.revision %></td>
@@ -23,22 +23,36 @@
     <td class="title"><%= page.title %></td>
     <td class="user"><%= page.editor.try(:login) %></td>
     <td class="date"><%= page.updated_at %></td>
+    <td><%= link_to 'show', node_revision_path(@node, page) %></td>
     <td>
-      <%= link_to 'show', node_revision_path(@node, page) %>
-    </td>
-    <td>
-      <%= link_to(
-            'restore', 
-            restore_node_revision_path(@node, page), 
-            :method => :put, 
-            :confirm => "Restore this revision?"
-          ) %>
+      <%= button_to 'restore', restore_node_revision_path(@node, page),
+            method: :put,
+            form: { data: { confirm: "Restore this revision?" } } %>
     </td>
   </tr>
 <% end %>
   <tr class="no_hover">
-    <td colspan="8" class="right"><%= submit_tag 'Diff revisions' %></td>
+    <td colspan="8" class="right">
+      <%= button_to 'Diff revisions', diff_node_revisions_path(@node),
+            method: :post,
+            form: { id: 'diff_form' } %>
+    </td>
   </tr>
 </table>
 
-<% end %>
+<script>
+  document.getElementById('diff_form').addEventListener('submit', function(e) {
+    var start = document.querySelector('input[name="start_revision"]:checked');
+    var end = document.querySelector('input[name="end_revision"]:checked');
+    if (start) {
+      var s = document.createElement('input');
+      s.type = 'hidden'; s.name = 'start_revision'; s.value = start.value;
+      this.appendChild(s);
+    }
+    if (end) {
+      var en = document.createElement('input');
+      en.type = 'hidden'; en.name = 'end_revision'; en.value = end.value;
+      this.appendChild(en);
+    }
+  });
+</script>

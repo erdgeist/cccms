@@ -4,7 +4,7 @@ require 'digest/sha1'
 class AuthorsImporter
   
   def initialize path
-    @parsed_file = CSV::Reader.parse(File.open(path, "r")) if File.exists? path
+    @parsed_file = CSV::Reader.parse(File.open(path, "r")) if File.exist? path
   end
   
   def import_authors

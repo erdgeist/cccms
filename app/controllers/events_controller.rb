@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   
   # Private
   
-  before_filter :login_required
+  before_action :login_required
   
   layout 'admin'
   
@@ -47,7 +47,7 @@ class EventsController < ApplicationController
   # POST /events
   # POST /events.xml
   def create
-    @event = Event.new(params[:event])
+    @event = Event.new(event_params)
 
     respond_to do |format|
       if @event.save
@@ -67,7 +67,7 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
 
     respond_to do |format|
-      if @event.update_attributes(params[:event])
+      if @event.update(event_params)
         flash[:notice] = 'Event was successfully updated.'
         format.html { redirect_to(edit_node_path(@event.node)) }
         format.xml  { head :ok }
@@ -89,4 +89,10 @@ class EventsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  private
+
+    def event_params
+      params.require(:event).permit(:start_time, :end_time, :rrule, :custom_rrule, :allday, :url, :latitude, :longitude, :node_id, :location)
+    end
 end

@@ -1,27 +1,35 @@
+function hide_all() {
+    $('#recent_changes_toggle').attr("class", "unselected");
+    $('#my_work_toggle').attr("class", "unselected");
+    $('#current_drafts_toggle').attr("class", "unselected");
+    $('#admin_sitemap_toggle').attr("class", "unselected");
+
+    $('#current_drafts_table').hide();
+    $('#my_work_table').hide();
+    $('#recent_changes_table').hide();
+    $('#admin_sitemap_table').hide();
+}
+
 $(document).ready(function () {
   admin_search.initialize();
   
-  $(".with_editor").tinymce({
-    script_url : '/javascripts/tiny_mce/tiny_mce.js',
-    theme: "advanced",
-    mode : "specific_textareas",
-    editor_selector : "with_editor",
-    plugins : "safari, paste",
-    paste_auto_cleanup_on_paste : true,
-    paste_strip_class_attributes : true,
-    paste_remove_spans : true,
-    paste_remove_styles : true,
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold, italic, underline, bullist, numlist, link, unlink, formatselect, code",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    extended_valid_elements : "aggregate[tags|limit|order_by|order_direction|partial]",
-    relative_urls : false,
-    entity_encoding : "raw",
-    oninit : cccms.setup_autosave()
-  });
-  
+  tinymce.init({
+    selector: 'textarea.with_editor',
+    license_key: 'gpl',
+    promotion: false,
+    menubar: false,
+    plugins: 'code',
+    toolbar: 'bold italic underline | bullist numlist | link unlink | blocks | code',
+    extended_valid_elements: 'aggregate[tags|limit|order_by|order_direction|partial|conditions]',
+    relative_urls: false,
+    entity_encoding: 'raw',
+    setup: function(editor) {
+      editor.on('init', function() {
+        cccms.setup_autosave();
+      });
+    }
+  }); 
+
   if ($("#menu_search_term").length != 0) {
     menu_items.initialize_search();
   }
@@ -43,22 +51,49 @@ $(document).ready(function () {
   }
   
   if ($('#recent_changes_toggle').length != 0) {
-    $('#current_drafts_table').hide();
+    hide_all();
     $('#recent_changes_toggle').attr("class", "selected");
+    $('#recent_changes_table').show();
     
     $('#recent_changes_toggle').bind("click", function(){
+      hide_all();
       $('#recent_changes_toggle').attr("class", "selected");
-      $('#current_drafts_toggle').attr("class", "unselected");
       $('#recent_changes_table').show();
-      $('#current_drafts_table').hide();
+      return false;
+    });
+    
+    $('#my_work_toggle').bind("click", function(){
+      hide_all();
+      $('#my_work_toggle').attr("class", "selected");
+      $('#my_work_table').show();
+      return false;
+    });
+
+    $('#admin_wizard_my_work').bind("click", function(){
+      hide_all();
+      $('#my_work_toggle').attr("class", "selected");
+      $('#my_work_table').show();
       return false;
     });
     
     $('#current_drafts_toggle').bind("click", function(){
-      $('#recent_changes_toggle').attr("class", "unselected");
+      hide_all();
       $('#current_drafts_toggle').attr("class", "selected");
       $('#current_drafts_table').show();
-      $('#recent_changes_table').hide();
+      return false;
+    });
+
+    $('#admin_sitemap_toggle').bind("click", function(){
+      hide_all();
+      $('#admin_sitemap_toggle').attr("class", "selected");
+      $('#admin_sitemap_table').show();
+      return false;
+    });
+
+    $('#admin_wizard_create_page').bind("click", function(){
+      hide_all();
+      $('#admin_sitemap_toggle').attr("class", "selected");
+      $('#admin_sitemap_table').show();
       return false;
     });
   }

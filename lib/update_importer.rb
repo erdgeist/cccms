@@ -82,7 +82,7 @@ class UpdateImporter
     I18n.locale = lang
     
     unless node.head
-      page.update_attributes(
+      page.update(
         :title => xhtml.elements['title'].get_text.to_s,
         :abstract => xhtml.elements['abstract'].get_text.to_s,
         :body => body
@@ -176,7 +176,7 @@ class UpdateImporter
         unless tmp_event = node.event
           tmp_event = Event.create! event_options.merge({:node_id => node.id})
         else
-          tmp_event.update_attributes event_options
+          tmp_event.update event_options
         end
       end
     end

@@ -1,7 +1,7 @@
 <h1>Editing occurrence</h1>
 
-<% form_for(@occurrence) do |f| %>
-  <%= f.error_messages %>
+<%= form_for(@occurrence) do |f| %>
+  <%= form_error_messages(f) %>
 
   <p>
     <%= f.label :summary %><br />

@@ -1,14 +1,14 @@
-class Node < ActiveRecord::Base
+class Node < ApplicationRecord
   # Mixins and Plugins
   acts_as_nested_set
 
   # Associations
-  has_many    :pages, :order => "revision ASC"
-  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id
-  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id
-  has_many    :permissions
-  has_one     :event
-  belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id
+  has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
+  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy, optional: true
+  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy, optional: true
+  has_many    :permissions, :dependent => :destroy
+  has_one     :event, :dependent => :destroy
+  belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
 
   # Callbacks
   after_create  :initialize_empty_page
@@ -16,20 +16,20 @@ class Node < ActiveRecord::Base
   after_save    :update_unique_names_of_children
 
   # Validations
-  validates_length_of     :slug, :within => 1..255,    :unless => "parent_id.nil?"
-  validates_presence_of   :slug,                       :unless => "parent_id.nil?"
-  validates_uniqueness_of :slug, :scope => :parent_id, :unless => "parent_id.nil?"
-  validates_presence_of   :parent_id,                  :unless => "Node.root.nil?"
+  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? }
+  validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
+  validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
+  validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
 
   validate :borders       # This should never ever happen.
 
   # Index for Fulltext Search
-  define_index do
-    indexes head.translations.title
-    indexes slug
-    indexes unique_name
-    indexes head.translations.body
-  end
+  # define_index do
+  #   indexes head.translations.title
+  #   indexes slug
+  #   indexes unique_name
+  #   indexes head.translations.body
+  # end
 
   # Class methods
 
@@ -39,8 +39,8 @@ class Node < ActiveRecord::Base
   # revision with -1. It raises an Argument error if the revision is not a
   # Fixnum
   def self.find_page path, revision = -1
-    unless revision.class == Fixnum
-      raise ArgumentError, "revision must be a Fixnum"
+    unless revision.is_a?(Integer)
+      raise ArgumentError, "revision must be a Integer"
     end
 
     node = Node.find_by_unique_name(path)
@@ -60,6 +60,7 @@ class Node < ActiveRecord::Base
   # Instance Methods
 
   def find_or_create_draft current_user
+    self.wipe_draft!
     if draft && self.lock_owner == current_user
       draft
     elsif draft && self.lock_owner.nil?
@@ -72,7 +73,7 @@ class Node < ActiveRecord::Base
       raise(
         LockedByAnotherUser,
         "Page is locked by another user who is working on it! " \
-        "Last modification: #{draft.updated_at.to_s(:db)}"
+        "Last modification: #{draft.updated_at.to_fs(:db)}"
       )
     else
       lock_for! current_user
@@ -94,25 +95,55 @@ class Node < ActiveRecord::Base
   end
 
   def publish_draft!
+    # Return nil if nothing to publish and no staged changes
+    return nil unless self.draft || staged_slug || staged_parent_id
+
     if self.draft
       self.head = self.draft
       self.head.published_at ||= Time.now
       self.head.save!
-
       self.draft = nil
-
-      if staged_slug && (staged_slug != slug)
-        self.slug = staged_slug
-      end
-
-      if staged_parent_id && (staged_parent_id != parent_id)
-        self.parent_id = staged_parent_id
-      end
-
-      self.save!
-      self.unlock!
-      self
     end
+
+    if staged_slug && (staged_slug != slug)
+      self.slug = staged_slug
+      self.staged_slug = nil
+    end
+
+    if staged_parent_id && (staged_parent_id != parent_id)
+      new_parent = Node.find(staged_parent_id)
+      self.staged_parent_id = nil
+      self.save!
+      self.move_to_child_of(new_parent)
+    else
+      unless self.save
+        raise ActiveRecord::RecordInvalid.new(self)
+      end
+    end
+
+    self.reload
+    self.update_unique_name
+    self.send(:update_unique_names_of_children)
+    self.unlock!
+    self
+  end
+
+  # removes a draft and the lock if it is older than a day and still
+  # identical to head
+  def wipe_draft!
+    unless self.draft
+      self.unlock!
+      return
+    end
+    return unless self.head
+    return unless self.draft.updated_at < 1.day.ago
+    return if self.head.has_changes_to? self.draft
+
+    self.draft.destroy
+    self.draft_id = nil
+    self.unlock!
+    self.save!
+    self.reload
   end
 
   def restore_revision! revision
@@ -126,7 +157,7 @@ class Node < ActiveRecord::Base
 
   # returns an array with all parts of a unique_name rather than a string
   def unique_path
-    unique_name.split("/") rescue [unique_name]
+    unique_name.to_s.split("/")
   end
 
   # returns array with pages up to root excluding root
@@ -180,6 +211,15 @@ class Node < ActiveRecord::Base
     self.created_at < new_id_format_date ? unique_path : id
   end
 
+  # Full-text search across all locale translations using PostgreSQL tsvector.
+  # Uses 'simple' dictionary (no stemming, no stopwords) so queries work
+  # across German and English content without language detection.
+  def self.search(term, _ = {})
+    joins(head: :translations)
+      .where("page_translations.search_vector @@ plainto_tsquery('simple', ?)", term)
+      .distinct
+  end
+
   protected
     def lock_for! current_user
       self.lock_owner = current_user
@@ -208,8 +248,12 @@ class Node < ActiveRecord::Base
     # Hopefully until no childrens occur
     def update_unique_names_of_children
       unless root?
-        self.descendants.each do |descendant|
-          descendant.update_unique_name
+        # Use parent_id-based traversal instead of lft/rgt descendants
+        # due to awesome_nested_set not refreshing parent lft/rgt in memory
+        Node.where(:parent_id => self.id).each do |child|
+          child.reload
+          child.update_unique_name
+          child.send(:update_unique_names_of_children)
         end
       end
     end
@@ -220,7 +264,3 @@ class Node < ActiveRecord::Base
       end
     end
 end
-
-class LockedByAnotherUser < StandardError; end
-
-

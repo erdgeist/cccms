@@ -18,7 +18,7 @@
     <td><%=h occurrence.event_id %></td>
     <td><%= link_to 'Show', occurrence %></td>
     <td><%= link_to 'Edit', edit_occurrence_path(occurrence) %></td>
-    <td><%= link_to 'Destroy', occurrence, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= button_to 'Destroy', occurrence, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
   </tr>
 <% end %>
 </table>

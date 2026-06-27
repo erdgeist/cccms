@@ -2,12 +2,13 @@ class RevisionsController < ApplicationController
   
   # Private
   
-  before_filter :login_required
+  before_action :login_required
   
   layout 'admin'
   
   def index
     @node = Node.find(params[:node_id])
+    @pages = @node.pages.all
   end
 
   def diff

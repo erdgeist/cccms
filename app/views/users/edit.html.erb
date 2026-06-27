@@ -1,8 +1,13 @@
 <h1>Edit existing user</h1>
 
-<%= error_messages_for :user %>
+<% if @user.errors.any? %>
+  <div class="error_messages">
+    <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg.gsub("Slug", "Title") %></li><% end %></ul>
+  </div>
+<% end %>
 
-<% form_for @user do |f| %>
+
+<%= form_for @user do |f| %>
 <table id="new_node">
   <tr>
     <td class="description">Login</td>

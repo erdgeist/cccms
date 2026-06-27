@@ -1,0 +1,8 @@
+license_key: gpl
+promotion: false
+menubar: false
+plugins:
+  - paste
+toolbar: bold italic underline | bullist numlist | link unlink | blocks | code
+relative_urls: false
+entity_encoding: raw

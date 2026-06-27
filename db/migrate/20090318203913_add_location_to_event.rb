@@ -1,4 +1,4 @@
-class AddLocationToEvent < ActiveRecord::Migration
+class AddLocationToEvent < ActiveRecord::Migration[4.2]
   def self.up
     add_column :events, :location, :text
   end
