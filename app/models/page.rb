@@ -63,6 +63,14 @@ class Page < ApplicationRecord
       end
     end
 
+    if options[:order_by] == "title"
+      return scope
+        .joins(:translations)
+        .where(page_translations: { locale: I18n.locale })
+        .order("page_translations.title #{options[:order_direction]}")
+        .paginate(:page => page, :per_page => options[:limit])
+    end
+
     scope.order("#{options[:order_by]} #{options[:order_direction]}")
       .paginate(:page => page, :per_page => options[:limit])
   end
