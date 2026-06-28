@@ -121,6 +121,11 @@ div#center_column .article_partial h2.headline {
   border-top: 2px solid #cccccc;
 }
 
+/* except for erfa list */
+div#center_column .chapter_partial h2.headline {
+  border-top: none;
+}
+
 div.article_partial h2 a {
   text-decoration: none;
 }
