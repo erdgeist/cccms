@@ -55,7 +55,9 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.fetch(:user, {}).permit(:login, :email, :password, :password_confirmation, :admin)
+      allowed = [:login, :email, :password, :password_confirmation]
+      allowed << :admin if current_user.admin?
+      params.fetch(:user, {}).permit(allowed)
     end
 
     def find_user
