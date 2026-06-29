@@ -42,6 +42,7 @@ class EventsController < ApplicationController
   # GET /events/1/edit
   def edit
     @event = Event.find(params[:id])
+    @return_to = params[:return_to] || events_path
   end
 
   # POST /events
@@ -52,7 +53,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.save
         flash[:notice] = 'Event was successfully created.'
-        format.html { redirect_to(edit_node_path(@event.node)) }
+        format.html { redirect_to(@event.node ? edit_node_path(@event.node) : edit_event_path(@event)) }
         format.xml  { render :xml => @event, :status => :created, :location => @event }
       else
         format.html { render :action => "new" }
@@ -69,7 +70,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.update(event_params)
         flash[:notice] = 'Event was successfully updated.'
-        format.html { redirect_to(edit_node_path(@event.node)) }
+        format.html { redirect_to(safe_return_to(params[:return_to] || events_path)) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

@@ -1,12 +1,15 @@
 <% content_for :subnavigation do %>
-  <%= link_to 'back', edit_node_path(@event.node) %>
+  <%= link_to 'back', safe_return_to(params[:return_to] || events_path) %>
+  <% if @event.node %>
+    <%= link_to 'node', edit_node_path(@event.node) %>
+  <% end %>
   <%= link_to 'show', @event %>
 <% end %>
-
 
 <h1>Editing event</h1>
 
 <%= form_for(@event) do |f| %>
+  <%= hidden_field_tag :return_to, @return_to %>
   <%= form_error_messages(f) %>
 
   <p>
