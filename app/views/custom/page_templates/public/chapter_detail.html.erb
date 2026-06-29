@@ -1,0 +1,23 @@
+<div class="article" lang="<%= @page.effective_lang %>">
+  <h2 class="headline"><%= @page.title %></h2>
+  <% if @page.node.external_url.present? %>
+    <div class="chapter_url"><%= link_to @page.node.external_url, @page.node.external_url, target: '_blank', rel: 'noopener' %></div>
+  <% end %>
+  <p><%= sanitize(@page.abstract) %></p>
+  <%= aggregate?(@page.body) %>
+  <% if @page.node.events.any? %>
+    <div class="chapter_events">
+      <h3>Events</h3>
+      <ul>
+        <% @page.node.events.order(:start_time).each do |event| %>
+          <li>
+            <span class="event_title"><%= event.display_title %></span>
+            <% if event.rrule.present? %>
+              <span class="event_rrule"><%= event.rrule %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

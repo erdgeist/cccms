@@ -34,6 +34,7 @@ def seed_chapter(parent_id:, slug:, tag:, title_de:, description_de:,
 
   # Set up draft with German translation
   draft = node.draft
+  draft.template_name = 'chapter_detail'
   I18n.with_locale(:de) do
     draft.title       = title_de
     draft.abstract    = location || ""
