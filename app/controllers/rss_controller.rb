@@ -1,6 +1,5 @@
 class RssController < ApplicationController
   
-  before_action :authenticate, :only => :recent_changes
   before_action :get_host
   
   def updates
@@ -40,18 +39,7 @@ class RssController < ApplicationController
     end
   end
 
-  def recent_changes
-    @items = Page.where(
-      "updated_at < ? AND updated_at > ?", Time.now, Time.now - 14.days
-    ).limit(20).order("updated_at desc")
-  end
-  
   protected
-    def authenticate
-      authenticate_or_request_with_http_basic do |username, password|
-        username == "recent" && password == "d@t3N+kLAu-23"
-      end
-    end
     
     def get_host
       @host = request.protocol + request.host_with_port

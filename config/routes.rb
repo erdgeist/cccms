@@ -70,7 +70,6 @@ Cccms::Application.routes.draw do
     get  'rss/updates',         :to => 'rss#updates', :as => :rss
     get  'rss/updates.:format', :to => 'rss#updates', :as => :rss_feed,
            :constraints => { :format => /xml|rdf/ }
-    get  'rss/recent_changes',  :to => 'rss#recent_changes'
     get  'rss/tags/:tag/updates',         :to => 'rss#tag_updates', :as => :rss_tag
     get  'rss/tags/:tag/updates.:format', :to => 'rss#tag_updates', :as => :rss_tag_feed,
            :constraints => { :format => /xml/ }
