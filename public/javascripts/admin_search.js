@@ -18,9 +18,7 @@ admin_search = {
     }
 
     $("#search_term").bind("keyup", function() {
-      console.log("keyup fired, value:", $(this).val());
       if ($(this).val()) {
-        console.log("sending ajax to", ADMIN_SEARCH_URL);
         $.ajax({
           type: "GET",
           url: ADMIN_SEARCH_URL,
