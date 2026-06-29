@@ -18,14 +18,19 @@ admin_search = {
     }
 
     $("#search_term").bind("keyup", function() {
-      if ($(this).attr("value")) {
+      console.log("keyup fired, value:", $(this).val());
+      if ($(this).val()) {
+        console.log("sending ajax to", ADMIN_SEARCH_URL);
         $.ajax({
           type: "GET",
-          url: "/admin/search",
-          data: "search_term=" + $(this).attr("value"),
+          url: ADMIN_SEARCH_URL,
+          data: "search_term=" + $(this).val(),
           dataType: "json",
           success : function(results) {
             admin_search.show_results(results);
+          },
+          error: function(xhr, status, error) {
+            console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
           }
         });
       }
@@ -52,7 +57,7 @@ menu_items = {
       if ($(this).attr("value")) {
         $.ajax({
           type: "GET",
-          url: "/admin/menu_search",
+          url: ADMIN_MENU_SEARCH_URL,
           data: "search_term=" + $(this).attr("value"),
           dataType: "json",
           success : function(results) {
@@ -104,7 +109,7 @@ parent_search = {
       if ($(this).attr("value")) {
         $.ajax({
           type: "GET",
-          url: "/admin/menu_search",
+          url: ADMIN_MENU_SEARCH_URL,
           data: "search_term=" + $(this).attr("value"),
           dataType: "json",
           success : function(results) {
@@ -184,7 +189,7 @@ move_to_search = {
     if (_this.attr("value")) {
       $.ajax({
         type: "GET",
-        url: "/admin/menu_search",
+        url: ADMIN_MENU_SEARCH_URL,
         data: "search_term=" + _this.attr("value"),
         dataType: "json",
         success : function(results) {

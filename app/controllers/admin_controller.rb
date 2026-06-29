@@ -35,12 +35,12 @@ class AdminController < ApplicationController
     
     respond_to do |format|
       format.html do
-        render :template => 'admin/search_results.html'
+        render :template => 'admin/search_results'
       end
       format.js do 
         render( :json => @results.map do |node| 
             if node
-              {:id => node.id, :title => node.title, :edit_path => node_path(node)}
+              {:id => node.id, :title => " #{node.title} (#{node.unique_name})", :edit_path => edit_node_path(node)}
             end
           end
         )

@@ -2,6 +2,6 @@
 
 <ul>
 <%- @results.each do |result| %>
-  <li><a href="<%= node_path(result) %>"><%= result.title %></a></li>
+  <li><%= link_to "#{result.title} (#{result.unique_name})", edit_node_path(result) %></li>
 <% end %>
 </ul>

@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="/stylesheets/admin.css">
     <script src="/javascripts/admin_search.js"></script>
     <script src="/javascripts/admin_interface.js"></script>
+    <script>
+      var ADMIN_SEARCH_URL = "<%= admin_search_path %>";
+      var ADMIN_MENU_SEARCH_URL = "<%= admin_menu_search_path %>";
+    </script>
   </head>
   
   <body>
@@ -41,7 +45,7 @@
     
     <div id="search_widget" style="display: none;">
       <div>
-        <% form_tag admin_search_path do %>
+        <%= form_tag admin_search_path, method: :get do %>
           <span>Search: </span><%= text_field_tag :search_term %>
         <% end %>
       </div>
