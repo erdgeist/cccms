@@ -2,27 +2,27 @@
 
 <table>
   <tr>
+    <th>Title</th>
+    <th>Is primary</th>
     <th>Start time</th>
     <th>End time</th>
     <th>Rrule</th>
     <th>Custom rrule</th>
     <th>Allday</th>
     <th>Url</th>
-    <th>Latitude</th>
-    <th>Longitude</th>
     <th>Node</th>
   </tr>
 
 <% @events.each do |event| %>
   <tr>
+    <td><%=h event.display_title %></td>
+    <td><%=h event.is_primary %></td>
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
     <td><%=h event.rrule %></td>
     <td><%=h event.custom_rrule %></td>
     <td><%=h event.allday %></td>
     <td><%=h event.url %></td>
-    <td><%=h event.latitude %></td>
-    <td><%=h event.longitude %></td>
     <td><%=h event.node_id %></td>
     <td><%= link_to 'Show', event %></td>
     <td><%= link_to 'Edit', edit_event_path(event) %></td>

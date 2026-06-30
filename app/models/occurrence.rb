@@ -35,7 +35,7 @@ class Occurrence < ApplicationRecord
       self.create(
         :start_time => occurrence,
         :end_time   => (occurrence + duration),
-        :node_id    => node.id,
+        :node_id    => node&.id,
         :event_id   => event.id
       )
     end

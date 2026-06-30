@@ -63,15 +63,15 @@ class Page < ApplicationRecord
       end
     end
 
+    direction = %w[ASC DESC].include?(options[:order_direction]&.upcase) ? options[:order_direction].upcase : "ASC"
+
     if options[:order_by] == "title"
       return scope
-        .joins(:translations)
-        .where(page_translations: { locale: I18n.locale })
-        .order("page_translations.title #{options[:order_direction]}")
+        .order(Arel.sql("(SELECT pt.title FROM page_translations pt WHERE pt.page_id = pages.id AND pt.locale = #{ActiveRecord::Base.connection.quote(I18n.locale.to_s)}) #{direction}"))
         .paginate(:page => page, :per_page => options[:limit])
     end
 
-    scope.order("#{options[:order_by]} #{options[:order_direction]}")
+    scope.order("#{options[:order_by]} #{direction}")
       .paginate(:page => page, :per_page => options[:limit])
   end
 
