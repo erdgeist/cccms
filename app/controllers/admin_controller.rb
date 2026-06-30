@@ -40,7 +40,7 @@ class AdminController < ApplicationController
       format.js do 
         render( :json => @results.map do |node| 
             if node
-              {:id => node.id, :title => " #{node.title} (#{node.unique_name})", :edit_path => edit_node_path(node)}
+              { :id => node.id, :title => node.title, :unique_name => node.unique_name, :node_path => node_path(node) }
             end
           end
         )

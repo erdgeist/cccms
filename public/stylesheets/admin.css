@@ -495,28 +495,50 @@ table tr.header {
 #search_widget {
   position: absolute;
   top: 20px;
-  left: 400px;
-  width: 300px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, 90vw);
   border: 1px solid #000000;
   -webkit-box-shadow: 3px 3px 5px #b1b1b1;
-  -moz-box-shadow: 10px 10px 5px #888, 10px 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 3px 3px 5px #b1b1b1;
   background-color: #ffffff;
   padding: 3px;
-  text-align: center;
-}
-
-#search_widget span {
-  font-size: 18px;
+  z-index: 100;
 }
 
 #search_widget input {
-  width: 210px;
+  width: calc(100% - 70px);
   font-size: 18px;
 }
 
-#search_widget #search_results {
-  padding: 4px;
-  text-align: left;
+#search_results p {
+  margin: 0;
+  padding: 4px 4px 0 4px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+#search_results p a {
+  display: block;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+#search_results p span.result_path {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #969696;
+  padding-bottom: 4px;
+}
+
+#search_results p.search_more {
+  margin: 0;
+  padding: 6px 4px;
+  font-size: 0.8rem;
+  color: #969696;
+  font-style: italic;
+  border-bottom: none;
 }
 
 table#content th.description {

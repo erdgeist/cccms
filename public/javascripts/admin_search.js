@@ -5,46 +5,68 @@ admin_search = {
       admin_search.display_toggle();
       return false;
     });
-  },
 
-  display_toggle : function() {
-    if ($('#search_widget').css("display") != "none") {
-      $('#search_widget').fadeOut();
-    }
-    else {
-      $('#search_widget').fadeIn();
-      $('#search_term').attr("value", "");
-      $('#search_term').focus();
-    }
+    $(document).bind("keydown", function(e) {
+      if (e.key === "Escape" && $('#search_widget').is(':visible')) {
+        $('#search_widget').fadeOut();
+      }
+    });
 
-    $("#search_term").bind("keyup", function() {
+    $(document).bind("click", function(e) {
+      if ($('#search_widget').is(':visible') &&
+          !$(e.target).closest('#search_widget').length &&
+          !$(e.target).closest('a[onclick*="display_toggle"]').length) {
+        $('#search_widget').fadeOut();
+      }
+    });
+
+    $("#search_term").bind("input", function() {
+      if (!$('#search_widget').is(':visible')) return;
       if ($(this).val()) {
         $.ajax({
           type: "GET",
           url: ADMIN_SEARCH_URL,
           data: "search_term=" + $(this).val(),
           dataType: "json",
-          success : function(results) {
+          success: function(results) {
             admin_search.show_results(results);
           },
           error: function(xhr, status, error) {
             console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
           }
         });
-      }
-      else {
+      } else {
         $('#search_results').slideUp();
         $('#search_results').empty();
       }
     });
   },
 
+  display_toggle : function() {
+    if ($('#search_widget').is(':visible')) {
+      $('#search_widget').fadeOut();
+    } else {
+      $('#search_widget').fadeIn();
+      $('#search_term').focus();
+    }
+  },
+
   show_results : function(results) {
-     $('#search_results').empty();
-     for (result in results) {
-       $('#search_results').append("<p><a href='"+ results[result].edit_path + "'>" + results[result].title + "</a></p>");
-     }
-     $('#search_results').slideDown();
+    $('#search_results').empty();
+    if (results.length) {
+      $('#search_results').append(
+        "<p class='search_more'>Press Enter to see all results ⏎</p>"
+      );
+    }
+    for (result in results) {
+      $('#search_results').append(
+        "<p><a href='" + results[result].node_path + "'>" +
+          results[result].title +
+          "<span class='result_path'>" + results[result].unique_name + "</span>" +
+        "</a></p>"
+      );
+    }
+    $('#search_results').slideDown();
   }
 };
 

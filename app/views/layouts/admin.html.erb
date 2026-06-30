@@ -46,7 +46,7 @@
     <div id="search_widget" style="display: none;">
       <div>
         <%= form_tag admin_search_path, method: :get do %>
-          <span>Search: </span><%= text_field_tag :search_term %>
+          <span>Search: </span><%= text_field_tag :search_term, nil, autocomplete: "off" %>
         <% end %>
       </div>
       <div id="search_results" style="display: none">
