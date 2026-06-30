@@ -7,6 +7,9 @@ de:
   sponsors: Sponsoren
   show_tag_headline: "Seiten mit dem Tag:"
   old_ccc_de: das alte ccc.de
+  event_schedule_time: "um %{time} Uhr"
+  event_schedule_unrecognized: "Termin-Regel nicht automatisch lesbar"
+  event_schedule_none: "Kein Termin"
   date:
     formats:
       default: "%d.%m.%Y"

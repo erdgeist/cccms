@@ -1,4 +1,5 @@
 class Event < ApplicationRecord
+  include RruleHumanizer
 
   belongs_to :node, optional: true
   has_many   :occurrences

@@ -42,6 +42,18 @@
       <td class="description">Tagged with:</td>
       <td><%= @page.tag_list %></td>
     </tr>
+    <% if @node.events.any? %>
+    <tr>
+      <td class="description">Events</td>
+      <td>
+        <ul>
+        <% @node.events.order(:start_time).each do |event| %>
+          <li><%= event_schedule_text(event) %><%= " (primary)" if event.is_primary? %></li>
+        <% end %>
+        </ul>
+      </td>
+    </tr>
+    <% end %>
     <tr>
       <td class="description"><strong>Title</strong></td>
       <td><%= sanitize( @page.title ) %></td>

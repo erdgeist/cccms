@@ -43,4 +43,20 @@ module NodesHelper
       link_to('add event', new_event_path(:node_id => @node.id))
     ])
   end
+
+  def event_schedule_text(event)
+    if event.rrule.present?
+      recurrence = event.humanize_rrule(I18n.locale)
+      if recurrence
+        time = event.start_time&.strftime("%H:%M")
+        time ? "#{recurrence} #{t(:event_schedule_time, time: time)}" : recurrence
+      else
+        "#{event.rrule} (#{t(:event_schedule_unrecognized)})"
+      end
+    elsif event.start_time
+      I18n.l(event.start_time, format: :long)
+    else
+      t(:event_schedule_none)
+    end
+  end
 end
