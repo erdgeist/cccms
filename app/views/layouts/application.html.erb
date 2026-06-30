@@ -11,9 +11,8 @@
 
     <title><%= page_title %></title>
     <link rel="stylesheet" href="/stylesheets/ccc.css">
-    <%= javascript_include_tag 'public_bundle' %>
-    <script src="/javascripts/shadowbox/shadowbox.js"></script>
-    <link rel="stylesheet" href="/stylesheets/shadowbox.css">
+    <link rel="stylesheet" href="/stylesheets/glightbox.min.css">
+    <script src="/javascripts/glightbox.min.js"></script>
     <script src="/javascripts/public.js"></script>
 
     <%= auto_discovery_link_tag(:atom, '/rss/updates.xml', title: "ATOM") %>

@@ -1,6 +1,8 @@
-<%= link_to_path(
+<%= link_to(
   image_tag(@images[0].upload.url(:headline)),
-  ("galleries/" + @page.node.unique_name)
+  @images[0].upload.url,
+  :class => "glightbox",
+  :data  => { :gallery => "page-#{@page.node.id}" }
 ) %>
 
 <% if 1 < @images.length %>
@@ -9,8 +11,6 @@
   </div>
 <% end %>
 
-<div class="shadowbox_images" style="display: none">
-  <% @images.each do |image| %>
-    <%= link_to "hallo", image.upload.url, :class => "shadowbox_image" %>
-  <% end %>
-</div>
+<% @images[1..-1].each do |image| %>
+  <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none", :data => { :gallery => "page-#{@page.node.id}" } %>
+<% end %>
