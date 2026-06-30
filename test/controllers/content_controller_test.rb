@@ -40,7 +40,7 @@ class ContentControllerTest < ActionController::TestCase
 
     new_node = create_node_under_root "fnord"
     draft = new_node.find_or_create_draft @user1
-    draft.body = '<aggregate tags="update" limit="20" />'
+    draft.body = '[aggregate tags="update" limit="20"]'
     draft.save
     new_node.publish_draft!
 
@@ -59,7 +59,7 @@ class ContentControllerTest < ActionController::TestCase
     
     new_node = create_node_under_root "fnord"
     draft = new_node.find_or_create_draft @user1
-    draft.body = '<aggregate tags="update" limit="20" partial="sidebar_title_only" />'
+    draft.body = '[aggregate tags="update" limit="20" partial="sidebar_title_only"]'
     draft.save
     new_node.publish_draft!
     
