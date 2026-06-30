@@ -30,12 +30,13 @@ module NodesHelper
   end
 
   def event_information
-    if @node.event
+    if @node.events.first
+      event = @node.events.first
       safe_join([
-        "#{@node.event.start_time.to_fs(:db)} - #{@node.event.end_time.to_fs(:db)} > ",
-        link_to('show', event_path(@node.event)),
-        ' ',
-        link_to('edit', edit_event_path(@node.event))
+        "#{event.start_time.to_fs(:db)} - #{event.end_time.to_fs(:db)} > ",
+        link_to('show', event_path(event)),
+        ' > ',
+        link_to('edit', edit_event_path(event))
       ])
     else
       safe_join([

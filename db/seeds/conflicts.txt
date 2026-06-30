@@ -1,0 +1,9 @@
+Entries flagged for review: true — these have notable German/English discrepancies:
+
+erfa-berlin: DE says Tuesday+Thursday 19:00; EN says Thursday 17:00 only — the English version is likely outdated
+erfa-erlangen: DE says ZAM, Hauptstr. 65-67, Fridays 18:00; EN says E-Werk, Fuchsenwiese 1, Tuesdays 19:30 — different location and day entirely
+erfa-freiburg: DE says Adlerstraße 12a; EN says ArTik, Kaiser-Joseph-Strasse 141 — different address
+erfa-goettingen: DE says Von-Bar-Straße 2-4; EN says Neustadt 7 — different address
+erfa-hannover: DE says every Wednesday; EN says every second Wednesday and last Sunday — different schedule
+erfa-karlsruhe: DE says Saturday; EN says Sunday — different day
+erfa-ulm: DE says Café Einstein; EN says Freiraum, Platzgasse 18 — different venue

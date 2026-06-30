@@ -1,13 +1,12 @@
-# TODO Make a gem out of the c wrapper
 require 'chaos_calendar'
 
 class Occurrence < ApplicationRecord
   
   # Associations
   
-  belongs_to :node
+  belongs_to :node,  optional: true
   belongs_to :event
-  
+
   # Class Methods
   
   def self.find_in_range start_time, end_time
@@ -64,7 +63,7 @@ class Occurrence < ApplicationRecord
   # Instance Methods
   
   def summary
-    node.head.title
+    node&.head&.title || event.display_title
   end
-  
+
 end

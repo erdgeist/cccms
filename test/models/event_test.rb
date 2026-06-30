@@ -74,17 +74,17 @@ class EventTest < ActiveSupport::TestCase
     
     assert_equal "2009-12-24T15:23:42".to_time, scoped_occurrences[51].start_time
     assert_equal "2009-12-24T20:05:23".to_time, scoped_occurrences[51].end_time
-    assert_equal @cal_node.event, scoped_occurrences[51].event
+    assert_equal @cal_node.events.first, scoped_occurrences[51].event
     assert_equal @cal_node, scoped_occurrences[51].node
     
     assert_equal "2009-03-19T15:23:42".to_time, scoped_occurrences[11].start_time
     assert_equal "2009-03-19T20:05:23".to_time, scoped_occurrences[11].end_time
-    assert_equal @cal_node.event, scoped_occurrences[11].event
+    assert_equal @cal_node.events.first, scoped_occurrences[11].event
     assert_equal @cal_node, scoped_occurrences[11].node
     
     assert_equal "2009-01-01T15:23:42".to_time, scoped_occurrences[0].start_time
     assert_equal "2009-01-01T20:05:23".to_time, scoped_occurrences[0].end_time
-    assert_equal @cal_node.event, scoped_occurrences[11].event
+    assert_equal @cal_node.events.first, scoped_occurrences[11].event
     assert_equal @cal_node, scoped_occurrences[11].node
   end
   
