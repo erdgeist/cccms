@@ -5,16 +5,26 @@
   <% end %>
   <p><%= sanitize(@page.abstract) %></p>
   <%= aggregate?(@page.body) %>
-  <% if @page.node.events.any? %>
-    <div class="chapter_events">
-      <h3>Events</h3>
+  <% open_days = @page.node.events.tagged_with('open-day').order(:start_time) %>
+  <% other_events = @page.node.events.where.not(id: open_days.map(&:id)).order(:start_time) %>
+  <% if open_days.any? %>
+    <div class="chapter_events open_days">
+      <h3><%= t(:open_days) %></h3>
       <ul>
-        <% @page.node.events.order(:start_time).each do |event| %>
+        <% open_days.each do |event| %>
+          <li><%= event_schedule_text(event) %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% if other_events.any? %>
+    <div class="chapter_events">
+      <h3><%= t(:upcoming_events) %></h3>
+      <ul>
+        <% other_events.each do |event| %>
           <li>
             <span class="event_title"><%= event.display_title %></span>
-            <% if event.rrule.present? %>
-              <span class="event_rrule"><%= event.rrule %></span>
-            <% end %>
+            <span class="event_schedule"><%= event_schedule_text(event) %></span>
           </li>
         <% end %>
       </ul>
