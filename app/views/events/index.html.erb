@@ -3,7 +3,6 @@
 <table>
   <tr>
     <th>Title</th>
-    <th>Is primary</th>
     <th>Start time</th>
     <th>End time</th>
     <th>Rrule</th>
@@ -16,17 +15,16 @@
 <% @events.each do |event| %>
   <tr>
     <td><%=h event.display_title %></td>
-    <td><%=h event.is_primary %></td>
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
     <td><%=h event.rrule %></td>
     <td><%=h event.custom_rrule %></td>
     <td><%=h event.allday %></td>
     <td><%=h event.url %></td>
-    <td><%=h event.node_id %></td>
-    <td><%= link_to 'Show', event %></td>
-    <td><%= link_to 'Edit', edit_event_path(event) %></td>
-    <td><%= button_to 'Destroy', event, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
+    <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>
+    <td><%= link_to 'show', event %></td>
+    <td><%= link_to 'edit', edit_event_path(event) %></td>
+    <td><%= button_to 'destroy', event, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } %></td>
   </tr>
 <% end %>
 </table>

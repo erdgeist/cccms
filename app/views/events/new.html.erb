@@ -16,8 +16,8 @@
     <%= f.text_field :rrule %>
   </p>
   <p>
-    <%= f.label :custom_rrule %><br />
-    <%= f.check_box :custom_rrule %>
+    <%= f.label :tag_list, "Tags" %><br />
+    <%= f.text_field :tag_list %>
   </p>
   <p>
     <%= f.label :allday %><br />
@@ -37,10 +37,11 @@
   </p>
   <p>
     <%= f.hidden_field :node_id %>
+    <%= hidden_field_tag :return_to, params[:return_to] %>
   </p>
   <p>
     <%= f.submit 'Create' %>
   </p>
 <% end %>
 
-<%= link_to 'Back', events_path %>
+<%= link_to 'Back', safe_return_to(params[:return_to] || events_path) %>

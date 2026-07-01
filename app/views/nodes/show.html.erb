@@ -48,7 +48,11 @@
       <td>
         <ul>
         <% @node.events.order(:start_time).each do |event| %>
-          <li><%= event_schedule_text(event) %><%= " (primary)" if event.is_primary? %></li>
+          <li>
+            <%= event_schedule_text(event) %>
+            [<%= link_to 'show', event_path(event, return_to: request.path) %>
+            | <%= link_to 'edit', edit_event_path(event, return_to: request.path) %>]
+          </li>
         <% end %>
         </ul>
       </td>

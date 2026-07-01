@@ -1,9 +1,6 @@
 <% content_for :subnavigation do %>
   <%= link_to 'back', safe_return_to(params[:return_to] || events_path) %>
-  <% if @event.node %>
-    <%= link_to 'node', edit_node_path(@event.node) %>
-  <% end %>
-  <%= link_to 'show', @event %>
+  <%= button_to 'destroy', event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } %>
 <% end %>
 
 <h1>Editing event</h1>
@@ -25,8 +22,8 @@
     <%= f.text_field :rrule %>
   </p>
   <p>
-    <%= f.label :custom_rrule %><br />
-    <%= f.check_box :custom_rrule %>
+    <%= f.label :tag_list, "Tags" %><br />
+    <%= f.text_field :tag_list %>
   </p>
   <p>
     <%= f.label :allday %><br />

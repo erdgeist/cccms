@@ -1,6 +1,9 @@
 <% content_for :subnavigation do %>
-  <%= link_to 'back', edit_node_path(@event.node) %>
-  <%= link_to 'edit', edit_event_path(@event) %>
+  <% if @event.node %>
+    <%= link_to 'node', node_path(@event.node) %>
+  <% end %>
+  <%= link_to 'edit', edit_event_path(@event, return_to: request.path) %>
+  <%= button_to 'destroy', event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } %>
 <% end %>
 
 <h2>Event for node <%= @event.node.unique_name %></h2>
@@ -18,11 +21,14 @@
 <p>
   <b>Rrule:</b>
   <%=h @event.rrule %>
+  <% if (human = @event.humanize_rrule(I18n.locale)) %>
+    <br/><small><em>( <%= human %></em> )</small>
+  <% end %>
 </p>
 
 <p>
-  <b>Custom rrule:</b>
-  <%=h @event.custom_rrule %>
+  <b>Tags:</b>
+  <%=h @event.tag_list %>
 </p>
 
 <p>
