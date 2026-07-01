@@ -3,11 +3,9 @@ class Event < ApplicationRecord
 
   belongs_to :node, optional: true
   has_many   :occurrences
+  acts_as_taggable_on :tags
 
   validates :title, presence: true, unless: -> { node_id.present? }
-  validates :is_primary, uniqueness: { scope: :node_id,
-    message: "only one primary event per node allowed" },
-    if: -> { is_primary? && node_id.present? }
 
   after_save :generate_occurences
 

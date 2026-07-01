@@ -10,6 +10,8 @@ de:
   event_schedule_time: "um %{time} Uhr"
   event_schedule_unrecognized: "Termin-Regel nicht automatisch lesbar"
   event_schedule_none: "Kein Termin"
+  open_days: "Offene Tage"
+  upcoming_events: "Weitere Termine"
   date:
     formats:
       default: "%d.%m.%Y"
