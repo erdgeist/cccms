@@ -21,7 +21,8 @@
       </td>
       <td class="actions">
         <%= link_to 'show',      node_path(node) %>
-        <%= link_to 'Revisions', node_revisions_path(node) %>
+        <%= link_to 'edit',      edit_node_path(node) %>
+        <%= link_to 'revisions', node_revisions_path(node) %>
       </td>
       <td>
         <%= node.lock_owner.login if node.lock_owner %>
