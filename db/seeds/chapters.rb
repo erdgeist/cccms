@@ -7,14 +7,15 @@
 #   549 = chaostreffs overview node
 #
 # Each entry requires at minimum: slug, title_de, description_de, external_url
-# Optional: title_en, description_en, location, rrule, start_time, review
+# Optional: title_en, description_en, location, events, review
+# events: array of { rrule:, start_time:, tag_list:, location:, duration_hours: }
 # Entries with review: true have known discrepancies between DE and EN content.
 
 require 'date'
 
 def seed_chapter(parent_id:, slug:, tag:, title_de:, description_de:,
                   external_url:, title_en: nil, description_en: nil,
-                  location: nil, rrule: nil, start_time: nil, review: false)
+                  location: nil, events: [], review: false)
 
   if review
     puts "  [REVIEW] #{slug} — check DE/EN discrepancy before publishing"
@@ -62,16 +63,16 @@ def seed_chapter(parent_id:, slug:, tag:, title_de:, description_de:,
   node.publish_draft!
   node.reload
 
-  # Create primary event if rrule or start_time provided
-  if rrule || start_time
-    base_time = Time.parse("#{Date.today.year}-01-01 #{start_time || '19:00'}:00")
+  # Create events
+  events.each do |ev|
+    base_time = Time.parse("#{Date.today.year}-01-01 #{ev[:start_time] || '19:00'}:00")
     node.events.create!(
       title:      title_de,
-      location:   location,
-      rrule:      rrule,
+      location:   ev[:location] || location,
+      rrule:      ev[:rrule],
       start_time: base_time,
-      end_time:   base_time + 2.hours,
-      is_primary: true
+      end_time:   base_time + (ev[:duration_hours] || 2).hours,
+      tag_list:   ev[:tag_list] || 'open-day'
     )
   end
 
@@ -79,7 +80,6 @@ def seed_chapter(parent_id:, slug:, tag:, title_de:, description_de:,
 end
 
 puts "Seeding erfas..."
-
 
 erfas = [
   {
@@ -90,8 +90,9 @@ erfas = [
     description_en: "CCC Aachen opens its doors regularly to themed and open evenings. Our small but cozy space full of plush sharks is located within a few minutes by foot from central station and the city center (Schützenstraße 11, 52062 Aachen). Thanks to colorful LEDs it's especially easy to find at night.",
     external_url: "https://ccc.ac/",
     location: "Schützenstraße 11, 52062 Aachen",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -102,8 +103,9 @@ erfas = [
     description_en: "The CCC affiliated hackerspace backspace gathers people interested in technical innovation and free information exchange. It is a think tank, workshop, hackerspace, open space, home, laboratory and instigator. There is something going on every day, but most people meet at Spiegelgraben 41 in Bamberg on Tuesday, 7pm.",
     external_url: "https://www.hackerspace-bamberg.de/",
     location: "Spiegelgraben 41, 96052 Bamberg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -114,8 +116,9 @@ erfas = [
     description_en: "CCC Basel opens its doors every Tuesday evening from 19:30. We are located at Birsfelderstrasse 6, 4132 Muttenz, Switzerland; just go down the outdoors stairway to the basement. If you arrive by public transit, we recommend taking tramway 14 to the stop Käppeli.",
     external_url: "https://ccc-basel.ch/",
     location: "Birsfelderstrasse 6, CH-4132 Muttenz",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:30",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:30" }
+    ],
     review: false
   },
   {
@@ -123,12 +126,13 @@ erfas = [
     title_de: "CCC Berlin – Club Discordia",
     title_en: "CCC Berlin – Club Discordia",
     description_de: "Der Club Discordia ist ein öffentliches Treffen in den Clubräumen des CCC Berlin (Marienstraße 11, 10117 Berlin-Mitte). Die Treffen finden jeden Dienstag und Donnerstag ab ca. 19 Uhr statt.",
-    description_en: "Club Discordia is a public meeting located at the CCC Berlin (Marienstr. 11, 10117 Berlin-Mitte). Meetings are held every Thursday at 5pm.",
+    description_en: "Club Discordia is a public meeting located at the CCC Berlin (Marienstr. 11, 10117 Berlin-Mitte). Meetings are held every Tuesday and Thursday at around 7pm.",
     external_url: "http://berlin.ccc.de/",
     location: "Marienstraße 11, 10117 Berlin",
-    rrule: "FREQ=WEEKLY;BYDAY=TU,TH",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU,TH", start_time: "19:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-bremen",
@@ -138,8 +142,9 @@ erfas = [
     description_en: "The public get together of CCC Bremen takes place every Tuesday at 8pm at Z1 (Zweigstraße 1, 28217 Bremen).",
     external_url: "https://www.ccchb.de/",
     location: "Zweigstraße 1, 28217 Bremen",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -150,8 +155,7 @@ erfas = [
     description_en: nil,
     external_url: "https://chaoschemnitz.de",
     location: "Augustusburger Straße 102, Chemnitz",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -159,12 +163,13 @@ erfas = [
     title_de: "CCC Darmstadt",
     title_en: "CCC Darmstadt",
     description_de: "Wir treffen uns jeden Dienstagabend ab 19 Uhr zum gemeinsamen Basteln, Diskutieren, Hacken, Nerden – eben einfach zum offenen Chaos – in unserem Hackspace in der Wilhelminenstraße 17, mitten in der Darmstädter Innenstadt. Aber auch an <a href=\"https://www.chaos-darmstadt.de/termine.html\">jedem anderen Abend</a> ist in der Regel etwas los. Neben der Nutzung unserer Elektronikwerkstatt hast du zum Beispiel die Möglichkeit, bei unserem <a href=\"https://www.chaos-darmstadt.de/wizardsofdos.html\">Capture-the-Flag-Team „Wizards of DoS“</a> reinzuschauen oder dich bei <a href=\"https://darmstadt.freifunk.net\">Freifunk Darmstadt</a> zu engagieren. Aktuelle Termine und Neuigkeiten sowie den Türstatus gibt's auf <a href=\"https://www.chaos-darmstadt.de/\">chaos-darmstadt.de</a>. Im IRC findest du uns unter <a href=\"https://webirc.hackint.org/#chaos-darmstadt\">#chaos-darmstadt auf hackint</a>. Mailingliste: public&lt;ät&gt;lists.darmstadt.ccc.de. Schau doch einfach mal vorbei!",
-    description_en: "CCC Darmstadt meets Tuesdays from 8pm in their hackspace at Wilhelm-Leuschner-Strasse 36.",
+    description_en: "CCC Darmstadt meets Tuesdays from 7pm in their hackspace at Wilhelminenstraße 17.",
     external_url: "https://www.chaos-darmstadt.de/",
     location: "Wilhelminenstraße 17, Darmstadt",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-dortmund",
@@ -174,8 +179,9 @@ erfas = [
     description_en: nil,
     external_url: "http://www.chaostreff-dortmund.de",
     location: "Braunschweiger Straße 22, Dortmund",
-    rrule: "FREQ=WEEKLY;BYDAY=TU,TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU,TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -186,8 +192,9 @@ erfas = [
     description_en: "The geeks from Saxony and southern Brandenburg meet every Tuesday in Dresden (<a href=\"http://www.c3d2.de/muc.html\">for details please ask via jabber at c3d2@muc.hq.c3d2.de</a>). Furthermore there are occasional get-togethers for specific subjects.",
     external_url: "http://www.c3d2.de/",
     location: "Dresden",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -198,8 +205,9 @@ erfas = [
     description_en: "CCC Düsseldorf (aka Chaosdorf) operates a hackspace in Sonnenstraße 58 that is open nearly 24/7. The best method for getting to know it is the \"Freitagsfoo\" event, taking place every Friday from 6pm.",
     external_url: "https://chaosdorf.de/",
     location: "Sonnenstraße 58, Düsseldorf",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=FR", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -207,24 +215,26 @@ erfas = [
     title_de: "Bits'n'Bugs e.V. Erlangen",
     title_en: "Bits'n'Bugs e.V. Erlangen",
     description_de: "Der Bits'n'Bugs e.V. trifft sich jeden Freitag ab 18 Uhr im <a href=\"https://zam.haus/\">ZAM</a>, Hauptstr. 65-67, und zu weiteren unregelmäßigen Zeiten je nach Aktivitäten. Wir beteiligen uns außerdem regelmäßig an Veranstaltungen und Projekten des ZAM.",
-    description_en: "Bits'n'Bugs e.V. meets every Tuesday at 7:30pm in E-Werk Erlangen, Fuchsenwiese 1, group room 5.",
+    description_en: "Bits'n'Bugs e.V. meets every Friday at 6pm at ZAM, Hauptstraße 65-67, Erlangen, and at various other times depending on activities.",
     external_url: "http://erlangen.ccc.de/",
     location: "Hauptstraße 65-67, Erlangen",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "18:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=FR", start_time: "18:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-essen",
     title_de: "Chaospott Essen",
     title_en: "Chaospott Essen",
     description_de: "Der Chaospott ist die lokale Vertretung des CCC im Herzen des Ruhrgebiets. Wir treffen uns jeden Mittwoch ab 19 Uhr in der Sibyllastraße 9, 45136 Essen (Hofgebäude).",
-    description_en: "Chaospott is the local subsidiary of the CCC at the heart of the Ruhr area. We meet every Wednesday at 7pm in the »foobar«.",
+    description_en: "Chaospott is the local subsidiary of the CCC at the heart of the Ruhr area. We meet every Wednesday at 7pm at Sibyllastraße 9, 45136 Essen (Hofgebäude).",
     external_url: "http://chaospott.de/",
     location: "Sibyllastraße 9, 45136 Essen",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-flensburg",
@@ -234,8 +244,9 @@ erfas = [
     description_en: nil,
     external_url: "https://c3fl.de/",
     location: "Apenrader Straße 49, 24939 Flensburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -243,11 +254,12 @@ erfas = [
     title_de: "CCC Frankfurt am Main",
     title_en: "CCC Frankfurt am Main",
     description_de: "Wir treffen uns jeden Dienstag und Donnerstag (auch an den meisten Feiertagen) ab 19 Uhr in unserem Hackerspace, dem HQ. Dazu sind alle Interessierten jederzeit herzlich eingeladen.",
-    description_en: "We meet every Tuesday (even on most holidays) at 7pm in our hackspace the HQ. All interested people are welcome.",
+    description_en: "We meet every Tuesday and Thursday (even on most holidays) at 7pm in our hackspace the HQ. All interested people are welcome.",
     external_url: "http://ccc-ffm.de/hackerspace/",
     location: "Frankfurt am Main",
-    rrule: "FREQ=WEEKLY;BYDAY=TU,TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU,TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -255,12 +267,15 @@ erfas = [
     title_de: "CCC Freiburg",
     title_en: "CCC Freiburg",
     description_de: "Der Chaos Computer Club Freiburg trifft sich montags und dienstags ab 19 Uhr sowie nach Lust und Laune in seinen Räumen in der Adlerstraße 12a, 79098 Freiburg. Plenum ist jede zweite Woche dienstags ab 20 Uhr.",
-    description_en: "Erfa Freiburg meets on Tuesdays at 7pm in their own room at ArTik, the former underpass at Siegesdenkmal (Kaiser-Joseph-Strasse 141, 79089 Freiburg).",
+    description_en: "CCC Freiburg meets on Mondays and Tuesdays from 7pm at Adlerstraße 12a, 79098 Freiburg. Plenum is every other Tuesday from 8pm.",
     external_url: "http://cccfr.de",
     location: "Adlerstraße 12a, 79098 Freiburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO,TU", start_time: "19:00" },
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "20:00",
+        tag_list: "plenum" }
+    ],
+    review: false
   },
   {
     slug: "erfa-fulda",
@@ -270,8 +285,9 @@ erfas = [
     description_en: nil,
     external_url: "https://maglab.space/",
     location: "Lindenstraße 14, Fulda",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=FR", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -279,23 +295,26 @@ erfas = [
     title_de: "CCC Göttingen",
     title_en: "CCC Göttingen",
     description_de: "Der Erfa-Kreis Göttingen wurde im November 2007 von Hackern gegründet, die sich dem Chaos Computer Club nahefühlen. Open Chaos findet jeden zweiten Dienstag ab 20 Uhr im Neotopia (Von-Bar-Straße 2-4, Keller des MLP-Hauses) statt. Interessierte sind herzlich willkommen.",
-    description_en: "Erfa Göttingen was founded Nov 2007 by hackers close to the Chaos Computer Club. Open Chaos is every Tuesday from 8pm at NOKLAB (Neustadt 7, Innenstadt). All interested people are welcome.",
+    description_en: "Erfa Göttingen was founded Nov 2007 by hackers close to the Chaos Computer Club. Open Chaos is every other Tuesday from 8pm at Neotopia (Von-Bar-Straße 2-4). All interested people are welcome.",
     external_url: "http://www.chaostreff-goettingen.de/",
     location: "Von-Bar-Straße 2-4, Göttingen",
-    rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU",
-    start_time: "20:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "20:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-hamburg",
     title_de: "CCC Hamburg",
     title_en: "CCC Hamburg",
     description_de: "Der Hamburger Erfa-Kreis trifft sich in der Viktoria-Kaserne (1. Stock, Ostflügel), Zeiseweg 9, 22765 Hamburg. Der zweite Freitag und der letzte Dienstag im Monat sind perfekt zum Kennenlernen und Fragen stellen, weitere Termine finden sich auf dem <a href=\"https://www.hamburg.ccc.de/calendar/\">Kalender des Erfa Hamburg</a>, der mit öffentlichen Veranstaltungen gefüllt ist.",
-    description_en: "The Erfakreis Hamburg meets at Viktoria-Kaserne, room 119 (1st floor, east wing) Zeiseweg 9, 22765 Hamburg. Every second Friday and last Tuesday of the month are great opportunities to meet people and ask questions. We also have a <a href=\"http://www.hamburg.ccc.de/category/termine\">calendar</a> filled with events open for visitors.",
+    description_en: "The Erfakreis Hamburg meets at Viktoria-Kaserne, room 119 (1st floor, east wing) Zeiseweg 9, 22765 Hamburg. Every second Friday and last Tuesday of the month are great opportunities to meet people and ask questions.",
     external_url: "http://hamburg.ccc.de/",
     location: "Zeiseweg 9, 22765 Hamburg",
-    rrule: "FREQ=MONTHLY;BYDAY=2FR",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=2FR", start_time: "19:00" },
+      { rrule: "FREQ=MONTHLY;BYDAY=-1TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -303,12 +322,13 @@ erfas = [
     title_de: "CCC Hannover",
     title_en: "CCC Hannover",
     description_de: "Das regionale Chaos in Hannover trifft sich jeden Mittwoch ab 19 Uhr in der Bürgerschule im Clubraum (Raum 3.1) im Stadtteilzentrum Nordstadt.",
-    description_en: "The regional Chaos in Hannover meets every second Wednesday of the month from 8pm and on the last Sunday of the month from 4pm at the Bürgerschule in their clubroom (room 3.1) in the community center Nordstadt.",
+    description_en: "The regional Chaos in Hannover meets every Wednesday from 7pm at the Bürgerschule in their clubroom (room 3.1) in the community center Nordstadt.",
     external_url: "https://hannover.ccc.de/",
     location: "Bürgerschule, Raum 3.1, Hannover",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-kaiserslautern",
@@ -318,8 +338,9 @@ erfas = [
     description_en: nil,
     external_url: "http://www.chaos-inkl.de/",
     location: "Kaiserslautern",
-    rrule: "FREQ=WEEKLY;BYDAY=SA",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=SA", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -327,12 +348,13 @@ erfas = [
     title_de: "Entropia e.V. Karlsruhe",
     title_en: "Entropia e.V. Karlsruhe",
     description_de: "Der <a href=\"https://entropia.de/\">Erfa-Kreis Karlsruhe</a> ist ein eingetragener Verein mit dem Namen Entropia. Die öffentlichen <a href=\"https://entropia.de/Treffen\">Treffen</a> finden jeden Samstag ab 19:30 Uhr in <a href=\"https://entropia.de/Clubr%C3%A4ume\">den Räumen des Erfa Karlsruhe</a> (Gewerbehof, Steinstraße 23) statt und richten sich an alle aus Karlsruhe und dem Umland.",
-    description_en: "Erfa Karlsruhe is a registered club with the name 'Entropia'. The public meetings take place every Sunday from 7:30pm at our club (Gewerbehof, Steinstr. 23) and targets people from Karlsruhe and surrounding region.",
+    description_en: "Erfa Karlsruhe is a registered club with the name 'Entropia'. The public meetings take place every Saturday from 7:30pm at our club (Gewerbehof, Steinstr. 23) and targets people from Karlsruhe and surrounding region.",
     external_url: "https://entropia.de/",
     location: "Steinstraße 23, Karlsruhe",
-    rrule: "FREQ=WEEKLY;BYDAY=SA",
-    start_time: "19:30",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=SA", start_time: "19:30" }
+    ],
+    review: false
   },
   {
     slug: "erfa-kassel",
@@ -342,8 +364,9 @@ erfas = [
     description_en: "flipdot e.V. hackerspace kassel is the local Erfa circle – a lively place with plenty of space for building and coding. There are well-equipped workshop rooms, a lecture and cinema room, and a kitchen with a professional pizza oven. At flipdot, people often cook and eat together. Since 2009, flipdot has been a breeding ground for new ideas, a living room, an anarchist adult education center, a coder's cave, and a bustling workshop. Open to visitors every Tuesday from 7pm, Schillerstraße 25, 34117 Kassel.",
     external_url: "http://kassel.ccc.de/",
     location: "Schillerstraße 25, 34117 Kassel",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -354,8 +377,9 @@ erfas = [
     description_en: "The c4 is a westward bridge head of the innovative technology usage with all features that are necessary for chaos. The public meeting is called OpenChaos and takes place on the last Thursday of the month at 19:30 in the Chaoslabor in Cologne-Ehrenfeld.",
     external_url: "http://koeln.ccc.de/",
     location: "Köln-Ehrenfeld",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:30",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:30" }
+    ],
     review: false
   },
   {
@@ -366,8 +390,9 @@ erfas = [
     description_en: nil,
     external_url: "http://dezentrale.space",
     location: "Leipzig",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=FR", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -378,8 +403,9 @@ erfas = [
     description_en: "The Lübeck Hackspace group is Chaotikum e.V., which has been running the Nobreakspace hackspace since 2012. Since then, tech enthusiasts have been meeting there to work on various projects, discuss topics that interest them, and above all, have fun. Open Space is every Wednesday from 7:00 PM.",
     external_url: "https://chaotikum.org",
     location: "Lübeck",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -390,8 +416,9 @@ erfas = [
     description_en: "The Chaos Computer Club Mainz meets every Tuesday, 7pm, at Sedanplatz 7 in Wiesbaden. The meetup is addressed to everyone from Mainz/Wiesbaden and the near surroundings.",
     external_url: "http://www.cccmz.de",
     location: "Sedanplatz 7, Wiesbaden",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -399,11 +426,12 @@ erfas = [
     title_de: "CCC Mannheim",
     title_en: "CCC Mannheim",
     description_de: "Der Erfa-Kreis Mannheim ist eine Anlaufstelle für Computer- und Technikinteressierte, die Gleichgesinnte suchen. Hier kann man sich austauschen, seine Ideen präsentieren und diskutieren. Unsere öffentlichen Treffen finden jeden Freitag ab 19 Uhr statt. Die Termine stehen in unserem Wiki.",
-    description_en: "Erfa Mannheim is a local contact point for people that are interested in computer and technology, who search for like minded people. You can exchange, present and discuss your ideas. Our public meeting takes place every Friday.",
+    description_en: "Erfa Mannheim is a local contact point for people that are interested in computer and technology, who search for like minded people. You can exchange, present and discuss your ideas. Our public meeting takes place every Friday from 7pm.",
     external_url: "http://www.ccc-mannheim.de",
     location: "Mannheim",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=FR", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -414,8 +442,9 @@ erfas = [
     description_en: "The public meetup of the µC³ takes places every second Tuesday of the month, starting at about 8pm at Schleißheimer Str. 39 (corner to Heßstraße 90).",
     external_url: "https://muc.ccc.de/",
     location: "Schleißheimer Straße 39, München",
-    rrule: "FREQ=MONTHLY;BYDAY=2TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=2TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -426,8 +455,9 @@ erfas = [
     description_en: nil,
     external_url: "https://section77.de",
     location: "Hauptstraße 1, Offenburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -435,12 +465,13 @@ erfas = [
     title_de: "CCC Paderborn (subraum)",
     title_en: "CCC Paderborn",
     description_de: "Wir treffen uns immer mittwochs in unserem Hackerspace \"subraum\" in der Westernmauer 12-16.",
-    description_en: "We meet up Wednesdays at the pottery in the \"Kulturwerkstatt\". Our move to our new rooms in Westernmauer 12 is imminent.",
+    description_en: "We meet every Wednesday at our hackspace \"subraum\" in Westernmauer 12-16, Paderborn.",
     external_url: "https://www.c3pb.de/",
     location: "Westernmauer 12-16, Paderborn",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
+    review: false
   },
   {
     slug: "erfa-salzburg",
@@ -450,8 +481,7 @@ erfas = [
     description_en: nil,
     external_url: "http://sbg.chaostreff.at/",
     location: "Salzburg",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -462,8 +492,7 @@ erfas = [
     description_en: nil,
     external_url: "https://c3si.de/",
     location: "Siegen",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -474,8 +503,11 @@ erfas = [
     description_en: "As the first Erfa in Mecklenburg-Western Pomerania, we at Port39 e.V. make sure that there's a healthy dose of chaos in Stralsund and the surrounding area. Through \"Chaos macht Schule\" events, lectures, workshops, hacking sessions, soldering workshops, Repair Cafés, and much more, we aim to inspire people of all ages to get excited about technology, IT, and everything that goes with it. Feel free to drop by or check out our <a href=\"https://port39.de\">website</a> or <a href=\"https://chaos.social/@Port39\">Mastodon</a>. We're definitely there every Thursday for the Chaos Meetup starting at 7pm and every 2nd &amp; 4th Saturday starting at 2pm for OpenSpace.",
     external_url: "https://port39.de",
     location: "Stralsund",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" },
+      { rrule: "FREQ=MONTHLY;BYDAY=2SA,4SA", start_time: "14:00",
+        tag_list: "open-day open-space", duration_hours: 4 }
+    ],
     review: false
   },
   {
@@ -483,24 +515,29 @@ erfas = [
     title_de: "CCC Stuttgart",
     title_en: "CCC Stuttgart",
     description_de: "Der Chaos Computer Club Stuttgart e.V. trifft sich jeden ersten Dienstag im Monat im Lichtblick in der Stadtmitte (Reinsburgstraße 13) ab 18:30 Uhr und jeden dritten Mittwoch im Monat im Shackspace (Ulmer Straße 255) ab 18:30 Uhr. Im Shackspace kann Bastelhardware gerne mitgebracht werden. Jeden zweiten Donnerstag im Monat haben wir unsere Vortragsreihe in der Stadtbibliothek Stuttgart am Mailänder Platz.",
-    description_en: "Der Chaos Computer Club Stuttgart e.V. meets every first Tuesday of the month at the Zadu-Bar (Reuchlinstraße 4b) at 6:30pm and every third Wednesday of the month at the Shackspace (Ulmer Straße 255). Our monthly Talk is every second Thursday of the month in the public library of Stuttgart at the Mailänder Platz at 7:30pm.",
+    description_en: "CCC Stuttgart meets every first Tuesday of the month at Lichtblick (Reinsburgstraße 13) from 6:30pm and every third Wednesday of the month at Shackspace (Ulmer Straße 255) from 6:30pm. Our monthly talk series is every second Thursday of the month at the public library at Mailänder Platz.",
     external_url: "https://www.cccs.de/",
     location: "Stuttgart",
-    rrule: "FREQ=MONTHLY;BYDAY=1TU",
-    start_time: "18:30",
-    review: true
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=1TU", start_time: "18:30",
+        location: "Reinsburgstraße 13, Stuttgart" },
+      { rrule: "FREQ=MONTHLY;BYDAY=3WE", start_time: "18:30",
+        location: "Ulmer Straße 255, Stuttgart" }
+    ],
+    review: false
   },
   {
     slug: "erfa-ulm",
     title_de: "Chaostreff Ulm",
     title_en: "Chaostreff Ulm",
     description_de: "Der Chaostreff Ulm findet jeden Montag ab 19:30 Uhr im Café Einstein an der Uni Ulm statt, außer jeden zweiten Montag des Monats. Dieser ist dem Chaosseminar vorbehalten.",
-    description_en: "The Chaostreff Ulm takes place every Monday at 8:00pm in the Freiraum (3rd floor, Platzgasse 18, Ulm) at Hackerspace Ulm e.V. In addition, the talk series Chaos seminar on various topics is held there every second Monday of the month.",
+    description_en: "The Chaostreff Ulm takes place every Monday at 7:30pm at Café Einstein, Uni Ulm, except every second Monday which is reserved for the Chaos seminar.",
     external_url: "http://www.ulm.ccc.de/",
     location: "Café Einstein, Uni Ulm",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "19:30",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:30" }
+    ],
+    review: false
   },
   {
     slug: "erfa-unna",
@@ -510,8 +547,9 @@ erfas = [
     description_en: "The CCC Unna usually meets every Thursday at around 7pm in the rooms of the UN-Hack-Bar. We chat about all kinds of topics: from net politics and politics in general to computers and technology, and sometimes even about odd questions like how to extinguish a burning fire extinguisher or the latest internet meme. ;-) Of course, we also tinker, build, and hack things in the best possible sense. Guests of all kinds are very welcome.",
     external_url: "https://www.un-hack-bar.de/ccc-unna/",
     location: "Unna",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -519,11 +557,12 @@ erfas = [
     title_de: "CCC Wien",
     title_en: "CCC Vienna",
     description_de: "Der Chaos Computer Club Wien trifft sich einmal im Monat, meistens im <a href=\"https://metalab.at/\">Metalab</a>. Details zu den Treffen werden <a href=\"https://c3w.at/events/\">auf der Webseite des C3W</a> bekanntgegeben. Für Fragen und allgemeine Announcements stehen die <a href=\"https://c3w.at/mitmachen/\">öffentliche C3W-Mailingliste</a> oder <a href=\"https://chaos.social/@C3Wien\">@C3Wien@chaos.social</a> bereit. Komm vorbei!",
-    description_en: "The Chaos Computer Club Vienna meets once a month. Usually at <a href=\"https://metalab.at/\">Metalab</a>. Find details on <a href=\"https://c3w.at/events/\">our website</a>. Use the <a href=\"https://c3w.at/mitmachen/\">public mailinglist</a> or <a href=\"https://chaos.social/@C3Wien\">@C3Wien@chaos.social</a> to ask questions or to receive announcements. Come by!",
+    description_en: "The Chaos Computer Club Vienna meets once a month, usually at <a href=\"https://metalab.at/\">Metalab</a>. Find details on <a href=\"https://c3w.at/events/\">our website</a>. Use the <a href=\"https://c3w.at/mitmachen/\">public mailinglist</a> or <a href=\"https://chaos.social/@C3Wien\">@C3Wien@chaos.social</a> to ask questions or to receive announcements. Come by!",
     external_url: "https://c3w.at/",
     location: "Metalab, Wien",
-    rrule: "FREQ=MONTHLY",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=MONTHLY", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -534,8 +573,9 @@ erfas = [
     description_en: nil,
     external_url: "http://nerd2nerd.org/",
     location: "FabLab Würzburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -543,12 +583,13 @@ erfas = [
     title_de: "CCCZH Zürich",
     title_en: "CCCZH Zurich",
     description_de: "Der CCCZH ist Teil des Hackerspace <a href=\"https://www.bitwaescherei.ch/\">bitwäscherei</a>. Von Züri Hardbrücke aus einen halben Katzensprung in die Zentralwäscherei Zürich an der Neuen Hard 12.",
-    description_en: "The Chaostreff Zurich meets every Wednesday from 7pm at the Hackerspace at Luegislandstrasse 485 in Zürich/Schwamendingen.",
+    description_en: "The CCCZH is part of the hackspace bitwäscherei, a short walk from Zürich Hardbrücke at Neue Hard 12.",
     external_url: "https://www.ccczh.ch/",
     location: "Neue Hard 12, Zürich",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
-    review: true
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
+    review: false
   }
 ]
 
@@ -567,8 +608,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://aalen.space/",
     location: "Blezingerstraße 15, 73430 Aalen",
-    rrule: "FREQ=MONTHLY;BYDAY=3TU",
-    start_time: "18:30",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=3TU", start_time: "18:30" }
+    ],
     review: false
   },
   {
@@ -579,8 +621,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-alzey.de/",
     location: "Juku Alzey",
-    rrule: "FREQ=MONTHLY;BYDAY=1SU",
-    start_time: "15:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=1SU", start_time: "15:00" }
+    ],
     review: false
   },
   {
@@ -591,8 +634,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://amborg-sulzbyte.de/",
     location: "Amberg",
-    rrule: "FREQ=MONTHLY",
-    start_time: nil,
+    events: [
+      { rrule: "FREQ=MONTHLY" }
+    ],
     review: false
   },
   {
@@ -603,8 +647,9 @@ chaostreffs = [
     description_en: "Chaos Amsterdam meets on Thursdays every other week at 19:00 in a social space close to the city center. We can be found on <a href=\"https://webirc.hackint.org/#chaosamsterdam\">IRC in #chaosamsterdam</a> on the hackint network.",
     external_url: "https://chaos.amsterdam/",
     location: "Amsterdam",
-    rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -615,9 +660,11 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://haxko.space",
     location: "Bahnhof Andernach",
-    rrule: "FREQ=WEEKLY;BYDAY=FR",
-    start_time: "18:00",
-    review: false
+    events: [
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=FR", start_time: "18:00" },
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=SA", start_time: "18:00" }
+    ],
+    review: true
   },
   {
     slug: "chaostreff-augsburg",
@@ -627,8 +674,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://openlab-augsburg.de",
     location: "Augsburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -639,8 +687,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://www.schaffenburg.org",
     location: "Dorfstraße 1, Aschaffenburg",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -651,8 +698,10 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-backnang.de/",
     location: "Willy-Brandt-Platz 2, Backnang",
-    rrule: "FREQ=MONTHLY;BYDAY=3SU",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=3SU", start_time: "18:00" },
+      { rrule: "FREQ=MONTHLY;BYDAY=1TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -663,8 +712,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://imaginaerraum.de/",
     location: "Schulstraße 7, Bayreuth",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -675,8 +725,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.chaostreffbern.ch/",
     location: "Zwyssigstrasse 45, Bern",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -687,8 +738,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://hackerspace-bielefeld.de/",
     location: "Bielefeld",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -699,8 +749,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://binhacken.de/",
     location: "Bingen am Rhein",
-    rrule: "FREQ=WEEKLY",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -711,8 +762,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://das-labor.org",
     location: "Bochum",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -723,8 +773,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://datenburg.org/",
     location: "Bonn",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -735,8 +786,9 @@ chaostreffs = [
     description_en: "Members of the Hungarian Autonomous Center for Knowledge (H.A.C.K.) usually meet on Tuesdays at 19:00 local time, but it's best to confirm beforehand on #hspbp at IRCnet. We're located in the middle of the city, and we have Mate, sticker exchange, Internet, and friendly hackers.",
     external_url: "https://hsbp.org/contact-us",
     location: "Budapest",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -747,8 +799,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://hackzogtum-coburg.de",
     location: "Heiligkreuzstr. 3, 96450 Coburg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -759,8 +812,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaos-cb.de",
     location: "Walther-Pauer-Straße 7, Cottbus",
-    rrule: "FREQ=MONTHLY;BYDAY=-1WE",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=-1WE", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -771,8 +825,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://wak-lab.org",
     location: "Eisenach",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -783,8 +836,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.bytespeicher.org/",
     location: "Liebknechtstraße 8, Erfurt",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -795,8 +849,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://giessen.ccc.de",
     location: "Ludwigstraße 10, Gießen",
-    rrule: "FREQ=MONTHLY;BYDAY=1WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=1WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -807,8 +862,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://realraum.at/",
     location: "Graz",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -819,8 +873,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://schafferei.org/chaos-treff/",
     location: "Göppingen",
-    rrule: "FREQ=MONTHLY",
-    start_time: nil,
+    events: [
+      { rrule: "FREQ=MONTHLY" }
+    ],
     review: false
   },
   {
@@ -831,8 +886,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-gun.de/",
     location: "FabLab Gunzenhausen",
-    rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -843,8 +899,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://eigenbaukombinat.de",
     location: "Landsberger Straße 3, Halle (Saale)",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -855,8 +912,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaos.social/@c3hamm",
     location: "Hamm",
-    rrule: "FREQ=MONTHLY;BYDAY=1WE",
-    start_time: nil,
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=1WE" }
+    ],
     review: false
   },
   {
@@ -867,8 +925,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.noname-ev.de",
     location: "Heidelberg",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -879,8 +938,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://blog.freieslabor.org/",
     location: "Hildesheim",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -891,8 +949,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaos-hip.de/",
     location: "Maria-Dorothea-Straße 8, Hilpoltstein",
-    rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -903,8 +962,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://ge.hackt.es/",
     location: "Hoher Fläming, Brandenburg",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -915,8 +973,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://ilmspace.de/",
     location: "Ilmenau",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -927,8 +986,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://www.bytewerk.org/",
     location: "Ingolstadt",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -939,8 +997,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://it-syndikat.org",
     location: "Tschamlerstraße 3, Innsbruck",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -951,8 +1010,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://cciz.de/",
     location: "Itzehoe",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -963,8 +1023,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://kraut.space/",
     location: "Krautgasse 26, Jena",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -975,8 +1036,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://toppoint.de/",
     location: "Kiel",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -987,8 +1049,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://open-lab.at/",
     location: "Klaus, Vorarlberg",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "16:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "16:00", duration_hours: 4 }
+    ],
     review: false
   },
   {
@@ -999,8 +1062,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.hacknology.de/",
     location: "Konstanz",
-    rrule: "FREQ=MONTHLY;BYDAY=2TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=2TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1011,8 +1075,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://ctrl-z.info/",
     location: "Klaus-Von-Klitzing-Str. 2, Landau",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00", duration_hours: 4 }
+    ],
     review: false
   },
   {
@@ -1023,8 +1088,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://technik.cafe/",
     location: "Lörrach",
-    rrule: "FREQ=MONTHLY",
-    start_time: nil,
+    events: [
+      { rrule: "FREQ=MONTHLY" }
+    ],
     review: false
   },
   {
@@ -1035,8 +1101,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://complb.de",
     location: "DemoZ, Ludwigsburg",
-    rrule: "FREQ=MONTHLY;BYDAY=-1TH",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=-1TH", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -1047,8 +1114,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://www.c3l.lu/",
     location: "Luxemburg",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -1059,8 +1127,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://hsmr.cc/",
     location: "Marburg",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -1071,8 +1140,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://bodensee.space/chaostreff-markdorf",
     location: "Markdorf",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -1083,8 +1151,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://www.warpzone.ms/",
     location: "Münster",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1095,8 +1164,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://fnordeingang.de/chaostreff",
     location: "Neuss",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1107,8 +1177,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-nuernberg.de",
     location: "Nürnberg",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -1119,8 +1188,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-osnabrueck.de/",
     location: "Osnabrück",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -1131,8 +1199,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.ccc-p.org/",
     location: "Friedrich-Engels-Straße 22, Haus 5, Potsdam",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1143,8 +1212,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.coredump.ch/",
     location: "Vinora-Areal, Jona",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -1155,8 +1225,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://c3re.de",
     location: "Westcharweg 101, 45659 Recklinghausen",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1167,8 +1238,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://binary.kitchen",
     location: "Regensburg",
-    rrule: "FREQ=WEEKLY;BYDAY=MO",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1179,8 +1251,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-rodgau.codeberg.page",
     location: "Rodgau",
-    rrule: "FREQ=MONTHLY",
-    start_time: nil,
+    events: [
+      { rrule: "FREQ=MONTHLY" }
+    ],
     review: false
   },
   {
@@ -1191,8 +1264,9 @@ chaostreffs = [
     description_en: "The Chaostreff of Rotterdam meets every Wednesdays around 20 Uhr at Pixelbar in the Keilewerf at the Vierhavensstraat 56 in Rotterdam close to RET / Metro station Marconiplein.",
     external_url: "https://www.pixelbar.nl/contact/",
     location: "Vierhavensstraat 56, Rotterdam",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -1203,8 +1277,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.hacksaar.de",
     location: "Rathausstraße 18, 66125 Saarbrücken",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1215,20 +1290,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://hacklabor.de/",
     location: "Hagenower Straße 73, Schwerin",
-    rrule: "FREQ=WEEKLY;BYDAY=WE,FR",
-    start_time: "19:00",
-    review: false
-  },
-  {
-    slug: "chaostreff-stralsund",
-    title_de: "Port39 e.V. Stralsund (Chaostreff)",
-    title_en: "Port39 e.V. Stralsund",
-    description_de: "Das Chaos ist jetzt auch in Stralsund eingezogen! Als ein weiterer Space in Mecklenburg-Vorpommern möchten wir auch hier das gute Chaos verbreiten, mit Chaos macht Schule in Stralsund und Umgebung Jung und Alt für Technik und IT begeistern und mit diversen Projekten im Space mal mehr, mal weniger sinnvolle Dinge anstellen. Kommt gerne rum oder schaut auf unserer <a href=\"https://port39.de/\">Website</a> oder den Socials vorbei. Definitiv da sind wir jeden Donnerstag zum Chaostreff ab 19 Uhr und jeden 2. &amp; 4. Samstag ab 14 Uhr zum OpenSpace.",
-    description_en: "As the first Erfa in Mecklenburg-Western Pomerania, we at Port39 e.V. make sure that there's a healthy dose of chaos in Stralsund. Feel free to drop by or check out our <a href=\"https://port39.de\">website</a>. We're definitely there every Thursday for the Chaos Meetup starting at 7pm and every 2nd &amp; 4th Saturday starting at 2pm for OpenSpace.",
-    external_url: "https://port39.de/",
-    location: "Stralsund",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE,FR", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1239,8 +1303,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://www.maschinendeck.org",
     location: "Trier",
-    rrule: "FREQ=WEEKLY;BYDAY=WE",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -1251,8 +1316,12 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://cttue.de",
     location: "Tübingen",
-    rrule: "FREQ=MONTHLY;BYDAY=-1SU",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=-1SU", start_time: "18:00",
+        location: "KIMS, Tübingen" },
+      { rrule: "FREQ=MONTHLY;BYDAY=2MO", start_time: "19:00",
+        location: "FabLab Neckar-Alb, Tübingen" }
+    ],
     review: false
   },
   {
@@ -1263,8 +1332,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "http://vspace.one",
     location: "Wilhelm-Binder-Straße 19, Villingen-Schwenningen",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+    ],
     review: false
   },
   {
@@ -1275,8 +1345,7 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://c3wkb.de",
     location: "Waldkraiburg",
-    rrule: nil,
-    start_time: nil,
+    events: [],
     review: false
   },
   {
@@ -1287,8 +1356,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://westwoodlabs.de/",
     location: "Ransbach-Baumbach",
-    rrule: "FREQ=WEEKLY;BYDAY=TU",
-    start_time: "18:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "18:00" }
+    ],
     review: false
   },
   {
@@ -1299,8 +1369,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.chaostal.de/category/meeting",
     location: "Mirker Straße 48, Wuppertal-Elberfeld",
-    rrule: "FREQ=MONTHLY;BYDAY=1TH",
-    start_time: "20:00",
+    events: [
+      { rrule: "FREQ=MONTHLY;BYDAY=1TH", start_time: "20:00" }
+    ],
     review: false
   },
   {
@@ -1311,8 +1382,9 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.z-labor.space",
     location: "Kulturweberei, Zwickau",
-    rrule: "FREQ=WEEKLY;BYDAY=TH",
-    start_time: "19:00",
+    events: [
+      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+    ],
     review: false
   }
 ]
@@ -1328,3 +1400,4 @@ puts "Nodes flagged for review:"
 end
 
 Node.rebuild!(false)
+
