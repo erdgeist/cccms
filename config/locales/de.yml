@@ -11,7 +11,9 @@ de:
   event_schedule_unrecognized: "Termin-Regel nicht automatisch lesbar"
   event_schedule_none: "Kein Termin"
   open_days: "Offene Tage"
+  open_days_label: "Offene Tage"
   upcoming_events: "Weitere Termine"
+  open_today: "Heute dabei"
   date:
     formats:
       default: "%d.%m.%Y"

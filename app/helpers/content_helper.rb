@@ -23,6 +23,22 @@ module ContentHelper
     )
   end
 
+  def open_erfas_today
+    occurrences = Occurrence
+      .find_in_range(Time.now.beginning_of_day, Time.now.end_of_day)
+      .joins(event: :tags)
+      .where(tags: { name: 'open-day' })
+      .reject { |o| o.node.nil? || o.node.head.nil? }
+      .sample(3)
+
+    return if occurrences.empty?
+
+    render(
+      :partial => 'content/open_erfas_today',
+      :locals  => { :occurrences => occurrences }
+    )
+  end
+
   def tags
     render :partial => 'content/tags'
   end

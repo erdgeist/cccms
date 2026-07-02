@@ -12,7 +12,9 @@ en:
   event_schedule_unrecognized: "Schedule not automatically readable"
   event_schedule_none: "No schedule"
   open_days: "Open days"
+  open_days_label: "Open days"
   upcoming_events: "Upcoming events"
+  open_today: "Open today"
 
   time:
     formats:

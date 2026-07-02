@@ -216,7 +216,7 @@ div#frontpage_calendar {
   }
 }
 
-div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div.main_navigation h2 {
+div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2, div.main_navigation h2 {
   border-top: 2px solid;
   border-bottom: 2px solid;
   font-size: 1.1em;
@@ -248,7 +248,7 @@ div#frontpage_calendar h2 {
 }
 
 @media(min-width:1016px) {
-  div#frontpage_calendar h2, div#tags h2, div#featured_articles h2 {
+  div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2 {
     font-size: 1rem;
   }
 
@@ -260,7 +260,7 @@ div#frontpage_calendar h2 {
 
 }
 
-div#frontpage_calendar ul, div#tags ul, div#featured_articles ul {
+div#frontpage_calendar ul, div#tags ul, div#featured_articles ul, div#open_erfas_today ul {
   padding: 0px;
   font-size: 1rem;
   line-height: 1.5em;
@@ -278,11 +278,11 @@ div#frontpage_calendar li {
   margin-bottom: 20px;
 }
 
-div#frontpage_calendar li, div#tags li, div#featured_articles li {
+div#frontpage_calendar li, div#tags li, div#featured_articles li, div#open_erfas_today li {
   list-style-type: none;
 }
 
-div#frontpage_calendar li a, div#tags li a, div#featured_articles li a {
+div#frontpage_calendar li a, div#tags li a, div#featured_articles li a, div#open_erfas_today li a {
   text-decoration: none;
   color: color-mix(in srgb, CanvasText, #808080 25%);
 }

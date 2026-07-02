@@ -1,0 +1,11 @@
+<div id="open_erfas_today">
+  <h2><%= t(:open_today) %></h2>
+  <ul class="teasertext">
+    <% occurrences.each do |occurrence| %>
+      <li>
+        <%= link_to_path occurrence.node.head.title, occurrence.node.unique_name %>
+        <span class="event_time"><%= occurrence.start_time.strftime("%H:%M") %></span>
+      </li>
+    <% end %>
+  </ul>
+</div>
