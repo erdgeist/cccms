@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/erdgeist/chaoscalendar.git
-  revision: 3c0b34dd260f11d15378a6255d9862d629c8413a
+  revision: 48fe5c517ae3895cc78d9d2fefbdd35b90d52ba7
   branch: erdgeist-ruby1.9
   specs:
     chaos_calendar (0.1.3)

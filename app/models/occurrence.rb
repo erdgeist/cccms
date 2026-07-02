@@ -10,9 +10,10 @@ class Occurrence < ApplicationRecord
   # Class Methods
   
   def self.find_in_range start_time, end_time
-    includes(:node)
-      .where("start_time > ? AND end_time < ?", start_time, end_time)
-      .order("start_time")
+    joins(:event)
+      .includes(:node)
+      .where("occurrences.start_time > ? AND occurrences.end_time < ?", start_time, end_time)
+      .order("occurrences.start_time")
   end
 
   def self.find_next
@@ -48,10 +49,11 @@ class Occurrence < ApplicationRecord
   # Return value is always an array of Time objects.
   def self.generate_dates event
     if event.rrule && !event.rrule.empty?
-      ChaosCalendar::occurrences( 
+      ChaosCalendar::occurrences_for_timezone( 
         event.start_time, 
         (Time.now + 5.years), 
-        event.rrule
+        event.rrule,
+        Time.zone.tzinfo.identifier
       )
     else
       [event.start_time]
