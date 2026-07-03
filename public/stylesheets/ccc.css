@@ -274,7 +274,7 @@ div#open_erfas_today .event_time {
 
 div#frontpage_calendar ul, div#tags ul, div#featured_articles ul, div#open_erfas_today ul {
   padding: 0px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1.5em;
 }
 
