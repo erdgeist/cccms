@@ -13,7 +13,7 @@ de:
   open_days: "Offene Tage"
   open_days_label: "Offene Tage"
   upcoming_events: "Weitere Termine"
-  open_today: "Heute dabei"
+  open_today: "Das Chaos, lokal und heute offen"
   date:
     formats:
       default: "%d.%m.%Y"
