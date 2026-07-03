@@ -39,6 +39,10 @@ module ContentHelper
     )
   end
 
+  def weekday_abbr(time)
+    RruleHumanizer.wday_abbr(time, I18n.locale)
+  end
+
   def tags
     render :partial => 'content/tags'
   end

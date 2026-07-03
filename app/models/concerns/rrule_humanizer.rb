@@ -10,6 +10,10 @@ module RruleHumanizer
     de: { "MO"=>"montags","TU"=>"dienstags","WE"=>"mittwochs","TH"=>"donnerstags","FR"=>"freitags","SA"=>"samstags","SU"=>"sonntags" }
   }.freeze
 
+  WEEKDAY_NAMES_ABBR = {
+    de: { "MO"=>"Mo","TU"=>"Di","WE"=>"Mi","TH"=>"Do","FR"=>"Fr","SA"=>"Sa","SU"=>"So" }
+  }.freeze
+
   ORDINAL_NAMES = {
     de: { 1=>"ersten", 2=>"zweiten", 3=>"dritten", 4=>"vierten", -1=>"letzten", -2=>"vorletzten" },
     en: { 1=>"first", 2=>"second", 3=>"third", 4=>"fourth", -1=>"last", -2=>"second-to-last" }
@@ -78,5 +82,10 @@ module RruleHumanizer
     end
 
     base
+  end
+
+  def self.wday_abbr(time, locale)
+    code = %w[SU MO TU WE TH FR SA][time.wday]
+    (WEEKDAY_NAMES_ABBR[locale.to_sym] || WEEKDAY_NAMES_ABBR[:de])[code]
   end
 end
