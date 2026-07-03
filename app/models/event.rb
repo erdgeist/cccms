@@ -2,12 +2,12 @@ class Event < ApplicationRecord
   include RruleHumanizer
 
   belongs_to :node, optional: true
-  has_many   :occurrences
+  has_many   :occurrences, dependent: :destroy
   acts_as_taggable_on :tags
 
   validates :title, presence: true, unless: -> { node_id.present? }
 
-  after_save :generate_occurences
+  after_save :generate_occurrences
 
   def occurrences_in_range start_time, end_time
     self.occurrences.where(
@@ -21,7 +21,7 @@ class Event < ApplicationRecord
   end
 
   private
-    def generate_occurences
+    def generate_occurrences
       Occurrence.generate self
     end
 end

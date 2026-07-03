@@ -65,13 +65,13 @@ def seed_chapter(parent_id:, slug:, tag:, title_de:, description_de:,
 
   # Create events
   events.each do |ev|
-    base_time = Time.parse("#{Date.today.year}-01-01 #{ev[:start_time] || '19:00'}:00")
+    base_time = ev[:start_time] ? Time.parse("#{Date.today.year}-01-01 #{ev[:start_time]}:00") : nil
     node.events.create!(
       title:      title_de,
       location:   ev[:location] || location,
       rrule:      ev[:rrule],
       start_time: base_time,
-      end_time:   base_time + (ev[:duration_hours] || 2).hours,
+      end_time:   base_time && base_time + (ev[:duration_hours] || 2).hours,
       tag_list:   ev[:tag_list] || 'open-day'
     )
   end

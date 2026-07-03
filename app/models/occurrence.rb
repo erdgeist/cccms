@@ -27,6 +27,7 @@ class Occurrence < ApplicationRecord
   # event are then calculated and created.
   def self.generate event
     self.where(:event_id => event.id).delete_all
+    return if event.start_time.nil?
     
     node        = event.node
     duration    = (event.end_time - event.start_time)
