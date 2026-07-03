@@ -90,10 +90,10 @@ erfas = [
     description_en: "CCC Aachen opens its doors regularly to themed and open evenings. Our small but cozy space full of plush sharks is located within a few minutes by foot from central station and the city center (Schützenstraße 11, 52062 Aachen). Thanks to colorful LEDs it's especially easy to find at night.",
     external_url: "https://ccc.ac/",
     location: "Schützenstraße 11, 52062 Aachen",
-    events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
-    ],
-    review: false
+    # ccc.de source names no day or time — former "TU 19:00" was unsourced.
+    # Verify against ccc.ac and restore the event if confirmed.
+    events: [],
+    review: true
   },
   {
     slug: "erfa-bamberg",
@@ -151,7 +151,7 @@ erfas = [
     slug: "erfa-chemnitz",
     title_de: "CCC Chemnitz (ChCh)",
     title_en: nil,
-    description_de: "Der Chaos Computer Club Chemnitz (ChCh) betreibt seit 2011 einen eigenen Hackspace in der Augustusburger Straße 102. Wir stehen allen technikinteressierten und kreativen Menschen offen und freuen uns immer über neue Gäste. Wir fühlen uns der Informationsfreiheit und der Aufklärung über die Auswirkungen aktueller Technologien auf die Gesellschaft verpflichtet. Trotzdem kommt bei uns auch der Spaß am Gerät nicht zu kurz.",
+    description_de: "Der Chaos Computer Club Chemnitz (ChCh) betreibt seit 2011 einen eigenen Hackspace in der Augustusburger Straße 102. Wir stehen allen technikinteressierten und kreativen Menschen offen und freuen uns immer über neue Gäste. Wir fühlen uns der Informationsfreiheit und der Aufklärung über die Auswirkungen aktueller Technologien auf die Gesellschaft verpflichtet. Trotzdem kommt bei uns auch der Spaß am Gerät nicht zu kurz. Zu erreichen sind wir auch über Matrix in <a href=\"https://matrix.to/#/#ChCh:matrix.org\">#ChCh:matrix.org</a>.",
     description_en: nil,
     external_url: "https://chaoschemnitz.de",
     location: "Augustusburger Straße 102, Chemnitz",
@@ -193,7 +193,7 @@ erfas = [
     external_url: "http://www.c3d2.de/",
     location: "Dresden",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=TU" }
     ],
     review: false
   },
@@ -307,13 +307,13 @@ erfas = [
     slug: "erfa-hamburg",
     title_de: "CCC Hamburg",
     title_en: "CCC Hamburg",
-    description_de: "Der Hamburger Erfa-Kreis trifft sich in der Viktoria-Kaserne (1. Stock, Ostflügel), Zeiseweg 9, 22765 Hamburg. Der zweite Freitag und der letzte Dienstag im Monat sind perfekt zum Kennenlernen und Fragen stellen, weitere Termine finden sich auf dem <a href=\"https://www.hamburg.ccc.de/calendar/\">Kalender des Erfa Hamburg</a>, der mit öffentlichen Veranstaltungen gefüllt ist.",
-    description_en: "The Erfakreis Hamburg meets at Viktoria-Kaserne, room 119 (1st floor, east wing) Zeiseweg 9, 22765 Hamburg. Every second Friday and last Tuesday of the month are great opportunities to meet people and ask questions.",
+    description_de: "Der Hamburger Erfa-Kreis trifft sich in der Viktoria-Kaserne (1. Stock, Ostflügel), Zeiseweg 9, 22765 Hamburg. Der zweite Freitag und der letzte Dienstag im Monat sind perfekt zum Kennenlernen und Fragen stellen, weitere Termine finden sich auf dem <a href=\"https://www.hamburg.ccc.de/calendar/\">Kalender des Erfa Hamburg</a>, der mit öffentlichen Veranstaltungen gefüllt ist. Im IRC ist der Erfa im Channel #ccchh auf irc.hackint.org erreichbar.",
+    description_en: "The Erfakreis Hamburg meets at Viktoria-Kaserne, room 119 (1st floor, east wing) Zeiseweg 9, 22765 Hamburg. Every second Friday and last Tuesday of the month are great opportunities to meet people and ask questions. The Erfa can also be reached on IRC in #ccchh on irc.hackint.org.",
     external_url: "http://hamburg.ccc.de/",
     location: "Zeiseweg 9, 22765 Hamburg",
     events: [
-      { rrule: "FREQ=MONTHLY;BYDAY=2FR", start_time: "19:00" },
-      { rrule: "FREQ=MONTHLY;BYDAY=-1TU", start_time: "19:00" }
+      { rrule: "FREQ=MONTHLY;BYDAY=2FR" },
+      { rrule: "FREQ=MONTHLY;BYDAY=-1TU" }
     ],
     review: false
   },
@@ -464,12 +464,12 @@ erfas = [
     slug: "erfa-paderborn",
     title_de: "CCC Paderborn (subraum)",
     title_en: "CCC Paderborn",
-    description_de: "Wir treffen uns immer mittwochs in unserem Hackerspace \"subraum\" in der Westernmauer 12-16.",
-    description_en: "We meet every Wednesday at our hackspace \"subraum\" in Westernmauer 12-16, Paderborn.",
+    description_de: "Wir treffen uns immer mittwochs in unserem Hackerspace \"subraum\" in der Westernmauer 12-16. Zu finden sind wir auch in #c3pb im HackInt.",
+    description_en: "We meet every Wednesday at our hackspace \"subraum\" in Westernmauer 12-16, Paderborn. You can also find us in #c3pb on HackInt.",
     external_url: "https://www.c3pb.de/",
     location: "Westernmauer 12-16, Paderborn",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=WE" }
     ],
     review: false
   },
@@ -499,8 +499,8 @@ erfas = [
     slug: "erfa-stralsund",
     title_de: "Port39 e.V. Stralsund",
     title_en: "Port39 e.V. Stralsund",
-    description_de: "Als erster Erfa in Mecklenburg-Vorpommern sorgen wir als Port39 e.V. in Stralsund und Umgebung für eine ordentliche Portion Chaos. Mit Chaos macht Schule, Vorträgen und Workshops, Hacking-Sessions, Löt-Workshops, RepairCafés und vielem mehr wollen wir Jung und Alt für Technik, IT und allem, was dazu gehört, begeistern, und mit diversen Projekten im eigenen Hackerspace mal mehr, mal weniger sinnvolle Dinge anstellen. Kommt gerne rum oder schaut auf unserer <a href=\"https://port39.de\">Website</a> oder auf <a href=\"https://chaos.social/@Port39\">Mastodon</a> vorbei. Definitiv da sind wir jeden Donnerstag zum Chaostreff ab 19 Uhr und jeden 2. &amp; 4. Samstag ab 14 Uhr zum OpenSpace.",
-    description_en: "As the first Erfa in Mecklenburg-Western Pomerania, we at Port39 e.V. make sure that there's a healthy dose of chaos in Stralsund and the surrounding area. Through \"Chaos macht Schule\" events, lectures, workshops, hacking sessions, soldering workshops, Repair Cafés, and much more, we aim to inspire people of all ages to get excited about technology, IT, and everything that goes with it. Feel free to drop by or check out our <a href=\"https://port39.de\">website</a> or <a href=\"https://chaos.social/@Port39\">Mastodon</a>. We're definitely there every Thursday for the Chaos Meetup starting at 7pm and every 2nd &amp; 4th Saturday starting at 2pm for OpenSpace.",
+    description_de: "Als erster Erfa in Mecklenburg-Vorpommern sorgen wir als Port39 e.V. in Stralsund und Umgebung für eine ordentliche Portion Chaos. Mit Chaos macht Schule, Vorträgen und Workshops, Hacking-Sessions, Löt-Workshops, RepairCafés und vielem mehr wollen wir Jung und Alt für Technik, IT und allem, was dazu gehört, begeistern, und mit diversen Projekten im eigenen Hackerspace mal mehr, mal weniger sinnvolle Dinge anstellen. Kommt gerne rum oder schaut auf unserer <a href=\"https://port39.de\">Website</a> oder auf <a href=\"https://chaos.social/@Port39\">Mastodon</a> vorbei. Definitiv da sind wir jeden Donnerstag zum Chaostreff ab 19 Uhr und jeden 2. &amp; 4. Samstag ab 14 Uhr zum OpenSpace. Und spontan immer dann, wenn unser Status auf der Website sagt, dass wir grade da sind.",
+    description_en: "As the first Erfa in Mecklenburg-Western Pomerania, we at Port39 e.V. make sure that there's a healthy dose of chaos in Stralsund and the surrounding area. Through \"Chaos macht Schule\" events, lectures, workshops, hacking sessions, soldering workshops, Repair Cafés, and much more, we aim to inspire people of all ages to get excited about technology, IT, and everything that goes with it. Feel free to drop by or check out our <a href=\"https://port39.de\">website</a> or <a href=\"https://chaos.social/@Port39\">Mastodon</a>. We're definitely there every Thursday for the Chaos Meetup starting at 7pm and every 2nd &amp; 4th Saturday starting at 2pm for OpenSpace. And spontaneously whenever the status on our website says we're around.",
     external_url: "https://port39.de",
     location: "Stralsund",
     events: [
@@ -534,10 +534,13 @@ erfas = [
     description_en: "The Chaostreff Ulm takes place every Monday at 7:30pm at Café Einstein, Uni Ulm, except every second Monday which is reserved for the Chaos seminar.",
     external_url: "http://www.ulm.ccc.de/",
     location: "Café Einstein, Uni Ulm",
+    # RRULE overstates: occurrences include 2nd Mondays which are actually
+    # the Chaosseminar. Exact rule would be FREQ=MONTHLY;BYDAY=MO;BYSETPOS=1,3,4,5
+    # but the humanizer can't render that. Decide during review.
     events: [
       { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:30" }
     ],
-    review: false
+    review: true
   },
   {
     slug: "erfa-unna",
@@ -561,7 +564,7 @@ erfas = [
     external_url: "https://c3w.at/",
     location: "Metalab, Wien",
     events: [
-      { rrule: "FREQ=MONTHLY", start_time: "19:00" }
+      { rrule: "FREQ=MONTHLY" }
     ],
     review: false
   },
@@ -586,10 +589,10 @@ erfas = [
     description_en: "The CCCZH is part of the hackspace bitwäscherei, a short walk from Zürich Hardbrücke at Neue Hard 12.",
     external_url: "https://www.ccczh.ch/",
     location: "Neue Hard 12, Zürich",
-    events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
-    ],
-    review: false
+    # ccc.de source names no schedule at all — former "WE 19:00" was unsourced.
+    # Verify against ccczh.ch and restore if confirmed.
+    events: [],
+    review: true
   }
 ]
 
@@ -656,7 +659,7 @@ chaostreffs = [
     slug: "chaostreff-andernach",
     title_de: "haxko e.V. Andernach",
     title_en: nil,
-    description_de: "Der Hacker- und Makerspace Mayen-Koblenz (haxko e.V.) befindet sich in der ehemaligen Gastwirtschaft des Bahnhofs Andernach. Unsere Treffen finden in geraden Kalenderwochen freitags und in ungeraden samstags statt. Beginn immer ab 18 Uhr. Thematisch sind wir offen und durch die Location direkt am Bahnhof gut zu erreichen.",
+    description_de: "Der Hacker- und Makerspace Mayen-Koblenz (haxko e.V.) befindet sich in der ehemaligen Gastwirtschaft des Bahnhofs Andernach. Unsere Treffen finden in geraden Kalenderwochen freitags und in ungeraden samstags statt. Beginn immer ab 18 Uhr. Thematisch sind wir offen und durch die Location direkt am Bahnhof gut zu erreichen. Kommt vorbei, wir freuen uns auf euch!",
     description_en: nil,
     external_url: "https://haxko.space",
     location: "Bahnhof Andernach",
@@ -675,7 +678,7 @@ chaostreffs = [
     external_url: "https://openlab-augsburg.de",
     location: "Augsburg",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=TH" }
     ],
     review: false
   },
@@ -699,8 +702,8 @@ chaostreffs = [
     external_url: "https://chaostreff-backnang.de/",
     location: "Willy-Brandt-Platz 2, Backnang",
     events: [
-      { rrule: "FREQ=MONTHLY;BYDAY=3SU", start_time: "18:00" },
-      { rrule: "FREQ=MONTHLY;BYDAY=1TU", start_time: "19:00" }
+      { rrule: "FREQ=MONTHLY;BYDAY=3SU" },
+      { rrule: "FREQ=MONTHLY;BYDAY=1TU" }
     ],
     review: false
   },
@@ -750,7 +753,7 @@ chaostreffs = [
     external_url: "https://binhacken.de/",
     location: "Bingen am Rhein",
     events: [
-      { rrule: "FREQ=WEEKLY", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY" }
     ],
     review: false
   },
@@ -758,7 +761,7 @@ chaostreffs = [
     slug: "chaostreff-bochum",
     title_de: "Das Labor Bochum",
     title_en: nil,
-    description_de: "Das Labor, Hackspace und Chaostreff, ist in erster Linie ein Ort, an dem praktisch gearbeitet wird. Wir benutzen und entwickeln freie Software, löten, ätzen und programmieren Mikrocontroller, beschäftigen uns mit 3D-Druck, Freifunk, Amateurfunk, IT-Sicherheit, Arduinos, OSM oder Open Science. Wir haben den Anspruch, mit Technologie Neues und Sinnvolles zu erschaffen. Im Labor gibt es Vorträge, Workshops und Diskussionen zu den unterschiedlichsten Bereichen der Technik.",
+    description_de: "Das Labor, Hackspace und Chaostreff, ist in erster Linie ein Ort, an dem praktisch gearbeitet wird. Wir benutzen und entwickeln freie Software, löten, ätzen und programmieren Mikrocontroller, beschäftigen uns mit 3D-Druck, Freifunk, Amateurfunk, IT-Sicherheit, Arduinos, OSM oder Open Science. Wir haben den Anspruch, mit Technologie Neues und Sinnvolles zu erschaffen. Im Labor gibt es Vorträge, Workshops und Diskussionen zu den unterschiedlichsten Bereichen der Technik. Wenn keine Veranstaltung stattfindet, wird gebastelt – zusammen oder allein. Du möchtest etwas verändern oder verbessern? Technik ausprobieren oder mehr über ihre Einsatzmöglichkeiten erfahren? Oder einfach neue Leute kennenlernen, die deine Interessen teilen? Dann komm vorbei und mach mit – das Labor entwickelt sich mit dir.",
     description_en: nil,
     external_url: "https://das-labor.org",
     location: "Bochum",
@@ -886,10 +889,12 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaostreff-gun.de/",
     location: "FabLab Gunzenhausen",
+    # "ungerade Kalenderwochen" — INTERVAL=2 phase depends on the dtstart
+    # anchor; verify generated occurrences land on odd ISO weeks.
     events: [
       { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "19:00" }
     ],
-    review: false
+    review: true
   },
   {
     slug: "chaostreff-halle",
@@ -908,7 +913,7 @@ chaostreffs = [
     slug: "chaostreff-hamm",
     title_de: "c3hamm",
     title_en: nil,
-    description_de: "Wir, c3hamm, sind seit dem 5.5.2025 Verein. Bauen gerade am HHiC, ein Hackspace &amp; Repair-Cafe zum Mitnehmen im Container. Wir treffen uns regelmässig am 1ten Mittwoch im Monat im Rahmen des eStatischH (Energier-Stammtisch Hamm) VorOrt. Nicht selten treffen wir uns Sonntags zum VRunch inner Brille und erkunden SocialVR Räume, pflegen ein kleines cHaoS-Log: <a href=\"https://y.lab.nrw/c3h-logs\">y.lab.nrw/c3h-logs</a>.",
+    description_de: "Wir, c3hamm, sind seit dem 5.5.2025 Verein. Bauen gerade am HHiC, ein Hackspace &amp; Repair-Cafe zum Mitnehmen im Container. Wir treffen uns regelmässig am 1ten Mittwoch im Monat im Rahmen des eStatischH (Energier-Stammtisch Hamm) VorOrt. Nicht selten treffen wir uns Sonntags zum VRunch inner Brille und erkunden SocialVR Räume, pflegen ein kleines cHaoS-Log: <a href=\"https://y.lab.nrw/c3h-logs\">y.lab.nrw/c3h-logs</a>. In der Matrix sind wir unter <a href=\"https://matrix.c3hamm.de/\">matrix.c3hamm.de</a> zu finden.",
     description_en: nil,
     external_url: "https://chaos.social/@c3hamm",
     location: "Hamm",
@@ -926,7 +931,7 @@ chaostreffs = [
     external_url: "https://www.noname-ev.de",
     location: "Heidelberg",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=TH", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=TH" }
     ],
     review: false
   },
@@ -934,7 +939,7 @@ chaostreffs = [
     slug: "chaostreff-hildesheim",
     title_de: "Freies Labor Hildesheim",
     title_en: nil,
-    description_de: "Der Hackerspace „Freies Labor“ ist ein Ort, an dem sich unterschiedliche Disziplinen treffen, kennenlernen und kooperieren. In unserem Labor wollen wir in gemütlicher Atmosphäre gemeinsam tüfteln, kochen, brauen und entdecken. Wir wollen unsere Fähigkeiten und unser Wissen miteinander teilen und stellen Werkstatt, Küche und gemütliche Räume zur Verfügung.",
+    description_de: "Der Hackerspace „Freies Labor“ ist ein Ort, an dem sich unterschiedliche Disziplinen treffen, kennenlernen und kooperieren. In unserem Labor wollen wir in gemütlicher Atmosphäre gemeinsam tüfteln, kochen, brauen und entdecken. Wir wollen unsere Fähigkeiten und unser Wissen miteinander teilen und stellen Werkstatt, Küche und gemütliche Räume zur Verfügung. Unsere Projekte umfassen z. B. 3D-Druck, Licht- und Soundinstallationen, ein Elektroniklabor, Quadcopter, Bierbrauen, Kochen und mehr.",
     description_en: nil,
     external_url: "https://blog.freieslabor.org/",
     location: "Hildesheim",
@@ -949,10 +954,11 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://chaos-hip.de/",
     location: "Maria-Dorothea-Straße 8, Hilpoltstein",
+    # Same odd-calendar-week phase caveat as Gunzenhausen.
     events: [
       { rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", start_time: "18:00" }
     ],
-    review: false
+    review: true
   },
   {
     slug: "chaostreff-hoher-flaeming",
@@ -1062,10 +1068,12 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://www.hacknology.de/",
     location: "Konstanz",
+    # "jeden 2. Dienstag" is ambiguous: monthly-2nd-Tuesday (seeded) vs.
+    # biweekly. Verify against hacknology.de.
     events: [
       { rrule: "FREQ=MONTHLY;BYDAY=2TU", start_time: "19:00" }
     ],
-    review: false
+    review: true
   },
   {
     slug: "chaostreff-landau",
@@ -1075,10 +1083,13 @@ chaostreffs = [
     description_en: nil,
     external_url: "https://ctrl-z.info/",
     location: "Klaus-Von-Klitzing-Str. 2, Landau",
+    # Source says "an drei Dienstagen im Monat" (which three: unknown) and
+    # only an end time ("bis 23 Uhr"). Weekly TU is an approximation.
+    # Verify against ctrl-z.info.
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=TU", start_time: "19:00", duration_hours: 4 }
+      { rrule: "FREQ=WEEKLY;BYDAY=TU" }
     ],
-    review: false
+    review: true
   },
   {
     slug: "chaostreff-loerrach",
@@ -1208,7 +1219,7 @@ chaostreffs = [
     slug: "chaostreff-rapperswil",
     title_de: "Coredump Rapperswil-Jona",
     title_en: nil,
-    description_de: "(Fast) jeden Montag treffen wir uns ab 20 Uhr im <a href=\"https://www.coredump.ch/der-hackerspace/\">Hackerspace Coredump</a> auf dem Vinora-Areal in Jona (Schweiz) zur wöchentlichen „Hacknight“. Wie bei all unseren Events sind Gäste dabei herzlich willkommen. Mit Ferienpass-Kursen und regelmäßigen Rust-Meetups engagiert sich der Verein Coredump auch in der Kinder- und Erwachsenen-Bildung.",
+    description_de: "(Fast) jeden Montag treffen wir uns ab 20 Uhr im <a href=\"https://www.coredump.ch/der-hackerspace/\">Hackerspace Coredump</a> auf dem Vinora-Areal in Jona (Schweiz) zur wöchentlichen „Hacknight“. Wie bei all unseren Events sind Gäste dabei herzlich willkommen. Mit Ferienpass-Kursen und regelmäßigen Rust-Meetups engagiert sich der Verein Coredump auch in der Kinder- und Erwachsenen-Bildung, während der als Unterverein angelegte Chaostreff Coredump als CCC-Schweiz-Mitglied auch politisch aktiv ist.",
     description_en: nil,
     external_url: "https://www.coredump.ch/",
     location: "Vinora-Areal, Jona",
@@ -1226,7 +1237,7 @@ chaostreffs = [
     external_url: "http://c3re.de",
     location: "Westcharweg 101, 45659 Recklinghausen",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=WE", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=WE" }
     ],
     review: false
   },
@@ -1239,7 +1250,7 @@ chaostreffs = [
     external_url: "http://binary.kitchen",
     location: "Regensburg",
     events: [
-      { rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "19:00" }
+      { rrule: "FREQ=WEEKLY;BYDAY=MO" }
     ],
     review: false
   },
@@ -1286,7 +1297,7 @@ chaostreffs = [
     slug: "chaostreff-schwerin",
     title_de: "Hacklabor Schwerin",
     title_en: nil,
-    description_de: "Bist Du interessiert an Computerkrams, Programmieren, Capture-the-Flag-Challenges, 3D-Druckern, CO2-Lasern, Microcontrollern, Automatisierung, gesellschaftlichen Auswirkungen von Technik und Spaß am Gerät? Hat es Dich nach Mecklenburg-Vorpommern verschlagen? Dann komm ins Hacklabor in der Hagenower Straße 73, Schwerin. In unserer offenen Werkstatt findet sich vom Lötkolben bis zum 3D-Drucker alles, was das Makerherz höher schlagen lässt. Jugendlichen bieten wir im \"Jugend hackt Lab\" die Möglichkeit, Neues auszuprobieren und kreative Ideen zu verwirklichen. Unsere Treffen sind öffentlich und finden mittwochs und freitags ab 19 Uhr statt.",
+    description_de: "Bist Du interessiert an Computerkrams, Programmieren, Capture-the-Flag-Challenges, 3D-Druckern, CO2-Lasern, Microcontrollern, Automatisierung, gesellschaftlichen Auswirkungen von Technik und Spaß am Gerät? Hat es Dich nach Mecklenburg-Vorpommern verschlagen? Suchst Du den Austausch mit anderen interessierten intergalaktischen Lebensformen? Dann komm ins Hacklabor in der Hagenower Straße 73, Schwerin, Mecklenburg-Vorpommern, Deutschland, Europa, Erde, Sonnensystem in einem aus der Mode gekommenen westlichen Spiralarm der Milchstraße. In unserer offenen Werkstatt findet sich vom Lötkolben bis zum 3D-Drucker alles, was das Makerherz höher schlagen lässt. Jugendlichen bieten wir im \"Jugend hackt Lab\" die Möglichkeit, Neues auszuprobieren und kreative Ideen zu verwirklichen. Unsere Treffen sind öffentlich und finden mittwochs und freitags ab 19 Uhr statt. Weitere Termine werden auf <a href=\"https://hacklabor.de/\">hacklabor.de</a> und auf <a href=\"https://chaos.social/@hacklabor\">Mastodon</a> bekannt gegeben. Wir freuen uns auf deinen Besuch!",
     description_en: nil,
     external_url: "https://hacklabor.de/",
     location: "Hagenower Straße 73, Schwerin",
@@ -1378,7 +1389,7 @@ chaostreffs = [
     slug: "chaostreff-zwickau",
     title_de: "z-Labor Zwickau",
     title_en: nil,
-    description_de: "Für alle chaosnahen Lebewesen öffnet das z-Labor donnerstags um 19 Uhr die Räumlichkeiten in der <a href=\"https://osm.org/go/0MCmr_jJo\">Kulturweberei</a> zum kollektiven Hacken, Basteln, Lernen und Philosophieren. Wir mögen Freie Software, IT-Sicherheit, (Analog-)Fotografie, 3D-Druck, Mate und viele Formen von (digitaler) Kunst. Neben Elektroniklabor und Rechentechnik gibt es eine Holz- und Metallwerkstatt, eine Musik-Ecke und einen Retro-Spiel-Bereich.",
+    description_de: "Für alle chaosnahen Lebewesen öffnet das z-Labor donnerstags um 19 Uhr die Räumlichkeiten in der <a href=\"https://osm.org/go/0MCmr_jJo\">Kulturweberei</a> zum kollektiven Hacken, Basteln, Lernen und Philosophieren. Wir mögen Freie Software, IT-Sicherheit, (Analog-)Fotografie, 3D-Druck, Mate und viele Formen von (digitaler) Kunst. Neben Elektroniklabor und Rechentechnik gibt es eine Holz- und Metallwerkstatt, eine Musik-Ecke und einen Retro-Spiel-Bereich. Zu erreichen sind wir auch unter <a href=\"https://chaos.social/@zLabor\">chaos.social/@zLabor</a> oder auf Matrix in <a href=\"https://matrix.to/#/#public:z-labor.space\">#public:z-labor.space</a>.",
     description_en: nil,
     external_url: "https://www.z-labor.space",
     location: "Kulturweberei, Zwickau",
