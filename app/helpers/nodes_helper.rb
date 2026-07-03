@@ -29,21 +29,6 @@ module NodesHelper
     User.all.map {|u| [u.login, u.id]}
   end
 
-  def event_information
-    events = @node.events.order(:start_time)
-    items = events.map do |event|
-      safe_join([
-        "#{event.start_time&.to_fs(:db)} - #{event.end_time&.to_fs(:db)} > ",
-        link_to('edit', edit_event_path(event)),
-      ])
-    end
-    safe_join([
-      safe_join(items, ' | '),
-      ' > ',
-      link_to('add event', new_event_path(:node_id => @node.id))
-    ])
-  end
-
   DEFAULT_EVENT_TAG_BY_PAGE_TAG = {
     'erfa-detail'       => 'open-day',
     'chaostreff-detail' => 'open-day'
