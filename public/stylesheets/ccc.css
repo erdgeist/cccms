@@ -234,6 +234,18 @@ div#frontpage_calendar h2 {
   margin-top: 0;
 }
 
+div#open_erfas_today li {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+div#open_erfas_today .event_time {
+  font-style: italic;
+  font-family: Georgia;
+  color: color-mix(in srgb, CanvasText, #808080);
+}
+
 @media(max-width:1016px) {
   div#tags li {
     list-style-type: none;
