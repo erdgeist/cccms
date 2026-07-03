@@ -44,6 +44,20 @@ module NodesHelper
     ])
   end
 
+  DEFAULT_EVENT_TAG_BY_PAGE_TAG = {
+    'erfa-detail'       => 'open-day',
+    'chaostreff-detail' => 'open-day'
+  }.freeze
+
+  def default_event_tag_mapping(page)
+    page_tags = page.tag_list
+    DEFAULT_EVENT_TAG_BY_PAGE_TAG.find { |page_tag, _| page_tags.include?(page_tag) }
+  end
+
+  def default_event_tag_list(page)
+    default_event_tag_mapping(page)&.last
+  end
+
   def event_schedule_text(event)
     if event.rrule.present?
       recurrence = event.humanize_rrule(I18n.locale)

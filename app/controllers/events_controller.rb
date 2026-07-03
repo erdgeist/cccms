@@ -37,6 +37,10 @@ class EventsController < ApplicationController
       tag_list: params[:tag_list]
     )
 
+    if params[:tag_list].present? && params[:auto_tag_source].present?
+      flash.now[:notice] = "Tag '#{params[:tag_list]}' was pre-filled because this page is tagged '#{params[:auto_tag_source]}'. You can remove it below."
+    end
+
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @event }

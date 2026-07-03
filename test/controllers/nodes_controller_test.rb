@@ -379,4 +379,37 @@ class NodesControllerTest < ActionController::TestCase
     get :index
   end
 
+  test "show renders events row and add-link for zero-event chapter node" do
+    login_as :quentin
+    node = create_node_with_published_page
+    node.head.tag_list = "erfa-detail"
+    node.head.save!
+
+    get :show, params: { id: node.id }
+    assert_response :success
+    assert_select "a", text: "add event"
+    assert_select "a[href*='tag_list=open-day']"
+    assert_select "a[href*='auto_tag_source=erfa-detail']"
+  end
+
+  test "show renders events row without a tag default for untagged node" do
+    login_as :quentin
+    node = create_node_with_published_page
+
+    get :show, params: { id: node.id }
+    assert_response :success
+    assert_select "a", text: "add event"
+    assert_select "a[href*='tag_list=']", count: 0
+  end
+
+  test "show never renders a destroy link for events" do
+    login_as :quentin
+    node = create_node_with_published_page
+    Event.create!(node_id: node.id, start_time: Time.now, end_time: Time.now + 1.hour)
+
+    get :show, params: { id: node.id }
+    assert_response :success
+    assert_select "form.button_to.destructive", count: 0
+  end
+
 end

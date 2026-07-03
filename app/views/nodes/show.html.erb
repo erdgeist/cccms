@@ -42,7 +42,6 @@
       <td class="description">Tagged with:</td>
       <td><%= @page.tag_list %></td>
     </tr>
-    <% if @node.events.any? %>
     <tr>
       <td class="description">Events</td>
       <td>
@@ -55,9 +54,10 @@
           </li>
         <% end %>
         </ul>
+        <% mapping = default_event_tag_mapping(@page) %>
+        <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
       </td>
     </tr>
-    <% end %>
     <tr>
       <td class="description"><strong>Title</strong></td>
       <td><%= sanitize( @page.title ) %></td>

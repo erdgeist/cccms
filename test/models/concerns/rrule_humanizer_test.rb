@@ -81,4 +81,19 @@ class RruleHumanizerTest < ActiveSupport::TestCase
   test "falls back to english for unknown locale" do
     assert_equal "Every Tuesday", humanize("FREQ=WEEKLY;BYDAY=TU", :fr)
   end
+
+  test "wday_abbr returns the correct German abbreviation for each day" do
+    monday = Time.parse("2026-07-06") # confirmed Monday
+    assert_equal "Mo", RruleHumanizer.wday_abbr(monday, :de)
+    assert_equal "Di", RruleHumanizer.wday_abbr(monday + 1.day, :de)
+    assert_equal "Mi", RruleHumanizer.wday_abbr(monday + 2.days, :de)
+    assert_equal "Do", RruleHumanizer.wday_abbr(monday + 3.days, :de)
+    assert_equal "Fr", RruleHumanizer.wday_abbr(monday + 4.days, :de)
+    assert_equal "Sa", RruleHumanizer.wday_abbr(monday + 5.days, :de)
+    assert_equal "So", RruleHumanizer.wday_abbr(monday + 6.days, :de)
+  end
+
+  test "wday_abbr falls back to :de for an unrecognized locale" do
+    assert_equal "Mo", RruleHumanizer.wday_abbr(Time.parse("2026-07-06"), :fr)
+  end
 end
