@@ -11,4 +11,8 @@ module ApplicationHelper
       end
     end
   end
+
+  def resolve_kind_text(value)
+    value.respond_to?(:call) ? value.call : value
+  end
 end

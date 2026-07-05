@@ -13,27 +13,23 @@
   <tr>
     <td class="description">Type</td>
     <td>
-      <div>
-        <%= radio_button_tag :kind, "top_level" %>
-        Top Level
-      </div>
+    <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
-        <%= radio_button_tag :kind, "generic", :selected => true %>
-        Generic ( can be created anywhere )
+        <%= radio_button_tag :kind, kind, kind == "generic",
+          data: { path_prefix: resolve_kind_text(config[:path_prefix]) } %>
+        <%= resolve_kind_text(config[:label]) %>
+        <% if config[:hint] %>
+          <span class="field_hint"><%= resolve_kind_text(config[:hint]) %></span>
+        <% end %>
       </p>
-      <p>
-        <%= radio_button_tag :kind, "update" %>
-        Update ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tag "update" )
-      </p>
-      <p>
-        <%= radio_button_tag :kind, "press_release" %>
-        Pressemitteilung ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tags "update, pressemitteilung" )
-      </p>
+    <% end %>
     </td>
   </tr>
   <tr>
     <td class="description">Title</td>
-    <td><%= text_field_tag :title %></td>
+    <td><%= text_field_tag :title %>
+    <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
+    </td>
   </tr>
   <tr id="parent_search_field">
     <td class="description">Parent</td>
@@ -44,6 +40,14 @@
 
       </div>
     </td>
+  </tr>
+  <tr>
+  <td class="description">Resulting path</td>
+  <td>
+    <span id="resulting_path">—</span>
+    <button type="button" id="copy_resulting_path" class="unselected">copy</button>
+    <span class="field_hint">This preview updates as you type. The final path can still be changed afterward by editing the title (for the last segment) or moving the node to a different parent (for everything before it).</span>
+  </td>
   </tr>
   <tr>
     <td></td>

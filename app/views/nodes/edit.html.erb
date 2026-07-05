@@ -44,7 +44,10 @@
     <div class="node_content"><%= d.datetime_select :published_at, :value => @draft.published_at %></div>
 
     <div class="node_description">Template</div>
-    <div class="node_content"><%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %></div>
+    <div class="node_content">
+    <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
+    <span class="field_hint">Set automatically based on how this node was created - change it if needed.</span>
+    </div>
 
     <div class="node_description">Author</div>
     <div class="node_content"><%= d.select :user_id, user_list %></div>

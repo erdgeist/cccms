@@ -508,6 +508,14 @@ table tr.header {
   text-align: left;
 }
 
+.field_hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #969696;
+  padding-bottom: 4px;
+}
+
 #search_widget {
   position: absolute;
   top: 20px;
@@ -527,18 +535,21 @@ table tr.header {
   font-size: 18px;
 }
 
+#menu_search_results p,
 #search_results p {
   margin: 0;
   padding: 4px 4px 0 4px;
   border-bottom: 1px solid #e8e8e8;
 }
 
+#menu_search_results p a,
 #search_results p a {
   display: block;
   font-weight: bold;
   font-size: 0.95rem;
 }
 
+#menu_search_results p span.result_path,
 #search_results p span.result_path {
   display: block;
   margin-top: 2px;
@@ -548,6 +559,7 @@ table tr.header {
   padding-bottom: 4px;
 }
 
+#menu_search_results p.search_more,
 #search_results p.search_more {
   margin: 0;
   padding: 6px 4px;
