@@ -225,9 +225,8 @@ class Page < ApplicationRecord
     end
 
     def set_template
-      if node && node.update?
-        self.template_name = "update"
-      end
+      return if template_name.present?
+      self.template_name = node&.default_template_name || (node&.update? ? "update" : nil)
     end
 
     def rewrite_links_in_body

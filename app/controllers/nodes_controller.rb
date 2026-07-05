@@ -33,17 +33,17 @@ class NodesController < ApplicationController
     
     @node = Node.new
     @node.parent_id = find_parent
-    @node.slug = params[:title].parameterize.to_s
-   
+    @node.slug = slug_for(params[:title])
+
+    config = CccConventions::NODE_KINDS[params[:kind]]
+
     if @node.save
       @node.draft.update(:title => params[:title])
-      case params[:kind]
-        when "update"
-          @node.draft.tag_list.add("update")
-        when "press_release"
-          @node.draft.tag_list.add("update", "pressemitteilung")
-      end
+      Array(config && config[:tags]).each { |t| @node.draft.tag_list.add(t) }
       @node.draft.save!
+
+      @node.update!(default_template_name: config[:template]) if config && config[:template]
+
       redirect_to(edit_node_path(@node))
     else
       render :new
@@ -103,8 +103,16 @@ class NodesController < ApplicationController
     
     redirect_to node_path(@node)
   end
-  
+
+  def parameterize_preview
+    render plain: slug_for(params[:title])
+  end
+
   private
+
+    def slug_for(title)
+      title.to_s.parameterize
+    end
 
     def node_params
       params.fetch(:node, {}).permit(:slug, :parent_id, :staged_slug, :staged_parent_id)
@@ -120,18 +128,15 @@ class NodesController < ApplicationController
     
     def find_parent
       case params[:kind]
-      when "top_level"
-        Node.root.id
-      when "update"
-        Update.find_or_create_parent.id
-      when "press_release"
-        Update.find_or_create_parent.id
       when "generic"
         if params[:parent_id] && Node.find(params[:parent_id])
           params[:parent_id]
         else
           nil
         end
+      else
+        config = CccConventions::NODE_KINDS[params[:kind]]
+        config && config[:parent] ? config[:parent].call.id : nil
       end
     end
 end

@@ -31,6 +31,10 @@ Cccms::Application.routes.draw do
     end
 
     resources :nodes do
+      collection do
+        get :parameterize_preview
+      end
+
       member do
         put :unlock
         put :publish
