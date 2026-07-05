@@ -1,14 +1,14 @@
 class NodesController < ApplicationController
-  
+
   # Private
-  
+
   layout 'admin'
-  
+
   before_action :login_required
   before_action :find_node, :only => [
-                              :show, 
-                              :edit, 
-                              :update, 
+                              :show,
+                              :edit,
+                              :update,
                               :destroy,
                               :publish,
                               :unlock
@@ -27,10 +27,10 @@ class NodesController < ApplicationController
       @parent_name = Node.find(@parent_id).title
     end
   end
-  
+
   def create
     params[:title] ||= ""
-    
+
     @node = Node.new
     @node.parent_id = find_parent
     @node.slug = slug_for(params[:title])
@@ -49,7 +49,7 @@ class NodesController < ApplicationController
       render :new
     end
   end
-  
+
   def show
     node = Node.find(params[:id])
     node.wipe_draft!
@@ -87,20 +87,20 @@ class NodesController < ApplicationController
   def destroy
     @node.destroy
   end
-  
+
   def publish
     @node.publish_draft!
     flash[:notice] = "Draft has been published"
     redirect_to node_path(@node)
   end
-  
+
   def unlock
     if @node.unlock!
       flash[:notice] = "Node unlocked"
     else
       flash[:notice] = "Already unlocked"
     end
-    
+
     redirect_to node_path(@node)
   end
 
@@ -121,11 +121,11 @@ class NodesController < ApplicationController
     def page_params
       params.fetch(:page, {}).permit(:title, :abstract, :body, :template_name, :published_at, :user_id)
     end
-  
+
     def find_node
       @node = Node.find(params[:id])
     end
-    
+
     def find_parent
       case params[:kind]
       when "generic"
