@@ -29,46 +29,49 @@ class AdminController < ApplicationController
               .order("updated_at desc")
               .uniq.first(50)
   end
-  
+
+  def conventions
+    @node_kinds = CccConventions::NODE_KINDS
+  end
+
   def search
     @results = Node.search params[:search_term], :per_page => 1000
-    
+
     respond_to do |format|
       format.html do
         render :template => 'admin/search_results'
       end
-      format.js do 
-        render( :json => @results.map do |node| 
+      format.js do
+        render( :json => @results.map do |node|
             if node
               { :id => node.id, :title => node.title, :unique_name => node.unique_name, :node_path => node_path(node) }
             end
           end
         )
-        
-      end 
+
+      end
     end
   end
-  
+
   def menu_search
     if params[:search_term] == "Root"
       @results = [Node.root]
     else
       @results = Node.search params[:search_term]
     end
-    
+
     respond_to do |format|
       format.html do
         render :partial => 'admin/menu_search_results'
       end
-      
-      format.js do 
-        render( :json => @results.map do |node| 
-          {:node_id => node.id, :title => node.title, :unique_name => node.unique_name} 
+
+      format.js do
+        render( :json => @results.map do |node|
+          {:node_id => node.id, :title => node.title, :unique_name => node.unique_name, :node_path => node_path(node)}
           end
         )
-        
-      end 
+
+      end
     end
   end
-  
 end
