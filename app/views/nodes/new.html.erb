@@ -6,13 +6,11 @@
   </div>
 <% end %>
 
-<p>What kind of node do you want to create?</p>
-
 <%= form_tag nodes_path do %>
-<table id="new_node">
-  <tr>
-    <td class="description">Type</td>
-    <td>
+<div id="new_node">
+
+  <div class="node_description">Type</div>
+  <div class="node_content">
     <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
         <%= radio_button_tag :kind, kind, kind == "generic",
@@ -23,35 +21,32 @@
         <% end %>
       </p>
     <% end %>
-    </td>
-  </tr>
-  <tr>
-    <td class="description">Title</td>
-    <td><%= text_field_tag :title %>
+  </div>
+
+  <div class="node_description">Title</div>
+  <div class="node_content">
+    <%= text_field_tag :title %>
     <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
-    </td>
-  </tr>
-  <tr id="parent_search_field">
-    <td class="description">Parent</td>
-    <td>
+  </div>
+
+  <div id="parent_search_field">
+    <div class="node_description">Parent</div>
+    <div class="node_content">
       <%= text_field_tag :parent_search_term, @parent_name %>
       <%= hidden_field_tag :parent_id, @parent_id %>
-      <div id="search_results">
+      <div id="search_results"></div>
+    </div>
+  </div>
 
-      </div>
-    </td>
-  </tr>
-  <tr>
-  <td class="description">Resulting path</td>
-  <td>
+  <div class="node_description">Resulting path</div>
+  <div class="node_content">
     <span id="resulting_path">—</span>
     <button type="button" id="copy_resulting_path" class="unselected">copy</button>
     <span class="field_hint">This preview updates as you type. The final path can still be changed afterward by editing the title (for the last segment) or moving the node to a different parent (for everything before it).</span>
-  </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td class="right"><%= submit_tag "Create" %></td>
-  </tr>
-</table>
+  </div>
+
+  <div class="node_description"></div>
+  <div class="node_content right"><%= submit_tag "Create" %></div>
+
+</div>
 <% end %>

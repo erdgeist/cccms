@@ -1,95 +1,129 @@
 <% content_for :subnavigation do %>
   <%= link_to 'Edit', edit_node_path(@node), :class => "unselected" %>
   <%= link_to 'Preview', preview_page_path(@page) %>
-  <%= link_to 'Revisions', node_revisions_path(@node) %>
-  <%= unlock_link if @node.locked? %>
 <% end %>
 
-
 <div id="page_editor" class="show_node">
-  <table id="content">
-    <tr>
-      <td class="description">Public Link</td>
-      <td><%= link_to @page.public_link, content_url(@node.unique_path) %></td>
-    </tr>
-    <% if @node.draft %>
-    <tr>
-      <td class="description">Admin Preview</td>
-      <td><%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %></td>
-    </tr>
-    <tr>
-      <td class="description">Public Preview</td>
-      <td>
-        <% if @node.draft.preview_token.present? %>
-          <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
-          <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." } } %>
-        <% else %>
-          <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put %>
+  <div id="content">
+
+    <div class="node_description">People</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Author</span>
+          <%= @page.user.try(:login) %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Editor</span>
+          <%= @page.editor.try(:login) %>
+        </div>
+        <% if @node.locked? %>
+          <div class="node_info_item">
+            <span class="node_info_label">Locked by</span>
+            <span class="warning"><%= @node.lock_owner.login %></span>
+            <%= unlock_link %>
+          </div>
         <% end %>
-      </td>
-    </tr>
-    <% end %>
-    <tr>
-      <td class="description">Author</td>
-      <td><%= @page.user.try(:login) %></td>
-    </tr>
-    <tr>
-      <td class="description">Editor</td>
-      <td><%= @page.editor.try(:login) %></td>
-    </tr>
-    <% if @page.node.locked? %>
-    <tr>
-      <td class="description">Locked by</td>
-      <td><span class="warning"><%= @page.node.lock_owner.login %></span></td>
-    </tr>
-    <% end %>
-    <tr>
-      <td class="description">Last updated</td>
-      <td><%= @page.updated_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Published at</td>
-      <td><%= @page.published_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Revision</td>
-      <td><%= @page.revision %></td>
-    </tr>
-    <tr>
-      <td class="description">Tagged with:</td>
-      <td><%= @page.tag_list %></td>
-    </tr>
-    <tr>
-      <td class="description">Events</td>
-      <td>
+      </div>
+    </div>
+
+    <div class="node_description">Dates</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Last updated</span>
+          <%= @page.updated_at %>
+        </div>
+        <% if @page.published_at.present? %>
+          <div class="node_info_item">
+            <span class="node_info_label"><%= @page.public? ? 'Published at' : 'Will publish at' %></span>
+            <%= @page.published_at %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">Links</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Public</span>
+          <%= link_to @page.public_link, content_url(@node.unique_path) %>
+        </div>
+        <% if @node.draft %>
+          <div class="node_info_item">
+            <span class="node_info_label">Admin Preview</span>
+            <%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %>
+          </div>
+          <div class="node_info_item">
+            <span class="node_info_label">Public Preview</span>
+            <% if @node.draft.preview_token.present? %>
+              <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
+              <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." } } %>
+            <% else %>
+              <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">Revisions</div>
+    <div class="node_content node_info_group">
+      <details>
+        <summary>
+          <%= pluralize(@node.pages.count, 'revision', 'revisions') %>
+          &middot; <%= link_to 'full history (diff / restore)', node_revisions_path(@node) %>
+        </summary>
         <ul>
-        <% @node.events.order(:start_time).each do |event| %>
-          <li>
-            <%= event_schedule_text(event) %>
-            [<%= link_to 'show', event_path(event, return_to: request.path) %>
-            | <%= link_to 'edit', edit_event_path(event, return_to: request.path) %>]
-          </li>
-        <% end %>
+          <% @node.pages.order(:revision).each do |page| %>
+            <li><%= link_to "##{page.revision} — #{page.title} (#{page.user.try(:login)}, #{page.updated_at})", node_revision_path(@node, page) %></li>
+          <% end %>
         </ul>
-        <% mapping = default_event_tag_mapping(@page) %>
-        <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
-      </td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Title</strong></td>
-      <td><%= sanitize( @page.title ) %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Abstract</strong></td>
-      <td><%= sanitize( @page.abstract ) %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Body</strong></td>
-      <td><%= sanitize( @page.body ) %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="right"></td>
-    </tr>
-  </table>
+      </details>
+    </div>
+
+    <div class="node_description">Tags</div>
+    <div class="node_content node_info_group"><%= @page.tag_list %></div>
+
+    <div class="node_description">Events</div>
+    <div class="node_content node_info_group">
+      <ul>
+      <% @node.events.order(:start_time).each do |event| %>
+        <li>
+          <%= event_schedule_text(event) %>
+          [<%= link_to 'show', event_path(event, return_to: request.path) %>
+          | <%= link_to 'edit', edit_event_path(event, return_to: request.path) %>]
+        </li>
+      <% end %>
+      </ul>
+      <% mapping = default_event_tag_mapping(@page) %>
+      <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
+    </div>
+
+    <% if @node.children.any? %>
+      <div class="node_description">Children</div>
+      <div class="node_content node_info_group">
+        <details>
+          <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
+          <ul>
+            <% @node.children.order(:slug).each do |child| %>
+              <li><%= link_to (child.head&.title || child.draft&.title || child.slug), node_path(child) %></li>
+            <% end %>
+          </ul>
+        </details>
+      </div>
+    <% end %>
+
+    <div class="node_description"><strong>Title</strong></div>
+    <div class="node_content"><strong><%= sanitize(@page.title) %></strong></div>
+
+    <div class="node_description">Abstract</div>
+    <div class="node_content"><%= sanitize(@page.abstract) %></div>
+
+    <div class="node_description">Body</div>
+    <div class="node_content"><%= sanitize(@page.body) %></div>
+    <%# Assets not yet addressed - no confirmed model/association seen for this page's attached assets %>
+
+  </div>
 </div>
