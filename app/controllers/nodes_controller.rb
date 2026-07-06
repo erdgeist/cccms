@@ -104,6 +104,24 @@ class NodesController < ApplicationController
     redirect_to node_path(@node)
   end
 
+  def generate_shared_preview
+    @node = Node.find(params[:id])
+    if @node.draft
+      @node.draft.ensure_preview_token!
+      flash[:notice] = "Shareable preview link created - see below."
+    else
+      flash[:notice] = "Create or edit a draft first - shared preview links are only available for pages with an active draft."
+    end
+    redirect_to node_path(@node)
+  end
+
+  def revoke_shared_preview
+    @node = Node.find(params[:id])
+    @node.draft.revoke_preview_token! if @node.draft
+    flash[:notice] = "Shareable preview link revoked."
+    redirect_to node_path(@node)
+  end
+
   def parameterize_preview
     render plain: slug_for(params[:title])
   end

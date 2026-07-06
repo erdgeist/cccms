@@ -12,6 +12,23 @@
       <td class="description">Public Link</td>
       <td><%= link_to @page.public_link, content_url(@node.unique_path) %></td>
     </tr>
+    <% if @node.draft %>
+    <tr>
+      <td class="description">Admin Preview</td>
+      <td><%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %></td>
+    </tr>
+    <tr>
+      <td class="description">Public Preview</td>
+      <td>
+        <% if @node.draft.preview_token.present? %>
+          <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
+          <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." } } %>
+        <% else %>
+          <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put %>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
     <tr>
       <td class="description">Author</td>
       <td><%= @page.user.try(:login) %></td>

@@ -38,6 +38,8 @@ Cccms::Application.routes.draw do
       member do
         put :unlock
         put :publish
+        put :generate_shared_preview
+        put :revoke_shared_preview
       end
 
       resources :revisions do
@@ -49,6 +51,8 @@ Cccms::Application.routes.draw do
         end
       end
     end
+
+    get 'preview/:token', to: 'shared_previews#show', as: :shared_preview
 
     scope '/admin' do
       resources :assets
