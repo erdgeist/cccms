@@ -63,6 +63,12 @@ class Page < ApplicationRecord
       end
     end
 
+    if options[:node] && options[:children] == "direct"
+      scope = scope.where(nodes: { parent_id: options[:node].id })
+    elsif options[:node] && options[:children] == "all"
+      scope = scope.where(nodes: { id: options[:node].descendants.pluck(:id) })
+    end
+
     direction = %w[ASC DESC].include?(options[:order_direction]&.upcase) ? options[:order_direction].upcase : "ASC"
 
     if options[:order_by] == "title"

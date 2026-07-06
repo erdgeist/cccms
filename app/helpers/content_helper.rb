@@ -108,6 +108,7 @@ module ContentHelper
         end
 
         options[:partial] = select_partial(options[:partial])
+        options[:node] = @page.node if options[:children].present?
 
         sanitize(content.sub(tag, render_collection(options)), :attributes => cccms_attributes)
       else
