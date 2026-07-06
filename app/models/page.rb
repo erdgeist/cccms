@@ -136,6 +136,15 @@ class Page < ApplicationRecord
     "/#{node.unique_name}"
   end
 
+  def ensure_preview_token!
+    update!(preview_token: SecureRandom.urlsafe_base64(24)) unless preview_token.present?
+    preview_token
+  end
+
+  def revoke_preview_token!
+    update!(preview_token: nil)
+  end
+
   def clone_attributes_from page
     return nil unless page
 
