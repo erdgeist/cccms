@@ -142,5 +142,38 @@ class PageTest < ActiveSupport::TestCase
     update        = updates2009.children.create!( :slug => "my-first-update" )
     assert_equal "update", update.draft.template_name
   end
-  
+
+  test "a page scheduled for future publication is not yet public even after being published" do
+    node = Node.root.children.create!(slug: "preview-scheduled-test")
+    draft = node.find_or_create_draft(@user1)
+    draft.title = "Scheduled test"
+    draft.published_at = 1.day.from_now
+    draft.save!
+    token = draft.ensure_preview_token!
+
+    node.publish_draft!
+    page = Page.find_by(preview_token: token)
+
+    assert_equal page.id, page.node.head_id
+    assert_not page.public?
+  end
+
+  test "a superseded page is no longer the head, even though it was once published" do
+    node = Node.root.children.create!(slug: "preview-superseded-test")
+    first_draft = node.find_or_create_draft(@user1)
+    first_draft.title = "First version"
+    first_draft.save!
+    first_token = first_draft.ensure_preview_token!
+    node.publish_draft!
+
+    second_draft = node.find_or_create_draft(@user1)
+    second_draft.title = "Second version"
+    second_draft.save!
+    node.publish_draft!
+
+    first_page = Page.find_by(preview_token: first_token)
+
+    assert_not_equal first_page.id, first_page.node.head_id
+    assert first_page.published_at.present?
+  end
 end
