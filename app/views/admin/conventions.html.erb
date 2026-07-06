@@ -1,0 +1,11 @@
+<h1>Node creation conventions</h1>
+
+<table id="conventions">
+  <tr><th>Kind</th><th>What happens</th></tr>
+  <% @node_kinds.each do |kind, config| %>
+    <tr>
+      <td><%= kind %></td>
+      <td><%= resolve_kind_text(config[:label]) %> — <%= resolve_kind_text(config[:hint]) %></td>
+    </tr>
+  <% end %>
+</table>
