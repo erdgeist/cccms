@@ -364,7 +364,7 @@ class NodesControllerTest < ActionController::TestCase
 
   test "can remove a node with an event" do
     node = create_node_with_published_page
-    Event.create!(
+    event = Event.create!(
       :start_time   => "2009-01-01T15:23:42".to_time,
       :end_time     => "2009-01-01T20:05:23".to_time,
       :url          => "http://events.ccc.de/congress/2082",
@@ -373,10 +373,16 @@ class NodesControllerTest < ActionController::TestCase
       :allday       => true,
       :node_id      => node.id
     )
+    event_id = event.id
+    assert_operator Occurrence.where(event_id: event_id).count, :>, 0, "expected the event to have generated at least one occurrence before destroy"
+
     node.destroy
+
+    assert_equal 0, Occurrence.where(event_id: event_id).count
 
     login_as :quentin
     get :index
+    assert_response :success
   end
 
   test "show renders events row and add-link for zero-event chapter node" do
