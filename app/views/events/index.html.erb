@@ -6,7 +6,6 @@
     <th>Start time</th>
     <th>End time</th>
     <th>Rrule</th>
-    <th>Custom rrule</th>
     <th>Allday</th>
     <th>Url</th>
     <th>Node</th>
@@ -18,7 +17,6 @@
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
     <td><%=h event.rrule %></td>
-    <td><%=h event.custom_rrule %></td>
     <td><%=h event.allday %></td>
     <td><%=h event.url %></td>
     <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>

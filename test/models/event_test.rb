@@ -29,7 +29,6 @@ class EventTest < ActiveSupport::TestCase
         :longitude    => 13.378944,
         :rrule        => "FOOBAR",
         :allday       => false,
-        :custom_rrule => false,
         :node_id      => @cal_node.id
       )
     end
@@ -44,7 +43,6 @@ class EventTest < ActiveSupport::TestCase
       :longitude    => 13.378944,
       :rrule        => nil,
       :allday       => false,
-      :custom_rrule => false,
       :node_id      => @cal_node.id
     )
     
@@ -62,7 +60,6 @@ class EventTest < ActiveSupport::TestCase
       :longitude    => 13.378944,
       :rrule        => "FREQ=WEEKLY;INTERVAL=1",
       :allday       => false,
-      :custom_rrule => false,
       :node_id      => @cal_node.id
     )
     
@@ -97,7 +94,6 @@ class EventTest < ActiveSupport::TestCase
       :longitude    => 13.378944,
       :rrule        => "FREQ=MONTHLY;INTERVAL=1;BYDAY=-1WE",
       :allday       => false,
-      :custom_rrule => true,
       :node_id      => @cal_node.id
     )
     

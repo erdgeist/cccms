@@ -4,6 +4,9 @@ class EventsControllerTest < ActionController::TestCase
 
   test "should get index" do
     login_as :quentin
+    node = create_node_with_published_page
+    Event.create!(node_id: node.id, start_time: Time.now, end_time: Time.now + 1.hour)
+
     get :index
     assert_response :success
     assert_not_nil assigns(:events)
