@@ -94,6 +94,14 @@ class Node < ApplicationRecord
     self.draft.reload
   end
 
+  def staged_slug=(value)
+    if head.blank?
+      self.slug = value
+    else
+      super
+    end
+  end
+
   def publish_draft!
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
