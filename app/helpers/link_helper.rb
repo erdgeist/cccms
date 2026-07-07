@@ -44,7 +44,7 @@ module LinkHelper
       "Last modified #{@page.updated_at.to_fs(:db)}"
     button_to 'Unlock', unlock_node_path(@node),
       method: :put,
-      form: { data: { confirm: message } }
+      form: { data: { confirm: message }, class: 'button_to state_changing' }
   end
 
   def content_path(page_path = nil, options = {})

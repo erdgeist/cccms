@@ -27,7 +27,7 @@
     <td>
       <%= button_to 'restore', restore_node_revision_path(@node, page),
             method: :put,
-            form: { data: { confirm: "Restore this revision?" } } %>
+            form: { data: { confirm: "Restore this revision?" }, class: 'button_to state_changing' } %>
     </td>
   </tr>
 <% end %>

@@ -59,9 +59,9 @@
             <span class="node_info_label">Public Preview</span>
             <% if @node.draft.preview_token.present? %>
               <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
-              <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." } } %>
+              <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." }, class: 'button_to state_changing' } %>
             <% else %>
-              <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put %>
+              <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put, form: { class: 'button_to state_changing' } %>
             <% end %>
           </div>
         <% end %>

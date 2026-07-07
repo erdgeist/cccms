@@ -2,7 +2,7 @@
   <%= link_to 'metadata', '#', :id => 'button', :class => "unselected" %>
   <%= link_to 'Show', @node %>
   <%= link_to 'Preview', preview_page_path(@draft) %>
-  <%= button_to 'Publish', publish_node_path(@node), method: :put, form: { data: { confirm: "Publish this draft?" } } %>
+  <%= button_to 'Publish', publish_node_path(@node), method: :put, form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
   <%= link_to 'Revisions', node_revisions_path(@node) %>  
 <% end %>
 
