@@ -9,6 +9,7 @@
     <th>Allday</th>
     <th>Url</th>
     <th>Node</th>
+    <th>Action</th>
   </tr>
 
 <% @events.each do |event| %>
@@ -20,9 +21,7 @@
     <td><%=h event.allday %></td>
     <td><%=h event.url %></td>
     <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>
-    <td><%= link_to 'show', event %></td>
-    <td><%= link_to 'edit', edit_event_path(event) %></td>
-    <td><%= button_to 'destroy', event, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } %></td>
+    <td><%= link_to 'show', event %> | <%= link_to 'edit', edit_event_path(event) %> | <%= button_to 'destroy', event, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } %></td>
   </tr>
 <% end %>
 </table>
