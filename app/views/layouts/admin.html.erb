@@ -29,13 +29,15 @@
           <%= yield :subnavigation %>
         </div>
       </div>
-      <div style="clear: both;"></div>
+      <div class="admin_content_spacer"></div>
+      <% if flash[:notice].present? || flash[:error].present? %>
       <div id="flash">
         <%= flash[:notice] %>
         <% if flash[:error] %>
           <span id="flash_error"><%= flash[:error] %></span>
         <% end %>
       </div>
+      <% end %>
       <div id="content">
         <%= yield %>
       </div>

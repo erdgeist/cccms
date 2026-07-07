@@ -1,4 +1,6 @@
-/* Layout */
+/* ============================================================
+   Base elements
+   ============================================================ */
 
 body {
   font-family: Helvetica, Arial, sans-serif;
@@ -15,8 +17,75 @@ a:hover {
   color: #ff9600;
 }
 
+/* Scoped link visibility: a light, desaturated squiggly underline
+   signals "clickable" at rest without the weight of a solid line.
+   Hover still relies on the global a:hover color change above -- this
+   only adds an at-rest affordance for plain content links that would
+   otherwise be indistinguishable from body text. Covers: page editor
+   body content, node listing tables, the child-creation shortcuts on
+   nodes#show, and the dashboard draft list's Show/Revisions links. */
+#page_editor a,
+table.node_table a,
+table.assets_table a,
+table.events_table a,
+table.user_table a,
+.add_child_links a,
+div#draft_list table td.actions a {
+  text-decoration: underline;
+  -webkit-text-decoration-style: wavy;
+  text-decoration-style: wavy;
+  text-decoration-color: #b0b0b0;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 th {
   text-transform: lowercase;
+}
+
+td {
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+}
+/* table#revisions td only overrides padding-right, so its rows still
+   depend on this rule for vertical padding. table.node_table td resets
+   padding-top/bottom to 0 explicitly and does not depend on it. */
+
+input[type=text], textarea {
+  font-size: 1rem;
+  font-family: Helvetica;
+  border: 1px solid #989898;
+}
+
+select {
+  font-size: 1rem;
+  border: 1px solid #989898;
+}
+
+input[type=password] {
+  border: 1px solid #989898;
+}
+
+input[type=radio] {
+  border: 1px solid #989898;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+@media(min-width:1016px) {
+  #wrapper {
+    margin: 0 125px;
+  }
+}
+@media(max-width:1015px) {
+  #wrapper {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 #metadata,
@@ -24,81 +93,28 @@ th {
   margin-left: 5px;
 }
 
-@media(min-width:1016px) {
-#wrapper {
-  margin: 0 125px;
-}
-}
-@media(max-width:1015px) {
-#wrapper {
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-}
+.right { text-align: right; }
+.clear_left { clear: left; }
 
-
-#flash {
-  height: 12px;
-  line-height: 20px;
-  margin-top: 40px;
-  margin-bottom: 20px;
-  margin-left: 5px;
-}
-
-#flash span {
-  letter-spacing: 1px;
-  margin-right: 10px;
-  text-transform: lowercase;
-}
-
-
-#flash img {
-  height: 12px;
-  width: 12px;
-}
-
-span#flash_error, span.warning {
-  color: #ffffff;
-  letter-spacing: 1px;
-  background-color: #ff9600;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-
-/* Pagination */
-
-div.pagination {
-  padding-top: 5px;
-  padding-bottom: 15px;
-}
-
-div.pagination span.current, div.pagination a:hover {
-  color: #ff9600;
-}
-
-/* Styles */
-
-.right {
-  text-align: right;
-}
-
-.clear_left {
-  clear: left;
-}
+/* ============================================================
+   Navigation
+   ============================================================ */
 
 #navigation {
   position: relative;
   margin-top: 10px;
 }
 
-#navigation div {
-  float: left;
-}
+#navigation div { float: left; }
 
 #navigation a:hover {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+#navigation a.selected,
+#metadata a.selected,
+#overview_toggle a.selected {
   color: #ffffff;
   background-color: #000000;
 }
@@ -115,7 +131,90 @@ div.pagination span.current, div.pagination a:hover {
   text-transform: lowercase;
 }
 
-/* button_to forms: render submit inputs as plain links */
+#metadata a:hover {
+  color: #ffffff;
+  background-color: #ff9600;
+}
+
+/* #sub_navigation covers 13 views' Show/Preview/Revisions/metadata
+   links (see `grep -rn "content_for :subnavigation" app/views/`),
+   including nodes#edit -- so #page_editor's own subnav links are
+   already covered here and are not part of the new scoped-underline
+   rule above. Proposed for full removal per the redesign notes; the
+   13-file list is the confirmation needed before scoping that work. */
+#sub_navigation a {
+  color: #969696;
+}
+
+#sub_navigation a:hover {
+  color: #ffffff;
+  background-color: #ff9600;
+}
+
+#sub_navigation a.selected {
+  color: #ffffff;
+  background-color: #ff9600;
+}
+
+.admin_content_spacer {
+  clear: both;
+  margin-bottom: 40px;
+}
+
+/* ============================================================
+   Flash / notices
+   ============================================================ */
+
+#flash {
+  height: auto;
+  line-height: 20px;
+  padding: 6px 10px;
+  border-left: 3px solid #969696;
+  background-color: #f1f1f1;
+  margin-bottom: 20px;
+  margin-left: 5px;
+}
+
+#flash span {
+  letter-spacing: 1px;
+  margin-right: 10px;
+  text-transform: lowercase;
+}
+
+#flash img {
+  height: 12px;
+  width: 12px;
+}
+
+span#flash_error, span.warning {
+  color: #ffffff;
+  letter-spacing: 1px;
+  background-color: #ff9600;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+/* ============================================================
+   Pagination
+   ============================================================ */
+
+div.pagination {
+  padding-top: 5px;
+  padding-bottom: 15px;
+}
+
+div.pagination span.current, div.pagination a:hover {
+  color: #ff9600;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+/* button_to forms: render submit inputs/buttons as plain links,
+   orange on hover; .destructive variant is red. */
 form.button_to {
   display: inline;
   margin: 0;
@@ -136,31 +235,64 @@ form.button_to button[type="submit"] {
   text-decoration: none;
 }
 
-form.button_to input[type="submit"]:hover,
-form.button_to button[type="submit"]:hover {
-  color: #ff9600;
+form.button_to.state_changing input[type="submit"],
+form.button_to.state_changing button[type="submit"] {
+  color: #0d47a1;
+  background-color: #e3f2fd;
+  border-radius: 2px;
+  padding: 2px 8px;
+}
+
+form.button_to.state_changing input[type="submit"]:hover,
+form.button_to.state_changing button[type="submit"]:hover {
+  color: #ffffff;
+  background-color: #1565c0;
 }
 
 form.button_to.destructive input[type="submit"],
 form.button_to.destructive button[type="submit"] {
   color: #cc0000;
+  background-color: #fdecea;
+  border-radius: 2px;
+  padding: 2px 8px;
 }
 
 form.button_to.destructive input[type="submit"]:hover,
 form.button_to.destructive button[type="submit"]:hover {
   color: #ffffff;
   background-color: #cc0000;
-  border-radius: 2px;
-  padding: 0 3px;
 }
+
+/* Native (non-button_to) submit buttons -- Create/Save/Publish forms.
+   Lower specificity than form.button_to's own rule, so button_to forms
+   are correctly unaffected. If a button_to output ever loses its class
+   wrapper, it will silently fall through to this bordered style instead
+   of rendering as a plain link -- worth knowing, not necessarily fixing. */
+input[type="submit"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font: inherit;
+  font-weight: bold;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+input[type="submit"]:hover {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+/* ============================================================
+   Wizard buttons
+   ============================================================ */
 
 #admin_wizard {
   margin-bottom: 2rem;
-}
-
-#page_submit a,
-.admin_wizard_button a {
-  color: white !important;
 }
 
 #page_submit,
@@ -173,31 +305,29 @@ form.button_to.destructive button[type="submit"]:hover {
   background-color: green;
 }
 
+#page_submit a,
+.admin_wizard_button a {
+  color: white !important;
+}
+
 #page_submit:hover,
 .admin_wizard_button:hover {
   background-color: lime !important;
 }
 
-#sub_navigation a {
-  color: #969696;
-}
+/* ============================================================
+   Tables
+   ============================================================ */
 
-#sub_navigation a:hover, #metadata a:hover {
-  color: #ffffff;
-  background-color: #ff9600;
+/* Generic fallback header row. Shadowed by table.node_table's own
+   tr.header (2rem) and duplicated (same values) by table#revisions's
+   own tr.header below. Applies as-is to #menu_item_list,
+   div#draft_list table, and table.user_table, none of which define
+   their own tr.header. */
+table tr.header {
+  height: 20px;
+  text-align: left;
 }
-
-#sub_navigation a.selected {
-  color: #ffffff;
-  background-color: #ff9600;
-}
-
-#navigation a.selected, #metadata a.selected, #overview_toggle a.selected {
-  color: #ffffff;
-  background-color: #000000;
-}
-
-/* Nodes */
 
 table.node_table {
   border-collapse: collapse;
@@ -214,6 +344,9 @@ table.node_table th.title {
   min-width: 4rem;
 }
 
+/* th.title's min-width is set to 4rem above and 12rem here -- the
+   later, equally-specific rule wins, so th.title ends up at 12rem and
+   the 4rem entry for it above is dead. Likely a copy/paste leftover. */
 table.node_table th.editor,
 table.node_table th.title {
   min-width: 12rem;
@@ -237,6 +370,10 @@ table.node_table .node_id {
   padding-right: 15px;
 }
 
+table.node_table .actions {
+  text-transform: lowercase;
+}
+
 table.node_table tr.header:hover {
   background-color: #ffffff;
 }
@@ -245,18 +382,23 @@ table.node_table tr:hover {
   background-color: #f1f1f1;
 }
 
-table.node_table .actions {
-  text-transform: lowercase;
-}
-
 #admin_sitemap_table .node_id:before {
   content: "• ";
 }
 
-/* Revisions */
-
 table#revisions {
   border-collapse: collapse;
+}
+
+table#revisions tr {
+  height: 45px;
+}
+
+/* Redundant with the generic table tr.header rule above (identical
+   values) -- harmless, kept presumably for explicitness. */
+table#revisions tr.header {
+  height: 20px;
+  text-align: left;
 }
 
 table#revisions td {
@@ -283,250 +425,43 @@ table#revisions tr:hover {
   background-color: #f1f1f1;
 }
 
-table#revisions tr.header {
-  height: 20px;
-  text-align: left;
+table.user_table td.user_login {
+  padding-right: 30px;
 }
 
-table#revisions tr {
-  height: 45px
-}
-
-/* Page Editor */
-
-input[type=text], textarea {
-  font-size: 1rem;
-  font-family: Helvetica;
-  border: 1px solid #989898;
-}
-
-select {
-  font-size: 1rem;
-  border: 1px solid #989898;
-}
-
-input[type=text]#tag_list,
-input[type=text]#node_staged_slug,
-input#move_to_search_term {
-  padding: 5px;
-}
-
-input[type=password] {
-  border: 1px solid #989898;
-}
-
-input[type="submit"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: none;
-  border: 1px solid #000000;
-  border-radius: 2px;
-  padding: 4px 12px;
-  font: inherit;
-  font-weight: bold;
-  color: inherit;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-input[type="submit"]:hover {
-  color: #ffffff;
-  background-color: #000000;
-}
-
-input[type=radio] {
-  border: 1px solid #989898;
-}
-
-.add_child_links {
-  margin-top: 0.5rem;
-}
-
-.add_child_links a {
-  white-space: nowrap;
-}
-
-div#login_form input[type=text], div#login_form input[type=password] {
-  width: 150px;
-}
-
+/* ============================================================
+   Node display (nodes#show / nodes#new)
+   ============================================================ */
 
 @media(min-width:1016px) {
-input#tag_list,
-input#node_staged_slug,
-input#move_to_search_term {
-  width: 690px;
-}
+  div.node_description {
+    float: left;
+    width: 110px;
+    min-height: 2rem;
+    text-align: right;
+    text-transform: lowercase;
+    vertical-align: top;
+  }
 
-input[type=text]#page_title {
-  width: 690px;
-  font-size: 1rem;
-  padding-top: 6px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  font-weight: bold;
-}
-
-textarea#page_abstract {
-  width: 690px;
-  height: 150px;
-  padding: 5px;
-}
-
-#page_editor textarea#page_body {
-  width: 700px;
-  height: 600px;
-}
-
-#page_editor #metadata, #page_editor #content, #admin_overview {
-  margin-left: -125px;
-}
-
-}
-
-/* Mobile */
-@media(max-width:1015px) {
-input#tag_list,
-input#node_staged_slug,
-input#move_to_search_term {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-#page_editor #content,
-#page_editor #metadata {
-  padding-right: 5px;
-}
-
-#page_editor textarea#page_body {
-  box-sizing: border-box;
-  width: 800px;
-  height: 50rem;
-}
-
-#page_editor textarea#page_abstract {
-  box-sizing: border-box;
-  height: 8rem;
-  width: 100%;
-}
-
-input[type=text]#page_title {
-  box-sizing: border-box;
-  width: 100%;
-  font-size: 2rem;
-  padding-top: 6px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  font-weight: bold;
-}
-
-input[type=text], textarea {
-  font-size: 1.5rem;
-}
-select {
-  font-size: 1.5rem;
-}
-
-#metadata ul#image_box {
-  width: 100% !important;
-}
-}
-
-#new_node {
-  margin-left: -118px;
-}
-
-#new_node input[type=text], #new_node input[type=password] {
-  width: 350px;
-}
-
-tr {}
-
-td {
-  padding-top: 10px;
-  padding-bottom: 5px;
-  padding-right: 10px;
-}
-
-@media(min-width:1016px) {
-div.node_description {
-  float: left;
-  width: 110px;
-  min-height: 2rem;
-  text-align: right;
-  text-transform: lowercase;
-  vertical-align: top;
-}
-
-div.node_content {
-  margin-left: 120px;
-  min-height: 2rem;
-  display: block;
-  margin-bottom: 1rem;
-}
+  div.node_content {
+    margin-left: 120px;
+    min-height: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
 }
 @media(max-width:1015px) {
-div.node_description {
-  min-height: 2rem;
-  width: 30em;
-  text-transform: lowercase;
-  vertical-align: top;
-}
+  div.node_description {
+    min-height: 2rem;
+    width: 30em;
+    text-transform: lowercase;
+    vertical-align: top;
+  }
 
-div.node_content {
-  min-height: 2rem;
-  margin-bottom: 1rem;
-}
-
-}
-
-div#page_editor {
-  margin-top: 0px;
-  margin-left: 10px;
-}
-
-div#draft_list {
-  border: 1px solid #000000;
-  padding: 5px;
-  overflow: auto;
-  height: 300px;
-}
-
-div#draft_list table {
-  border-collapse: collapse;
-}
-
-div#draft_list table tr.header:hover {
-  background-color: #ffffff;
-}
-
-div#draft_list table td.actions {
-  text-transform: lowercase;
-  white-space: nowrap;
-}
-
-div#draft_list table td.actions a {
-  letter-spacing: 1px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-div#draft_list table tr:hover {
-  background-color: #f1f1f1;
-}
-
-table tr.header {
-  height: 20px;
-  text-align: left;
-}
-
-.field_hint {
-  display: block;
-  margin-top: 2px;
-  font-size: 0.75rem;
-  color: #969696;
-  padding-bottom: 4px;
+  div.node_content {
+    min-height: 2rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .node_content.node_info_group {
@@ -561,6 +496,179 @@ table tr.header {
 .node_info_group li {
   margin-bottom: 0.25rem;
 }
+
+.field_hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #969696;
+  padding-bottom: 4px;
+}
+/* Identical declaration block to #search_results p span.result_path /
+   #menu_search_results p span.result_path below -- three independent
+   copies of the same "small gray helper text" style. */
+
+/* Layout only -- the at-rest visibility (wavy underline) for these
+   links comes from the scoped rule in Base elements above. */
+.add_child_links {
+  margin-top: 0.5rem;
+}
+
+.add_child_links a {
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Page editor / metadata forms
+   ============================================================ */
+
+#new_node {
+  margin-left: -118px;
+}
+
+#new_node input[type=text], #new_node input[type=password] {
+  width: 350px;
+}
+
+div#login_form input[type=text], div#login_form input[type=password] {
+  width: 150px;
+}
+
+input[type=text]#tag_list,
+input[type=text]#node_staged_slug,
+input#move_to_search_term {
+  padding: 5px;
+}
+
+div#page_editor {
+  margin-top: 0px;
+  margin-left: 10px;
+}
+
+@media(min-width:1016px) {
+  input#tag_list,
+  input#node_staged_slug,
+  input#move_to_search_term {
+    width: 690px;
+  }
+
+  input[type=text]#page_title {
+    width: 690px;
+    font-size: 1rem;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-weight: bold;
+  }
+
+  textarea#page_abstract {
+    width: 690px;
+    height: 150px;
+    padding: 5px;
+  }
+
+  #page_editor textarea#page_body {
+    width: 700px;
+    height: 600px;
+  }
+
+  #page_editor #metadata, #page_editor #content, #admin_overview {
+    margin-left: -125px;
+  }
+}
+
+@media(max-width:1015px) {
+  input#tag_list,
+  input#node_staged_slug,
+  input#move_to_search_term {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  #page_editor #content,
+  #page_editor #metadata {
+    padding-right: 5px;
+  }
+
+  /* Fixed 800px width will overflow narrow viewports despite
+     border-box -- every sibling rule in this block uses 100% instead.
+     Worth checking on an actual phone; looks unfinished rather than
+     intentional. Not changed here since it wasn't part of what you
+     asked to fix. */
+  #page_editor textarea#page_body {
+    box-sizing: border-box;
+    width: 800px;
+    height: 50rem;
+  }
+
+  #page_editor textarea#page_abstract {
+    box-sizing: border-box;
+    height: 8rem;
+    width: 100%;
+  }
+
+  input[type=text]#page_title {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 2rem;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    padding-left: 5px;
+    font-weight: bold;
+  }
+
+  input[type=text], textarea {
+    font-size: 1.5rem;
+  }
+  select {
+    font-size: 1.5rem;
+  }
+
+  #metadata ul#image_box {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   Draft list (dashboard widget)
+   ============================================================ */
+
+div#draft_list {
+  border: 1px solid #000000;
+  padding: 5px;
+  overflow: auto;
+  height: 300px;
+}
+
+div#draft_list table {
+  border-collapse: collapse;
+}
+
+div#draft_list table tr.header:hover {
+  background-color: #ffffff;
+}
+
+div#draft_list table tr:hover {
+  background-color: #f1f1f1;
+}
+
+div#draft_list table td.actions {
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+/* Layout only -- the at-rest visibility (wavy underline) for these
+   links comes from the scoped rule in Base elements above. */
+div#draft_list table td.actions a {
+  letter-spacing: 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* ============================================================
+   Search widgets
+   ============================================================ */
 
 #search_widget {
   position: absolute;
@@ -615,6 +723,10 @@ table tr.header {
   border-bottom: none;
 }
 
+/* ============================================================
+   Menu items (navigation editor)
+   ============================================================ */
+
 #menu_item_list {
   border-collapse: collapse;
   padding: 5px 5px 5px 5px;
@@ -629,6 +741,10 @@ table tr.header {
 
 #menu_item_list td {
   height: 20px;
+}
+
+#menu_item_list td.menu_item_title {
+  width: 200px;
 }
 
 #menu_item_list td.menu_sort_handle div {
@@ -649,13 +765,13 @@ table tr.header {
   cursor: grab;
 }
 
-#menu_item_list td.menu_item_title {
-  width: 200px;
-}
-
-.ui-state-highlight td{
+.ui-state-highlight td {
   height: 20px;
 }
+
+/* ============================================================
+   Image box / browser
+   ============================================================ */
 
 #metadata ul#image_box {
   box-sizing: border-box;
@@ -681,8 +797,3 @@ div#image_browser {
 div#image_browser ul li {
   list-style-type: none;
 }
-
-table.user_list td.user_login {
-  padding-right: 30px;
-}
-
