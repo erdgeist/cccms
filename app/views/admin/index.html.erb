@@ -1,5 +1,6 @@
 <div id="admin_wizard">
-  <div class="admin_wizard_button"><%= link_to 'Create Update or Pressemitteilung', new_node_path, :only_path => false %></div>
+  <h2>Quick links</h2>
+  <div class="admin_wizard_button"><%= link_to 'Create post or page', new_node_path, :only_path => false %></div>
   <div class="admin_wizard_button"><a href="#" id="admin_wizard_my_work" class="button">Continue my work</a></div>
   <div class="admin_wizard_button"><a href="#" id="admin_wizard_create_page" class="button">Add a page in the page tree</a></div>
   <div class="admin_wizard_button"><%= link_to("Upload a new asset", new_asset_path, :only_path => false) %></div>
@@ -14,7 +15,7 @@
 
 <div id="recent_changes_table">
   
-  <h1>Recent Changes</h1>
+  <h2>Recent Changes</h2>
 
   <table class="node_table">
     <tr class="header">
@@ -48,7 +49,7 @@
 
 <div id="my_work_table">
   
-  <h1>My Work</h1>
+  <h2>My Work</h2>
 
   <table class="node_table">
     <tr class="header">
@@ -82,7 +83,7 @@
 
 <div id="current_drafts_table">
   
-  <h1>Current Drafts (<%= @drafts_count %>)</h1>
+  <h2>Current Drafts (<%= @drafts_count %>)</h2>
   
   <table class="node_table">
     <tr class="header">
@@ -116,7 +117,7 @@
 
 <div id="admin_sitemap_table">
 
-  <h1>Sitemap</h1>
+  <h2>Sitemap</h2>
 
   <table class="node_table">
     <tr class="header">
