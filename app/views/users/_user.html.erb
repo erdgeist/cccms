@@ -9,7 +9,7 @@
   <td>
     <%= button_to "destroy", user_path(user),
           method: :delete,
-          form: { data: { confirm: "Do you really want to delete user #{user.login}?" } } %>
+          form: { data: { confirm: "Do you really want to delete user #{user.login}?" }, class: 'button_to destructive' } %>
   </td>
   <% end %>
 </tr>
