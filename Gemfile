@@ -44,9 +44,6 @@ gem 'will_paginate',  '~> 3.0'
 gem 'acts-as-taggable-on',
     git:    'https://github.com/mbleigh/acts-as-taggable-on.git',
     branch: 'master'
-gem 'awesome_nested_set',
-    git:    'https://github.com/collectiveidea/awesome_nested_set.git',
-    branch: 'main'
 
 # ── XML / parsing ─────────────────────────────────────────────────────────────
 

@@ -1409,6 +1409,3 @@ puts "Nodes flagged for review:"
 (erfas + chaostreffs).select { |e| e[:review] }.each do |e|
   puts "  #{e[:slug]}"
 end
-
-Node.rebuild!(false)
-

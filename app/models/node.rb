@@ -1,6 +1,6 @@
 class Node < ApplicationRecord
   # Mixins and Plugins
-  acts_as_nested_set
+  include NestedTree
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
@@ -20,16 +20,6 @@ class Node < ApplicationRecord
   validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
-
-  validate :borders       # This should never ever happen.
-
-  # Index for Fulltext Search
-  # define_index do
-  #   indexes head.translations.title
-  #   indexes slug
-  #   indexes unique_name
-  #   indexes head.translations.body
-  # end
 
   # Class methods
 
@@ -254,21 +244,18 @@ class Node < ApplicationRecord
     # Watch out recursion ahead! update_unique_name itself triggers this
     # after_save callback which invokes update_unique_name on its children.
     # Hopefully until no childrens occur
+    #
+    # Queries parent_id directly rather than the NestedTree#children
+    # association out of habit from the old awesome_nested_set-avoidance
+    # workaround - no longer strictly necessary now that children is
+    # equally safe, but left as-is since it already works correctly.
     def update_unique_names_of_children
       unless root?
-        # Use parent_id-based traversal instead of lft/rgt descendants
-        # due to awesome_nested_set not refreshing parent lft/rgt in memory
         Node.where(:parent_id => self.id).each do |child|
           child.reload
           child.update_unique_name
           child.send(:update_unique_names_of_children)
         end
-      end
-    end
-
-    def borders
-      if lft && rgt && (lft > rgt)
-        errors.add("Fuck!. lft should never be smaller than rgt")
       end
     end
 end

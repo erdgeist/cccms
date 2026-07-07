@@ -15,12 +15,10 @@ class AdminController < ApplicationController
       Time.now, Time.now - 14.days
     ).limit(50).order("updated_at desc")
 
-    all_nodes = Node.root.self_and_descendants
+    ordered_with_level = Node.root.self_and_descendants_ordered_with_level
     @sitemap_depth = {}
-    Node.each_with_level(all_nodes) do |node, level|
-      @sitemap_depth[node.id] = level
-    end
-    @sitemap = all_nodes.to_a.sort! { |node1,node2| node1.lft <=> node2.lft }.delete_if { |node| node.update? }
+    ordered_with_level.each { |node, level| @sitemap_depth[node.id] = level }
+    @sitemap = ordered_with_level.map(&:first).reject(&:update?)
 
     @mypages = Page.where("user_id = ? or editor_id = ?", @current_user, @current_user)
 
