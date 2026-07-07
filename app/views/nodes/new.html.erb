@@ -13,7 +13,7 @@
   <div class="node_content">
     <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
-        <%= radio_button_tag :kind, kind, kind == "generic",
+        <%= radio_button_tag :kind, kind, kind == @selected_kind,
           data: { path_prefix: resolve_kind_text(config[:path_prefix]) } %>
         <%= resolve_kind_text(config[:label]) %>
         <% if config[:hint] %>
@@ -29,7 +29,7 @@
     <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
   </div>
 
-  <div id="parent_search_field">
+  <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
     <div class="node_description">Parent</div>
     <div class="node_content">
       <%= text_field_tag :parent_search_term, @parent_name %>

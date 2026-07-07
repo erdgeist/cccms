@@ -22,6 +22,7 @@ class NodesController < ApplicationController
 
   def new
     @node = Node.new node_params
+    @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
     if params.has_key?(:parent_id)
       @parent_id = params[:parent_id]
       @parent_name = Node.find(@parent_id).title

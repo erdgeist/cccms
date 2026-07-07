@@ -208,14 +208,20 @@ parent_search = {
   },
 
   initialize_radio_buttons : function() {
-    $("input[name='kind']").bind("change", function(){
-      if ($(this).val() === "generic") {
-        $("#parent_search_field").show();
-      } else {
-        $("#parent_search_field").hide();
-      }
+    parent_search.sync_parent_field();
+    $("input[name='kind']").bind("change", function() {
+      parent_search.sync_parent_field();
       parent_search.update_resulting_path();
     });
+  },
+
+  sync_parent_field : function() {
+    var kind = $("input[name='kind']:checked").val();
+    if (kind === "generic") {
+      $("#parent_search_field").show();
+    } else {
+      $("#parent_search_field").hide();
+    }
   }
 }
 

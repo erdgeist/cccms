@@ -101,17 +101,30 @@
       <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
     </div>
 
-    <% if @node.children.any? %>
+    <% matches = matching_node_kinds(@node) %>
+    <% if @node.children.any? || matches.any? %>
       <div class="node_description">Children</div>
       <div class="node_content node_info_group">
-        <details>
-          <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
-          <ul>
-            <% @node.children.order(:slug).each do |child| %>
-              <li><%= link_to (child.head&.title || child.draft&.title || child.slug), node_path(child) %></li>
+        <% if @node.children.any? %>
+          <details>
+            <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
+            <ul>
+              <% @node.children.order(:slug).each do |child| %>
+                <li><%= link_to (child.head&.title || child.draft&.title || child.slug), node_path(child) %></li>
+              <% end %>
+            </ul>
+          </details>
+        <% end %>
+        <% if matches.any? %>
+          <p class="add_child_links">
+            <% matches.each_with_index do |(kind, config), index| %>
+              <%= " &middot; ".html_safe if index > 0 %>
+              <% link_params = { kind: kind } %>
+              <% link_params[:parent_id] = @node.id if kind == "generic" %>
+              <%= link_to "add '#{resolve_kind_text(config[:label])}' child", new_node_path(link_params) %>
             <% end %>
-          </ul>
-        </details>
+          </p>
+        <% end %>
       </div>
     <% end %>
 

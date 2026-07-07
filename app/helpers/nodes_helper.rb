@@ -58,4 +58,9 @@ module NodesHelper
       t(:event_schedule_none)
     end
   end
+
+  def matching_node_kinds(node)
+    path = node.unique_path
+    CccConventions::NODE_KINDS.select { |_, config| config[:parent_match]&.call(path) }
+  end
 end

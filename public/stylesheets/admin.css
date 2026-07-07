@@ -338,6 +338,14 @@ input[type=radio] {
   border: 1px solid #989898;
 }
 
+.add_child_links {
+  margin-top: 0.5rem;
+}
+
+.add_child_links a {
+  white-space: nowrap;
+}
+
 div#login_form input[type=text], div#login_form input[type=password] {
   width: 150px;
 }
