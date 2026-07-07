@@ -18,11 +18,12 @@ $(document).ready(function () {
     license_key: 'gpl',
     promotion: false,
     menubar: false,
-    plugins: 'code',
+    plugins: 'code link lists visualblocks',
     toolbar: 'bold italic underline | bullist numlist | link unlink | blocks | code',
-    extended_valid_elements: 'aggregate[tags|limit|order_by|order_direction|partial|conditions]',
+    extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions]',
     relative_urls: false,
     entity_encoding: 'raw',
+    valid_classes: { '*': '' },
     setup: function(editor) {
       editor.on('init', function() {
         cccms.setup_autosave();
