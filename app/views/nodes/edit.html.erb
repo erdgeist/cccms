@@ -5,7 +5,7 @@
 <% end %>
 
 <div id="page_editor">
-<%= form_for(@node) do |f| %>
+  <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
   <% if @node.errors.any? %>
     <div class="error_messages">
       <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>

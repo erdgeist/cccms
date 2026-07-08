@@ -200,6 +200,11 @@ span#flash_error, span.warning {
   padding-bottom: 1px;
 }
 
+span.warning a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 /* ============================================================
    Pagination
    ============================================================ */

@@ -159,13 +159,45 @@ cccms = {
         page.cached_abstract   = elements.abstract.val();
         page.cached_body       = elements.body.html();
 
-        $("#flash").append("<img src='/images/ajax-loader.gif' alt='' />");
-        $.post(this.attr("action"), $(this).serialize(), null, "script");
+        var data = this.serializeArray().filter(function(field) {
+          return field.name !== "_method";
+        });
+        data.push({ name: "_method", value: "put" });
+
+        $.ajax({
+          type: "POST",
+          url: this.attr("data-autosave-url"),
+          data: data,
+          error: function(xhr) {
+            if (xhr.status === 423) {
+              clearInterval(cccms.autosave_timer);
+              cccms.report_lock_lost($("#page_editor > form").attr("data-show-url"));
+            }
+            // any other failure: quietly retried on the next tick
+          }
+        });
 
       }
     };
 
-    setInterval('$("#page_editor > form").submitWithAjax()', 7000);
+    cccms.autosave_timer = setInterval(function() {
+      $("#page_editor > form").submitWithAjax();
+    }, 7000);
+  },
+
+  report_lock_lost : function(show_url) {
+    var $flash = $("#flash");
+    if ($flash.length === 0) {
+      $flash = $("<div>", { id: "flash" }).insertAfter(".admin_content_spacer");
+    }
+
+    var $banner = $("<span>", { "class": "warning" }).text(
+      "This page is now locked by someone else — your changes here can no longer be saved. Copy anything you need, then "
+    );
+    $banner.append($("<a>", { href: show_url }).text("return to the published page"));
+    $banner.append(".");
+
+    $flash.html($banner);
   }
 }
 
