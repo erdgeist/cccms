@@ -264,12 +264,11 @@ image_interface = {
         $("#image_browser_toggle").attr("class", "unselected");
         $("#image_browser").hide();
       }
-      
+
       return false;
     });
   }
 }
-      
 
 rrule_builder = {
   initialize : function() {
