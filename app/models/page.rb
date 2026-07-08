@@ -234,9 +234,7 @@ class Page < ApplicationRecord
   private
 
     def set_page_title
-      if title.nil?
-        title = "Untitled"
-      end
+      self.title = "Untitled" if title.nil?
     end
 
     def set_template
