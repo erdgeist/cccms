@@ -1,3 +1,21 @@
+<h1><%= title_for_node(@node) %></h1>
+
+<div class="node_action_bar">
+  <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
+        form: { class: 'button_to state_changing' },
+        disabled: @node.autosave.present? %>
+
+  <% if @node.autosave || (@node.draft && @node.head) %>
+    <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
+          revert_node_path(@node), method: :put,
+          form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+  <% end %>
+
+  <%= submit_tag "Save Draft", form: dom_id(@node, :edit) %>
+  <%= submit_tag "Save + Unlock + Exit", form: dom_id(@node, :edit) %>
+  <%= link_to "Preview ↗", preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
+</div>
+
 <div id="page_editor">
   <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
   <% if @node.errors.any? %>
@@ -5,25 +23,6 @@
       <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
     </div>
   <% end %>
-
-  <h1><%= title_for_node(@node) %></h1>
-
-  <div id="node_action_bar">
-    <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
-          form: { class: 'button_to state_changing' },
-          disabled: @node.autosave.present? %>
-
-    <% if @node.autosave || (@node.draft && @node.head) %>
-      <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
-            revert_node_path(@node), method: :put,
-            form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
-    <% end %>
-
-    <%= link_to 'Preview', preview_page_path(@page) %>
-
-    <%= f.submit 'Save Draft' %>
-    <%= f.submit 'Save + Unlock + Exit' %>
-  </div>
 
   <details id="metadata_details">
     <summary>Metadata (slug, parent, tags, template, author, images)</summary>
@@ -102,9 +101,9 @@
     <div class="node_content"><%= d.text_area :body, :class => 'with_editor' %></div>
   <% end %>
 
-    <div id="node_action_bar">
-      <%= f.submit 'Save Draft' %>
-      <%= f.submit 'Save + Unlock + Exit' %>
-    </div>
+  <div class="node_action_bar node_action_bar_save">
+    <%= f.submit 'Save Draft' %>
+    <%= f.submit 'Save + Unlock + Exit' %>
+  </div>
   <% end %>
 </div>

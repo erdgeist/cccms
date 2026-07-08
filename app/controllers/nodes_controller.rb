@@ -68,6 +68,8 @@ class NodesController < ApplicationController
     @node.lock_for_editing!( current_user )
     @page = @node.autosave || @node.draft || @node.head
 
+    flash.now[:notice] = "Node locked and ready to edit" unless @node.autosave
+
     if @node.autosave
       flash.now[:notice] =
         "This page has unsaved changes from a previous session, shown below. " \

@@ -1,11 +1,59 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Edit', edit_node_path(@node), :class => "unselected" %>
-  <%= link_to 'Preview', preview_page_path(@page) %>
-<% end %>
-
+<% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
 <div id="page_editor" class="show_node">
   <h1><%= title_for_node(@node) %></h1>
   <div id="content">
+    <div class="node_description">Status</div>
+    <div class="node_content node_info_group node_status">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Head</span>
+          <%= @node.head ? "#{@node.head.title} (rev #{@node.head.revision}, #{@node.head.updated_at})" : "none — never published" %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Draft</span>
+          <%= @node.draft ? "#{@node.draft.title} (rev #{@node.draft.revision}, saved #{@node.draft.updated_at})" : "none" %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Autosave</span>
+          <%= @node.autosave ? "#{@node.autosave.title} (unsaved, #{@node.autosave.updated_at})" : "none" %>
+        </div>
+      </div>
+
+      <% edit_label = @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Edit") %>
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <% if locked_by_other %>
+            <span class="disabled_action"><%= edit_label %></span>
+          <% else %>
+            <%= link_to (@node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Lock + Edit")), edit_node_path(@node), class: "action_button" %>
+            <% if !@node.draft && !@node.autosave %>
+              <span class="field_hint">Nothing pending — this will start a fresh draft.</span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% unless locked_by_other %>
+          <% if @node.draft && !@node.autosave %>
+            <div class="node_info_item">
+              <%= button_to 'Publish', publish_node_path(@node), method: :put,
+                    form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
+            </div>
+          <% end %>
+          <% if @node.draft || @node.autosave %>
+            <div class="node_info_item">
+              <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
+                    revert_node_path(@node), method: :put,
+                    form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if locked_by_other %>
+        <span class="field_hint">Locked — see People below to unlock before editing, publishing, or discarding.</span>
+      <% end %>
+    </div>
+
     <div class="node_description">People</div>
     <div class="node_content node_info_group">
       <div class="node_info_group_items">

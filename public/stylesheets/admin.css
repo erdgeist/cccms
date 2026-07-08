@@ -79,6 +79,9 @@ input[type=radio] {
   #wrapper {
     margin: 0 125px;
   }
+  .node_action_bar.node_action_bar_save {
+    margin-left: 120px;
+  }
 }
 @media(max-width:1015px) {
   #wrapper {
@@ -165,12 +168,14 @@ input[type=radio] {
   margin-bottom: 40px;
 }
 
-#node_action_bar {
-  margin-bottom: 1rem;
-}
-
-#node_action_bar > * {
-  margin-right: 0.5rem;
+.node_action_bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 /* ============================================================
@@ -211,6 +216,18 @@ span#flash_error, span.warning {
 span.warning a {
   color: inherit;
   text-decoration: underline;
+}
+
+.error_messages {
+  border-left: 3px solid #cc0000;
+  background-color: #fdecea;
+  padding: 6px 10px;
+  margin-bottom: 1rem;
+}
+
+.error_messages ul {
+  margin: 0;
+  padding-left: 1.25rem;
 }
 
 /* ============================================================
@@ -487,6 +504,16 @@ table.user_table td.user_login {
   padding: 0.5rem 0.75rem;
 }
 
+.node_info_group .disabled_action {
+  display: inline-block;
+  border: 1px solid #c0c0c0;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-weight: bold;
+  color: #969696;
+  cursor: not-allowed;
+}
+
 .node_info_group_items {
   display: flex;
   flex-wrap: wrap;
@@ -512,6 +539,38 @@ table.user_table td.user_login {
 
 .node_info_group li {
   margin-bottom: 0.25rem;
+}
+
+.node_content.node_status {
+  border: 2px solid #000000;
+  background-color: #fafafa;
+}
+
+.node_status .node_info_group_items:first-child {
+  margin-bottom: 0.75rem;
+}
+
+.node_status .node_info_group_items + .node_info_group_items {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.node_status .field_hint {
+  margin-top: 0.5rem;
+  display: block;
+}
+
+#page_editor a.action_button,
+.node_status form.button_to input[type="submit"],
+.node_status form.button_to button[type="submit"] {
+  padding: 4px 12px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.node_status form.button_to input[type="submit"],
+.node_status form.button_to button[type="submit"] {
+  border: 1px solid transparent;
 }
 
 .field_hint {
@@ -560,6 +619,23 @@ input#move_to_search_term {
 div#page_editor {
   margin-top: 0px;
   margin-left: 10px;
+}
+
+#page_editor a.action_button {
+  display: inline-block;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #000000;
+}
+
+#page_editor a.action_button:hover {
+  color: #ffffff;
+  background-color: #000000;
 }
 
 @media(min-width:1016px) {
