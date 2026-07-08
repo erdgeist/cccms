@@ -18,8 +18,34 @@
     <%= f.datetime_select :end_time %>
   </p>
   <p>
-    <%= f.label :rrule %><br />
-    <%= f.text_field :rrule %>
+    <%= f.label :rrule, "Recurrence" %>
+    <div id="rrule_builder">
+      <p>
+        <label><%= radio_button_tag "rrule_freq", "weekly", true %> Weekly</label>
+        <label><%= radio_button_tag "rrule_freq", "monthly" %> Monthly</label>
+      </p>
+      <div id="rrule_weekly_options">
+        <p><label><%= check_box_tag "rrule_biweekly" %> Every 2 weeks</label></p>
+        <p>
+          <% %w[MO TU WE TH FR SA SU].each do |code| %>
+            <label><%= check_box_tag "rrule_byday_#{code}" %> <%= RruleHumanizer::WEEKDAY_NAMES_ABBR[:de][code] %></label>
+          <% end %>
+        </p>
+      </div>
+      <div id="rrule_monthly_options" style="display: none;">
+        <p><label><%= check_box_tag "rrule_monthly_ordinal" %> On a specific weekday each month</label></p>
+        <p id="rrule_ordinal_fields" style="display: none;">
+          <%= select_tag "rrule_ordinal", options_for_select([["1.", 1], ["2.", 2], ["3.", 3], ["4.", 4], ["letzter", -1], ["vorletzter", -2]]) %>
+          <%= select_tag "rrule_ordinal_day", options_for_select(%w[MO TU WE TH FR SA SU].map { |c| [RruleHumanizer::WEEKDAY_NAMES[:de][c], c] }) %>
+        </p>
+      </div>
+      <p>
+        <label><%= check_box_tag "rrule_exclude_month" %> Except in one month</label>
+        <%= select_tag "rrule_excluded_month", options_for_select((1..12).map { |m| [RruleHumanizer::MONTH_NAMES[:de][m-1], m] }), style: "display: none;" %>
+      </p>
+      <span class="field_hint">Builds the field below automatically. If your pattern is more complex than this covers, just edit it directly below - these controls won't touch it unless you use them.</span>
+    </div>
+    <%= f.text_field :rrule, id: "event_rrule" %>
   </p>
   <p>
     <%= f.label :tag_list, "Tags" %><br />

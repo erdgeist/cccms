@@ -50,7 +50,11 @@ $(document).ready(function () {
   if ($("#move_to_search_term").length != 0) {
     move_to_search.initialize_search();
   }
-  
+
+  if ($("#rrule_builder").length != 0) {
+    rrule_builder.initialize();
+  }
+
   if ($('#recent_changes_toggle').length != 0) {
     hide_all();
     $('#recent_changes_toggle').attr("class", "selected");
