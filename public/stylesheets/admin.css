@@ -165,6 +165,14 @@ input[type=radio] {
   margin-bottom: 40px;
 }
 
+#node_action_bar {
+  margin-bottom: 1rem;
+}
+
+#node_action_bar > * {
+  margin-right: 0.5rem;
+}
+
 /* ============================================================
    Flash / notices
    ============================================================ */

@@ -1,9 +1,3 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Show', @node %>
-  <%= link_to 'Preview', preview_page_path(@draft) %>
-  <%= button_to 'Publish', publish_node_path(@node), method: :put, form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
-<% end %>
-
 <div id="page_editor">
   <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
   <% if @node.errors.any? %>
@@ -13,6 +7,23 @@
   <% end %>
 
   <h1><%= title_for_node(@node) %></h1>
+
+  <div id="node_action_bar">
+    <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
+          form: { class: 'button_to state_changing' },
+          disabled: @node.autosave.present? %>
+
+    <% if @node.autosave || (@node.draft && @node.head) %>
+      <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
+            revert_node_path(@node), method: :put,
+            form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+    <% end %>
+
+    <%= link_to 'Preview', preview_page_path(@page) %>
+
+    <%= f.submit 'Save Draft' %>
+    <%= f.submit 'Save + Unlock + Exit' %>
+  </div>
 
   <details id="metadata_details">
     <summary>Metadata (slug, parent, tags, template, author, images)</summary>
@@ -38,12 +49,12 @@
            %>
       </div>
 
-      <%= fields_for @draft do |d| %>
+      <%= fields_for @page do |d| %>
       <div class="node_description">Tags - comma seperated</div>
-      <div class="node_content"><%= text_field_tag :tag_list, @draft.tag_list.join(', ') %></div>
+      <div class="node_content"><%= text_field_tag :tag_list, @page.tag_list.join(', ') %></div>
 
       <div class="node_description">Publish at</div>
-      <div class="node_content"><%= d.datetime_select :published_at, :value => @draft.published_at %></div>
+      <div class="node_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
 
       <div class="node_description">Template</div>
       <div class="node_content">
@@ -52,12 +63,15 @@
       </div>
 
       <div class="node_description">Author</div>
-      <div class="node_content"><%= d.select :user_id, user_list %></div>
+      <div class="node_content">
+        <%= d.select :user_id, user_list,
+              :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
+      </div>
 
       <div class="node_description">Images</div>
       <div class="node_content">
-        <ul id="image_box" rel="<%= @draft.id %>">
-          <% @draft.assets.images.each do |image| %>
+        <ul id="image_box" rel="<%= @page.id %>">
+          <% @page.assets.images.each do |image| %>
             <li rel="images_<%= image.id %>">
               <%= image_tag(image.upload.url(:thumb)) %>
             </li>
@@ -86,8 +100,11 @@
 
     <div class="node_description">Body</div>
     <div class="node_content"><%= d.text_area :body, :class => 'with_editor' %></div>
-
-    <div><%= d.submit 'save' %></div>
   <% end %>
-<% end %>
+
+    <div id="node_action_bar">
+      <%= f.submit 'Save Draft' %>
+      <%= f.submit 'Save + Unlock + Exit' %>
+    </div>
+  <% end %>
 </div>
