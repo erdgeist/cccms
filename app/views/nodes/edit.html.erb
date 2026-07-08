@@ -1,9 +1,7 @@
 <% content_for :subnavigation do %>
-  <%= link_to 'metadata', '#', :id => 'button', :class => "unselected" %>
   <%= link_to 'Show', @node %>
   <%= link_to 'Preview', preview_page_path(@draft) %>
   <%= button_to 'Publish', publish_node_path(@node), method: :put, form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
-  <%= link_to 'Revisions', node_revisions_path(@node) %>  
 <% end %>
 
 <div id="page_editor">
@@ -13,67 +11,72 @@
       <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
     </div>
   <% end %>
-  
-  <div id="metadata">
-    <div class="node_description">Slug</div>
-    <div class="node_content">
-      <%= f.text_field(
-            :staged_slug, :value => @node.staged_slug || @node.slug
-          ) 
-        %>
-    </div>
 
-    <div class="node_description">parent</div>
-    <div class="node_content">
-      <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
-        <div id="search_results">
+  <h1><%= title_for_node(@node) %></h1>
 
-        </div>
-        <%= f.hidden_field(
-              :staged_parent_id, 
-              :value => @node.staged_parent_id || @node.parent_id
+  <details id="metadata_details">
+    <summary>Metadata (slug, parent, tags, template, author, images)</summary>
+    <div id="metadata">
+      <div class="node_description">Slug</div>
+      <div class="node_content">
+        <%= f.text_field(
+              :staged_slug, :value => @node.staged_slug || @node.slug
             )
-         %>
-    </div>
-      
-    <%= fields_for @draft do |d| %>
-    <div class="node_description">Tags - comma seperated</div>
-    <div class="node_content"><%= text_field_tag :tag_list, @draft.tag_list.join(', ') %></div>
-
-    <div class="node_description">Publish at</div>
-    <div class="node_content"><%= d.datetime_select :published_at, :value => @draft.published_at %></div>
-
-    <div class="node_description">Template</div>
-    <div class="node_content">
-    <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
-    <span class="field_hint">Set automatically based on how this node was created - change it if needed.</span>
-    </div>
-
-    <div class="node_description">Author</div>
-    <div class="node_content"><%= d.select :user_id, user_list %></div>
-
-    <div class="node_description">Images</div>
-    <div class="node_content"> 
-      <ul id="image_box" rel="<%= @draft.id %>">
-        <% @draft.assets.images.each do |image| %>
-          <li rel="images_<%= image.id %>">
-            <%= image_tag(image.upload.url(:thumb)) %>
-          </li>
-        <% end %>
-      </ul>
-      <div class="clear_left right">
-        <a id="image_browser_toggle" class="unselected" href="#">image browser</a>
+          %>
       </div>
-      <div id="image_browser">
-        <ul>
-          <% Asset.images.each do |image| %>
-          <li rel="images_<%= image.id %>"><%= image_tag(image.upload.url(:thumb)) %></li>
+
+      <div class="node_description">parent</div>
+      <div class="node_content">
+        <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
+          <div id="search_results">
+
+          </div>
+          <%= f.hidden_field(
+                :staged_parent_id,
+                :value => @node.staged_parent_id || @node.parent_id
+              )
+           %>
+      </div>
+
+      <%= fields_for @draft do |d| %>
+      <div class="node_description">Tags - comma seperated</div>
+      <div class="node_content"><%= text_field_tag :tag_list, @draft.tag_list.join(', ') %></div>
+
+      <div class="node_description">Publish at</div>
+      <div class="node_content"><%= d.datetime_select :published_at, :value => @draft.published_at %></div>
+
+      <div class="node_description">Template</div>
+      <div class="node_content">
+      <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
+      <span class="field_hint">Set automatically based on how this node was created - change it if needed.</span>
+      </div>
+
+      <div class="node_description">Author</div>
+      <div class="node_content"><%= d.select :user_id, user_list %></div>
+
+      <div class="node_description">Images</div>
+      <div class="node_content">
+        <ul id="image_box" rel="<%= @draft.id %>">
+          <% @draft.assets.images.each do |image| %>
+            <li rel="images_<%= image.id %>">
+              <%= image_tag(image.upload.url(:thumb)) %>
+            </li>
           <% end %>
         </ul>
+        <div class="clear_left right">
+          <a id="image_browser_toggle" class="unselected" href="#">image browser</a>
+        </div>
+        <div id="image_browser">
+          <ul>
+            <% Asset.images.each do |image| %>
+            <li rel="images_<%= image.id %>"><%= image_tag(image.upload.url(:thumb)) %></li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-  
+  </details>
+
   <div id="content">
     <div class="node_description">Title</div>
     <div class="node_content"><%= d.text_field :title %></div>
