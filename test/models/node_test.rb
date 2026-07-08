@@ -339,6 +339,9 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal head_revision, node.head.revision
     assert_nil node.autosave
     assert_equal 2, node.pages.count
+    assert_equal node.head.user, node.draft.user
+    assert_equal @user1, node.draft.editor
+    assert_equal node.head.published_at, node.draft.published_at
   end
 
   test "autosave!, save_draft!, and lock_for_editing! raise LockedByAnotherUser for a second user" do

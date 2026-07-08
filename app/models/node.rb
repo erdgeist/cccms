@@ -56,6 +56,11 @@ class Node < ApplicationRecord
   def lock_for_editing! current_user
     if self.lock_owner.nil? || self.lock_owner == current_user
       lock_for! current_user
+      if self.draft
+        self.draft.user = current_user if self.draft.user.nil?
+        self.draft.editor = current_user
+        self.draft.save!
+      end
       self
     else
       raise(
@@ -95,15 +100,18 @@ class Node < ApplicationRecord
     return unless self.autosave
 
     if self.draft
+      preserved_published_at = self.draft.published_at
       self.draft.clone_attributes_from self.autosave
+      self.draft.published_at = preserved_published_at
       self.draft.user_id = self.autosave.user_id if self.autosave.user_id
       self.draft.editor  = current_user
       self.draft.save!
     else
-      empty_page        = self.pages.create!
-      empty_page.user   = self.autosave.user_id ? self.autosave.user : (self.head ? self.head.user : current_user)
-      empty_page.editor = current_user
+      empty_page = self.pages.create!
       empty_page.clone_attributes_from self.autosave
+      empty_page.user         = self.autosave.user_id ? self.autosave.user : (self.head ? self.head.user : current_user)
+      empty_page.editor       = current_user
+      empty_page.published_at = self.head.published_at if self.head
       empty_page.save!
       self.draft = empty_page
       self.save!
@@ -148,6 +156,28 @@ class Node < ApplicationRecord
     self.draft = empty_page
     self.save
     self.draft.reload
+  end
+
+  # Discards exactly the topmost non-empty layer -- autosave if present,
+  # else draft -- and reveals whatever's beneath it. Releases the lock
+  # only once nothing is left to protect (no draft survives); leaves it
+  # alone whenever a draft remains, since #edit still has real content
+  # open.
+  def revert! current_user
+    assert_locked_by! current_user
+
+    if self.autosave
+      self.autosave.destroy
+      self.autosave_id = nil
+      self.save!
+    elsif self.draft && self.head
+      self.draft.destroy
+      self.draft_id = nil
+      self.save!
+    end
+
+    self.unlock! unless self.draft
+    self.reload
   end
 
   def staged_slug=(value)

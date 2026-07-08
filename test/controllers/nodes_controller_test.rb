@@ -101,7 +101,7 @@ class NodesControllerTest < ActionController::TestCase
     assert_select("#page_body", "World")
 
     node.reload
-    assert_equal 2, node.pages.length
+    assert_equal 1, node.pages.length
     assert_equal "Hello", node.find_or_create_draft( User.first ).title
     assert_equal "World", node.find_or_create_draft( User.first ).body
   end
@@ -291,6 +291,7 @@ class NodesControllerTest < ActionController::TestCase
     get :edit, params: { :id => node.id }
     assert_response :success
 
+    put :update,  params: { :id => node.id, :page => { :title => "updated" } }
     put :publish, params: { :id => node.id }
 
     node.reload
@@ -303,6 +304,7 @@ class NodesControllerTest < ActionController::TestCase
     node  = create_node_with_published_page
     get :edit,    params: { :id => node.id }
 
+    put :update,  params: { :id => node.id, :page => { :title => "updated" } }
     put :publish, params: { :id => node.id }
 
     node.reload
@@ -324,7 +326,8 @@ class NodesControllerTest < ActionController::TestCase
     assert_equal "quentin", node.head.user.login
 
     login_as :aaron
-    get :edit,  params: {:id => node.id }
+    get :edit,   params: { :id => node.id }
+    put :update, params: { :id => node.id, :page => { :title => "updated" } }
 
     node.reload
     assert_equal "quentin", node.head.user.login
