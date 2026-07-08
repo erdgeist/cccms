@@ -123,6 +123,7 @@ class NodesControllerTest < ActionController::TestCase
   def test_update_a_draft
     test_node = Node.root.children.create! :slug => "test_node"
     login_as :quentin
+    get :edit, params: { :id => test_node.id }
     put :update, params: { :id => test_node.id, :page => {:title => "Hello", :body => "There"} }
     test_node.reload
     assert_equal "Hello", test_node.draft.title
@@ -133,6 +134,7 @@ class NodesControllerTest < ActionController::TestCase
     test_node = Node.root.children.create! :slug => "test_node"
 
     login_as :quentin
+    get :edit, params: { :id => test_node.id }
     put :update, params: {
       :id => test_node.id,
       :page => {

@@ -11,7 +11,8 @@ class NodesController < ApplicationController
                               :update,
                               :destroy,
                               :publish,
-                              :unlock
+                              :unlock,
+                              :autosave
                             ]
 
   def index
@@ -72,17 +73,35 @@ class NodesController < ApplicationController
 
   def update
     @node.update(node_params)
-    @draft = @node.find_or_create_draft current_user
-    @draft.tag_list = params[:tag_list]
-    if @draft.update( page_params )
-      flash[:notice] = "Draft has been saved: #{Time.now}"
-      respond_to do |format|
-        format.html { redirect_to edit_node_path(@node) }
-        format.js
-      end
+    @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
+    @node.save_draft!(current_user)
+
+    flash[:notice] = "Draft has been saved: #{Time.now}"
+
+    if params[:commit] == "Save + Unlock + Exit"
+      @node.unlock!
+      redirect_to node_path(@node)
     else
-      render :action => :edit
+      redirect_to edit_node_path(@node)
     end
+  rescue LockedByAnotherUser => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
+  rescue ActiveRecord::RecordInvalid
+    @page = @node.autosave || @node.draft || @node.head
+    render :action => :edit
+  end
+
+  def autosave
+    @node.update(node_params)
+    @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
+    head :ok
+  rescue LockedByAnotherUser => e
+    render plain: e.message, status: :locked
+  rescue ActiveRecord::RecordInvalid => e
+    render plain: e.message, status: :unprocessable_entity
+  rescue StandardError => e
+    render plain: "Autosave failed", status: :internal_server_error
   end
 
   def destroy
