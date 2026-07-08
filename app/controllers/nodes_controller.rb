@@ -12,7 +12,8 @@ class NodesController < ApplicationController
                               :destroy,
                               :publish,
                               :unlock,
-                              :autosave
+                              :autosave,
+                              :revert
                             ]
 
   def index
@@ -59,16 +60,17 @@ class NodesController < ApplicationController
   end
 
   def edit
-    begin
-      @draft = @node.find_or_create_draft( current_user )
-    rescue LockedByAnotherUser => e
-      flash[:error] = e.message
-      if request.referer
-        redirect_to request.referer || node_path(@node)
-      else
-        redirect_to node_path(@node)
-      end
+    @node.lock_for_editing!( current_user )
+    @page = @node.autosave || @node.draft || @node.head
+
+    if @node.autosave
+      flash.now[:notice] =
+        "This page has unsaved changes from a previous session, shown below. " \
+        "Save to keep them, or use \"Discard changes\" below to go back to the last saved version."
     end
+  rescue LockedByAnotherUser => e
+    flash[:error] = e.message
+    redirect_to(request.referer || node_path(@node))
   end
 
   def update
@@ -102,6 +104,18 @@ class NodesController < ApplicationController
     render plain: e.message, status: :unprocessable_entity
   rescue StandardError => e
     render plain: "Autosave failed", status: :internal_server_error
+  end
+
+  def revert
+    @node.revert!(current_user)
+    if @node.draft
+      redirect_to edit_node_path(@node)
+    else
+      redirect_to node_path(@node)
+    end
+  rescue LockedByAnotherUser => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
   end
 
   def destroy

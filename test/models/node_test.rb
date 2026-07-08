@@ -379,6 +379,93 @@ class NodeTest < ActiveSupport::TestCase
     assert_nil node.autosave
     assert_nil node.lock_owner
   end
+
+  test "revert! is a safe no-op on a fresh node with only a draft" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_not_nil node.draft
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! discards an autosave on a fresh node without touching its only draft" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "typing" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_not_nil node.draft
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! does nothing when a published node has no draft or autosave" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_not_nil node.head
+    assert_nil node.draft
+  end
+
+  test "revert! discards a fresh autosave and releases the lock when no draft exists" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "in progress" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_nil node.draft
+    assert_nil node.lock_owner
+  end
+
+  test "revert! destroys an existing draft and releases the lock" do
+    node = create_node_with_published_page
+    head_title = node.head.title
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "second version" }, @user1)
+    node.save_draft!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.draft
+    assert_equal head_title, node.head.title
+    assert_nil node.lock_owner
+  end
+
+  test "revert! discards only the autosave when a draft survives beneath it" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "second version" }, @user1)
+    node.save_draft!(@user1)
+    node.autosave!({ :title => "third version, still typing" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_not_nil node.draft
+    assert_equal "second version", node.draft.title
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! raises LockedByAnotherUser for a non-owner" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    assert_raise(LockedByAnotherUser) { node.revert!(@user2) }
+    assert_equal @user1, node.reload.lock_owner
+  end
   
   def create_revisions node, count
     count.times do

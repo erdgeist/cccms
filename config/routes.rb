@@ -41,6 +41,7 @@ Cccms::Application.routes.draw do
         put :generate_shared_preview
         put :revoke_shared_preview
         put :autosave
+        put :revert
       end
 
       resources :revisions do
