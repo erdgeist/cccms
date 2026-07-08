@@ -40,6 +40,7 @@ Cccms::Application.routes.draw do
         put :publish
         put :generate_shared_preview
         put :revoke_shared_preview
+        put :autosave
       end
 
       resources :revisions do
