@@ -271,3 +271,104 @@ image_interface = {
 }
       
 
+rrule_builder = {
+  initialize : function() {
+    rrule_builder.try_populate_from_rrule($("#event_rrule").val());
+
+    $("input[name='rrule_freq']").bind("change", function() {
+      if ($(this).val() === "weekly") { rrule_builder.show_weekly_options(); }
+      else { rrule_builder.show_monthly_options(); }
+      rrule_builder.sync();
+    });
+    $("#rrule_monthly_ordinal").bind("change", function() {
+      $("#rrule_ordinal_fields").toggle($(this).is(":checked"));
+      rrule_builder.sync();
+    });
+    $("#rrule_exclude_month").bind("change", function() {
+      $("#rrule_excluded_month").toggle($(this).is(":checked"));
+      rrule_builder.sync();
+    });
+    $("#rrule_builder input, #rrule_builder select").bind("change", rrule_builder.sync);
+  },
+
+  show_weekly_options : function() {
+    $("#rrule_weekly_options").show();
+    $("#rrule_monthly_options").hide();
+  },
+  show_monthly_options : function() {
+    $("#rrule_weekly_options").hide();
+    $("#rrule_monthly_options").show();
+  },
+
+  sync : function() {
+    var freq = $("input[name='rrule_freq']:checked").val();
+    var parts = [];
+
+    if (freq === "weekly") {
+      parts.push("FREQ=WEEKLY");
+      if ($("#rrule_biweekly").is(":checked")) parts.push("INTERVAL=2");
+      var days = [];
+      $("input[id^='rrule_byday_']:checked").each(function() {
+        days.push($(this).attr("id").replace("rrule_byday_", ""));
+      });
+      if (days.length > 0) parts.push("BYDAY=" + days.join(","));
+    } else {
+      parts.push("FREQ=MONTHLY");
+      if ($("#rrule_monthly_ordinal").is(":checked")) {
+        parts.push("BYDAY=" + $("#rrule_ordinal").val() + $("#rrule_ordinal_day").val());
+      }
+    }
+
+    if ($("#rrule_exclude_month").is(":checked")) {
+      var excluded = parseInt($("#rrule_excluded_month").val(), 10);
+      var months = [];
+      for (var m = 1; m <= 12; m++) { if (m !== excluded) months.push(m); }
+      parts.push("BYMONTH=" + months.join(","));
+    }
+
+    $("#event_rrule").val(parts.join(";"));
+  },
+
+  try_populate_from_rrule : function(rrule) {
+    if (!rrule) return;
+    var parts = {};
+    rrule.split(";").forEach(function(p) {
+      var kv = p.split("=");
+      parts[kv[0]] = kv[1];
+    });
+    if (parts.COUNT || parts.UNTIL) return;
+
+    if (parts.FREQ === "WEEKLY") {
+      $("input[name='rrule_freq'][value='weekly']").prop("checked", true);
+      rrule_builder.show_weekly_options();
+      if (parts.INTERVAL === "2") $("#rrule_biweekly").prop("checked", true);
+      if (parts.BYDAY) {
+        parts.BYDAY.split(",").forEach(function(code) {
+          $("#rrule_byday_" + code).prop("checked", true);
+        });
+      }
+    } else if (parts.FREQ === "MONTHLY") {
+      $("input[name='rrule_freq'][value='monthly']").prop("checked", true);
+      rrule_builder.show_monthly_options();
+      var match = parts.BYDAY && parts.BYDAY.match(/^(-?\d+)([A-Z]{2})$/);
+      if (match) {
+        $("#rrule_monthly_ordinal").prop("checked", true);
+        $("#rrule_ordinal_fields").show();
+        $("#rrule_ordinal").val(match[1]);
+        $("#rrule_ordinal_day").val(match[2]);
+      }
+    } else {
+      return;
+    }
+
+    if (parts.BYMONTH) {
+      var included = parts.BYMONTH.split(",").map(function(s) { return parseInt(s, 10); });
+      var missing = [];
+      for (var m = 1; m <= 12; m++) { if (included.indexOf(m) === -1) missing.push(m); }
+      if (missing.length === 1) {
+        $("#rrule_exclude_month").prop("checked", true);
+        $("#rrule_excluded_month").val(missing[0]).show();
+      }
+    }
+  }
+};
