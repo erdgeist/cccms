@@ -98,6 +98,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_not_nil node.draft
     assert_nil node.draft.user
     assert_nil node.head
+    assert_nil node.autosave
   end
   
   def test_create_new_draft_of_published_page
@@ -279,6 +280,101 @@ class NodeTest < ActiveSupport::TestCase
   test "new nodes should have drafts with no publidhed_at set" do
     node = Node.root.children.create( :slug => "wow" )
     assert_nil node.draft.published_at
+  end
+
+  test "lock_for_editing! acquires the lock without creating a draft or autosave" do
+    node = create_node_with_published_page
+
+    node.lock_for_editing!(@user1)
+
+    assert_equal @user1, node.lock_owner
+    assert_nil node.draft
+    assert_nil node.autosave
+  end
+
+  test "autosave! creates a buffer that never appears among a node's pages, leaving the draft untouched" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    page_count_before = node.pages.count
+
+    node.autosave!({ :title => "in progress" }, @user1)
+    node.reload
+
+    assert_not_nil node.autosave
+    assert_nil node.autosave.node_id
+    assert_equal page_count_before, node.pages.count
+    assert_not_equal "in progress", node.draft.title
+  end
+
+  test "save_draft! promotes an autosave into an existing draft without creating a new revision" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "in progress" }, @user1)
+    page_count_before = node.pages.count
+
+    node.save_draft!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_equal "in progress", node.draft.title
+    assert_equal page_count_before, node.pages.count
+  end
+
+  test "save_draft! promotes an autosave into a brand new, correctly-revisioned draft when none exists" do
+    node = create_node_with_published_page
+    head_revision = node.head.revision
+
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "updated version" }, @user1)
+    node.reload
+
+    assert_nil node.draft
+    assert_nil node.autosave.node_id
+
+    node.save_draft!(@user1)
+    node.reload
+
+    assert_not_nil node.draft
+    assert_equal head_revision + 1, node.draft.revision
+    assert_equal head_revision, node.head.revision
+    assert_nil node.autosave
+    assert_equal 2, node.pages.count
+  end
+
+  test "autosave!, save_draft!, and lock_for_editing! raise LockedByAnotherUser for a second user" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    assert_raise(LockedByAnotherUser) { node.autosave!({ :title => "x" }, @user2) }
+    assert_raise(LockedByAnotherUser) { node.save_draft!(@user2) }
+    assert_raise(LockedByAnotherUser) { node.lock_for_editing!(@user2) }
+
+    assert_equal @user1, node.reload.lock_owner
+  end
+
+  test "wipe_draft! leaves a fresh autosave and its lock untouched" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "still typing" }, @user1)
+
+    node.wipe_draft!
+    node.reload
+
+    assert_not_nil node.autosave
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "wipe_draft! destroys a stale, orphaned autosave and releases its lock" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "abandoned mid-session" }, @user1)
+    node.autosave.update_column(:updated_at, 2.days.ago)
+
+    node.wipe_draft!
+    node.reload
+
+    assert_nil node.autosave
+    assert_nil node.lock_owner
   end
   
   def create_revisions node, count

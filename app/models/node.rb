@@ -6,6 +6,7 @@ class Node < ApplicationRecord
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
   belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy, optional: true
   belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy, optional: true
+  belongs_to  :autosave, :class_name => "Page", :foreign_key => :autosave_id, :dependent => :destroy, optional: true
   has_many    :permissions, :dependent => :destroy
   has_many    :events, :dependent => :destroy
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
@@ -48,6 +49,71 @@ class Node < ApplicationRecord
   end
 
   # Instance Methods
+
+  # Acquires (or reaffirms) the editing lock without creating a draft or
+  # an autosave -- both are now deferred until there is real content to
+  # hold.
+  def lock_for_editing! current_user
+    if self.lock_owner.nil? || self.lock_owner == current_user
+      lock_for! current_user
+      self
+    else
+      raise(
+        LockedByAnotherUser,
+        "Page is locked by another user who is working on it! " \
+        "Last modification: #{(self.autosave || self.draft || self.head).updated_at.to_fs(:db)}"
+      )
+    end
+  end
+
+  # Creates or updates the autosave buffer from the given attributes.
+  # Autosave rows are never associated to the node via node_id -- they
+  # must never appear in self.pages / the revisions list, which is the
+  # whole reason autosave exists as a separate, unversioned layer.
+  def autosave! attributes, current_user
+    assert_locked_by! current_user
+
+    unless self.autosave
+      self.autosave = Page.create!(:editor => current_user)
+      self.save!
+    end
+    self.autosave.assign_attributes(attributes)
+    self.autosave.save!
+    self.autosave
+  end
+
+  # Promotes the current autosave into the draft (creating the draft if
+  # none exists yet) and destroys the autosave afterward. This is what
+  # the explicit "Save" action does; it never creates a new revision --
+  # same as any other in-place draft edit. The new draft is created via
+  # self.pages.create! rather than by repointing the autosave's own
+  # node_id, because acts_as_list assigns the revision number at create
+  # time, scoped to node_id -- a page created with node_id nil and
+  # reassigned afterward would carry a wrong or missing revision number.
+  def save_draft! current_user
+    assert_locked_by! current_user
+    return unless self.autosave
+
+    if self.draft
+      self.draft.clone_attributes_from self.autosave
+      self.draft.user_id = self.autosave.user_id if self.autosave.user_id
+      self.draft.editor  = current_user
+      self.draft.save!
+    else
+      empty_page        = self.pages.create!
+      empty_page.user   = self.autosave.user_id ? self.autosave.user : (self.head ? self.head.user : current_user)
+      empty_page.editor = current_user
+      empty_page.clone_attributes_from self.autosave
+      empty_page.save!
+      self.draft = empty_page
+      self.save!
+    end
+
+    self.autosave.destroy
+    self.autosave_id = nil
+    self.save!
+    self.draft.reload
+  end
 
   def find_or_create_draft current_user
     self.wipe_draft!
@@ -129,8 +195,13 @@ class Node < ApplicationRecord
   # removes a draft and the lock if it is older than a day and still
   # identical to head
   def wipe_draft!
+    return if self.autosave && self.autosave.updated_at > 1.day.ago
+
     unless self.draft
+      self.autosave&.destroy
+      self.autosave_id = nil
       self.unlock!
+      self.save!
       return
     end
     return unless self.head
@@ -222,6 +293,15 @@ class Node < ApplicationRecord
     def lock_for! current_user
       self.lock_owner = current_user
       self.save
+    end
+
+    def assert_locked_by! current_user
+      return if self.lock_owner == current_user
+      raise(
+        LockedByAnotherUser,
+        "Page is locked by another user who is working on it! " \
+        "Last modification: #{(self.autosave || self.draft || self.head).updated_at.to_fs(:db)}"
+      )
     end
 
     # Creates an empty page and associates it to the given node. This means
