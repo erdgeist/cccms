@@ -112,6 +112,7 @@ class NodesController < ApplicationController
   end
 
   def revert
+    @node.lock_for_editing!(current_user)
     @node.revert!(current_user)
     if @node.draft
       redirect_to edit_node_path(@node)
