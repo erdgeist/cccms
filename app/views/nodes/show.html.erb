@@ -4,8 +4,8 @@
 <% end %>
 
 <div id="page_editor" class="show_node">
+  <h1><%= title_for_node(@node) %></h1>
   <div id="content">
-
     <div class="node_description">People</div>
     <div class="node_content node_info_group">
       <div class="node_info_group_items">
@@ -127,9 +127,6 @@
         <% end %>
       </div>
     <% end %>
-
-    <div class="node_description"><strong>Title</strong></div>
-    <div class="node_content"><strong><%= sanitize(@page.title) %></strong></div>
 
     <div class="node_description">Abstract</div>
     <div class="node_content"><%= sanitize(@page.abstract) %></div>
