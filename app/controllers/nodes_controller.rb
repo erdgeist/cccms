@@ -49,6 +49,11 @@ class NodesController < ApplicationController
 
       redirect_to(edit_node_path(@node))
     else
+      @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
+      if params[:parent_id].present?
+        @parent_id = params[:parent_id]
+        @parent_name = Node.find(@parent_id).title
+      end
       render :new
     end
   end

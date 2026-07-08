@@ -17,7 +17,7 @@ class Node < ApplicationRecord
   after_save    :update_unique_names_of_children
 
   # Validations
-  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? }
+  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? || slug.blank? }
   validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }

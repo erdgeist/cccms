@@ -25,7 +25,7 @@
 
   <div class="node_description">Title</div>
   <div class="node_content">
-    <%= text_field_tag :title %>
+    <%= text_field_tag :title, nil, required: true %>
     <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
   </div>
 
