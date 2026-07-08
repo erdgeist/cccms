@@ -119,24 +119,8 @@ $(document).ready(function () {
 
 meta_data = {
   initialize : function() {
-    $("#metadata").hide();
-
-    $("#button").click(function () {
-      
-      $("#metadata").slideToggle(1200);
-      image_interface.initialize();
-
-      if ($("#button").attr("class") == "unselected") {
-        $("#button").attr("class", "selected");        
-        
-      }
-      else {
-        $("#button").attr("class", "unselected");
-        $("#image_browser").hide();
-        $("#image_browser_toggle").attr("class", "unselected");
-      }
-      
-      return false;
+    document.getElementById("metadata_details").addEventListener("toggle", function() {
+      if (this.open) image_interface.initialize();
     });
   }
 };

@@ -93,6 +93,10 @@ input[type=radio] {
   margin-left: 5px;
 }
 
+#metadata_details summary {
+  margin-bottom: 1em;
+}
+
 .right { text-align: right; }
 .clear_left { clear: left; }
 
