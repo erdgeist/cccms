@@ -17,6 +17,11 @@ class EventsController < ApplicationController
     end
   end
 
+  # GET /events/without_node
+  def without_node
+    @events = Event.where(node_id: nil).order(:start_time).paginate(page: params[:page], per_page: 25)
+  end
+
   # GET /events/1
   # GET /events/1.xml
   def show
