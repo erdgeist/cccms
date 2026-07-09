@@ -29,6 +29,7 @@ table.node_table a,
 table.assets_table a,
 table.events_table a,
 table.user_table a,
+table.revisions_table a,
 .add_child_links a,
 div#draft_list table td.actions a {
   text-decoration: underline;
@@ -297,6 +298,27 @@ form.button_to.destructive button[type="submit"]:hover {
   background-color: #cc0000;
 }
 
+form.button_to.computation input[type="submit"],
+form.button_to.computation button[type="submit"] {
+  color: #00838f;
+  background-color: #e0f2f1;
+  border-radius: 2px;
+  padding: 2px 8px;
+}
+
+form.button_to.computation input[type="submit"]:hover,
+form.button_to.computation button[type="submit"]:hover {
+  color: #ffffff;
+  background-color: #00838f;
+}
+
+form.button_to.computation input[type="submit"]:disabled,
+form.button_to.computation button[type="submit"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Native (non-button_to) submit buttons -- Create/Save/Publish forms.
    Lower specificity than form.button_to's own rule, so button_to forms
    are correctly unaffected. If a button_to output ever loses its class
@@ -420,42 +442,58 @@ table.node_table tr:hover {
   content: "• ";
 }
 
-table#revisions {
+table.revisions_table {
   border-collapse: collapse;
 }
 
-table#revisions tr {
-  height: 45px;
+table.revisions_table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-/* Redundant with the generic table tr.header rule above (identical
-   values) -- harmless, kept presumably for explicitness. */
-table#revisions tr.header {
-  height: 20px;
+table.revisions_table th,
+table.revisions_table td {
+  padding: 0.4rem 0.75rem;
   text-align: left;
 }
 
-table#revisions td {
-  padding-right: 25px;
+table.revisions_table thead tr.header,
+table.revisions_table thead tr.diff_sticky_bar {
+  background-color: #ffffff;
 }
 
-table#revisions td.title {
+table.revisions_table .diff_sticky_bar td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+#diff_selection_label {
+  margin-left: 0.75rem;
+  color: #969696;
+}
+table.revisions_table td.title {
   width: 450px;
 }
 
-table#revisions td.date {
+table.revisions_table td.date {
   width: 175px;
 }
 
-table#revisions tr.header:hover {
+table.revisions_table tr:not(.header):not(.no_hover) {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+table.revisions_table tr.header:hover {
   background-color: #ffffff;
 }
 
-table#revisions tr.no_hover:hover {
+table.revisions_table tr.no_hover:hover {
   background-color: #ffffff;
 }
 
-table#revisions tr:hover {
+table.revisions_table tr:hover {
   background-color: #f1f1f1;
 }
 
