@@ -1,54 +1,38 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'show all revisions', node_revisions_path(@node) %>
-<% end %>
-
 <div id="page_editor" class="show_node">
-  <table id="content">
-    <tr>
-      <td class="description">Path</td>
-      <td><%= @page.public_link %></td>
-    </tr>
-    <tr>
-      <td class="description">Author</td>
-      <td><%= @page.user.try(:login) %></td>
-    </tr>
-    <tr>
-      <td class="description">Editor</td>
-      <td><%= @page.editor.try(:login) %></td>
-    </tr>
-    <% if @page.node.locked? %>
-    <tr>
-      <td class="description">Locked by</td>
-      <td><%= @page.node.lock_owner.login %></td>
-    </tr>
-    <% end %>
-    <tr>
-      <td class="description">Last updated</td>
-      <td><%= @page.updated_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Published at</td>
-      <td><%= @page.published_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Revision</td>
-      <td><%= @page.revision %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Title</strong></td>
-      <td><%= @page.title %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Abstract</strong></td>
-      <td><%= @page.abstract %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Body</strong></td>
-      <td><%= @page.body %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="right"></td>
-    </tr>
-  </table>
+  <h1>Revision <%= @page.revision %>: <%= @page.title %></h1>
+
+  <div id="content">
+    <div class="node_description">Actions</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <%= link_to 'Show all revisions', node_revisions_path(@node) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="node_description">Path</div>
+    <div class="node_content"><%= @page.public_link %></div>
+
+    <div class="node_description">Author</div>
+    <div class="node_content"><%= @page.user.try(:login) %></div>
+
+    <div class="node_description">Editor</div>
+    <div class="node_content"><%= @page.editor.try(:login) %></div>
+
+    <div class="node_description">Last updated</div>
+    <div class="node_content"><%= @page.updated_at %></div>
+
+    <div class="node_description">Published at</div>
+    <div class="node_content"><%= @page.published_at %></div>
+
+    <div class="node_description">Title</div>
+    <div class="node_content"><%= @page.title %></div>
+
+    <div class="node_description">Abstract</div>
+    <div class="node_content"><%= @page.abstract %></div>
+
+    <div class="node_description">Body</div>
+    <div class="node_content"><%= @page.body %></div>
+  </div>
 </div>
