@@ -274,8 +274,6 @@ form.button_to.state_changing input[type="submit"],
 form.button_to.state_changing button[type="submit"] {
   color: #0d47a1;
   background-color: #e3f2fd;
-  border-radius: 2px;
-  padding: 2px 8px;
 }
 
 form.button_to.state_changing input[type="submit"]:hover,
@@ -288,8 +286,6 @@ form.button_to.destructive input[type="submit"],
 form.button_to.destructive button[type="submit"] {
   color: #cc0000;
   background-color: #fdecea;
-  border-radius: 2px;
-  padding: 2px 8px;
 }
 
 form.button_to.destructive input[type="submit"]:hover,
@@ -302,8 +298,6 @@ form.button_to.computation input[type="submit"],
 form.button_to.computation button[type="submit"] {
   color: #00838f;
   background-color: #e0f2f1;
-  border-radius: 2px;
-  padding: 2px 8px;
 }
 
 form.button_to.computation input[type="submit"]:hover,
@@ -385,13 +379,21 @@ table tr.header {
   text-align: left;
 }
 
-table.node_table {
+table.node_table ,
+table.assets_table,
+table.user_table,
+table.events_table {
   border-collapse: collapse;
 }
 
 table.node_table tr {
-  min-height: 2rem;
   border-bottom: 1px solid #000000;
+}
+
+table.assets_table tr,
+table.user_table tr,
+table.events_table tr {
+  border-bottom: 1px solid #e8e8e8;
 }
 
 table.node_table th.node_id,
@@ -408,7 +410,10 @@ table.node_table th.title {
   min-width: 12rem;
 }
 
-table.node_table tr.header {
+table.node_table tr.header,
+table.assets_table tr.header,
+table.user_table tr.header,
+table.events_table tr.header {
   height: 2rem;
   text-align: left;
 }
@@ -416,6 +421,16 @@ table.node_table tr.header {
 table.node_table td {
   padding-top: 0px;
   padding-bottom: 0px;
+  padding-right: 25px;
+  padding-left: 0px;
+  min-width: 2rem;
+}
+
+table.assets_table td,
+table.user_table td,
+table.events_table td {
+  padding-top: 8px;
+  padding-bottom: 8px;
   padding-right: 25px;
   padding-left: 0px;
   min-width: 2rem;
@@ -430,11 +445,17 @@ table.node_table .actions {
   text-transform: lowercase;
 }
 
-table.node_table tr.header:hover {
+table.node_table tr.header:hover,
+table.assets_table tr.header:hover,
+table.user_table tr.header:hover,
+table.events_table tr.header:hover {
   background-color: #ffffff;
 }
 
-table.node_table tr:hover {
+table.node_table tr:hover,
+table.assets_table tr:hover,
+table.user_table tr:hover,
+table.events_table tr:hover {
   background-color: #f1f1f1;
 }
 
@@ -598,17 +619,18 @@ table.user_table td.user_login {
   display: block;
 }
 
-#page_editor a.action_button,
-.node_status form.button_to input[type="submit"],
-.node_status form.button_to button[type="submit"] {
+a.action_button,
+form.button_to input[type="submit"],
+form.button_to button[type="submit"] {
   padding: 4px 12px;
   line-height: 1.2;
   box-sizing: border-box;
 }
 
-.node_status form.button_to input[type="submit"],
-.node_status form.button_to button[type="submit"] {
+form.button_to input[type="submit"],
+form.button_to button[type="submit"] {
   border: 1px solid transparent;
+  border-radius: 2px;
 }
 
 .field_hint {
@@ -659,7 +681,8 @@ div#page_editor {
   margin-left: 10px;
 }
 
-#page_editor a.action_button {
+#page_editor a.action_button,
+a.action_button {
   display: inline-block;
   -webkit-appearance: none;
   appearance: none;
@@ -671,7 +694,8 @@ div#page_editor {
   color: #000000;
 }
 
-#page_editor a.action_button:hover {
+#page_editor a.action_button:hover,
+a.action_button:hover {
   color: #ffffff;
   background-color: #000000;
 }

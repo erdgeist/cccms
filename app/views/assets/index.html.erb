@@ -2,11 +2,16 @@
   <%= link_to 'New asset', new_asset_path %>
 <% end %>
 
-
 <%= will_paginate @assets %>
 
 <table class="assets_table">
-  <tr>
+  <tr class="header">
+    <th>Preview</th>
+    <th>Name</th>
+    <th>Type</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </tr>
 <% @assets.each do |asset| %>
   <tr>
