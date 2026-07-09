@@ -243,31 +243,22 @@ class Page < ApplicationRecord
     end
 
     def rewrite_links_in_body
-      begin
-        if self.body
-          tmp_body    = "<div>#{self.body}</div>"
-          xml_string  = XML::Parser.string( tmp_body )
-          xml_doc     = xml_string.parse
-          links       = xml_doc.find("//a[not(starts-with(@href, 'http://'))]")
-          links       = links.reject { |l| l[:href] =~ /system\/uploads/ }
-          locales     = I18n.available_locales.reject {|l| l == :root}
+      return unless self.body
 
-          links.each do |link|
-            unless locales.include? link[:href].slice(1,2).to_sym
-              unless link[:href] =~ /sytem\/uploads/
-                link[:href] = link[:href].sub(/^\//, "/#{I18n.locale}/")
-              end
-            end
-          end
+      doc = Nokogiri::HTML::DocumentFragment.parse(self.body)
+      locales = I18n.available_locales.reject { |l| l == :root }
 
-          tmp_body = xml_doc.to_s.gsub(/(\n\<div\>|\<\/div\>\n)/, "")
-          tmp_body.gsub!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+      doc.css('a').each do |link|
+        href = link['href']
+        next unless href
+        next if href.start_with?('http://', 'https://')
+        next if href =~ /system\/uploads/
 
-          self.body = tmp_body
+        unless locales.include?(href.slice(1, 2)&.to_sym)
+          link['href'] = href.sub(/^\//, "/#{I18n.locale}/")
         end
-      rescue
-        nil
       end
-    end
 
+      self.body = doc.to_html
+    end
 end

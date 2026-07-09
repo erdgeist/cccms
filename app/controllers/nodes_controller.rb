@@ -65,15 +65,16 @@ class NodesController < ApplicationController
   end
 
   def edit
+    freshly_locked = @node.lock_owner != current_user
     @node.lock_for_editing!( current_user )
     @page = @node.autosave || @node.draft || @node.head
-
-    flash.now[:notice] = "Node locked and ready to edit" unless @node.autosave
 
     if @node.autosave
       flash.now[:notice] =
         "This page has unsaved changes from a previous session, shown below. " \
         "Save to keep them, or use \"Discard changes\" below to go back to the last saved version."
+    elsif freshly_locked
+      flash.now[:notice] = "Node locked and ready to edit"
     end
   rescue LockedByAnotherUser => e
     flash[:error] = e.message
@@ -85,7 +86,18 @@ class NodesController < ApplicationController
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     @node.save_draft!(current_user)
 
-    flash[:notice] = "Draft has been saved: #{Time.now}"
+    flash[:notice] = "Draft saved. Publish your changes in the Status section once you're done."
+    flash[:status_path] = node_path(@node)
+
+    if @node.draft.translated_locales.size > 1
+      stale_locale = @node.draft.translated_locales.find do |locale|
+        @node.draft.outdated_translations?(locale: locale)
+      end
+      if stale_locale
+        flash[:stale_locale] = stale_locale
+        flash[:stale_locale_path] = edit_node_path(@node, locale: stale_locale)
+      end
+    end
 
     if params[:commit] == "Save + Unlock + Exit"
       @node.unlock!

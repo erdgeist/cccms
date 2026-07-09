@@ -22,9 +22,7 @@ xml.feed(:xmlns => "http://www.w3.org/2005/Atom", "xml:base" => @host) do
       xml.updated(item.updated_at.xmlschema)
       xml.published(item.published_at.xmlschema)
       xml.summary(CGI.escapeHTML(item.abstract.to_s))
-      xml.content(:type => "xhtml") do
-        xml.div(item.body, :xmlns => "http://www.w3.org/1999/xhtml")
-      end
+      xml.content(CGI.escapeHTML(item.body.to_s), :type => "html")
     end
     
   end
