@@ -511,6 +511,31 @@ table.revisions_table tr:hover {
   background-color: #f1f1f1;
 }
 
+#diffview del {
+  background: #ffd7d5;
+  color: #82071e;
+  text-decoration: line-through;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+#diffview ins {
+  background: #ccffd8;
+  color: #055d20;
+  text-decoration: none;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+#diffview .diff_side_by_side {
+  display: flex;
+  gap: 1rem;
+}
+
+#diffview .diff_column {
+  flex: 1;
+}
+
 table.user_table td.user_login {
   padding-right: 30px;
 }

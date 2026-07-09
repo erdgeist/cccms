@@ -13,16 +13,18 @@ class RevisionsController < ApplicationController
 
   def diff
     @node = Node.find(params[:node_id])
-    
+
     if @node.pages.length > 1
       params[:start_revision]  ||= @node.pages.all[-2].revision
       params[:end_revision]    ||= @node.pages.all[-1].revision
     else
-      params[:start], params[:end] = 1, 1
+      params[:start_revision], params[:end_revision] = 1, 1
     end
-    
-    @start  = @node.pages.find_by_revision( params[:start_revision] )
-    @end    = @node.pages.find_by_revision( params[:end_revision] )
+
+    @start      = @node.pages.find_by_revision( params[:start_revision] )
+    @end        = @node.pages.find_by_revision( params[:end_revision] )
+    @diff_view  = params[:view] == "side_by_side" ? :side_by_side : :inline
+    @diff       = @end.diff_against( @start, view: @diff_view )
   end
 
   def show

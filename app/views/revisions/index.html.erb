@@ -19,6 +19,8 @@
               form: { id: 'diff_form', class: 'button_to computation' },
               disabled: true %>
         <span id="diff_selection_label"></span>
+        <label><%= radio_button_tag :view, 'inline', true %> Inline</label>
+        <label><%= radio_button_tag :view, 'side_by_side', false %> Side by side</label>
       </td>
     </tr>
   </thead>
@@ -68,6 +70,7 @@
   document.getElementById('diff_form').addEventListener('submit', function(e) {
     var start = document.querySelector('input[name="start_revision"]:checked');
     var end = document.querySelector('input[name="end_revision"]:checked');
+    var view = document.querySelector('input[name="view"]:checked');
     if (start) {
       var s = document.createElement('input');
       s.type = 'hidden'; s.name = 'start_revision'; s.value = start.value;
@@ -77,6 +80,11 @@
       var en = document.createElement('input');
       en.type = 'hidden'; en.name = 'end_revision'; en.value = end.value;
       this.appendChild(en);
+    }
+    if (view) {
+      var v = document.createElement('input');
+      v.type = 'hidden'; v.name = 'view'; v.value = view.value;
+      this.appendChild(v);
     }
   });
 </script>

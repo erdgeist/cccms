@@ -59,4 +59,33 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_equal @node.head, @node.pages.first
     assert_equal "first", @node.head.reload.body
   end
+
+  test "diffing two revisions renders real markup with only the changed words marked" do
+    login_as :quentin
+    post(
+      :diff, params: {
+        :node_id => @node.id,
+        :start_revision => @node.pages.first.revision,
+        :end_revision => @node.pages.last.revision
+      }
+    )
+    assert_response :success
+    assert_select "del", "first"
+    assert_select "ins", "second"
+    assert_no_match /&lt;/, response.body
+  end
+
+  test "diffing two revisions in side by side view renders two columns" do
+    login_as :quentin
+    post(
+      :diff, params: {
+        :node_id => @node.id,
+        :start_revision => @node.pages.first.revision,
+        :end_revision => @node.pages.last.revision,
+        :view => "side_by_side"
+      }
+    )
+    assert_response :success
+    assert_select ".diff_column", 2
+  end
 end

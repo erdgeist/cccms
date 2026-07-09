@@ -176,4 +176,38 @@ class PageTest < ActiveSupport::TestCase
     assert_not_equal first_page.id, first_page.node.head_id
     assert first_page.published_at.present?
   end
+
+  def test_diff_against_inline_keeps_tags_and_marks_only_the_changed_word
+    n = Node.root.children.create! :slug => "diff_against_test"
+    d = n.find_or_create_draft @user1
+    d.title = "Old heading"
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft @user1
+    d2.title = "New heading"
+    d2.save!
+
+    diff = d2.diff_against(n.head)
+
+    assert_match "<del>Old</del>", diff[:title]
+    assert_match "<ins>New</ins>", diff[:title]
+  end
+
+  def test_diff_against_side_by_side_returns_two_annotated_strings
+    n = Node.root.children.create! :slug => "diff_against_sbs_test"
+    d = n.find_or_create_draft @user1
+    d.title = "Old heading"
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft @user1
+    d2.title = "New heading"
+    d2.save!
+
+    old_html, new_html = d2.diff_against(n.head, view: :side_by_side)[:title]
+
+    assert_match "<del>Old</del>", old_html
+    assert_match "<ins>New</ins>", new_html
+  end
 end

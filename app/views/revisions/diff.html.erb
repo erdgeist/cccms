@@ -7,58 +7,36 @@
 <%= form_tag diff_node_revisions_path do %>
   <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
   <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
+  <%= select_tag :view, options_for_select([['Inline', 'inline'], ['Side by side', 'side_by_side']], @diff_view) %>
   <%= submit_tag 'Diff' %>
 <% end %>
 
-<div id="start_title" style="display: none;">
-  <%= h(@start.title) %>
-</div>
-
-<div id="end_title" style="display: none;">
-  <%= h(@end.title) %>
-</div>
-
-<div id="start_abstract" style="display: none;">
-  <%= h(@start.abstract) %>
-</div>
-
-<div id="end_abstract" style="display: none;">
-  <%= h(@end.abstract) %>
-</div>
-
-<pre>
-  <div id="start_body" style="display: none;">
-    <%= (@start.body) %>
-  </div>
-</pre>
-<pre>
-  <div id="end_body" style="display: none;">
-    <%= (@end.body) %>
-  </div>
-</pre>
-
-<script src="/javascripts/cacycle_diff.js"></script>
-<script type="text/javascript" charset="utf-8">
-  window.onload = function() {
-    title1    = document.getElementById('start_title').innerHTML;
-    title2    = document.getElementById('end_title').innerHTML;
-    abstract1 = document.getElementById('start_abstract').innerHTML;
-    abstract2 = document.getElementById('end_abstract').innerHTML;
-    body1     = document.getElementById('start_body').innerHTML;
-    body2     = document.getElementById('end_body').innerHTML;
-    document.getElementById('diffview_title').innerHTML = WDiffString(title1, title2);
-    document.getElementById('diffview_abstract').innerHTML = WDiffString(abstract1, abstract2);
-    document.getElementById('diffview_body').innerHTML = WDiffString(body1, body2);
-  }
-</script>
-
 <div id="diffview">
-  <h3>Title</h3>
-  <p id="diffview_title"></p>
-  
-  <h3>Abstract</h3>
-  <p id="diffview_abstract"></p>
-  
-  <h3>Body</h3>
-  <p id="diffview_body"></p>
+  <% if @diff_view == :side_by_side %>
+    <div class="diff_side_by_side">
+      <div class="diff_column">
+        <h3>Title</h3>
+        <p><%= raw @diff[:title][0] %></p>
+        <h3>Abstract</h3>
+        <p><%= raw @diff[:abstract][0] %></p>
+        <h3>Body</h3>
+        <%= raw @diff[:body][0] %>
+      </div>
+      <div class="diff_column">
+        <h3>Title</h3>
+        <p><%= raw @diff[:title][1] %></p>
+        <h3>Abstract</h3>
+        <p><%= raw @diff[:abstract][1] %></p>
+        <h3>Body</h3>
+        <%= raw @diff[:body][1] %>
+      </div>
+    </div>
+  <% else %>
+    <h3>Title</h3>
+    <p><%= raw @diff[:title] %></p>
+    <h3>Abstract</h3>
+    <p><%= raw @diff[:abstract] %></p>
+    <h3>Body</h3>
+    <%= raw @diff[:body] %>
+  <% end %>
 </div>

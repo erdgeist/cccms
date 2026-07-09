@@ -45,10 +45,11 @@ gem 'acts-as-taggable-on',
     git:    'https://github.com/mbleigh/acts-as-taggable-on.git',
     branch: 'master'
 
-# ── XML / parsing ─────────────────────────────────────────────────────────────
+# ── XML / parsing / diffing ───────────────────────────────────────────────────
 
 gem 'libxml-ruby', '~> 5.0', require: 'xml'  # body link rewriting in Page model
 gem 'nokogiri',    '~> 1.18'
+gem 'diff-lcs', require: 'diff/lcs'
 
 # ── Operational ───────────────────────────────────────────────────────────────
 

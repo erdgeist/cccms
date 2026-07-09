@@ -175,6 +175,22 @@ class Page < ApplicationRecord
     self.save
   end
 
+  def diff_against other, view: :inline
+    if view == :side_by_side
+      {
+        title:    HtmlWordDiff.side_by_side(other.title.to_s,    title.to_s),
+        abstract: HtmlWordDiff.side_by_side(other.abstract.to_s, abstract.to_s),
+        body:     HtmlWordDiff.side_by_side(other.body.to_s,     body.to_s)
+      }
+    else
+      {
+        title:    HtmlWordDiff.inline(other.title.to_s,    title.to_s),
+        abstract: HtmlWordDiff.inline(other.abstract.to_s, abstract.to_s),
+        body:     HtmlWordDiff.inline(other.body.to_s,     body.to_s)
+      }
+    end
+  end
+
   def public?
     published_at.nil? ? true : published_at < Time.now
   end
