@@ -31,6 +31,7 @@ table.events_table a,
 table.user_table a,
 table.revisions_table a,
 .add_child_links a,
+.standalone_action_bar a,
 div#draft_list table td.actions a {
   text-decoration: underline;
   -webkit-text-decoration-style: wavy;
@@ -82,6 +83,10 @@ input[type=radio] {
   }
   .node_action_bar.node_action_bar_save {
     margin-left: 120px;
+  }
+
+  .standalone_action_bar {
+    margin-left: -125px;
   }
 }
 @media(max-width:1015px) {
