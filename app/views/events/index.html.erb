@@ -2,6 +2,8 @@
 
 <%= link_to 'New event', new_event_path, class: 'action_button' %>
 
+<%= will_paginate @events %>
+
 <table class="events_table">
   <tr class="header">
     <th>Title</th>
@@ -27,5 +29,3 @@
   </tr>
 <% end %>
 </table>
-
-<%= link_to 'New event', new_event_path, class: 'action_button' %>
