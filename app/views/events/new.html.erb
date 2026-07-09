@@ -1,47 +1,56 @@
 <h1>New event</h1>
 
+<%= link_to 'Back', safe_return_to(params[:return_to] || events_path) %>
+
 <%= form_for(@event) do |f| %>
   <%= form_error_messages(f) %>
 
-  <p>
-    <%= f.label :start_time %><br />
-    <%= f.datetime_select :start_time %>
-  </p>
-  <p>
-    <%= f.label :end_time %><br />
-    <%= f.datetime_select :end_time %>
-  </p>
-  <p>
-    <%= f.label :rrule %><br />
-    <%= f.text_field :rrule %>
-  </p>
-  <p>
-    <%= f.label :tag_list, "Tags" %><br />
-    <%= f.text_field :tag_list %>
-  </p>
-  <p>
-    <%= f.label :allday %><br />
-    <%= f.check_box :allday %>
-  </p>
-  <p>
-    <%= f.label :url %><br />
-    <%= f.text_field :url %>
-  </p>
-  <p>
-    <%= f.label :latitude %><br />
-    <%= f.text_field :latitude %>
-  </p>
-  <p>
-    <%= f.label :longitude %><br />
-    <%= f.text_field :longitude %>
-  </p>
-  <p>
-    <%= f.hidden_field :node_id %>
-    <%= hidden_field_tag :return_to, params[:return_to] %>
-  </p>
-  <p>
-    <%= f.submit 'Create' %>
-  </p>
+  <div id="page_editor">
+    <div id="content">
+      <div class="node_description">Node</div>
+      <div class="node_content">
+        <%= text_field_tag :event_node_search_term %>
+        <div id="search_results"></div>
+        <%= f.hidden_field :node_id %>
+        <span class="field_hint">Optional — search and pick a node to associate this event with a page.</span>
+      </div>
+
+      <div class="node_description">Start time</div>
+      <div class="node_content"><%= f.datetime_select :start_time %></div>
+
+      <div class="node_description">End time</div>
+      <div class="node_content"><%= f.datetime_select :end_time %></div>
+
+      <div class="node_description">Rrule</div>
+      <div class="node_content"><%= f.text_field :rrule %></div>
+
+      <div class="node_description">Title</div>
+      <div class="node_content">
+        <%= f.text_field :title %>
+        <span id="event_title_hint" class="field_hint">Optional — if left blank, the associated node's title is used.</span>
+      </div>
+
+      <div class="node_description">Tags</div>
+      <div class="node_content"><%= f.text_field :tag_list %></div>
+
+      <div class="node_description">Allday</div>
+      <div class="node_content"><%= f.check_box :allday %></div>
+
+      <div class="node_description">Url</div>
+      <div class="node_content"><%= f.text_field :url %></div>
+
+      <div class="node_description">Latitude</div>
+      <div class="node_content"><%= f.text_field :latitude %></div>
+
+      <div class="node_description">Longitude</div>
+      <div class="node_content"><%= f.text_field :longitude %></div>
+
+      <div class="node_description"></div>
+      <div class="node_content"><%= hidden_field_tag :return_to, params[:return_to] %></div>
+
+      <div class="node_description"></div>
+      <div class="node_content"><%= f.submit 'Create' %></div>
+    </div>
+  </div>
 <% end %>
 
-<%= link_to 'Back', safe_return_to(params[:return_to] || events_path) %>

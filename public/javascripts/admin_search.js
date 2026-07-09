@@ -283,3 +283,62 @@ move_to_search = {
     return barf;
   }
 }
+
+event_search = {
+  initialize_search : function() {
+    $("#event_node_search_term").bind("input", function() {
+      if ($(this).val()) {
+        $.ajax({
+          type: "GET",
+          url: ADMIN_MENU_SEARCH_URL,
+          data: "search_term=" + $(this).val(),
+          dataType: "json",
+          success : function(results) {
+            event_search.show_results(results);
+          }
+        });
+      }
+      else {
+        $('#search_results').slideUp();
+        $('#search_results').empty();
+      }
+    });
+  },
+
+  show_results : function(results) {
+    $("#search_results").empty();
+    var found = false;
+    for (result in results) {
+      var link = $((
+        "<p><a href='#'>" + results[result].title +
+          "<span class='result_path'>" + results[result].unique_name + "</span>" +
+        "</a></p>"));
+
+      $(link).bind("click", event_search.link_closure(results[result]));
+
+      $("#search_results").append(link);
+      found = true;
+    }
+    if (found)
+      $('#search_results').slideDown();
+    else
+      $('#search_results').slideUp();
+  },
+
+  link_closure : function(node) {
+    var barf = function(){
+      $("#event_node_search_term").val(node.title);
+      $("#event_node_id").val(node.node_id);
+      $('#search_results').slideUp();
+      $('#search_results').empty();
+
+      var title_field = $("#event_title");
+      if (title_field.val() === "") {
+        $("#event_title_hint").text("Using \"" + node.title + "\" from the associated node.");
+      }
+
+      return false;
+    }
+    return barf;
+  }
+};
