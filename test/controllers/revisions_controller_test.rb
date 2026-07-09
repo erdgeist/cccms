@@ -28,21 +28,33 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select ".revision", 2
   end
-  
-  test "showing one revision" do
+
+   test "showing one revision" do
     login_as :quentin
     get :show, params: { :node_id => @node.id, :id => @node.pages.last.id }
     assert_response :success
-    assert_select "strong", "Body"
-    assert_select "td", {:count => 1, :text => "second"}
+    assert_select ".node_description", "Body"
+    assert_select ".node_content", {:count => 1, :text => "second"}
   end
-  
+
+  test "showing a revision renders real markup in the body, not escaped entities" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "show_markup_test")
+    draft = node.draft
+    draft.body = "<h3>Hello</h3>"
+    node.publish_draft!
+
+    get :show, params: { :node_id => node.id, :id => node.head.id }
+    assert_response :success
+    assert_select ".node_content h3", "Hello"
+  end
+
   test "diffing two revisions" do
     login_as :quentin
     post(
       :diff, params: {
         :node_id => @node.id,
-        :start_revision => @node.pages.first.revision, 
+        :start_revision => @node.pages.first.revision,
         :end_revision => @node.pages.last.revision
       }
     )
