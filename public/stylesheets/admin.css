@@ -133,7 +133,6 @@ input[type=radio] {
 }
 
 #main_navigation a,
-#sub_navigation a,
 #metadata a,
 #overview_toggle a {
   letter-spacing: 1px;
@@ -145,26 +144,6 @@ input[type=radio] {
 }
 
 #metadata a:hover {
-  color: #ffffff;
-  background-color: #ff9600;
-}
-
-/* #sub_navigation covers 13 views' Show/Preview/Revisions/metadata
-   links (see `grep -rn "content_for :subnavigation" app/views/`),
-   including nodes#edit -- so #page_editor's own subnav links are
-   already covered here and are not part of the new scoped-underline
-   rule above. Proposed for full removal per the redesign notes; the
-   13-file list is the confirmation needed before scoping that work. */
-#sub_navigation a {
-  color: #969696;
-}
-
-#sub_navigation a:hover {
-  color: #ffffff;
-  background-color: #ff9600;
-}
-
-#sub_navigation a.selected {
   color: #ffffff;
   background-color: #ff9600;
 }
