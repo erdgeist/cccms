@@ -20,7 +20,12 @@ Cccms::Application.routes.draw do
   scope '(:locale)', locale: /de|en/ do
 
     resources :tags
-    resources :events
+
+    resources :events do
+      collection do
+        get :without_node
+      end
+    end
 
     get  'pages/:id/preview',     to: 'pages#preview',     as: :preview_page
     put  'pages/:id/sort_images', to: 'pages#sort_images', as: :sort_images_page
