@@ -3,6 +3,11 @@
 <% end %>
 <h1>Nodes</h1>
 
+<div>
+  <%= link_to 'New node', new_node_path, class: 'action_button' %>
+  <span class="field_hint">Creates a node with no parent or kind set — for a specific page, use the wizard's create flow or "add child" from an existing node instead.</span>
+</div>
+
 <%= will_paginate @nodes %>
   <table class="node_table">
     <tr class="header">

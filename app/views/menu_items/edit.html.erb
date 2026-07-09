@@ -1,32 +1,25 @@
 <h1>Edit Menu Item</h1>
 
-<%= form_for @menu_item do |f| %>
-  <table>
-    
-    <tr>
-      <td class="description">Search</td>
-      <td>
-        <%= text_field_tag :menu_search_term %>
-        <div id="search_results">
+<div id="page_editor">
+  <%= form_for @menu_item do |f| %>
+  <div id="content">
+    <div class="node_description">Search</div>
+    <div class="node_content">
+      <%= text_field_tag :menu_search_term %>
+      <div id="search_results"></div>
+    </div>
 
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td class="description">Node Id</td>
-      <td><%= f.text_field :node_id %></td>
-    </tr>
-    <tr>
-      <td class="description">Path</td>
-      <td><%= f.text_field :path %></td>
-    </tr>
-    <tr>
-      <td class="description">Title</td>
-      <td><%= f.text_field :title %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="right"><%= f.submit 'Update' %></td>
-    </tr>
-  </table>
-<% end %>
+    <div class="node_description">Node Id</div>
+    <div class="node_content"><%= f.text_field :node_id %></div>
+
+    <div class="node_description">Path</div>
+    <div class="node_content"><%= f.text_field :path %></div>
+
+    <div class="node_description">Title</div>
+    <div class="node_content"><%= f.text_field :title %></div>
+
+    <div class="node_description"></div>
+    <div class="node_content"><%= f.submit 'Update' %></div>
+  <% end %>
+  </div>
+</div>

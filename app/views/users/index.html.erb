@@ -1,7 +1,6 @@
+<h1>Admins</h1>
+<%= link_to 'New admin user', new_user_path(admin: true), class: 'action_button' %>
 <table class="user_table">
-  <tr>
-    <td><h1>Admins</h1></td>
-  </tr>
   <tr class="header">
     <th>Login</th>
     <th></th>
@@ -9,9 +8,11 @@
     <th></th>
   </tr>
   <%= render :partial => "user", :locals => {:users => @users[:admin] ||= []} %>
-  <tr>
-    <td><h1>Users</h1></td>
-  </tr>
+</table>
+
+<h1>Users</h1>
+<%= link_to 'New user', new_user_path, class: 'action_button' %>
+<table class="user_table">
   <tr class="header">
     <th>Login</th>
     <th></th>
@@ -20,7 +21,3 @@
   </tr>
   <%= render :partial => "user", :locals => {:users => @users[:user] ||= []} %>
 </table>
-
-<% content_for :subnavigation do %>
-  <%= link_to "create", new_user_path %>
-<% end %>

@@ -1,6 +1,6 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'New asset', new_asset_path %>
-<% end %>
+<h1>Assets</h1>
+
+<%= link_to 'New asset', new_asset_path, class: 'action_button' %>
 
 <%= will_paginate @assets %>
 

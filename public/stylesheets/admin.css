@@ -640,6 +640,13 @@ form.button_to button[type="submit"] {
   color: #969696;
   padding-bottom: 4px;
 }
+
+.action_button + .field_hint {
+  display: inline;
+  margin-left: 0.5rem;
+  margin-top: 0;
+}
+
 /* Identical declaration block to #search_results p span.result_path /
    #menu_search_results p span.result_path below -- three independent
    copies of the same "small gray helper text" style. */
@@ -692,12 +699,18 @@ a.action_button {
   font-weight: bold;
   text-decoration: none;
   color: #000000;
+  margin-bottom: 1rem;
 }
 
 #page_editor a.action_button:hover,
 a.action_button:hover {
   color: #ffffff;
   background-color: #000000;
+}
+
+#page_editor form input[type=text],
+#page_editor form input[type=password] {
+  padding: 5px;
 }
 
 @media(min-width:1016px) {
@@ -730,6 +743,11 @@ a.action_button:hover {
 
   #page_editor #metadata, #page_editor #content, #admin_overview {
     margin-left: -125px;
+  }
+
+  #page_editor form input[type=text],
+  #page_editor form input[type=password] {
+    width: 690px;
   }
 }
 
@@ -771,6 +789,12 @@ a.action_button:hover {
     padding-bottom: 4px;
     padding-left: 5px;
     font-weight: bold;
+  }
+
+  #page_editor form input[type=text],
+  #page_editor form input[type=password] {
+    box-sizing: border-box;
+    width: 100%;
   }
 
   input[type=text], textarea {
@@ -918,6 +942,14 @@ div#draft_list table td.actions a {
 
 #menu_item_list td.menu_sort_handle div:hover {
   cursor: grab;
+}
+
+#menu_item_list td a {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #b0b0b0;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
 
 .ui-state-highlight td {

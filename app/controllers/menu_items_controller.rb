@@ -14,7 +14,7 @@ class MenuItemsController < ApplicationController
   end
 
   def new
-    @menu_item = MenuItem.new menu_item_params
+    @menu_item = MenuItem.new
   end
 
   def create

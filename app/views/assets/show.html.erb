@@ -1,23 +1,29 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Edit', edit_asset_path(@asset) %>
-  <%= link_to 'Back', assets_path %>
-<% end %>
+<div id="page_editor">
+  <h1><%= @asset.name %></h1>
 
-<table>
-  <tr>
-    <td>Thumbnail</td>
-    <td><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></td>
-  </tr>
-  <tr>
-    <td>Public Path</td>
-    <td><%= @asset.upload.url.sub(/\?\d+$/, "") %></td>
-  </tr>
-  <tr>
-    <td>Content Type</td>
-    <td><%= @asset.upload.content_type %></td>
-  </tr>
-  <tr>
-    <td>Size</td>
-    <td><%= "#{@asset.upload.size/1024} KB" %></td>
-  </tr>
-</table>
+  <div id="content">
+    <div class="node_description">Actions</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <%= link_to 'Edit', edit_asset_path(@asset), class: 'action_button' %>
+        </div>
+        <div class="node_info_item">
+          <%= link_to 'Back', assets_path %>
+        </div>
+      </div>
+    </div>
+
+    <div class="node_description">Thumbnail</div>
+    <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
+
+    <div class="node_description">Public Path</div>
+    <div class="node_content"><%= @asset.upload.url.sub(/\?\d+$/, "") %></div>
+
+    <div class="node_description">Content Type</div>
+    <div class="node_content"><%= @asset.upload.content_type %></div>
+
+    <div class="node_description">Size</div>
+    <div class="node_content"><%= "#{@asset.upload.size/1024} KB" %></div>
+  </div>
+</div>
