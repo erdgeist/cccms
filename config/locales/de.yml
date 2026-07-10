@@ -133,3 +133,12 @@ de:
         less_than_or_equal_to: "must be less than or equal to {{count}}"
         odd: "must be odd"
         even: "must be even"
+
+  will_paginate:
+    previous_label: "&#8592; Zurück"
+    previous_aria_label: "Vorherige Seite"
+    next_label: "Weiter &#8594;"
+    next_aria_label: "Nächste Seite"
+    page_gap: "&hellip;"
+    container_aria_label: "Seitennavigation"
+    page_aria_label: "Seite %{page}"

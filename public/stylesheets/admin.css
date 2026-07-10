@@ -240,10 +240,50 @@ span.warning a {
 div.pagination {
   padding-top: 5px;
   padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-div.pagination span.current, div.pagination a:hover {
+div.pagination a,
+div.pagination em.current,
+div.pagination span.gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  font-style: normal;
+}
+
+div.pagination a {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #b0b0b0;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+div.pagination a:hover {
   color: #ff9600;
+}
+
+div.pagination em.current {
+  background-color: #ff9600;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+div.pagination span.gap {
+  color: #969696;
+}
+
+div.pagination .previous_page.disabled,
+div.pagination .next_page.disabled {
+  color: #969696;
+  cursor: not-allowed;
 }
 
 /* ============================================================
