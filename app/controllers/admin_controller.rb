@@ -20,12 +20,10 @@ class AdminController < ApplicationController
     ordered_with_level.each { |node, level| @sitemap_depth[node.id] = level }
     @sitemap = ordered_with_level.map(&:first).reject(&:update?)
 
-    @mypages = Page.where("user_id = ? or editor_id = ?", @current_user, @current_user)
-
     @mynodes = Node.joins(:pages)
-              .where("pages.user_id = ? or pages.editor_id = ?", @current_user, @current_user)
-              .order("updated_at desc")
-              .uniq.first(50)
+          .where("pages.user_id = ? or pages.editor_id = ?", current_user, current_user)
+          .order("updated_at desc")
+          .distinct.first(50)
   end
 
   def conventions
