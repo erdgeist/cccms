@@ -1,5 +1,9 @@
 <h2>Revisions for Node: <%= @node.unique_name %></h2>
 
+<p class="node_action_bar standalone_action_bar">
+  <%= link_to 'Back to node', node_path(@node) %>
+</p>
+
 <table id="revisions" class="revisions_table">
   <thead>
     <tr class="header">
