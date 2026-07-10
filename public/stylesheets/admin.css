@@ -750,8 +750,9 @@ a.action_button:hover {
   background-color: #000000;
 }
 
-#page_editor form input[type=text],
-#page_editor form input[type=password] {
+#page_editor input[type=text],
+#page_editor input[type=password],
+#page_editor textarea {
   padding: 5px;
 }
 
@@ -787,8 +788,9 @@ a.action_button:hover {
     margin-left: -125px;
   }
 
-  #page_editor form input[type=text],
-  #page_editor form input[type=password] {
+  #page_editor input[type=text],
+  #page_editor input[type=password],
+  #page_editor textarea {
     width: 690px;
   }
 }
@@ -833,8 +835,9 @@ a.action_button:hover {
     font-weight: bold;
   }
 
-  #page_editor form input[type=text],
-  #page_editor form input[type=password] {
+  #page_editor input[type=text],
+  #page_editor input[type=password],
+  #page_editor textarea {
     box-sizing: border-box;
     width: 100%;
   }
