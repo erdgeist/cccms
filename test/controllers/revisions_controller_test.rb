@@ -139,4 +139,13 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_select "form.computation input[type=hidden][name=start_revision]"
     assert_select "form.computation input[type=hidden][name=end_revision]"
   end
+
+  test "the view toggle is available even when comparing named layers" do
+    login_as :quentin
+    @node.find_or_create_draft(@user)
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
+    assert_response :success
+    assert_select "a", "Side by side"
+  end
 end

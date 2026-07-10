@@ -9,13 +9,28 @@
   against <strong><%= describe_page_reference(params[:end_revision]) %></strong>
 </p>
 
+<p class="diff_view_toggle">
+  View:
+  <% if @diff_view == :inline %>
+    <strong>Inline</strong>
+  <% else %>
+    <%= link_to 'Inline', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline') %>
+  <% end %>
+  &middot;
+  <% if @diff_view == :side_by_side %>
+    <strong>Side by side</strong>
+  <% else %>
+    <%= link_to 'Side by side', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side') %>
+  <% end %>
+</p>
+
 <% numeric_comparison = params[:start_revision].to_s =~ /\A\d+\z/ && params[:end_revision].to_s =~ /\A\d+\z/ %>
 
 <% if numeric_comparison %>
   <%= form_tag diff_node_revisions_path do %>
     <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
     <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
-    <%= select_tag :view, options_for_select([['Inline', 'inline'], ['Side by side', 'side_by_side']], @diff_view) %>
+    <%= hidden_field_tag :view, @diff_view %>
     <%= submit_tag 'Diff' %>
   <% end %>
 <% else %>

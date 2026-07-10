@@ -32,6 +32,7 @@ table.user_table a,
 table.revisions_table a,
 .add_child_links a,
 .standalone_action_bar a,
+.diff_view_toggle a,
 div#draft_list table td.actions a {
   text-decoration: underline;
   -webkit-text-decoration-style: wavy;
