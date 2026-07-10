@@ -161,4 +161,11 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_select "h3", "Template"
     assert_select "h3", "Assets"
   end
+
+  test "revisions#index links back to the node" do
+    login_as :quentin
+    get :index, params: { :node_id => @node.id }
+    assert_response :success
+    assert_select "a[href=?]", node_path(@node)
+  end
 end
