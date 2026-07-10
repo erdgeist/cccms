@@ -544,6 +544,11 @@ table.revisions_table tr:hover {
   flex: 1;
 }
 
+#diffview del.diff_structural,
+#diffview ins.diff_structural {
+  cursor: help;
+}
+
 table.user_table td.user_login {
   padding-right: 30px;
 }
