@@ -398,8 +398,7 @@ table.events_table tr {
 }
 
 table.node_table th.node_id,
-table.node_table th.revision,
-table.node_table th.title {
+table.node_table th.revision {
   min-width: 4rem;
 }
 
