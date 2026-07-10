@@ -87,11 +87,14 @@ module ContentHelper
   # Syntax of the [aggregate ] short code:
   #
   # [aggregate
-  #   flags="update, pressemitteilung"
+  #   children="all" | children="direct" # optional, at least one of children
+  #   tags="update, pressemitteilung"    # or tags is required
   #   limit="20"
   #   order_by="published_at"
   #   order_direction="DESC"
   # ]
+
+
   def aggregate? content
     options = {}
 
