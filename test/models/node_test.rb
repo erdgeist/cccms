@@ -499,4 +499,16 @@ class NodeTest < ActiveSupport::TestCase
     node.autosave!({title: "v3"}, user)
     assert_equal [[:head, :draft], [:draft, :autosave]], node.available_layer_pairs # state D
   end
+
+  test "publishing a staged move under one's own descendant is rejected, not allowed to crash" do
+    a = Node.root.children.create!(:slug => "cycle_guard_a")
+    b = a.children.create!(:slug => "cycle_guard_b")
+
+    a.staged_parent_id = b.id
+
+    assert_raises(ActiveRecord::RecordInvalid) { a.publish_draft! }
+
+    a.reload
+    assert_equal Node.root.id, a.parent_id
+  end
 end

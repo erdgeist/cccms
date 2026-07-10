@@ -227,6 +227,11 @@ class Node < ApplicationRecord
 
     if staged_parent_id && (staged_parent_id != parent_id)
       new_parent = Node.find(staged_parent_id)
+
+      if new_parent == self || self.descendants.include?(new_parent)
+        raise ActiveRecord::RecordInvalid.new(self), "Cannot move a node under itself or one of its own descendants"
+      end
+
       self.staged_parent_id = nil
       self.save!
       self.move_to_child_of(new_parent)
