@@ -201,7 +201,7 @@ parent_search = {
 
     clearTimeout(parent_search.path_timeout);
     parent_search.path_timeout = setTimeout(function() {
-      $.get("/nodes/parameterize_preview", { title: title }, function(slug) {
+        $.get(PARAMETERIZE_PREVIEW_URL, { title: title }, function(slug) {
         $("#resulting_path").text(window.location.origin + "/" + (prefix ? prefix + "/" : "") + slug);
       });
     }, 300);
