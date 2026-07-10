@@ -355,6 +355,7 @@ class NodesControllerTest < ActionController::TestCase
 
     login_as :quentin
     get :index
+    assert_response :success
   end
 
   test "no dangling pages remain after node removal" do

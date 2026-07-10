@@ -111,15 +111,19 @@ class NodeTest < ActiveSupport::TestCase
     node.publish_draft!
     assert_not_nil node.find_or_create_draft( @user1 )
   end
-  
+
   def test_find_or_create_draft_if_draft_exists_and_is_owned_by_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
-    
-    node.find_or_create_draft @user1
-    node.find_or_create_draft @user1
+
+    first_call  = node.find_or_create_draft @user1
+    second_call = node.find_or_create_draft @user1
+
+    assert_equal first_call, second_call
+    assert_equal 2, node.pages.count
+    assert_equal @user1, node.lock_owner
   end
-  
+
   def test_exception_if_draft_exists_but_locked_by_another_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
