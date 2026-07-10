@@ -463,4 +463,12 @@ class NodesControllerTest < ActionController::TestCase
     put :revert, params: { :id => node.id }
     assert_redirected_to edit_node_path(node)
   end
+
+  test "nodes#show does not offer to destroy the only draft of a never-published node" do
+    node = Node.root.children.create!(:slug => "draft_only_test")
+    login_as :quentin
+    get :show, params: { :id => node.id }
+    assert_response :success
+    assert_select "form.destructive", :count => 0
+  end
 end

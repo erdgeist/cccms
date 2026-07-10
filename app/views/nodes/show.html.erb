@@ -49,7 +49,7 @@
                     form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
             </div>
           <% end %>
-          <% if @node.draft || @node.autosave %>
+          <% if @node.autosave || (@node.draft && @node.head) %>
             <div class="node_info_item">
               <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
                     revert_node_path(@node), method: :put,
