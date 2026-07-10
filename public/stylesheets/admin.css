@@ -65,6 +65,14 @@ select {
   border: 1px solid #989898;
 }
 
+summary {
+  cursor: pointer;
+}
+
+summary:hover {
+  background-color: #f7f7f7;
+}
+
 input[type=password] {
   border: 1px solid #989898;
 }
@@ -665,9 +673,9 @@ form.button_to button[type="submit"] {
   margin-top: 0;
 }
 
-/* Identical declaration block to #search_results p span.result_path /
-   #menu_search_results p span.result_path below -- three independent
-   copies of the same "small gray helper text" style. */
+.revisions_full_history_link {
+  margin-bottom: 0;
+}
 
 /* Layout only -- the at-rest visibility (wavy underline) for these
    links comes from the scoped rule in Base elements above. */
