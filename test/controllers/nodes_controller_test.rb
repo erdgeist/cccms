@@ -423,4 +423,43 @@ class NodesControllerTest < ActionController::TestCase
     assert_select "form.button_to.destructive", count: 0
   end
 
+  test "reverting from nodes#show returns to the show page, not the editor, even if a draft remains" do
+    user = User.find_by_login("aaron")
+    node = Node.root.children.create!(:slug => "revert_return_to_test")
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+    node.save_draft!(user)
+    node.publish_draft!
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v2"}, user)
+    node.save_draft!(user)
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v3"}, user)
+    # state D: head, draft, and autosave all present, locked by aaron
+
+    login_as :aaron
+    put :revert, params: { :id => node.id, :return_to => node_path(node) }
+    assert_redirected_to node_path(node)
+    node.reload
+    assert node.draft.present?
+    assert node.autosave.blank?
+  end
+
+  test "reverting from nodes#edit without return_to still lands back in the editor when a draft remains" do
+    user = User.find_by_login("aaron")
+    node = Node.root.children.create!(:slug => "revert_default_test")
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+    node.save_draft!(user)
+    node.publish_draft!
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v2"}, user)
+    node.save_draft!(user)
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v3"}, user)
+
+    login_as :aaron
+    put :revert, params: { :id => node.id }
+    assert_redirected_to edit_node_path(node)
+  end
 end

@@ -128,7 +128,10 @@ class NodesController < ApplicationController
   def revert
     @node.lock_for_editing!(current_user)
     @node.revert!(current_user)
-    if @node.draft
+
+    if params[:return_to].present?
+      redirect_to safe_return_to(params[:return_to])
+    elsif @node.draft
       redirect_to edit_node_path(@node)
     else
       redirect_to node_path(@node)

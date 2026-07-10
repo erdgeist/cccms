@@ -36,6 +36,7 @@
     <% if !@locked_by_other && (@node.autosave || @node.draft) %>
       <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
             revert_node_path(@node), method: :put,
+            params: { return_to: request.fullpath },
             form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
     <% end %>
   </p>

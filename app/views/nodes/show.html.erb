@@ -53,6 +53,7 @@
             <div class="node_info_item">
               <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
                     revert_node_path(@node), method: :put,
+                    params: { return_to: request.path },
                     form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
             </div>
           <% end %>
