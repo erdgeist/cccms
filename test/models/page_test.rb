@@ -228,4 +228,47 @@ class PageTest < ActiveSupport::TestCase
     assert_equal 2, fragment.css('ins.diff_structural').length
     assert_match "der Zugang erfolgt über den Hinterhof.", fragment.text
   end
+
+  test "diff_against reports tag and template changes" do
+    n = Node.root.children.create! :slug => "field_diff_test"
+    d = n.find_or_create_draft @user1
+    d.tag_list = "update"
+    d.template_name = "standard_template"
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft @user1
+    d2.tag_list = "update, pressemitteilung"
+    d2.template_name = "title_only"
+    d2.save!
+
+    diff = d2.diff_against(n.head)
+
+    assert_equal ["pressemitteilung"], diff[:tags][:added]
+    assert_equal [], diff[:tags][:removed]
+    assert diff[:template_name][:changed]
+    assert_equal "standard_template", diff[:template_name][:from]
+    assert_equal "title_only", diff[:template_name][:to]
+  end
+
+  test "diff_against reports added and removed assets by filename" do
+    n = Node.root.children.create! :slug => "asset_diff_test"
+    d = n.find_or_create_draft @user1
+    d.save!
+    n.publish_draft!
+
+    kept_asset    = Asset.create!(:upload_file_name => "kept.png", :upload_content_type => "image/png", :upload_file_size => 1)
+    removed_asset = Asset.create!(:upload_file_name => "removed.pdf", :upload_content_type => "application/pdf", :upload_file_size => 1)
+    n.head.update_assets([kept_asset.id, removed_asset.id])
+
+    d2 = n.find_or_create_draft @user1
+    added_asset = Asset.create!(:upload_file_name => "added.png", :upload_content_type => "image/png", :upload_file_size => 1)
+    d2.update_assets([kept_asset.id, added_asset.id])
+    d2.save!
+
+    diff = d2.diff_against(n.head)
+
+    assert_equal [added_asset], diff[:assets][:added]
+    assert_equal [removed_asset], diff[:assets][:removed]
+  end
 end

@@ -549,6 +549,17 @@ table.revisions_table tr:hover {
   cursor: help;
 }
 
+.diff_unchanged {
+  color: #969696;
+  font-style: italic;
+}
+
+.diff_set_list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
 table.user_table td.user_login {
   padding-right: 30px;
 }

@@ -85,4 +85,31 @@
     <h3>Body</h3>
     <%= raw @diff[:body] %>
   <% end %>
+
+  <h3>Tags</h3>
+  <% if @diff[:tags][:added].empty? && @diff[:tags][:removed].empty? %>
+    <p class="diff_unchanged">No change.</p>
+  <% else %>
+    <ul class="diff_set_list">
+      <% @diff[:tags][:added].each do |tag| %><li><ins><%= tag %></ins></li><% end %>
+      <% @diff[:tags][:removed].each do |tag| %><li><del><%= tag %></del></li><% end %>
+    </ul>
+  <% end %>
+
+  <h3>Template</h3>
+  <% if @diff[:template_name][:changed] %>
+    <p><del><%= @diff[:template_name][:from] || '(none)' %></del> <ins><%= @diff[:template_name][:to] || '(none)' %></ins></p>
+  <% else %>
+    <p class="diff_unchanged">No change.</p>
+  <% end %>
+
+  <h3>Assets</h3>
+  <% if @diff[:assets][:added].empty? && @diff[:assets][:removed].empty? %>
+    <p class="diff_unchanged">No change.</p>
+  <% else %>
+    <ul class="diff_set_list">
+      <% @diff[:assets][:added].each do |asset| %><li><ins><%= asset.upload_file_name %></ins></li><% end %>
+      <% @diff[:assets][:removed].each do |asset| %><li><del><%= asset.upload_file_name %></del></li><% end %>
+    </ul>
+  <% end %>
 </div>

@@ -148,4 +148,17 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "a", "Side by side"
   end
+
+  test "diffing two revisions also shows tag, template, and asset changes" do
+    login_as :quentin
+    @node.find_or_create_draft(@user)
+    @node.draft.tag_list = "update"
+    @node.draft.save!
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => @node.pages.first.revision, :end_revision => @node.pages.last.revision })
+    assert_response :success
+    assert_select "h3", "Tags"
+    assert_select "h3", "Template"
+    assert_select "h3", "Assets"
+  end
 end
