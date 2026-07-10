@@ -82,9 +82,9 @@
 </div>
 
 <div id="current_drafts_table">
-  
-  <h2>Current Drafts (<%= @drafts_count %>)</h2>
-  
+
+  <h2>Current Drafts & Autosaves (<%= @drafts_count %>)</h2>
+
   <table class="node_table">
     <tr class="header">
       <th class="node_id">ID</th>
@@ -92,6 +92,7 @@
       <th class="actions">Actions</th>
       <th class="editor">Locked by</th>
       <th class="revision">Rev.</th>
+      <th class="autosave">Autosave</th>
     </tr>
     <% @drafts.each do |node| %>
     <tr class="<%= cycle("even", "odd") %>">
@@ -103,12 +104,18 @@
       <td class="actions">
         <%= link_to 'show',      node_path(node) %>
         <%= link_to 'Revisions', node_revisions_path(node) %>
+        <% if pair = node.available_layer_pairs.last %>
+          <%= link_to 'diff', diff_node_revisions_path(node, start_revision: pair.first, end_revision: pair.last) %>
+        <% end %>
       </td>
       <td>
         <%= node.lock_owner.login if node.lock_owner %>
       </td>
       <td>
         <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
+      </td>
+      <td class="autosave">
+        <%= node.autosave ? "unsaved changes" : "" %>
       </td>
     </tr>
     <% end %>

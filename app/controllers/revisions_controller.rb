@@ -21,10 +21,18 @@ class RevisionsController < ApplicationController
       params[:start_revision], params[:end_revision] = 1, 1
     end
 
-    @start      = @node.pages.find_by_revision( params[:start_revision] )
-    @end        = @node.pages.find_by_revision( params[:end_revision] )
-    @diff_view  = params[:view] == "side_by_side" ? :side_by_side : :inline
-    @diff       = @end.diff_against( @start, view: @diff_view )
+    @start = @node.resolve_page_reference(params[:start_revision])
+    @end   = @node.resolve_page_reference(params[:end_revision])
+
+    if @start.nil? || @end.nil?
+      flash[:error] = "That comparison is no longer available."
+      redirect_to(node_path(@node)) and return
+    end
+
+    @diff_view              = params[:view] == "side_by_side" ? :side_by_side : :inline
+    @diff                   = @end.diff_against(@start, view: @diff_view)
+    @available_layer_pairs  = @node.available_layer_pairs
+    @locked_by_other        = @node.locked? && @node.lock_owner != current_user
   end
 
   def show

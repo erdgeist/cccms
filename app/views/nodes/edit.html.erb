@@ -6,9 +6,16 @@
         disabled: @node.autosave.present? %>
 
   <% if @node.autosave || (@node.draft && @node.head) %>
-    <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
+    <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
           revert_node_path(@node), method: :put,
           form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+    <% if pair = @node.available_layer_pairs.find { |p| p.include?(:autosave) } %>
+      <%= button_to 'What changed?',
+            diff_node_revisions_path(@node),
+            method: :get,
+            params: { start_revision: pair.first, end_revision: pair.last },
+            form: { class: 'button_to computation' } %>
+    <% end %>
   <% end %>
 
   <%= submit_tag "Save Draft", form: dom_id(@node, :edit) %>

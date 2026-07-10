@@ -5,10 +5,10 @@ class AdminController < ApplicationController
   before_action :login_required
 
   def index
-    @drafts = Node.where("draft_id IS NOT NULL")
+    @drafts = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
       .limit(50).order("updated_at desc")
 
-    @drafts_count = Node.where("draft_id IS NOT NULL").count
+    @drafts_count = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL").count
 
     @recent_changes = Node.where(
       "updated_at < ? AND updated_at > ? AND parent_id IS NOT NULL",

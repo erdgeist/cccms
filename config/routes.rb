@@ -47,6 +47,7 @@ Cccms::Application.routes.draw do
       resources :revisions do
         collection do
           post :diff
+          get  :diff
         end
         member do
           put :restore

@@ -123,6 +123,27 @@ class Node < ApplicationRecord
     self.draft.reload
   end
 
+  def resolve_page_reference ref
+    case ref.to_s
+    when "head" then head
+    when "draft" then draft
+    when "autosave" then autosave
+    else pages.find_by_revision(ref)
+    end
+  end
+
+  # Which layer-pairs are meaningful to compare right now, given this
+  # node's actual state. Head vs autosave only shows up when no draft
+  # sits between them -- with a draft present, autosave is compared
+  # against the draft, never past it straight to head.
+  def available_layer_pairs
+    pairs = []
+    pairs << [:head, :draft]     if head && draft
+    pairs << [:draft, :autosave] if draft && autosave
+    pairs << [:head, :autosave]  if head && autosave && !draft
+    pairs
+  end
+
   def find_or_create_draft current_user
     self.wipe_draft!
     if draft && self.lock_owner == current_user

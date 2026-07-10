@@ -32,6 +32,16 @@
           <% end %>
         </div>
 
+        <% @node.available_layer_pairs.each do |pair| %>
+          <div class="node_info_item">
+            <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
+                  diff_node_revisions_path(@node),
+                  method: :get,
+                  params: { start_revision: pair.first, end_revision: pair.last },
+                  form: { class: 'button_to computation' } %>
+          </div>
+        <% end %>
+
         <% unless locked_by_other %>
           <% if @node.draft && !@node.autosave %>
             <div class="node_info_item">
@@ -41,7 +51,7 @@
           <% end %>
           <% if @node.draft || @node.autosave %>
             <div class="node_info_item">
-              <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard changes'),
+              <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
                     revert_node_path(@node), method: :put,
                     form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
             </div>

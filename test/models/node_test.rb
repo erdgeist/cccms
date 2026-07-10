@@ -473,4 +473,26 @@ class NodeTest < ActiveSupport::TestCase
       node.publish_draft!
     end
   end
+
+  test "available_layer_pairs matches the six-state table" do
+    node = Node.root.children.create!(:slug => "layer_pairs_test")
+    user = @user1 || User.find_by_login("aaron")
+
+    assert_equal [[:draft, :autosave]], (node.lock_for_editing!(user); node.autosave!({title: "v1"}, user); node.available_layer_pairs) # state F
+
+    node.save_draft!(user)
+    node.publish_draft!
+    assert_equal [], node.available_layer_pairs # state A
+
+    node.lock_for_editing!(user)
+    node.autosave!({title: "v2"}, user)
+    assert_equal [[:head, :autosave]], node.available_layer_pairs # state B
+
+    node.save_draft!(user)
+    assert_equal [[:head, :draft]], node.available_layer_pairs # state C
+
+    node.lock_for_editing!(user)
+    node.autosave!({title: "v3"}, user)
+    assert_equal [[:head, :draft], [:draft, :autosave]], node.available_layer_pairs # state D
+  end
 end

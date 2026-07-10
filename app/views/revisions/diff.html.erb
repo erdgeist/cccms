@@ -4,11 +4,41 @@
   <%= link_to 'Revisions', node_revisions_path(@node) %>
 </p>
 
-<%= form_tag diff_node_revisions_path do %>
-  <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
-  <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
-  <%= select_tag :view, options_for_select([['Inline', 'inline'], ['Side by side', 'side_by_side']], @diff_view) %>
-  <%= submit_tag 'Diff' %>
+<p class="diff_comparison_label">
+  Comparing <strong><%= describe_page_reference(params[:start_revision]) %></strong>
+  against <strong><%= describe_page_reference(params[:end_revision]) %></strong>
+</p>
+
+<% numeric_comparison = params[:start_revision].to_s =~ /\A\d+\z/ && params[:end_revision].to_s =~ /\A\d+\z/ %>
+
+<% if numeric_comparison %>
+  <%= form_tag diff_node_revisions_path do %>
+    <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
+    <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
+    <%= select_tag :view, options_for_select([['Inline', 'inline'], ['Side by side', 'side_by_side']], @diff_view) %>
+    <%= submit_tag 'Diff' %>
+  <% end %>
+<% else %>
+  <p class="node_action_bar standalone_action_bar"><%= link_to 'Compare two numbered revisions instead', node_revisions_path(@node) %></p>
+<% end %>
+
+<% if @available_layer_pairs.present? %>
+  <p class="node_action_bar standalone_action_bar">
+    <% @available_layer_pairs.each do |pair| %>
+      <% next if [params[:start_revision].to_s, params[:end_revision].to_s].sort == pair.map(&:to_s).sort %>
+      <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
+            diff_node_revisions_path(@node),
+            method: :get,
+            params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view },
+            form: { class: 'button_to computation' } %>
+    <% end %>
+
+    <% if !@locked_by_other && (@node.autosave || @node.draft) %>
+      <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
+            revert_node_path(@node), method: :put,
+            form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+    <% end %>
+  </p>
 <% end %>
 
 <div id="diffview">

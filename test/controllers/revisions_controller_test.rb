@@ -100,4 +100,43 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select ".diff_column", 2
   end
+
+  test "diffing head against draft by name" do
+    login_as :quentin
+    @node.find_or_create_draft(@user)
+    @node.draft.update(:body => "draft body")
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
+    assert_response :success
+  end
+
+  test "diffing a layer pair that no longer exists redirects with a flash" do
+    login_as :quentin
+    post(:diff, params: { :node_id => @node.id, :start_revision => "draft", :end_revision => "autosave" })
+    assert_redirected_to node_path(@node)
+    assert flash[:error].present?
+  end
+
+  test "diffing by name shows a clear comparison label instead of a misleading revision picker" do
+    login_as :quentin
+    @node.find_or_create_draft(@user)
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
+    assert_response :success
+    assert_select "strong", "Head"
+    assert_select "strong", "Draft"
+    assert_select "select[name=?]", "start_revision", :count => 0
+  end
+
+  test "pair-switcher buttons carry their params as real hidden fields, not a query string" do
+    login_as :quentin
+    @node.find_or_create_draft(@user)
+    @node.lock_for_editing!(@user)
+    @node.autosave!({ :body => "unsaved" }, @user)
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
+    assert_response :success
+    assert_select "form.computation input[type=hidden][name=start_revision]"
+    assert_select "form.computation input[type=hidden][name=end_revision]"
+  end
 end
