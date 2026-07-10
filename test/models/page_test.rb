@@ -210,4 +210,22 @@ class PageTest < ActiveSupport::TestCase
     assert_match "<del>Old</del>", old_html
     assert_match "<ins>New</ins>", new_html
   end
+
+  test "diff_against handles an inserted paragraph split without corrupting the document" do
+    n = Node.root.children.create! :slug => "paragraph_split_test"
+    d = n.find_or_create_draft @user1
+    d.body = "<p>Der Vortragsraum ist ab 19 Uhr geöffnet, der Zugang erfolgt über den Hinterhof.</p>"
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft @user1
+    d2.body = "<p>Der Vortragsraum ist ab 19 Uhr geöffnet,</p>\n<p>der Zugang erfolgt über den Hinterhof.</p>"
+    d2.save!
+
+    diff = d2.diff_against(n.head)
+    fragment = Nokogiri::HTML::DocumentFragment.parse(diff[:body])
+
+    assert_equal 2, fragment.css('ins.diff_structural').length
+    assert_match "der Zugang erfolgt über den Hinterhof.", fragment.text
+  end
 end

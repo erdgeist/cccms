@@ -1,4 +1,5 @@
 require 'diff/lcs'
+require 'cgi'
 
 module HtmlWordDiff
   TOKEN_REGEXP = /<[^>]*>|[[:space:]]+|[[:alnum:]]+|[^[:space:][:alnum:]<>]/
@@ -10,11 +11,12 @@ module HtmlWordDiff
       when '='
         html << new_token
       when '-'
-        html << "<del>#{old_token}</del>"
+        html << wrap_removed(old_token)
       when '+'
-        html << "<ins>#{new_token}</ins>"
+        html << wrap_inserted(new_token)
       when '!'
-        html << "<del>#{old_token}</del><ins>#{new_token}</ins>"
+        html << wrap_removed(old_token)
+        html << wrap_inserted(new_token)
       end
     end
     html
@@ -29,12 +31,12 @@ module HtmlWordDiff
         old_out << old_token
         new_out << new_token
       when '-'
-        old_out << "<del>#{old_token}</del>"
+        old_out << wrap_removed(old_token)
       when '+'
-        new_out << "<ins>#{new_token}</ins>"
+        new_out << wrap_inserted(new_token)
       when '!'
-        old_out << "<del>#{old_token}</del>"
-        new_out << "<ins>#{new_token}</ins>"
+        old_out << wrap_removed(old_token)
+        new_out << wrap_inserted(new_token)
       end
     end
     [old_out, new_out]
@@ -48,5 +50,25 @@ module HtmlWordDiff
 
   def self.tokenize(html)
     html.to_s.scan(TOKEN_REGEXP)
+  end
+
+  def self.tag_token?(token)
+    token.to_s.match?(/\A<[^>]*>\z/)
+  end
+
+  def self.wrap_removed(token)
+    if tag_token?(token)
+      %(<del class="diff_structural" title="removed: #{CGI.escapeHTML(token)}">\u00b6</del>)
+    else
+      "<del>#{token}</del>"
+    end
+  end
+
+  def self.wrap_inserted(token)
+    if tag_token?(token)
+      %(<ins class="diff_structural" title="added: #{CGI.escapeHTML(token)}">\u00b6</ins>)
+    else
+      "<ins>#{token}</ins>"
+    end
   end
 end
