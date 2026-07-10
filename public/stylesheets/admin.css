@@ -519,6 +519,21 @@ table.revisions_table tr:hover {
   background-color: #f1f1f1;
 }
 
+.events_table .rrule_text {
+  display: inline-block;
+  max-width: 300px;
+  overflow-wrap: break-word;
+}
+
+.events_table .truncate {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
 #diffview del {
   background: #ffd7d5;
   color: #82071e;
