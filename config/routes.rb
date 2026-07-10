@@ -30,43 +30,44 @@ Cccms::Application.routes.draw do
     get  'pages/:id/preview',     to: 'pages#preview',     as: :preview_page
     put  'pages/:id/sort_images', to: 'pages#sort_images', as: :sort_images_page
 
-    resources :nodes do
-      collection do
-        get :parameterize_preview
-      end
-
-      member do
-        put :unlock
-        put :publish
-        put :generate_shared_preview
-        put :revoke_shared_preview
-        put :autosave
-        put :revert
-      end
-
-      resources :revisions do
-        collection do
-          post :diff
-          get  :diff
-        end
-        member do
-          put :restore
-        end
-      end
-    end
-
     get 'preview/:token', to: 'shared_previews#show', as: :shared_preview
 
     scope '/admin' do
       resources :assets
+
+      resources :nodes do
+        collection do
+          get :parameterize_preview
+        end
+
+        member do
+          put :unlock
+          put :publish
+          put :generate_shared_preview
+          put :revoke_shared_preview
+          put :autosave
+          put :revert
+        end
+
+        resources :revisions do
+          collection do
+            post :diff
+            get  :diff
+          end
+          member do
+            put :restore
+          end
+        end
+      end
+
+      match ''            => 'admin#index',        :as => :admin,             :via => :get
+      match 'search'      => 'admin#search',       :as => :admin_search,      :via => :get
+      match 'menu_search' => 'admin#menu_search',  :as => :admin_menu_search, :via => :get
+      match 'conventions' => 'admin#conventions',  :as => :admin_conventions, :via => :get
     end
 
     match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete
     match '/login'       => 'sessions#new',     :as => :login,        :via => :get
-    match 'admin'        => 'admin#index',      :as => :admin,        :via => :get
-    match 'admin/search' => 'admin#search',     :as => :admin_search, :via => :get
-    match 'admin/menu_search' => 'admin#menu_search', :as => :admin_menu_search, :via => :get
-    match 'admin/conventions' => 'admin#conventions', :as => :admin_conventions, :via => :get
     match 'search'       => 'search#index',     :as => :search,       :via => :get
 
     resources :users
