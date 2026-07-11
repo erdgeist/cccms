@@ -345,6 +345,28 @@ class Node < ApplicationRecord
       .distinct
   end
 
+  # This one is for admin-only views, where finding a draft is the point.
+  # Substring match on whichever of head/draft is present.
+  def self.editor_search(term)
+    words = term.to_s.split(/\s+/).reject(&:blank?)
+    return none if words.empty?
+
+    conditions = []
+    binds = {}
+
+    words.each_with_index do |word, i|
+      key = "term#{i}"
+      binds[key.to_sym] = "%#{sanitize_sql_like(word)}%"
+      conditions << "(head_translations.title ILIKE :#{key} OR head_translations.abstract ILIKE :#{key} " \
+                    "OR draft_translations.title ILIKE :#{key} OR draft_translations.abstract ILIKE :#{key})"
+    end
+
+    joins("LEFT JOIN page_translations head_translations ON head_translations.page_id = nodes.head_id")
+      .joins("LEFT JOIN page_translations draft_translations ON draft_translations.page_id = nodes.draft_id")
+      .where(conditions.join(" AND "), binds)
+      .distinct
+  end
+
   protected
     def lock_for! current_user
       self.lock_owner = current_user

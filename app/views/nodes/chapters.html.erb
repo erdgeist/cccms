@@ -1,0 +1,9 @@
+<h1>Chapters</h1>
+
+<%= form_tag chapters_nodes_path, method: :get do %>
+  <label><%= check_box_tag 'kinds[]', 'erfa', @kind_keys.include?('erfa') %> Erfa</label>
+  <label><%= check_box_tag 'kinds[]', 'chaostreff', @kind_keys.include?('chaostreff') %> Chaostreff</label>
+  <%= submit_tag "Filter", class: "action_button" %>
+<% end %>
+
+<%= render 'node_list' %>

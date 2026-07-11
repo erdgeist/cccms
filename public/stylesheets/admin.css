@@ -748,6 +748,21 @@ form.button_to button[type="submit"] {
   margin-bottom: 0;
 }
 
+.node_search_form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.node_search_form input[type=text] {
+  padding: 4px 12px;
+  box-sizing: border-box;
+  height: 2.25rem;
+  width: 22rem;
+  border-radius: 2px;
+}
+
 /* Layout only -- the at-rest visibility (wavy underline) for these
    links comes from the scoped rule in Base elements above. */
 .add_child_links {

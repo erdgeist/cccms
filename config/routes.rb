@@ -37,7 +37,12 @@ Cccms::Application.routes.draw do
 
       resources :nodes do
         collection do
+          get 'tags/:tags', action: :tags, as: :tags, constraints: { tags: /[^\/]+/ }
           get :parameterize_preview
+          get :drafts
+          get :recent
+          get :mine
+          get :chapters
         end
 
         member do

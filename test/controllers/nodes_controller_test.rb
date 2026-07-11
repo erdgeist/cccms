@@ -471,4 +471,108 @@ class NodesControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "form.destructive", :count => 0
   end
+
+  test "drafts includes a never-published node with only a draft" do
+    node = Node.root.children.create!(:slug => "drafts_action_test")
+    login_as :quentin
+    get :drafts
+    assert_includes assigns(:nodes), node
+  end
+
+  test "chapters filters by kind, matching head or draft, and shows both by default" do
+    erfa_node = Node.root.children.create!(:slug => "chapters_erfa_test")
+    erfa_node.find_or_create_draft(@user1)
+    erfa_node.draft.tag_list = "erfa-detail"
+    erfa_node.draft.save!
+    erfa_node.publish_draft!
+
+    chaostreff_node = Node.root.children.create!(:slug => "chapters_chaostreff_test")
+    chaostreff_node.find_or_create_draft(@user1)
+    chaostreff_node.draft.tag_list = "chaostreff-detail"
+    chaostreff_node.draft.save!
+    chaostreff_node.publish_draft!
+
+    login_as :quentin
+
+    get :chapters, params: { :kinds => "erfa" }
+    assert_includes assigns(:nodes), erfa_node
+    assert_not_includes assigns(:nodes), chaostreff_node
+
+    get :chapters
+    assert_includes assigns(:nodes), erfa_node
+    assert_includes assigns(:nodes), chaostreff_node
+  end
+
+  test "recent combined with a search term does not raise an ambiguous column error" do
+    login_as :quentin
+    get :recent, params: { :q => "Zombies" }
+    assert_response :success
+  end
+
+  test "drafts combined with a search term does not raise an ambiguous column error" do
+    login_as :quentin
+    get :drafts, params: { :q => "Zombies" }
+    assert_response :success
+  end
+
+  test "mine combined with a search term does not raise an ambiguous column error" do
+    login_as :quentin
+    get :mine, params: { :q => "Zombies" }
+    assert_response :success
+  end
+
+  test "chapters combined with a search term does not raise an ambiguous column error" do
+    login_as :quentin
+    get :chapters, params: { :q => "Zombies" }
+    assert_response :success
+  end
+
+  test "tags path filters by an arbitrary raw tag, generalizing chapters" do
+    presse_node = Node.root.children.create!(:slug => "tags_path_presse_test")
+    presse_node.find_or_create_draft(@user1)
+    presse_node.draft.tag_list = "pressemitteilung"
+    presse_node.draft.save!
+    presse_node.publish_draft!
+
+    erfa_node = Node.root.children.create!(:slug => "tags_path_erfa_test")
+    erfa_node.find_or_create_draft(@user1)
+    erfa_node.draft.tag_list = "erfa-detail"
+    erfa_node.draft.save!
+    erfa_node.publish_draft!
+
+    login_as :quentin
+    get :tags, params: { :tags => "pressemitteilung" }
+
+    assert_includes assigns(:nodes), presse_node
+    assert_not_includes assigns(:nodes), erfa_node
+
+    assert_select "h1", "Nodes tagged: pressemitteilung"
+    assert_select "h1", :text => "Chapters", :count => 0
+  end
+
+  test "tags path with multiple tags matches any of them, not all" do
+    erfa_node = Node.root.children.create!(:slug => "tags_path_multi_erfa_test")
+    erfa_node.find_or_create_draft(@user1)
+    erfa_node.draft.tag_list = "erfa-detail"
+    erfa_node.draft.save!
+    erfa_node.publish_draft!
+
+    chaostreff_node = Node.root.children.create!(:slug => "tags_path_multi_chaostreff_test")
+    chaostreff_node.find_or_create_draft(@user1)
+    chaostreff_node.draft.tag_list = "chaostreff-detail"
+    chaostreff_node.draft.save!
+    chaostreff_node.publish_draft!
+
+    login_as :quentin
+    get :tags, params: {:tags => "erfa-detail,chaostreff-detail" }
+
+    assert_includes assigns(:nodes), erfa_node
+    assert_includes assigns(:nodes), chaostreff_node
+  end
+
+  test "chapters renders the curated heading" do
+    login_as :quentin
+    get :chapters
+    assert_select "h1", "Chapters"
+  end
 end

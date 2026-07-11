@@ -511,4 +511,30 @@ class NodeTest < ActiveSupport::TestCase
     a.reload
     assert_equal Node.root.id, a.parent_id
   end
+
+  test "editor_search matches a partial substring, not just a whole word" do
+    node = Node.root.children.create!(:slug => "editor_search_substring_test")
+    node.find_or_create_draft(@user1)
+    node.draft.update(:title => "Biometrics Conference")
+    node.publish_draft!
+
+    assert_includes Node.editor_search("bio"), node
+    assert_includes Node.editor_search("Conf"), node
+  end
+
+  test "editor_search returns an empty relation for a blank term, not every node" do
+    assert_equal 0, Node.editor_search("").count
+    assert_equal 0, Node.editor_search(nil).count
+    assert_equal 0, Node.editor_search("   ").count
+  end
+
+  test "editor_search requires every word to match, but each word can match a different field" do
+    node = Node.root.children.create!(:slug => "editor_search_multiword_test")
+    node.find_or_create_draft(@user1)
+    node.draft.update(:title => "Backspace e.V. Bamberg", :abstract => "Spiegelgraben 41, 96052 Bamberg")
+    node.publish_draft!
+
+    assert_includes Node.editor_search("Backspace Spiegelgraben"), node
+    assert_equal 0, Node.editor_search("Backspace Nonexistentstreet").count
+  end
 end

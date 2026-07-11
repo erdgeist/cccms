@@ -183,6 +183,39 @@ class NodesController < ApplicationController
     render plain: slug_for(params[:title])
   end
 
+  # Filter functions for admin views
+  def drafts
+    base = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
+    @nodes = index_matching(base)
+  end
+
+  def recent
+    base = Node.where(
+      "nodes.updated_at < ? AND nodes.updated_at > ? AND nodes.parent_id IS NOT NULL",
+      Time.now, Time.now - 14.days
+    )
+    @nodes = index_matching(base)
+  end
+
+  def mine
+    base = Node.joins(:pages)
+      .where("pages.user_id = ? or pages.editor_id = ?", current_user, current_user)
+      .distinct
+    @nodes = index_matching(base)
+  end
+
+  def chapters
+    @kind_keys = Array(params[:kinds]) & %w[erfa chaostreff]
+    @kind_keys = %w[erfa chaostreff] if @kind_keys.empty?
+    tags = @kind_keys.flat_map { |key| CccConventions::NODE_KINDS[key][:tags] }
+    @nodes = nodes_matching_tags(tags)
+  end
+
+  def tags
+    tags = params[:tags].to_s.split(',').map(&:strip).reject(&:blank?)
+    @nodes = nodes_matching_tags(tags)
+  end
+
   private
 
     def slug_for(title)
@@ -213,5 +246,17 @@ class NodesController < ApplicationController
         config = CccConventions::NODE_KINDS[params[:kind]]
         config && config[:parent] ? config[:parent].call.id : nil
       end
+    end
+
+    def nodes_matching_tags(tags)
+      matching_pages = Page.tagged_with(tags, any: true).reselect(:id)
+      base = Node.where(head_id: matching_pages).or(Node.where(draft_id: matching_pages))
+      index_matching(base)
+    end
+
+    def index_matching(base_scope)
+      scope = base_scope.includes(:head, :draft)
+      scope = scope.merge(Node.editor_search(params[:q])) if params[:q].present?
+      scope.order("nodes.updated_at desc").paginate(page: params[:page], per_page: 25)
     end
 end
