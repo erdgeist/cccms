@@ -254,6 +254,32 @@ class Page < ApplicationRecord
 
   end
 
+  # Installs (or re-installs) the trigger that keeps page_translations'
+  # search_vector in sync. Idempotent, safe to call on every boot.
+  # search_vector is populated by a raw Postgres trigger, not anything
+  # Rails' schema dumper can represent -- a database rebuilt from
+  # schema.rb rather than replayed migrations silently loses it.
+  def self.ensure_search_vector_trigger!
+    connection.execute(<<~SQL)
+      CREATE OR REPLACE FUNCTION page_translations_search_vector_update()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.search_vector := to_tsvector(
+          'simple',
+          coalesce(NEW.title, '') || ' ' ||
+          coalesce(NEW.abstract, '') || ' ' ||
+          coalesce(NEW.body, '')
+        );
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE OR REPLACE TRIGGER page_translations_search_vector_trigger
+      BEFORE INSERT OR UPDATE ON page_translations
+      FOR EACH ROW EXECUTE PROCEDURE page_translations_search_vector_update();
+    SQL
+  end
+
   private
 
     def set_page_title
