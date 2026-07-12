@@ -8,44 +8,20 @@ body {
   margin: 0px;
 }
 
+/* Plain link visibility: a light, desaturated squiggly underline
+   signals "clickable" at rest without the weight of a solid line. */
 a {
   color: #000000;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #ff9600;
-}
-
-/* Scoped link visibility: a light, desaturated squiggly underline
-   signals "clickable" at rest without the weight of a solid line.
-   Hover still relies on the global a:hover color change above -- this
-   only adds an at-rest affordance for plain content links that would
-   otherwise be indistinguishable from body text. Covers: page editor
-   body content, node listing tables, the child-creation shortcuts on
-   nodes#show, and the dashboard draft list's Show/Revisions links. */
-#page_editor a,
-.dashboard_widget a,
-.search_results_list a,
-#sitemap a,
-#flash a,
-div.pagination a,
-#menu_item_list td a,
-table.node_table a,
-table.assets_table a,
-table.events_table a,
-table.user_table a,
-table.revisions_table a,
-.add_child_links a,
-.standalone_action_bar a,
-.diff_view_toggle a,
-div#draft_list table td.actions a {
   text-decoration: underline;
   -webkit-text-decoration-style: wavy;
   text-decoration-style: wavy;
   text-decoration-color: #b0b0b0;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+}
+
+a:hover {
+  color: #ff9600;
 }
 
 th {
@@ -264,6 +240,9 @@ form.button_to {
 
 form.button_to input[type="submit"],
 form.button_to button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   -webkit-appearance: none;
   appearance: none;
   background: none;
@@ -356,6 +335,7 @@ input[type="submit"]:hover {
 #main_navigation a,
 #main_navigation form.button_to button {
   display: inline-flex;
+  text-decoration: none;
   align-items: center;
   background-color: #f7f7f7;
   justify-content: center;
@@ -372,7 +352,8 @@ input[type="submit"]:hover {
 }
 
 #main_navigation svg,
-.action_button svg {
+.action_button svg,
+form.button_to svg  {
   width: 1.25rem;
   height: 1.25rem;
 }
@@ -853,6 +834,17 @@ form.button_to button[type="submit"] {
   font-weight: bold;
 }
 
+.preview_link_row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 0.5rem;
+}
+
+.preview_link_row form.button_to {
+  margin-top: -5px;
+}
+
 /* ============================================================
    Page editor / metadata forms
    ============================================================ */
@@ -1060,6 +1052,23 @@ div#draft_list table td.actions a {
   border-bottom: 1px solid #f1f1f1;
 }
 
+.search_tag_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.search_tag_pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background-color: #f1f1f1;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
 /* ============================================================
    Search widgets
    ============================================================ */
@@ -1093,6 +1102,7 @@ div#draft_list table td.actions a {
 }
 
 .search_results p a {
+  text-decoration: none;
   display: block;
   font-weight: bold;
   font-size: 0.95rem;

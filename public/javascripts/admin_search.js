@@ -137,10 +137,12 @@ dashboard_search = {
 
         if (data.tags.length) {
           results.append("<p class='search_group_label'>Tags</p>");
+          var tag_row = $("<div class='search_tag_row'></div>");
           data.tags.forEach(function(tag) {
-            results.append("<p><a href='" + tag.tag_path + "'>" + tag.name + "</a></p>");
+            tag_row.append("<a class='search_tag_pill' href='" + tag.tag_path + "'>" + tag.name + "</a>");
             found = true;
           });
+          results.append(tag_row);
         }
 
         if (data.nodes.length) {
