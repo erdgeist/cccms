@@ -45,14 +45,12 @@
       <div class="node_description">parent</div>
       <div class="node_content">
         <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
-          <div id="search_results">
-
-          </div>
-          <%= f.hidden_field(
-                :staged_parent_id,
-                :value => @node.staged_parent_id || @node.parent_id
-              )
-           %>
+        <div id="move_to_search_results" class="search_results"></div>
+        <%= f.hidden_field(
+              :staged_parent_id,
+              :value => @node.staged_parent_id || @node.parent_id
+            )
+         %>
       </div>
 
       <%= fields_for @page do |d| %>

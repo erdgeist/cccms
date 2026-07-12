@@ -19,12 +19,12 @@
           <details>
             <summary>Change node</summary>
             <%= text_field_tag :event_node_search_term %>
-            <div id="search_results"></div>
+            <div id="event_search_results" class="search_results"></div>
             <span class="field_hint">This will re-link the event to a different node — rarely needed.</span>
           </details>
         <% else %>
           <%= text_field_tag :event_node_search_term %>
-          <div id="search_results"></div>
+          <div id="event_search_results" class="search_results"></div>
           <span class="field_hint">Optional — search and pick a node to associate this event with a page.</span>
         <% end %>
         <%= f.hidden_field :node_id %>

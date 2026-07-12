@@ -31,7 +31,7 @@ class AdminController < ApplicationController
   end
 
   def search
-    @results = Node.search params[:search_term], :per_page => 1000
+    @results = Node.editor_search(params[:search_term])
 
     respond_to do |format|
       format.html do
@@ -53,7 +53,7 @@ class AdminController < ApplicationController
     if params[:search_term] == "Root"
       @results = [Node.root]
     else
-      @results = Node.search params[:search_term]
+      @results = Node.editor_search(params[:search_term])
     end
 
     respond_to do |format|

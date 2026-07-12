@@ -155,7 +155,6 @@ input[type=radio] {
   padding-right: 5px;
   padding-top: 1px;
   padding-bottom: 1px;
-  text-transform: lowercase;
 }
 
 #metadata a:hover {
@@ -1023,22 +1022,19 @@ div#draft_list table td.actions a {
   font-size: 18px;
 }
 
-#menu_search_results p,
-#search_results p {
+.search_results p {
   margin: 0;
   padding: 4px 4px 0 4px;
   border-bottom: 1px solid #e8e8e8;
 }
 
-#menu_search_results p a,
-#search_results p a {
+.search_results p a {
   display: block;
   font-weight: bold;
   font-size: 0.95rem;
 }
 
-#menu_search_results p span.result_path,
-#search_results p span.result_path {
+.search_results p span.result_path {
   display: block;
   margin-top: 2px;
   font-size: 0.75rem;
@@ -1047,8 +1043,7 @@ div#draft_list table td.actions a {
   padding-bottom: 4px;
 }
 
-#menu_search_results p.search_more,
-#search_results p.search_more {
+.search_results p.search_more {
   margin: 0;
   padding: 6px 4px;
   font-size: 0.8rem;

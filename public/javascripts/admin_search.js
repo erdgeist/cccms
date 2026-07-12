@@ -1,5 +1,4 @@
 admin_search = {
-
   initialize : function() {
     $(document).bind("keydown", 'Alt+f', function(){
       admin_search.display_toggle();
@@ -20,25 +19,12 @@ admin_search = {
       }
     });
 
-    $("#search_term").bind("input", function() {
-      if (!$('#search_widget').is(':visible')) return;
-      if ($(this).val()) {
-        $.ajax({
-          type: "GET",
-          url: ADMIN_SEARCH_URL,
-          data: "search_term=" + $(this).val(),
-          dataType: "json",
-          success: function(results) {
-            admin_search.show_results(results);
-          },
-          error: function(xhr, status, error) {
-            console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
-          }
-        });
-      } else {
-        $('#menu_search_results').slideUp();
-        $('#menu_search_results').empty();
-      }
+    initSearchPicker({
+      inputSelector: "#search_term",
+      resultsSelector: "#menu_search_results",
+      url: ADMIN_SEARCH_URL,
+      isActive: function() { return $('#search_widget').is(':visible'); },
+      resultsHeaderHtml: "<p class='search_more'>Press Enter to see all results ⏎</p>"
     });
   },
 
@@ -49,75 +35,97 @@ admin_search = {
       $('#search_widget').fadeIn();
       $('#search_term').focus();
     }
-  },
-
-  show_results : function(results) {
-    $('#menu_search_results').empty();
-    if (results.length) {
-      $('#menu_search_results').append(
-        "<p class='search_more'>Press Enter to see all results ⏎</p>"
-      );
-    }
-    for (result in results) {
-      $('#menu_search_results').append(
-        "<p><a href='" + results[result].node_path + "'>" +
-          results[result].title +
-          "<span class='result_path'>" + results[result].unique_name + "</span>" +
-        "</a></p>"
-      );
-    }
-    $('#menu_search_results').slideDown();
   }
 };
 
-menu_items = {
+function initSearchPicker(options) {
+  var inputSelector = options.inputSelector;
+  var resultsSelector = options.resultsSelector;
+  var url = options.url || ADMIN_MENU_SEARCH_URL;
+  var onSelect = options.onSelect;               // omit for a real-navigation search like admin_search
+  var isActive = options.isActive;                 // optional guard, checked before every search
+  var resultsHeaderHtml = options.resultsHeaderHtml; // optional, prepended only when results exist
+  var requestId = 0;
+  var timeout;
 
-  initialize_search : function() {
-    $("#menu_search_term").bind("input", function() {
-      if ($(this).val()) {
-        $.ajax({
-          type: "GET",
-          url: ADMIN_MENU_SEARCH_URL,
-          data: "search_term=" + $(this).val(),
-          dataType: "json",
-          success : function(results) {
-            menu_items.show_results(results);
+  $(inputSelector).bind("input", function() {
+    if (isActive && !isActive()) return;
+
+    var term = $(this).val();
+    var results = $(resultsSelector);
+    clearTimeout(timeout);
+
+    if (!term) {
+      results.slideUp();
+      results.empty();
+      return;
+    }
+
+    timeout = setTimeout(function() {
+      var thisRequest = ++requestId;
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: "search_term=" + term,
+        dataType: "json",
+        success: function(nodes) {
+          if (thisRequest !== requestId) return;
+          results.empty();
+          if (nodes.length && resultsHeaderHtml) {
+            results.append(resultsHeaderHtml);
           }
-        });
-      }
-      else {
-        $('#search_results').slideUp();
-        $('#search_results').empty();
+          var found = false;
+          for (var i = 0; i < nodes.length; i++) {
+            (function(node) {
+              var link;
+              if (onSelect) {
+                link = $(
+                  "<p><a href='#'>" + node.title +
+                    "<span class='result_path'>" + node.unique_name + "</span>" +
+                  "</a></p>"
+                );
+                link.find("a").bind("click", function() {
+                  onSelect(node);
+                  results.slideUp();
+                  results.empty();
+                  return false;
+                });
+              } else {
+                link = $(
+                  "<p><a href='" + node.node_path + "'>" + node.title +
+                    "<span class='result_path'>" + node.unique_name + "</span>" +
+                  "</a></p>"
+                );
+              }
+              results.append(link);
+              found = true;
+            })(nodes[i]);
+          }
+          if (found) {
+            results.slideDown();
+          } else {
+            results.slideUp();
+          }
+        },
+        error: function(xhr, status, error) {
+          console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
+        }
+      });
+    }, 250);
+  });
+}
+
+menu_items = {
+  initialize_search : function() {
+    initSearchPicker({
+      inputSelector: "#menu_search_term",
+      resultsSelector: "#menu_item_search_results",
+      onSelect: function(node) {
+        $("#menu_item_node_id").val(node.node_id);
+        $("#menu_item_path").val("/" + node.unique_name);
+        $("#menu_item_title").val(node.title);
       }
     });
-  },
-
-  show_results : function(results) {
-    $("#search_results").empty();
-    for (result in results) {
-      var link = $(("<a href='#'>"+ results[result].title + "</a>"));
-      $(link).bind("click", menu_items.link_closure(results[result]));
-
-
-      // Sometimes I don't get jquery; wrap() didn't work *sigh*
-      // Guess I'll need a book someday or another framework
-      var wrapper = $("<div></div>");
-      $(wrapper).append(link)
-
-      $("#search_results").append(wrapper);
-
-    }
-  },
-
-  link_closure : function(node) {
-    var barf = function(){
-      $("#menu_item_node_id").val(node.node_id);
-      $("#menu_item_path").val("/" + node.unique_name);
-      $("#menu_item_title").val(node.title);
-      return false;
-    }
-
-    return barf;
   }
 };
 
@@ -125,21 +133,13 @@ parent_search = {
   initialize_search : function() {
     parent_search.initialize_radio_buttons();
 
-    $("#parent_search_term").bind("input", function() {
-      if ($(this).val()) {
-        $.ajax({
-          type: "GET",
-          url: ADMIN_MENU_SEARCH_URL,
-          data: "search_term=" + $(this).val(),
-          dataType: "json",
-          success : function(results) {
-            parent_search.show_results(results);
-          }
-        });
-      }
-      else {
-        $('#search_results').slideUp();
-        $('#search_results').empty();
+    initSearchPicker({
+      inputSelector: "#parent_search_term",
+      resultsSelector: "#parent_search_results",
+      onSelect: function(node) {
+        $("#parent_search_term").val(node.title);
+        $("#parent_id").val(node.node_id).attr("data-unique-name", node.unique_name);
+        parent_search.update_resulting_path();
       }
     });
 
@@ -152,38 +152,6 @@ parent_search = {
       if (path === "—" || !navigator.clipboard) return;
       navigator.clipboard.writeText(path);
     });
-  },
-
-  show_results : function(results) {
-    $("#search_results").empty();
-    var found = false;
-    for (result in results) {
-
-      var link = $((
-        "<p><a href='#'>" + results[result].title +
-          "<span class='result_path'>" + results[result].unique_name + "</span>" +
-        "</a></p>"));
-
-      $(link).bind("click", parent_search.link_closure(results[result]));
-
-      $("#search_results").append(link);
-      found = true;
-    }
-    if (found)
-      $('#search_results').slideDown();
-  },
-
-  link_closure : function(node) {
-    var barf = function(){
-      $("#parent_search_term").val(node.title);
-      $("#parent_id").val(node.node_id).attr("data-unique-name", node.unique_name);
-      $('#search_results').slideUp();
-      $('#search_results').empty();
-      parent_search.update_resulting_path();
-      return false;
-    }
-
-    return barf;
   },
 
   update_resulting_path : function() {
@@ -223,122 +191,35 @@ parent_search = {
       $("#parent_search_field").hide();
     }
   }
-}
+};
 
 move_to_search = {
   initialize_search : function() {
-    $("#move_to_search_term").bind("input", function() {move_to_search.do_search($(this))});
-  },
-
-  do_search : function(_this) {
-    if (_this.val()) {
-      $.ajax({
-        type: "GET",
-        url: ADMIN_MENU_SEARCH_URL,
-        data: "search_term=" + _this.val(),
-        dataType: "json",
-        success : function(results) {
-          move_to_search.show_results(results);
-        }
-      });
-    }
-    else {
-      $('#search_results').slideUp();
-      $('#search_results').empty();
-    }
-  },
-
-  show_results : function(results) {
-    $("#search_results").empty();
-    var found = false;
-    for (result in results) {
-      var link = $(("<a href='#'>"+ results[result].title + "</a>"));
-      $(link).bind("click", move_to_search.link_closure(results[result]));
-
-
-      // Sometimes I don't get jquery; wrap() didn't work *sigh*
-      // Guess I'll need a book someday or another framework
-      var wrapper = $("<div></div>");
-      $(wrapper).append(link)
-
-      $("#search_results").append(wrapper);
-      found = true;
-    }
-    if (found)
-      $('#search_results').slideDown();
-    else
-      $('#search_results').slideUp();
-
-  },
-
-  link_closure : function(node) {
-    var barf = function(){
-      $("#move_to_search_term").val(node.title);
-      $("#node_staged_parent_id").val(node.node_id);
-      $('#search_results').slideUp();
-      $('#search_results').empty();
-      return false;
-    }
-
-    return barf;
+    initSearchPicker({
+      inputSelector: "#move_to_search_term",
+      resultsSelector: "#move_to_search_results",
+      onSelect: function(node) {
+        $("#move_to_search_term").val(node.title);
+        $("#node_staged_parent_id").val(node.node_id);
+      }
+    });
   }
-}
+};
 
 event_search = {
   initialize_search : function() {
-    $("#event_node_search_term").bind("input", function() {
-      if ($(this).val()) {
-        $.ajax({
-          type: "GET",
-          url: ADMIN_MENU_SEARCH_URL,
-          data: "search_term=" + $(this).val(),
-          dataType: "json",
-          success : function(results) {
-            event_search.show_results(results);
-          }
-        });
-      }
-      else {
-        $('#search_results').slideUp();
-        $('#search_results').empty();
+    initSearchPicker({
+      inputSelector: "#event_node_search_term",
+      resultsSelector: "#event_search_results",
+      onSelect: function(node) {
+        $("#event_node_search_term").val(node.title);
+        $("#event_node_id").val(node.node_id);
+
+        var title_field = $("#event_title");
+        if (title_field.val() === "") {
+          $("#event_title_hint").text("Using \"" + node.title + "\" from the associated node.");
+        }
       }
     });
-  },
-
-  show_results : function(results) {
-    $("#search_results").empty();
-    var found = false;
-    for (result in results) {
-      var link = $((
-        "<p><a href='#'>" + results[result].title +
-          "<span class='result_path'>" + results[result].unique_name + "</span>" +
-        "</a></p>"));
-
-      $(link).bind("click", event_search.link_closure(results[result]));
-
-      $("#search_results").append(link);
-      found = true;
-    }
-    if (found)
-      $('#search_results').slideDown();
-    else
-      $('#search_results').slideUp();
-  },
-
-  link_closure : function(node) {
-    var barf = function(){
-      $("#event_node_search_term").val(node.title);
-      $("#event_node_id").val(node.node_id);
-      $('#search_results').slideUp();
-      $('#search_results').empty();
-
-      var title_field = $("#event_title");
-      if (title_field.val() === "") {
-        $("#event_title_hint").text("Using \"" + node.title + "\" from the associated node.");
-      }
-
-      return false;
-    }
-    return barf;
   }
 };
