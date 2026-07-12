@@ -537,4 +537,28 @@ class NodeTest < ActiveSupport::TestCase
     assert_includes Node.editor_search("Backspace Spiegelgraben"), node
     assert_equal 0, Node.editor_search("Backspace Nonexistentstreet").count
   end
+
+  test "drafts_and_autosaves without a user sorts by recency only" do
+    older = Node.root.children.create!(:slug => "drafts_order_older")
+    older.find_or_create_draft(@user1)
+    newer = Node.root.children.create!(:slug => "drafts_order_newer")
+    newer.find_or_create_draft(@user1)
+
+    result = Node.drafts_and_autosaves.to_a
+    assert result.index(newer) < result.index(older)
+  end
+
+  test "drafts_and_autosaves with a user puts their own locked nodes first, regardless of recency" do
+    mine = Node.root.children.create!(:slug => "drafts_order_mine")
+    mine.lock_for_editing!(@user1)
+    mine.autosave!({:title => "mine"}, @user1)
+
+    someone_elses_newer = Node.root.children.create!(:slug => "drafts_order_theirs")
+    other_user = User.find_by_login("quentin")
+    someone_elses_newer.lock_for_editing!(other_user)
+    someone_elses_newer.autosave!({:title => "theirs"}, other_user)
+
+    result = Node.drafts_and_autosaves(current_user_id: @user1.id).to_a
+    assert result.index(mine) < result.index(someone_elses_newer)
+  end
 end

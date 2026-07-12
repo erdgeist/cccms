@@ -185,16 +185,11 @@ class NodesController < ApplicationController
 
   # Filter functions for admin views
   def drafts
-    base = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
-    @nodes = index_matching(base)
+    @nodes = index_matching(Node.drafts_and_autosaves)
   end
 
   def recent
-    base = Node.where(
-      "nodes.updated_at < ? AND nodes.updated_at > ? AND nodes.parent_id IS NOT NULL",
-      Time.now, Time.now - 14.days
-    )
-    @nodes = index_matching(base)
+    @nodes = index_matching(Node.recently_changed)
   end
 
   def mine

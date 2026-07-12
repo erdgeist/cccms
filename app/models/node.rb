@@ -367,6 +367,22 @@ class Node < ApplicationRecord
       .distinct
   end
 
+  def self.drafts_and_autosaves(current_user_id: nil)
+    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
+    return scope.order("updated_at DESC") unless current_user_id
+
+    scope.order(
+      Arel.sql(sanitize_sql_array(["CASE WHEN locking_user_id = ? THEN 0 ELSE 1 END, updated_at DESC", current_user_id]))
+    )
+  end
+
+  def self.recently_changed
+    where(
+      "nodes.updated_at < ? AND nodes.updated_at > ? AND nodes.parent_id IS NOT NULL",
+      Time.now, Time.now - 14.days
+    )
+  end
+
   protected
     def lock_for! current_user
       self.lock_owner = current_user
