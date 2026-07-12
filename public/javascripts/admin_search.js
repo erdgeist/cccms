@@ -42,9 +42,10 @@ function initSearchPicker(options) {
   var inputSelector = options.inputSelector;
   var resultsSelector = options.resultsSelector;
   var url = options.url || ADMIN_MENU_SEARCH_URL;
-  var onSelect = options.onSelect;               // omit for a real-navigation search like admin_search
-  var isActive = options.isActive;                 // optional guard, checked before every search
+  var onSelect = options.onSelect;                   // omit for a real-navigation search like admin_search
+  var isActive = options.isActive;                   // optional guard, checked before every search
   var resultsHeaderHtml = options.resultsHeaderHtml; // optional, prepended only when results exist
+  var renderResults = options.renderResults;         // optional, replaces the default per-node rendering entirely
   var requestId = 0;
   var timeout;
 
@@ -68,39 +69,44 @@ function initSearchPicker(options) {
         url: url,
         data: "search_term=" + term,
         dataType: "json",
-        success: function(nodes) {
+        success: function(data) {
           if (thisRequest !== requestId) return;
           results.empty();
-          if (nodes.length && resultsHeaderHtml) {
-            results.append(resultsHeaderHtml);
+
+          var found;
+          if (renderResults) {
+            found = renderResults(data, results, resultsHeaderHtml);
+          } else {
+            if (data.length && resultsHeaderHtml) {
+              results.append(resultsHeaderHtml);
+            }
+            found = false;
+            for (var i = 0; i < data.length; i++) {
+              (function(node) {
+                var link;
+                if (onSelect) {
+                  link = $(
+                    "<p><a href='#'>" + node.title +
+                      "<span class='result_path'>" + node.unique_name + "</span></a></p>"
+                  );
+                  link.find("a").bind("click", function() {
+                    onSelect(node);
+                    results.slideUp();
+                    results.empty();
+                    return false;
+                  });
+                } else {
+                  link = $(
+                    "<p><a href='" + node.node_path + "'>" + node.title +
+                      "<span class='result_path'>" + node.unique_name + "</span></a></p>"
+                  );
+                }
+                results.append(link);
+                found = true;
+              })(data[i]);
+            }
           }
-          var found = false;
-          for (var i = 0; i < nodes.length; i++) {
-            (function(node) {
-              var link;
-              if (onSelect) {
-                link = $(
-                  "<p><a href='#'>" + node.title +
-                    "<span class='result_path'>" + node.unique_name + "</span>" +
-                  "</a></p>"
-                );
-                link.find("a").bind("click", function() {
-                  onSelect(node);
-                  results.slideUp();
-                  results.empty();
-                  return false;
-                });
-              } else {
-                link = $(
-                  "<p><a href='" + node.node_path + "'>" + node.title +
-                    "<span class='result_path'>" + node.unique_name + "</span>" +
-                  "</a></p>"
-                );
-              }
-              results.append(link);
-              found = true;
-            })(nodes[i]);
-          }
+
           if (found) {
             results.slideDown();
           } else {
@@ -114,6 +120,45 @@ function initSearchPicker(options) {
     }, 250);
   });
 }
+
+dashboard_search = {
+  initialize : function() {
+    initSearchPicker({
+      inputSelector: "#dashboard_search_term",
+      resultsSelector: "#dashboard_search_results",
+      url: DASHBOARD_SEARCH_URL,
+      resultsHeaderHtml: "<p class='search_more'>Press Enter to see all results ⏎</p>",
+      renderResults: function(data, results, resultsHeaderHtml) {
+        var found = false;
+
+        if ((data.tags.length || data.nodes.length) && resultsHeaderHtml) {
+          results.append(resultsHeaderHtml);
+        }
+
+        if (data.tags.length) {
+          results.append("<p class='search_group_label'>Tags</p>");
+          data.tags.forEach(function(tag) {
+            results.append("<p><a href='" + tag.tag_path + "'>" + tag.name + "</a></p>");
+            found = true;
+          });
+        }
+
+        if (data.nodes.length) {
+          results.append("<p class='search_group_label'>Pages</p>");
+          data.nodes.forEach(function(node) {
+            results.append(
+              "<p><a href='" + node.node_path + "'>" + node.title +
+                "<span class='result_path'>" + node.unique_name + "</span></a></p>"
+            );
+            found = true;
+          });
+        }
+
+        return found;
+      }
+    });
+  }
+};
 
 menu_items = {
   initialize_search : function() {

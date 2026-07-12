@@ -66,10 +66,11 @@ Cccms::Application.routes.draw do
         end
       end
 
-      match ''            => 'admin#index',        :as => :admin,             :via => :get
-      match 'search'      => 'admin#search',       :as => :admin_search,      :via => :get
-      match 'menu_search' => 'admin#menu_search',  :as => :admin_menu_search, :via => :get
-      match 'conventions' => 'admin#conventions',  :as => :admin_conventions, :via => :get
+      match ''                 => 'admin#index',            :as => :admin,                  :via => :get
+      match 'search'           => 'admin#search',           :as => :admin_search,           :via => :get
+      match 'menu_search'      => 'admin#menu_search',      :as => :admin_menu_search,      :via => :get
+      match 'conventions'      => 'admin#conventions',      :as => :admin_conventions,      :via => :get
+      match 'dashboard_search' => 'admin#dashboard_search', :as => :admin_dashboard_search, :via => :get
     end
 
     match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete

@@ -34,4 +34,28 @@ class AdminControllerTest < ActionController::TestCase
     matches = assigns(:mynodes).select { |n| n.id == node.id }
     assert_equal 1, matches.length
   end
+
+  test "dashboard_search returns matching tags and nodes grouped separately" do
+    node = Node.root.children.create!(:slug => "dashboard_search_test")
+    node.find_or_create_draft(User.find_by_login("aaron"))
+    node.draft.update(:title => "Biometrics Workshop")
+    node.draft.tag_list = "biometrics-workshop"
+    node.draft.save!
+
+    login_as :quentin
+    get :dashboard_search, params: { :search_term => "biometr" }, :format => :json
+
+    json = JSON.parse(response.body)
+    assert json["tags"].any? { |t| t["name"] == "biometrics-workshop" }
+    assert json["nodes"].any? { |n| n["title"] == "Biometrics Workshop" }
+  end
+
+  test "dashboard_search returns empty results for a blank term" do
+    login_as :quentin
+    get :dashboard_search, params: { :search_term => "" }, :format => :json
+
+    json = JSON.parse(response.body)
+    assert_equal [], json["tags"]
+    assert_equal [], json["nodes"]
+  end
 end

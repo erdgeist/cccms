@@ -31,6 +31,10 @@ $(document).ready(function () {
     }
   });
 
+  if ($("#dashboard_search_term").length != 0) {
+    dashboard_search.initialize();
+  }
+
   if ($("#menu_search_term").length != 0) {
     menu_items.initialize_search();
   }

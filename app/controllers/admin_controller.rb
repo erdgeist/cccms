@@ -49,6 +49,24 @@ class AdminController < ApplicationController
     end
   end
 
+  def dashboard_search
+    term = params[:search_term]
+
+    if term.blank?
+      render json: { tags: [], nodes: [] }
+      return
+    end
+
+    render json: {
+      tags: ActsAsTaggableOn::Tag.named_like(term).limit(5).map { |tag|
+        { name: tag.name, tag_path: tags_nodes_path(tags: tag.name) }
+      },
+      nodes: Node.editor_search(term).limit(10).map { |node|
+        { node_id: node.id, title: node.title, unique_name: node.unique_name, node_path: node_path(node) }
+      }
+    }
+  end
+
   def menu_search
     if params[:search_term] == "Root"
       @results = [Node.root]

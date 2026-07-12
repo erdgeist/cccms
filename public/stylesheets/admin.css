@@ -1052,6 +1052,16 @@ div#draft_list table td.actions a {
   border-bottom: none;
 }
 
+.search_results p.search_group_label {
+  margin: 8px 0 2px;
+  padding: 0;
+  border-bottom: none;
+  font-size: 0.75rem;
+  color: #969696;
+  text-transform: lowercase;
+  font-weight: normal;
+}
+
 /* ============================================================
    Menu items (navigation editor)
    ============================================================ */
