@@ -15,6 +15,10 @@ en:
   open_days_label: "Open days"
   upcoming_events: "Upcoming events"
   open_today: "Open today"
+  published: "published"
+  published_by: "published by %{editor}"
+  publisher_self: "you"
+  editor_self: "you"
 
   time:
     formats:
