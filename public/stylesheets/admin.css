@@ -25,7 +25,11 @@ a:hover {
    body content, node listing tables, the child-creation shortcuts on
    nodes#show, and the dashboard draft list's Show/Revisions links. */
 #page_editor a,
+.dashboard_widget a,
 #sitemap a,
+#flash a,
+div.pagination a,
+#menu_item_list td a,
 table.node_table a,
 table.assets_table a,
 table.events_table a,
@@ -191,15 +195,6 @@ input[type=radio] {
   margin-left: 5px;
 }
 
-#flash a {
-  text-decoration: underline;
-  -webkit-text-decoration-style: wavy;
-  text-decoration-style: wavy;
-  text-decoration-color: #b0b0b0;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
 #flash span {
   letter-spacing: 1px;
   margin-right: 10px;
@@ -261,14 +256,6 @@ div.pagination span.gap {
   padding: 0 0.4rem;
   border-radius: 4px;
   font-style: normal;
-}
-
-div.pagination a {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: #b0b0b0;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
 }
 
 div.pagination a:hover {
@@ -385,31 +372,108 @@ input[type="submit"]:hover {
 }
 
 /* ============================================================
-   Wizard buttons
+   Admin dashboard
    ============================================================ */
 
-#admin_wizard {
+#main_navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#main_navigation a,
+#main_navigation form.button_to button {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f7f7f7;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 2px;
+}
+
+#main_navigation a:hover,
+#main_navigation form.button_to button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+#main_navigation svg,
+.action_button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+#dashboard_search {
+  margin-bottom: 1.5rem;
+}
+
+#dashboard_search input[type=text] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  border-radius: 2px;
+}
+
+.button_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button_row .action_button,
+.node_search_form .action_button {
+  margin-bottom: 0;
+}
+
+#dashboard_signposts {
   margin-bottom: 2rem;
 }
 
-#page_submit,
-.admin_wizard_button {
-  display: inline-block;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  background-color: green;
+#dashboard_housekeeping h3 {
+  margin-bottom: 0.75rem;
 }
 
-#page_submit a,
-.admin_wizard_button a {
-  color: white !important;
+#dashboard_widgets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-#page_submit:hover,
-.admin_wizard_button:hover {
-  background-color: lime !important;
+.dashboard_widget {
+  flex: 1 1 300px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+.dashboard_widget h3 {
+  margin-top: 0;
+}
+
+.dashboard_widget ul {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.dashboard_widget li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.dashboard_widget_meta {
+  white-space: nowrap;
+  color: #969696;
+  font-size: 0.85rem;
 }
 
 /* ============================================================
@@ -721,7 +785,7 @@ table.user_table td.user_login {
   display: block;
 }
 
-a.action_button,
+.action_button,
 form.button_to input[type="submit"],
 form.button_to button[type="submit"] {
   padding: 4px 12px;
@@ -766,6 +830,11 @@ form.button_to button[type="submit"] {
   height: 2.25rem;
   width: 22rem;
   border-radius: 2px;
+}
+
+.node_search_form .action_button {
+  height: 2.25rem;
+  box-sizing: border-box;
 }
 
 /* Layout only -- the at-rest visibility (wavy underline) for these
@@ -840,8 +909,10 @@ div#page_editor {
 }
 
 #page_editor a.action_button,
-a.action_button {
-  display: inline-block;
+.action_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   -webkit-appearance: none;
   appearance: none;
   border: 1px solid #000000;
@@ -851,10 +922,13 @@ a.action_button {
   text-decoration: none;
   color: #000000;
   margin-bottom: 1rem;
+  background: none;
+  cursor: pointer;
+  font: inherit;
 }
 
 #page_editor a.action_button:hover,
-a.action_button:hover {
+.action_button:hover {
   color: #ffffff;
   background-color: #000000;
 }
@@ -1102,14 +1176,6 @@ div#draft_list table td.actions a {
 
 #menu_item_list td.menu_sort_handle div:hover {
   cursor: grab;
-}
-
-#menu_item_list td a {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: #b0b0b0;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
 }
 
 .ui-state-highlight td {
