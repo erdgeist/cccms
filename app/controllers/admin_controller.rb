@@ -5,25 +5,8 @@ class AdminController < ApplicationController
   before_action :login_required
 
   def index
-    @drafts = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
-      .limit(50).order("updated_at desc")
-
-    @drafts_count = Node.where("draft_id IS NOT NULL OR autosave_id IS NOT NULL").count
-
-    @recent_changes = Node.where(
-      "updated_at < ? AND updated_at > ? AND parent_id IS NOT NULL",
-      Time.now, Time.now - 14.days
-    ).limit(50).order("updated_at desc")
-
-    ordered_with_level = Node.root.self_and_descendants_ordered_with_level
-    @sitemap_depth = {}
-    ordered_with_level.each { |node, level| @sitemap_depth[node.id] = level }
-    @sitemap = ordered_with_level.map(&:first).reject(&:update?)
-
-    @mynodes = Node.joins(:pages)
-          .where("pages.user_id = ? or pages.editor_id = ?", current_user, current_user)
-          .order("updated_at desc")
-          .distinct.first(50)
+    @drafts = Node.drafts_and_autosaves(current_user_id: current_user.id).limit(5)
+    @recent_changes = Node.recently_changed.limit(5)
   end
 
   def conventions

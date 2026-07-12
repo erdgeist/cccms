@@ -15,26 +15,6 @@ class AdminControllerTest < ActionController::TestCase
     assert_includes assigns(:drafts), node
   end
 
-  test "my work list shows each matching node only once, even with several revisions by the same user" do
-    login_as :quentin
-    user = User.find_by_login("quentin")
-    node = Node.root.children.create!(:slug => "dedup_test")
-    node.lock_for_editing!(user)
-    node.autosave!({:title => "v1"}, user)
-    node.save_draft!(user)
-    node.publish_draft!
-    node.lock_for_editing!(user)
-    node.autosave!({:title => "v2"}, user)
-    node.save_draft!(user)
-    node.publish_draft!
-    # three pages now exist on this node, all touched by quentin --
-    # without DISTINCT, the join would return this node three times
-
-    get :index
-    matches = assigns(:mynodes).select { |n| n.id == node.id }
-    assert_equal 1, matches.length
-  end
-
   test "dashboard_search returns matching tags and nodes grouped separately" do
     node = Node.root.children.create!(:slug => "dashboard_search_test")
     node.find_or_create_draft(User.find_by_login("aaron"))

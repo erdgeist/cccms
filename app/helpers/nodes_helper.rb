@@ -28,6 +28,18 @@ module NodesHelper
     User.all.map {|u| [u.login, u.id]}
   end
 
+  def node_last_editor(node)
+    editor = node.draft&.editor || node.head&.editor
+    return nil unless editor
+    editor == current_user ? t("editor_self") : editor.login
+  end
+
+  def node_head_editor(node)
+    editor = node.head&.editor
+    return nil unless editor
+    editor == current_user ? t("publisher_self") : editor.login
+  end
+
   DEFAULT_EVENT_TAG_BY_PAGE_TAG = {
     'erfa-detail'       => 'open-day',
     'chaostreff-detail' => 'open-day'

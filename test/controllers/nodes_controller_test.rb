@@ -521,6 +521,26 @@ class NodesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  test "mine shows each matching node only once, even with several revisions by the same user" do
+    login_as :quentin
+    user = User.find_by_login("quentin")
+    node = Node.root.children.create!(:slug => "dedup_test")
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+    node.save_draft!(user)
+    node.publish_draft!
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v2"}, user)
+    node.save_draft!(user)
+    node.publish_draft!
+    # three pages now exist on this node, all touched by quentin --
+    # without DISTINCT, the join would return this node three times
+
+    get :mine
+    matches = assigns(:nodes).select { |n| n.id == node.id }
+    assert_equal 1, matches.length
+  end
+
   test "chapters combined with a search term does not raise an ambiguous column error" do
     login_as :quentin
     get :chapters, params: { :q => "Zombies" }

@@ -377,10 +377,10 @@ class Node < ApplicationRecord
   end
 
   def self.recently_changed
-    where(
-      "nodes.updated_at < ? AND nodes.updated_at > ? AND nodes.parent_id IS NOT NULL",
+    includes(:head).where(
+      "pages.updated_at < ? AND pages.updated_at > ? AND nodes.parent_id IS NOT NULL",
       Time.now, Time.now - 14.days
-    )
+    ).order("pages.updated_at desc").references(:head)
   end
 
   protected
