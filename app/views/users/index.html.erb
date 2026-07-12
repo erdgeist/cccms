@@ -1,5 +1,7 @@
 <h1>Admins</h1>
-<%= link_to 'New admin user', new_user_path(admin: true), class: 'action_button' %>
+<%= link_to new_user_path(admin: true), class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create admin user
+<% end %>
 <table class="user_table">
   <tr class="header">
     <th>Login</th>
@@ -11,7 +13,9 @@
 </table>
 
 <h1>Users</h1>
-<%= link_to 'New user', new_user_path, class: 'action_button' %>
+<%= link_to new_user_path, class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create user
+<% end %>
 <table class="user_table">
   <tr class="header">
     <th>Login</th>

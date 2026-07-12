@@ -4,7 +4,9 @@
   <% end %>
   <%= hidden_field_tag :tags, params[:tags] if params[:tags].present? %>
   <%= text_field_tag :q, params[:q], placeholder: "Search title, abstract, body…" %>
-  <%= submit_tag "Search", class: "action_button" %>
+  <%= button_tag type: "submit", class: "action_button" do %>
+    <%= icon("search", library: "tabler", "aria-hidden": true) %> Search
+  <% end %>
   <% if params[:q].present? || params[:kinds].present? || params[:tags].present? %>
     <%= link_to "Reset", url_for(controller: params[:controller], action: params[:action]) %>
   <% end %>

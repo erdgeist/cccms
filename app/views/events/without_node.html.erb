@@ -1,7 +1,9 @@
 <h1>Events without a node</h1>
 
 <%= link_to '← All events', events_path %>
-<%= link_to 'New event', new_event_path, class: 'action_button' %>
+<%= link_to new_event_path, class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create event
+<% end %>
 
 <%= will_paginate @events %>
 

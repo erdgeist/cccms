@@ -1,7 +1,9 @@
 <h1>Nodes</h1>
 
 <div>
-  <%= link_to 'New node', new_node_path, class: 'action_button' %>
+  <%= link_to new_node_path, class: 'action_button' do %>
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create node
+  <% end %>
   <span class="field_hint">Creates a node with no parent or kind set — for a specific page, use the wizard's create flow or "add child" from an existing node instead.</span>
 </div>
 

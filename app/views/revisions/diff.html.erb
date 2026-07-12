@@ -49,10 +49,12 @@
     <% end %>
 
     <% if !@locked_by_other && (@node.autosave || @node.draft) %>
-      <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
-            revert_node_path(@node), method: :put,
-            params: { return_to: request.fullpath },
-            form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+      <%= button_to revert_node_path(@node), method: :put,
+                  params: { return_to: request.fullpath },
+                  form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+        <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+        <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+      <% end %>
     <% end %>
   </p>
 <% end %>

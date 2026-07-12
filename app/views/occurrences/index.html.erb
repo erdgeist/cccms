@@ -18,7 +18,9 @@
     <td><%=h occurrence.event_id %></td>
     <td><%= link_to 'Show', occurrence %></td>
     <td><%= link_to 'Edit', edit_occurrence_path(occurrence) %></td>
-    <td><%= button_to 'Destroy', occurrence, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
+    <td><%= button_to occurrence, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } do %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+    <% end %></td>
   </tr>
 <% end %>
 </table>

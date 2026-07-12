@@ -1,7 +1,11 @@
 <h1>Events</h1>
 
-<%= link_to 'New event', new_event_path, class: 'action_button' %>
-<%= link_to 'View events without a page →', without_node_events_path %>
+<div class="button_row">
+  <%= link_to new_event_path, class: 'action_button' do %>
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create event
+  <% end %>
+  <%= link_to 'View events without a page →', without_node_events_path %>
+</div>
 
 <%= will_paginate @events %>
 

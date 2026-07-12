@@ -25,7 +25,10 @@
           <% if locked_by_other %>
             <span class="disabled_action"><%= edit_label %></span>
           <% else %>
-            <%= link_to (@node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Lock + Edit")), edit_node_path(@node), class: "action_button" %>
+            <%= link_to edit_node_path(@node), class: "action_button" do %>
+              <%= icon("edit", library: "tabler", "aria-hidden": true) %>
+              <%= @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Lock + Edit") %>
+            <% end %>
             <% if !@node.draft && !@node.autosave %>
               <span class="field_hint">Nothing pending — this will start a fresh draft.</span>
             <% end %>
@@ -51,10 +54,12 @@
           <% end %>
           <% if @node.autosave || (@node.draft && @node.head) %>
             <div class="node_info_item">
-              <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
-                    revert_node_path(@node), method: :put,
-                    params: { return_to: request.path },
-                    form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+            <%= button_to revert_node_path(@node), method: :put,
+                                params: { return_to: request.path },
+                                form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+              <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+              <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+            <% end %>
             </div>
           <% end %>
         <% end %>

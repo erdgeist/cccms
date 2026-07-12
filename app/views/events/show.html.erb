@@ -11,10 +11,14 @@
           </div>
         <% end %>
         <div class="node_info_item">
-          <%= link_to 'Edit', edit_event_path(@event, return_to: request.path), class: 'action_button' %>
+          <%= link_to edit_event_path(@event, return_to: request.path), class: 'action_button' do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+          <% end %>
         </div>
         <div class="node_info_item">
-          <%= button_to 'Destroy', event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } %>
+          <%= button_to event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } do %>
+            <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+          <% end %>
         </div>
       </div>
     </div>

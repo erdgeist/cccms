@@ -6,7 +6,9 @@
     <div class="node_content node_info_group">
       <div class="node_info_group_items">
         <div class="node_info_item">
-          <%= link_to 'Edit', edit_asset_path(@asset), class: 'action_button' %>
+        <%= link_to edit_asset_path(@asset), class: 'action_button' do %>
+          <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+        <% end %>
         </div>
         <div class="node_info_item">
           <%= link_to 'Back', assets_path %>

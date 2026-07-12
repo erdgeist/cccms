@@ -6,9 +6,11 @@
         disabled: @node.autosave.present? %>
 
   <% if @node.autosave || (@node.draft && @node.head) %>
-    <%= button_to (@node.draft && !@node.autosave ? 'Destroy Draft' : 'Discard Autosave'),
-          revert_node_path(@node), method: :put,
-          form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } %>
+    <%= button_to revert_node_path(@node), method: :put,
+              form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+      <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+    <% end %>
     <% if pair = @node.available_layer_pairs.find { |p| p.include?(:autosave) } %>
       <%= button_to 'What changed?',
             diff_node_revisions_path(@node),
