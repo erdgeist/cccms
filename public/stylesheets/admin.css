@@ -26,6 +26,7 @@ a:hover {
    nodes#show, and the dashboard draft list's Show/Revisions links. */
 #page_editor a,
 .dashboard_widget a,
+.search_results_list a,
 #sitemap a,
 #flash a,
 div.pagination a,
@@ -941,6 +942,10 @@ div#page_editor {
 
 @media(min-width:1016px) {
   input#tag_list,
+  input#menu_search_term,
+  input#menu_item_node_id,
+  input#menu_item_path,
+  input#menu_item_title,
   input#node_staged_slug,
   input#move_to_search_term {
     width: 690px;
@@ -1073,15 +1078,25 @@ div#draft_list table td.actions a {
   padding-right: 5px;
 }
 
+.search_results_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search_results_list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
 /* ============================================================
    Search widgets
    ============================================================ */
 
 #search_widget {
   position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 2.75rem;
+  left: 0;
   width: min(520px, 90vw);
   border: 1px solid #000000;
   -webkit-box-shadow: 3px 3px 5px #b1b1b1;

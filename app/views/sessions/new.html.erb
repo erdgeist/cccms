@@ -1,24 +1,15 @@
 <div id="login_form">
   <%= form_tag session_path do -%>
-  <table>
-    <tr>
-      <td></td>
-      <td>
-        <%= flash[:error] %>&nbsp;
-      </td>
-    </tr>
-    <tr>
-      <td class="description">Login</td>
-      <td><%= text_field_tag 'login', @login %></td>
-    </tr>
-    <tr>
-      <td class="description">Password</td>
-      <td><%= password_field_tag 'password', nil %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="right"><%= submit_tag 'log in' %></td>
-    </tr>
-  </table>
+    <% if flash[:error] %>
+      <div class="error_messages"><%= flash[:error] %></div>
+    <% end %>
+
+    <div class="node_description">Login</div>
+    <div class="node_content"><%= text_field_tag 'login', @login %></div>
+
+    <div class="node_description">Password</div>
+    <div class="node_content"><%= password_field_tag 'password', nil %></div>
+
+    <div class="node_content"><%= submit_tag 'log in' %></div>
   <% end -%>
 </div>
