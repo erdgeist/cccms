@@ -12,7 +12,6 @@ module NodesHelper
     end
   end
   
-  
   def truncated_title_for_node node
     if (title = title_for_node node) && title.size > 20
       "<span title='#{title}'>#{truncate(title, 40)}</span>"
@@ -62,5 +61,9 @@ module NodesHelper
   def matching_node_kinds(node)
     path = node.unique_path
     CccConventions::NODE_KINDS.select { |_, config| config[:parent_match]&.call(path) }
+  end
+
+  def sitemap_node_open?(node)
+    !CccConventions::SITEMAP_COLLAPSED_PATHS.include?(node.unique_name)
   end
 end

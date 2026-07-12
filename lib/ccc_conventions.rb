@@ -1,6 +1,7 @@
 module CccConventions
   ERFA_PARENT_NAME       = "club/erfas"
   CHAOSTREFF_PARENT_NAME = "club/chaostreffs"
+  SITEMAP_COLLAPSED_PATHS = %w[updates club/erfas club/chaostreffs disclosure].freeze
 
   NODE_KINDS = {
     "top_level" => {

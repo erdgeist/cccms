@@ -575,4 +575,56 @@ class NodesControllerTest < ActionController::TestCase
     get :chapters
     assert_select "h1", "Chapters"
   end
+
+  test "sitemap collapses configured paths but leaves others open" do
+    club = Node.root.children.create!(:slug => "club")
+    erfas = club.children.create!(:slug => "erfas")
+    erfas.children.create!(:slug => "one_chapter")
+    other = Node.root.children.create!(:slug => "sitemap_controller_open_test")
+    other.children.create!(:slug => "sitemap_controller_open_child")
+
+    login_as :quentin
+    get :sitemap
+    assert_response :success
+
+    doc = Nokogiri::HTML::DocumentFragment.parse(response.body)
+
+    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(erfas.unique_name) }
+    other_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(other.unique_name) }
+
+    erfas_details = erfas_node_div.next_element
+    other_details = other_node_div.next_element
+
+    assert_equal 'details', erfas_details.name
+    assert_equal 'details', other_details.name
+    assert_not erfas_details.key?('open')
+    assert other_details.key?('open')
+  end
+
+  test "sitemap shows how many descendants a collapsed branch is hiding" do
+    club = Node.root.children.create!(:slug => "club")
+    erfas = club.children.create!(:slug => "erfas")
+    erfas.children.create!(:slug => "one_chapter")
+    erfas.children.create!(:slug => "another_chapter")
+
+    login_as :quentin
+    get :sitemap
+    assert_response :success
+
+    doc = Nokogiri::HTML::DocumentFragment.parse(response.body)
+    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(erfas.unique_name) }
+    erfas_details = erfas_node_div.next_element
+
+    assert_equal 'details', erfas_details.name
+    assert_match "2 descendants", erfas_details.at_css('summary').text
+  end
+
+  test "sitemap shows Show and Create Child, not Revisions" do
+    node = Node.root.children.create!(:slug => "sitemap_actions_test")
+    login_as :quentin
+    get :sitemap
+    assert_select ".sitemap_node_actions", :text => /Show/
+    assert_select ".sitemap_node_actions", :text => /Create Child/
+    assert_select ".sitemap_node_actions", :text => /Revisions/, :count => 0
+  end
 end

@@ -25,6 +25,7 @@ a:hover {
    body content, node listing tables, the child-creation shortcuts on
    nodes#show, and the dashboard draft list's Show/Revisions links. */
 #page_editor a,
+#sitemap a,
 table.node_table a,
 table.assets_table a,
 table.events_table a,
@@ -103,6 +104,11 @@ input[type=radio] {
     margin: 0;
     width: 100%;
     box-sizing: border-box;
+  }
+
+  #sitemap details details {
+    margin-left: 0.75rem;
+    padding-left: 0.5rem;
   }
 }
 
@@ -771,6 +777,40 @@ form.button_to button[type="submit"] {
 
 .add_child_links a {
   white-space: nowrap;
+}
+
+.sitemap_node {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.sitemap_node h4 {
+  margin: 0;
+}
+
+.sitemap_node .field_hint {
+  display: block;
+  margin: 2px 0 0;
+}
+
+.sitemap_node p {
+  margin: 2px 0 0;
+}
+
+#sitemap details details {
+  margin-left: 1.5rem;
+  border-left: 1px solid #e8e8e8;
+  padding-left: 0.75rem;
+}
+
+#sitemap summary {
+  padding: 4px 0;
+}
+
+#sitemap details:not([open]) > summary {
+  color: #ff9600;
+  font-weight: bold;
 }
 
 /* ============================================================

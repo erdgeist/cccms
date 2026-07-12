@@ -22,4 +22,15 @@ class NodesHelperTest < ActionView::TestCase
     page = FakePage.new([])
     assert_nil default_event_tag_list(page)
   end
+
+  test "sitemap_node_open? is false for a configured collapsed path" do
+    club = Node.root.children.create!(:slug => "club")
+    erfas = club.children.create!(:slug => "erfas")
+    assert_equal false, sitemap_node_open?(erfas)
+  end
+
+  test "sitemap_node_open? is true for anything not configured as collapsed" do
+    node = Node.root.children.create!(:slug => "sitemap_open_test")
+    assert_equal true, sitemap_node_open?(node)
+  end
 end

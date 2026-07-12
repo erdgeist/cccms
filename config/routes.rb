@@ -43,6 +43,7 @@ Cccms::Application.routes.draw do
           get :recent
           get :mine
           get :chapters
+          get :sitemap
         end
 
         member do

@@ -216,6 +216,11 @@ class NodesController < ApplicationController
     @nodes = nodes_matching_tags(tags)
   end
 
+  def sitemap
+    @sitemap = Node.root.self_and_descendants_ordered_with_level
+    @sitemap_descendant_counts = descendant_counts_for(@sitemap)
+  end
+
   private
 
     def slug_for(title)
@@ -246,6 +251,24 @@ class NodesController < ApplicationController
         config = CccConventions::NODE_KINDS[params[:kind]]
         config && config[:parent] ? config[:parent].call.id : nil
       end
+    end
+
+    def descendant_counts_for(ordered_with_level)
+      counts = Hash.new(0)
+      stack = [] # [node, level, index]
+      ordered_with_level.each_with_index do |(node, level), index|
+        while stack.any? && stack.last[1] >= level
+          ancestor_node, _ancestor_level, ancestor_index = stack.pop
+          counts[ancestor_node.id] = index - ancestor_index - 1
+        end
+        stack << [node, level, index]
+      end
+      total = ordered_with_level.length
+      while stack.any?
+        ancestor_node, _ancestor_level, ancestor_index = stack.pop
+        counts[ancestor_node.id] = total - ancestor_index - 1
+      end
+      counts
     end
 
     def nodes_matching_tags(tags)
