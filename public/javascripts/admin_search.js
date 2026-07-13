@@ -42,18 +42,76 @@ function initSearchPicker(options) {
   var inputSelector = options.inputSelector;
   var resultsSelector = options.resultsSelector;
   var url = options.url || ADMIN_MENU_SEARCH_URL;
-  var onSelect = options.onSelect;                   // omit for a real-navigation search like admin_search
-  var isActive = options.isActive;                   // optional guard, checked before every search
-  var resultsHeaderHtml = options.resultsHeaderHtml; // optional, prepended only when results exist
-  var renderResults = options.renderResults;         // optional, replaces the default per-node rendering entirely
+  var onSelect = options.onSelect;
+  var isActive = options.isActive;
+  var resultsHeaderHtml = options.resultsHeaderHtml;
+  var renderResults = options.renderResults;
+  var loadOnFocus = options.loadOnFocus; // optional, fires an initial search on focus with no term typed yet
   var requestId = 0;
   var timeout;
+  var results = $(resultsSelector);
+
+  function runSearch(term) {
+    var thisRequest = ++requestId;
+    $.ajax({
+      type: "GET",
+      url: url,
+      data: "search_term=" + term,
+      dataType: "json",
+      success: function(data) {
+        if (thisRequest !== requestId) return;
+        results.empty();
+
+        var found;
+        if (renderResults) {
+          found = renderResults(data, results, resultsHeaderHtml);
+        } else {
+          if (data.length && resultsHeaderHtml) {
+            results.append(resultsHeaderHtml);
+          }
+          found = false;
+          for (var i = 0; i < data.length; i++) {
+            (function(node) {
+              var link;
+              if (onSelect) {
+                link = $(
+                  "<p><a href='#'>" + node.title +
+                    "<span class='result_path'>" + node.unique_name + "</span></a></p>"
+                );
+                link.find("a").bind("click", function() {
+                  onSelect(node);
+                  results.slideUp();
+                  results.empty();
+                  return false;
+                });
+              } else {
+                link = $(
+                  "<p><a href='" + node.node_path + "'>" + node.title +
+                    "<span class='result_path'>" + node.unique_name + "</span></a></p>"
+                );
+              }
+              results.append(link);
+              found = true;
+            })(data[i]);
+          }
+        }
+
+        if (found) {
+          results.slideDown();
+        } else {
+          results.slideUp();
+        }
+      },
+      error: function(xhr, status, error) {
+        console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
+      }
+    });
+  }
 
   $(inputSelector).bind("input", function() {
     if (isActive && !isActive()) return;
 
     var term = $(this).val();
-    var results = $(resultsSelector);
     clearTimeout(timeout);
 
     if (!term) {
@@ -62,63 +120,16 @@ function initSearchPicker(options) {
       return;
     }
 
-    timeout = setTimeout(function() {
-      var thisRequest = ++requestId;
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: "search_term=" + term,
-        dataType: "json",
-        success: function(data) {
-          if (thisRequest !== requestId) return;
-          results.empty();
-
-          var found;
-          if (renderResults) {
-            found = renderResults(data, results, resultsHeaderHtml);
-          } else {
-            if (data.length && resultsHeaderHtml) {
-              results.append(resultsHeaderHtml);
-            }
-            found = false;
-            for (var i = 0; i < data.length; i++) {
-              (function(node) {
-                var link;
-                if (onSelect) {
-                  link = $(
-                    "<p><a href='#'>" + node.title +
-                      "<span class='result_path'>" + node.unique_name + "</span></a></p>"
-                  );
-                  link.find("a").bind("click", function() {
-                    onSelect(node);
-                    results.slideUp();
-                    results.empty();
-                    return false;
-                  });
-                } else {
-                  link = $(
-                    "<p><a href='" + node.node_path + "'>" + node.title +
-                      "<span class='result_path'>" + node.unique_name + "</span></a></p>"
-                  );
-                }
-                results.append(link);
-                found = true;
-              })(data[i]);
-            }
-          }
-
-          if (found) {
-            results.slideDown();
-          } else {
-            results.slideUp();
-          }
-        },
-        error: function(xhr, status, error) {
-          console.log("Ajax error:", status, error, xhr.status, xhr.responseText);
-        }
-      });
-    }, 250);
+    timeout = setTimeout(function() { runSearch(term); }, 250);
   });
+
+  if (loadOnFocus) {
+    $(inputSelector).bind("focus", function() {
+      if (isActive && !isActive()) return;
+      if ($(this).val()) return; // the input handler above already covers a real term
+      runSearch("");
+    });
+  }
 }
 
 dashboard_search = {

@@ -3,17 +3,15 @@ class RelatedAssetsController < ApplicationController
   before_action :find_node
 
   def search
-    term = params[:q].to_s.strip
-    if term.blank?
-      render json: []
-      return
-    end
-
+    term = params[:search_term].to_s.strip
     attached_ids = @node.editable_page.related_assets.pluck(:asset_id)
-    results = Asset.images
-      .where("name ILIKE ?", "%#{term}%")
-      .where.not(id: attached_ids)
-      .limit(10)
+    scope = Asset.images.where.not(id: attached_ids)
+
+    results = if term.present?
+      scope.where("name ILIKE ?", "%#{term}%").limit(10)
+    else
+      scope.order(created_at: :desc).limit(5)
+    end
 
     render json: results.map { |a|
       { id: a.id, name: a.name, thumb_url: a.upload.url(:thumb) }

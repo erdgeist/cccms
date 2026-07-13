@@ -11,7 +11,7 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     Asset.create!(:name => "biometrics-poster", :upload_content_type => "image/png")
     Asset.create!(:name => "chaostreff-flyer", :upload_content_type => "image/png")
 
-    get :search, params: { :node_id => node.id, :q => "biometrics" }
+    get :search, params: { :node_id => node.id, :search_term => "biometrics" }
 
     json = JSON.parse(response.body)
     names = json.map { |a| a["name"] }
@@ -20,13 +20,19 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     assert_not_includes names, "chaostreff-flyer"
   end
 
-  test "search returns an empty list for a blank term" do
+  test "search with a blank term returns the most recently created assets" do
+    Asset.delete_all
+    RelatedAsset.delete_all
     login_as :quentin
-    node = Node.root.children.create!(:slug => "related_assets_blank_search_test")
+    node = Node.root.children.create!(:slug => "related_assets_recent_test")
 
-    get :search, params: { :node_id => node.id, :q => "" }
+    Asset.create!(:name => "older-photo", :upload_content_type => "image/png", :created_at => 2.days.ago)
+    Asset.create!(:name => "newer-photo", :upload_content_type => "image/png", :created_at => 1.hour.ago)
 
-    assert_equal [], JSON.parse(response.body)
+    get :search, params: { :node_id => node.id, :search_term => "" }
+
+    json = JSON.parse(response.body)
+    assert_equal ["newer-photo", "older-photo"], json.map { |a| a["name"] }
   end
 
   test "create attaches an asset to the node's editable page" do
