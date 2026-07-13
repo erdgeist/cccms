@@ -614,4 +614,36 @@ class NodeTest < ActiveSupport::TestCase
     assert_includes node.autosave.reload.assets, original
     assert_includes node.autosave.reload.assets, extra
   end
+
+  test "autosave! carries over other-locale translations to the newly created autosave row" do
+    node = Node.root.children.create!(:slug => "autosave_translation_carryover_test")
+    user = User.find_by_login("quentin")
+
+    Globalize.with_locale(:en) { node.draft.update!(:title => "English title") }
+
+    node.lock_for_editing!(user)
+    Globalize.with_locale(:de) { node.autosave!({:title => "German edit"}, user) }
+
+    autosave = node.autosave.reload
+    assert_includes autosave.translated_locales, :en
+    assert_equal "English title", Globalize.with_locale(:en) { autosave.title }
+    assert_equal "German edit",   Globalize.with_locale(:de) { autosave.title }
+  end
+
+  test "autosave! does not reset other-locale translations already attached directly to an existing autosave" do
+    node = Node.root.children.create!(:slug => "autosave_translation_no_reset_test")
+    user = User.find_by_login("quentin")
+
+    Globalize.with_locale(:en) { node.draft.update!(:title => "Original English title") }
+
+    node.lock_for_editing!(user)
+    Globalize.with_locale(:de) { node.autosave!({:title => "v1"}, user) }
+    Globalize.with_locale(:en) { node.autosave.update!(:title => "Edited directly on autosave") }
+
+    Globalize.with_locale(:de) { node.autosave!({:title => "v2"}, user) }
+
+    autosave = node.autosave.reload
+    assert_equal "Edited directly on autosave", Globalize.with_locale(:en) { autosave.title }
+    assert_equal "v2",                          Globalize.with_locale(:de) { autosave.title }
+  end
 end
