@@ -55,6 +55,12 @@ Cccms::Application.routes.draw do
           put :revert
         end
 
+        resources :related_assets, only: [:create, :destroy, :update] do
+          collection do
+            get :search
+          end
+        end
+
         resources :revisions do
           collection do
             post :diff

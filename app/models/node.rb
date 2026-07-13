@@ -328,6 +328,10 @@ class Node < ApplicationRecord
     unique_path.length == 3 && unique_path[0] == "updates"
   end
 
+  def editable_page
+    autosave || draft || head
+  end
+
   # Returns immutable node id for all new nodes so that the atom feed entry ids
   # stay the same eventhough the slug or positions changes.
   # Can be removed after a year or so ;)
