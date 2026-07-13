@@ -3,13 +3,17 @@ class SharedPreviewsController < ApplicationController
     @page = Page.find_by!(preview_token: params[:token])
     node  = @page.node
 
-    was_published    = @page.published_at.present?
-    superseded       = was_published && node && node.head_id != @page.id
-    currently_public = was_published && node && node.head_id == @page.id && @page.public?
+    if node
+      is_head  = node.head_id  == @page.id
+      is_draft = node.draft_id == @page.id
 
-    if superseded || currently_public
-      redirect_to node_path(node)
-      return
+      currently_public = is_head && @page.public?
+      superseded        = !is_head && !is_draft
+
+      if superseded || currently_public
+        redirect_to @page.public_link
+        return
+      end
     end
 
     response.headers['X-Robots-Tag'] = 'noindex'
