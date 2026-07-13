@@ -1092,6 +1092,22 @@ div#draft_list table td.actions a {
   text-decoration: none;
 }
 
+.tag_pill_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tag_pill {
+  background: #eee;
+  border-radius: 999px;
+  padding: 0.15rem 0.75rem;
+  font-size: 0.9em;
+}
+
 /* ============================================================
    Search widgets
    ============================================================ */

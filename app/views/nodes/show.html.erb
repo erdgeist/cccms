@@ -185,8 +185,19 @@
       <p class="revisions_full_history_link"><%= link_to 'Full history (diff / restore)', node_revisions_path(@node) %></p>
     </div>
 
+
     <div class="node_description">Tags</div>
-    <div class="node_content node_info_group"><%= @page.tag_list %></div>
+    <div class="node_content node_info_group">
+      <% if @page.tag_list.any? %>
+        <ul class="tag_pill_list">
+          <% @page.tag_list.sort.each do |tag| %>
+            <li class="tag_pill"><%= tag %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <span class="field_hint">No tags.</span>
+      <% end %>
+    </div>
 
     <% if @page.assets.images.any? %>
       <div class="node_description">Images</div>
