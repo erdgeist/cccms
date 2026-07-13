@@ -7,20 +7,37 @@
 <p class="diff_comparison_label">
   Comparing <strong><%= describe_page_reference(params[:start_revision]) %></strong>
   against <strong><%= describe_page_reference(params[:end_revision]) %></strong>
+  — showing the <strong><%= @locale.to_s.upcase %></strong> translation
 </p>
+
+<% if @locale_summary.size > 1 %>
+  <p class="diff_locale_toggle">
+    Locale:
+    <% @locale_summary.each_with_index do |s, i| %>
+      <%= " &middot; ".html_safe if i > 0 %>
+      <% label = "#{s[:locale].to_s.upcase}#{' *' if s[:changed]}" %>
+      <% if s[:locale] == @locale %>
+        <strong><%= label %></strong>
+      <% else %>
+        <%= link_to label, diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: @diff_view, locale: s[:locale]) %>
+      <% end %>
+    <% end %>
+  </p>
+  <p class="field_hint">* has a difference between these two versions.</p>
+<% end %>
 
 <p class="diff_view_toggle">
   View:
   <% if @diff_view == :inline %>
     <strong>Inline</strong>
   <% else %>
-    <%= link_to 'Inline', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline') %>
+    <%= link_to 'Inline', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline', locale: @locale) %>
   <% end %>
   &middot;
   <% if @diff_view == :side_by_side %>
     <strong>Side by side</strong>
   <% else %>
-    <%= link_to 'Side by side', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side') %>
+    <%= link_to 'Side by side', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side', locale: @locale) %>
   <% end %>
 </p>
 
@@ -31,6 +48,7 @@
     <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
     <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
     <%= hidden_field_tag :view, @diff_view %>
+    <%= hidden_field_tag :locale, @locale %>
     <%= submit_tag 'Diff' %>
   <% end %>
 <% else %>
@@ -44,10 +62,9 @@
       <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
             diff_node_revisions_path(@node),
             method: :get,
-            params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view },
+            params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view, locale: @locale },
             form: { class: 'button_to computation' } %>
     <% end %>
-
     <% if !@locked_by_other && (@node.autosave || @node.draft) %>
       <%= button_to revert_node_path(@node), method: :put,
                   params: { return_to: request.fullpath },

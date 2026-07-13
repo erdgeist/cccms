@@ -29,8 +29,13 @@ class RevisionsController < ApplicationController
       redirect_to(node_path(@node)) and return
     end
 
+    @locale_summary  = @end.locale_diff_summary(@start)
+    requested_locale = params[:locale].presence&.to_sym
+    default_locale    = @locale_summary.find { |s| s[:changed] }&.dig(:locale) || I18n.default_locale
+    @locale = @locale_summary.any? { |s| s[:locale] == requested_locale } ? requested_locale : default_locale
+
     @diff_view              = params[:view] == "side_by_side" ? :side_by_side : :inline
-    @diff                   = @end.diff_against(@start, view: @diff_view)
+    @diff                   = @end.diff_against(@start, view: @diff_view, locale: @locale)
     @available_layer_pairs  = @node.available_layer_pairs
     @locked_by_other        = @node.locked? && @node.lock_owner != current_user
   end

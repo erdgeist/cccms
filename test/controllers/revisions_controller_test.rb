@@ -168,4 +168,36 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "a[href=?]", node_path(@node)
   end
+
+  test "diff defaults to a locale that actually changed, not the ambient default" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "diff_default_locale_test")
+    node.draft.save!
+    node.publish_draft!
+
+    node.find_or_create_draft(@user)
+    Globalize.with_locale(:en) { node.draft.update!(:title => "Changed in English only") }
+    node.draft.save!
+
+    post(:diff, params: { :node_id => node.id, :start_revision => "head", :end_revision => "draft" })
+
+    assert_response :success
+    assert_match(/Changed/, response.body)
+  end
+
+  test "diff respects an explicitly requested locale over the auto-detected one" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "diff_explicit_locale_test")
+    node.draft.save!
+    node.publish_draft!
+
+    node.find_or_create_draft(@user)
+    Globalize.with_locale(:en) { node.draft.update!(:title => "English changed") }
+    node.draft.save!
+
+    post(:diff, params: { :node_id => node.id, :start_revision => "head", :end_revision => "draft", :locale => "de" })
+
+    assert_response :success
+    assert_no_match(/English changed/, response.body)
+  end
 end
