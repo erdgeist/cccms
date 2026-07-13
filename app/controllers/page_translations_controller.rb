@@ -3,7 +3,7 @@ class PageTranslationsController < ApplicationController
 
   before_action :login_required
   before_action :find_node
-  before_action :find_locale, :only => [:show, :edit, :update, :destroy]
+  before_action :find_locale, :only => [:show, :edit, :update, :autosave, :destroy]
 
   def index
     page = @node.draft || @node.head
@@ -26,8 +26,8 @@ class PageTranslationsController < ApplicationController
   end
 
   def update
-    draft = ensure_editable_draft
-    Globalize.with_locale(@locale) { draft.update!(translation_params) }
+    Globalize.with_locale(@locale) { @node.autosave!(translation_params, current_user) }
+    @node.save_draft!(current_user)
     flash[:notice] = "#{@locale.upcase} translation saved. Publish the draft to make it live."
 
     if params[:commit] == "Save + Unlock + Exit"
@@ -39,6 +39,17 @@ class PageTranslationsController < ApplicationController
   rescue LockedByAnotherUser => e
     flash[:error] = e.message
     redirect_to node_path(@node)
+  end
+
+  def autosave
+    Globalize.with_locale(@locale) { @node.autosave!(translation_params, current_user) }
+    head :ok
+  rescue LockedByAnotherUser => e
+    render plain: e.message, status: :locked
+  rescue ActiveRecord::RecordInvalid => e
+    render plain: e.message, status: :unprocessable_entity
+  rescue StandardError => e
+    render plain: "Autosave failed", status: :internal_server_error
   end
 
   def destroy

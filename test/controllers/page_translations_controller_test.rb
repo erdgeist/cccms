@@ -18,6 +18,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
     node = Node.root.children.create!(:slug => "translations_create_test")
     Globalize.with_locale(:de) { node.draft.update!(:title => "Deutscher Titel") }
     node.publish_draft!
+    node.lock_for_editing!(users(:quentin))
 
     patch :update, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "English Title" } }
 
@@ -39,6 +40,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
   test "update with Save + Unlock + Exit unlocks the node and redirects to nodes#show" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "translations_exit_test")
+    node.lock_for_editing!(users(:quentin))
 
     patch :update, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "x" }, :commit => "Save + Unlock + Exit" }
 
@@ -50,6 +52,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
     login_as :quentin
     node = Node.root.children.create!(:slug => "translations_update_test")
     Globalize.with_locale(:en) { node.draft.update!(:title => "Original") }
+    node.lock_for_editing!(users(:quentin))
 
     patch :update, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "Revised" } }
 
@@ -74,5 +77,21 @@ class PageTranslationsControllerTest < ActionController::TestCase
     delete :destroy, params: { :node_id => node.id, :translation_locale => "en" }
 
     assert_match(/No EN translation exists/, flash[:error])
+  end
+
+  test "autosave writes the translation without creating a new revision or touching the draft" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "translations_autosave_test")
+    node.publish_draft!
+    node.lock_for_editing!(users(:quentin))
+    page_count_before = node.pages.count
+
+    put :autosave, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "in progress" } }
+
+    assert_response :success
+    node.reload
+    assert_not_nil node.autosave
+    assert_equal page_count_before, node.pages.count
+    assert_equal "in progress", Globalize.with_locale(:en) { node.autosave.title }
   end
 end

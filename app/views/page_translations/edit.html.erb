@@ -18,7 +18,8 @@
 </div>
 
 <div id="page_editor">
-  <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form" do |f| %>
+    <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
+          data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
     <div id="content">
       <div class="node_description">Title</div>
       <div class="node_content">
