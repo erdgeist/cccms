@@ -5,7 +5,7 @@ ruby '3.2.11'
 # ── Core framework ────────────────────────────────────────────────────────────
 
 gem 'rails',      '~> 8.1'
-gem 'rails-i18n', '~> 8.0'  # AR error messages and date formats for :de locale
+gem 'rails-i18n', '~> 8.1'  # AR error messages and date formats for :de locale
 
 # concurrent-ruby 1.3 ships with Rails 8 but has a known incompatibility with
 # some versions of Zeitwerk unless pinned. Remove once upstream resolves it.
@@ -31,6 +31,7 @@ gem 'jquery-ui-rails'  # provides jQuery UI via asset pipeline (admin only)
 # TinyMCE 8 via asset pipeline; replaces vendored TinyMCE 3 in public/javascripts.
 # Note: TinyMCE 7+ is GPL-licensed.
 gem 'tinymce-rails', '~> 8.3'
+gem 'rails_icons'
 
 # ── Model layer ───────────────────────────────────────────────────────────────
 
@@ -44,14 +45,12 @@ gem 'will_paginate',  '~> 3.0'
 gem 'acts-as-taggable-on',
     git:    'https://github.com/mbleigh/acts-as-taggable-on.git',
     branch: 'master'
-gem 'awesome_nested_set',
-    git:    'https://github.com/collectiveidea/awesome_nested_set.git',
-    branch: 'main'
 
-# ── XML / parsing ─────────────────────────────────────────────────────────────
+# ── XML / parsing / diffing ───────────────────────────────────────────────────
 
 gem 'libxml-ruby', '~> 5.0', require: 'xml'  # body link rewriting in Page model
 gem 'nokogiri',    '~> 1.18'
+gem 'diff-lcs', require: 'diff/lcs'
 
 # ── Operational ───────────────────────────────────────────────────────────────
 

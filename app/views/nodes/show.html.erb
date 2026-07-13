@@ -1,62 +1,251 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Edit', edit_node_path(@node), :class => "unselected" %>
-  <%= link_to 'Preview', preview_page_path(@page) %>
-  <%= link_to 'Revisions', node_revisions_path(@node) %>
-  <%= unlock_link if @node.locked? %>
-<% end %>
-
-
+<% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
 <div id="page_editor" class="show_node">
-  <table id="content">
-    <tr>
-      <td class="description">Public Link</td>
-      <td><%= link_to @page.public_link, content_url(@node.unique_path) %></td>
-    </tr>
-    <tr>
-      <td class="description">Author</td>
-      <td><%= @page.user.try(:login) %></td>
-    </tr>
-    <tr>
-      <td class="description">Editor</td>
-      <td><%= @page.editor.try(:login) %></td>
-    </tr>
-    <% if @page.node.locked? %>
-    <tr>
-      <td class="description">Locked by</td>
-      <td><span class="warning"><%= @page.node.lock_owner.login %></span></td>
-    </tr>
+  <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
+  <div id="content">
+    <div class="node_description">Status</div>
+    <div class="node_content node_info_group node_status">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Head</span>
+          <%= @node.head ? "#{@node.head.title} (rev #{@node.head.revision}, #{@node.head.updated_at})" : "none — never published" %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Draft</span>
+          <%= @node.draft ? "#{@node.draft.title} (rev #{@node.draft.revision}, saved #{@node.draft.updated_at})" : "none" %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Autosave</span>
+          <%= @node.autosave ? "#{@node.autosave.title} (unsaved, #{@node.autosave.updated_at})" : "none" %>
+        </div>
+      </div>
+
+      <% edit_label = @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Edit") %>
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <% if locked_by_other %>
+            <span class="disabled_action"><%= edit_label %></span>
+          <% else %>
+            <%= link_to edit_node_path(@node), class: "action_button" do %>
+              <%= icon("edit", library: "tabler", "aria-hidden": true) %>
+              <%= @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Lock + Edit") %>
+            <% end %>
+            <% if !@node.draft && !@node.autosave %>
+              <span class="field_hint">Nothing pending — this will start a fresh draft.</span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% @node.available_layer_pairs.each do |pair| %>
+          <div class="node_info_item">
+            <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
+                  diff_node_revisions_path(@node),
+                  method: :get,
+                  params: { start_revision: pair.first, end_revision: pair.last },
+                  form: { class: 'button_to computation' } %>
+          </div>
+        <% end %>
+
+        <% unless locked_by_other %>
+          <% if @node.draft && !@node.autosave %>
+            <div class="node_info_item">
+              <%= button_to 'Publish', publish_node_path(@node), method: :put,
+                    form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
+            </div>
+          <% end %>
+          <% if @node.autosave || (@node.draft && @node.head) %>
+            <div class="node_info_item">
+            <%= button_to revert_node_path(@node), method: :put,
+                                params: { return_to: request.path },
+                                form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+              <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+              <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+            <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if locked_by_other %>
+        <span class="field_hint">Locked — see People below to unlock before editing, publishing, or discarding.</span>
+      <% end %>
+    </div>
+
+    <div class="node_description">Translations</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <% @translations.each do |t| %>
+          <div class="node_info_item">
+            <span class="node_info_label"><%= t[:locale].to_s.upcase %></span>
+            <div class="aligned_action_row">
+              <% if t[:exists] %>
+                <%= link_to t[:title], node_translation_path(@node, t[:locale]) %> — updated <%= t[:updated_at] %>
+                <% if t[:outdated] %>
+                  <span class="warning">may be outdated</span>
+                <% end %>
+              <% else %>
+                <span class="field_hint">Not yet translated.</span>
+              <% end %>
+              <% if locked_by_other %>
+                <span class="disabled_action"><%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %></span>
+              <% else %>
+                <%= link_to edit_node_translation_path(@node, t[:locale]), class: "action_button" do %>
+                  <%= icon(t[:exists] ? "edit" : "language", library: "tabler", "aria-hidden": true) %>
+                  <%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %>
+                <% end %>
+                <% if t[:exists] %>
+                  <%= button_to node_translation_path(@node, t[:locale]), method: :delete,
+                        form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+                    <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+                    Destroy Translation
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">People</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Author</span>
+          <%= @page.user.try(:login) %>
+        </div>
+        <div class="node_info_item">
+          <span class="node_info_label">Editor</span>
+          <%= @page.editor.try(:login) %>
+        </div>
+        <% if @node.locked? %>
+          <div class="node_info_item">
+            <span class="node_info_label">Locked by</span>
+            <span class="warning"><%= @node.lock_owner.login %></span>
+            <%= unlock_link %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">Dates</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Last updated</span>
+          <%= @page.updated_at %>
+        </div>
+        <% if @page.published_at.present? %>
+          <div class="node_info_item">
+            <span class="node_info_label"><%= @page.public? ? 'Published at' : 'Will publish at' %></span>
+            <%= @page.published_at %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">Links</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label">Public</span>
+          <%= link_to @page.public_link, content_url(@node.unique_path) %>
+        </div>
+        <% if @node.draft %>
+          <div class="node_info_item">
+            <span class="node_info_label">Admin Preview</span>
+            <%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %>
+          </div>
+          <div class="node_info_item">
+            <span class="node_info_label">Public Preview</span>
+            <% if @node.draft.preview_token.present? %>
+              <div class="aligned_action_row">
+                <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
+                <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." }, class: 'button_to state_changing' } %>
+              </div>
+            <% else %>
+              <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put, form: { class: 'button_to state_changing' } %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="node_description">Revisions</div>
+    <div class="node_content node_info_group">
+      <details>
+        <summary>
+          <%= pluralize(@node.pages.count, 'revision', 'revisions') %>
+        </summary>
+        <ul>
+          <% @node.pages.order(:revision).each do |page| %>
+            <li><%= link_to "##{page.revision} — #{page.title} (#{page.editor.try(:login)}, #{page.updated_at})", node_revision_path(@node, page) %></li>
+          <% end %>
+        </ul>
+      </details>
+      <p class="revisions_full_history_link"><%= link_to 'Full history (diff / restore)', node_revisions_path(@node) %></p>
+    </div>
+
+    <div class="node_description">Tags</div>
+    <div class="node_content node_info_group"><%= @page.tag_list %></div>
+
+    <% if @page.assets.images.any? %>
+      <div class="node_description">Images</div>
+      <div class="node_content node_info_group">
+        <ul class="thumbnail_list">
+          <% @page.assets.images.each do |asset| %>
+            <li><%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
-    <tr>
-      <td class="description">Last updated</td>
-      <td><%= @page.updated_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Published at</td>
-      <td><%= @page.published_at %></td>
-    </tr>
-    <tr>
-      <td class="description">Revision</td>
-      <td><%= @page.revision %></td>
-    </tr>
-    <tr>
-      <td class="description">Tagged with:</td>
-      <td><%= @page.tag_list %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Title</strong></td>
-      <td><%= sanitize( @page.title ) %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Abstract</strong></td>
-      <td><%= sanitize( @page.abstract ) %></td>
-    </tr>
-    <tr>
-      <td class="description"><strong>Body</strong></td>
-      <td><%= sanitize( @page.body ) %></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="right"></td>
-    </tr>
-  </table>
+
+    <div class="node_description">Events</div>
+    <div class="node_content node_info_group">
+      <ul>
+      <% @node.events.order(:start_time).each do |event| %>
+        <li>
+          <%= event_schedule_text(event) %>
+          [<%= link_to 'show', event_path(event, return_to: request.path) %>
+          | <%= link_to 'edit', edit_event_path(event, return_to: request.path) %>]
+        </li>
+      <% end %>
+      </ul>
+      <% mapping = default_event_tag_mapping(@page) %>
+      <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
+    </div>
+
+    <% matches = matching_node_kinds(@node) %>
+    <% if @node.children.any? || matches.any? %>
+      <div class="node_description">Children</div>
+      <div class="node_content node_info_group">
+        <% if @node.children.any? %>
+          <details>
+            <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
+            <ul>
+              <% @node.children.order(:slug).each do |child| %>
+                <li><%= link_to (child.head&.title || child.draft&.title || child.slug), node_path(child) %></li>
+              <% end %>
+            </ul>
+          </details>
+        <% end %>
+        <% if matches.any? %>
+          <p class="add_child_links">
+            <% matches.each_with_index do |(kind, config), index| %>
+              <%= " &middot; ".html_safe if index > 0 %>
+              <% link_params = { kind: kind } %>
+              <% link_params[:parent_id] = @node.id if kind == "generic" %>
+              <%= link_to "add '#{resolve_kind_text(config[:label])}' child", new_node_path(link_params) %>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="node_description">Abstract (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="node_content"><%= sanitize(@page.abstract) %></div>
+
+    <div class="node_description">Body (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="node_content"><%= sanitize(@page.body) %></div>
+
+  </div>
 </div>

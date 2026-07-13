@@ -98,6 +98,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_not_nil node.draft
     assert_nil node.draft.user
     assert_nil node.head
+    assert_nil node.autosave
   end
   
   def test_create_new_draft_of_published_page
@@ -110,15 +111,19 @@ class NodeTest < ActiveSupport::TestCase
     node.publish_draft!
     assert_not_nil node.find_or_create_draft( @user1 )
   end
-  
+
   def test_find_or_create_draft_if_draft_exists_and_is_owned_by_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
-    
-    node.find_or_create_draft @user1
-    node.find_or_create_draft @user1
+
+    first_call  = node.find_or_create_draft @user1
+    second_call = node.find_or_create_draft @user1
+
+    assert_equal first_call, second_call
+    assert_equal 2, node.pages.count
+    assert_equal @user1, node.lock_owner
   end
-  
+
   def test_exception_if_draft_exists_but_locked_by_another_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
@@ -280,11 +285,365 @@ class NodeTest < ActiveSupport::TestCase
     node = Node.root.children.create( :slug => "wow" )
     assert_nil node.draft.published_at
   end
+
+  test "lock_for_editing! acquires the lock without creating a draft or autosave" do
+    node = create_node_with_published_page
+
+    node.lock_for_editing!(@user1)
+
+    assert_equal @user1, node.lock_owner
+    assert_nil node.draft
+    assert_nil node.autosave
+  end
+
+  test "autosave! creates a buffer that never appears among a node's pages, leaving the draft untouched" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    page_count_before = node.pages.count
+
+    node.autosave!({ :title => "in progress" }, @user1)
+    node.reload
+
+    assert_not_nil node.autosave
+    assert_nil node.autosave.node_id
+    assert_equal page_count_before, node.pages.count
+    assert_not_equal "in progress", node.draft.title
+  end
+
+  test "save_draft! promotes an autosave into an existing draft without creating a new revision" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "in progress" }, @user1)
+    page_count_before = node.pages.count
+
+    node.save_draft!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_equal "in progress", node.draft.title
+    assert_equal page_count_before, node.pages.count
+  end
+
+  test "save_draft! promotes an autosave into a brand new, correctly-revisioned draft when none exists" do
+    node = create_node_with_published_page
+    head_revision = node.head.revision
+
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "updated version" }, @user1)
+    node.reload
+
+    assert_nil node.draft
+    assert_nil node.autosave.node_id
+
+    node.save_draft!(@user1)
+    node.reload
+
+    assert_not_nil node.draft
+    assert_equal head_revision + 1, node.draft.revision
+    assert_equal head_revision, node.head.revision
+    assert_nil node.autosave
+    assert_equal 2, node.pages.count
+    assert_equal node.head.user, node.draft.user
+    assert_equal @user1, node.draft.editor
+    assert_equal node.head.published_at, node.draft.published_at
+  end
+
+  test "autosave!, save_draft!, and lock_for_editing! raise LockedByAnotherUser for a second user" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    assert_raise(LockedByAnotherUser) { node.autosave!({ :title => "x" }, @user2) }
+    assert_raise(LockedByAnotherUser) { node.save_draft!(@user2) }
+    assert_raise(LockedByAnotherUser) { node.lock_for_editing!(@user2) }
+
+    assert_equal @user1, node.reload.lock_owner
+  end
+
+  test "wipe_draft! leaves a fresh autosave and its lock untouched" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "still typing" }, @user1)
+
+    node.wipe_draft!
+    node.reload
+
+    assert_not_nil node.autosave
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "wipe_draft! destroys a stale, orphaned autosave and releases its lock" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "abandoned mid-session" }, @user1)
+    node.autosave.update_column(:updated_at, 2.days.ago)
+
+    node.wipe_draft!
+    node.reload
+
+    assert_nil node.autosave
+    assert_nil node.lock_owner
+  end
+
+  test "revert! is a safe no-op on a fresh node with only a draft" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_not_nil node.draft
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! discards an autosave on a fresh node without touching its only draft" do
+    node = create_node_with_draft
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "typing" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_not_nil node.draft
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! does nothing when a published node has no draft or autosave" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_not_nil node.head
+    assert_nil node.draft
+  end
+
+  test "revert! discards a fresh autosave and releases the lock when no draft exists" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "in progress" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_nil node.draft
+    assert_nil node.lock_owner
+  end
+
+  test "revert! destroys an existing draft and releases the lock" do
+    node = create_node_with_published_page
+    head_title = node.head.title
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "second version" }, @user1)
+    node.save_draft!(@user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.draft
+    assert_equal head_title, node.head.title
+    assert_nil node.lock_owner
+  end
+
+  test "revert! discards only the autosave when a draft survives beneath it" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({ :title => "second version" }, @user1)
+    node.save_draft!(@user1)
+    node.autosave!({ :title => "third version, still typing" }, @user1)
+
+    node.revert!(@user1)
+    node.reload
+
+    assert_nil node.autosave
+    assert_not_nil node.draft
+    assert_equal "second version", node.draft.title
+    assert_equal @user1, node.lock_owner
+  end
+
+  test "revert! raises LockedByAnotherUser for a non-owner" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+
+    assert_raise(LockedByAnotherUser) { node.revert!(@user2) }
+    assert_equal @user1, node.reload.lock_owner
+  end
   
   def create_revisions node, count
     count.times do
       node.find_or_create_draft @user1
       node.publish_draft!
     end
+  end
+
+  test "available_layer_pairs matches the six-state table" do
+    node = Node.root.children.create!(:slug => "layer_pairs_test")
+    user = @user1 || User.find_by_login("aaron")
+
+    assert_equal [[:draft, :autosave]], (node.lock_for_editing!(user); node.autosave!({title: "v1"}, user); node.available_layer_pairs) # state F
+
+    node.save_draft!(user)
+    node.publish_draft!
+    assert_equal [], node.available_layer_pairs # state A
+
+    node.lock_for_editing!(user)
+    node.autosave!({title: "v2"}, user)
+    assert_equal [[:head, :autosave]], node.available_layer_pairs # state B
+
+    node.save_draft!(user)
+    assert_equal [[:head, :draft]], node.available_layer_pairs # state C
+
+    node.lock_for_editing!(user)
+    node.autosave!({title: "v3"}, user)
+    assert_equal [[:head, :draft], [:draft, :autosave]], node.available_layer_pairs # state D
+  end
+
+  test "publishing a staged move under one's own descendant is rejected, not allowed to crash" do
+    a = Node.root.children.create!(:slug => "cycle_guard_a")
+    b = a.children.create!(:slug => "cycle_guard_b")
+
+    a.staged_parent_id = b.id
+
+    assert_raises(ActiveRecord::RecordInvalid) { a.publish_draft! }
+
+    a.reload
+    assert_equal Node.root.id, a.parent_id
+  end
+
+  test "editor_search matches a partial substring, not just a whole word" do
+    node = Node.root.children.create!(:slug => "editor_search_substring_test")
+    node.find_or_create_draft(@user1)
+    node.draft.update(:title => "Biometrics Conference")
+    node.publish_draft!
+
+    assert_includes Node.editor_search("bio"), node
+    assert_includes Node.editor_search("Conf"), node
+  end
+
+  test "editor_search returns an empty relation for a blank term, not every node" do
+    assert_equal 0, Node.editor_search("").count
+    assert_equal 0, Node.editor_search(nil).count
+    assert_equal 0, Node.editor_search("   ").count
+  end
+
+  test "editor_search requires every word to match, but each word can match a different field" do
+    node = Node.root.children.create!(:slug => "editor_search_multiword_test")
+    node.find_or_create_draft(@user1)
+    node.draft.update(:title => "Backspace e.V. Bamberg", :abstract => "Spiegelgraben 41, 96052 Bamberg")
+    node.publish_draft!
+
+    assert_includes Node.editor_search("Backspace Spiegelgraben"), node
+    assert_equal 0, Node.editor_search("Backspace Nonexistentstreet").count
+  end
+
+  test "drafts_and_autosaves without a user sorts by recency only" do
+    older = Node.root.children.create!(:slug => "drafts_order_older")
+    older.find_or_create_draft(@user1)
+    newer = Node.root.children.create!(:slug => "drafts_order_newer")
+    newer.find_or_create_draft(@user1)
+
+    result = Node.drafts_and_autosaves.to_a
+    assert result.index(newer) < result.index(older)
+  end
+
+  test "drafts_and_autosaves with a user puts their own locked nodes first, regardless of recency" do
+    mine = Node.root.children.create!(:slug => "drafts_order_mine")
+    mine.lock_for_editing!(@user1)
+    mine.autosave!({:title => "mine"}, @user1)
+
+    someone_elses_newer = Node.root.children.create!(:slug => "drafts_order_theirs")
+    other_user = User.find_by_login("quentin")
+    someone_elses_newer.lock_for_editing!(other_user)
+    someone_elses_newer.autosave!({:title => "theirs"}, other_user)
+
+    result = Node.drafts_and_autosaves(current_user_id: @user1.id).to_a
+    assert result.index(mine) < result.index(someone_elses_newer)
+  end
+
+  test "recently_changed includes a node whose head was recently published" do
+    node = Node.root.children.create!(:slug => "recent_changed_published")
+    node.find_or_create_draft(@user1)
+    node.autosave!({:title => "v1"}, @user1)
+    node.save_draft!(@user1)
+    node.publish_draft!
+
+    assert_includes Node.recently_changed, node
+  end
+
+  test "recently_changed excludes a node only touched by locking or unlocking after an old publish" do
+    node = Node.root.children.create!(:slug => "recent_changed_lock_only")
+    node.find_or_create_draft(@user1)
+    node.autosave!({:title => "v1"}, @user1)
+    node.save_draft!(@user1)
+    node.publish_draft!
+    node.head.update_column(:updated_at, 20.days.ago)
+
+    node.lock_for_editing!(@user1)
+    node.unlock!
+
+    assert_not_includes Node.recently_changed, node
+  end
+
+  test "autosave! carries over the current related assets to the newly created autosave row" do
+    node = Node.root.children.create!(:slug => "autosave_asset_carryover_test")
+    user = User.find_by_login("quentin")
+    asset = Asset.create!(:name => "carryover-photo", :upload_content_type => "image/png")
+    node.draft.assets << asset
+
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+
+    assert_includes node.autosave.reload.assets, asset
+  end
+
+  test "autosave! does not reset assets already attached directly to an existing autosave" do
+    node = Node.root.children.create!(:slug => "autosave_asset_no_reset_test")
+    user = User.find_by_login("quentin")
+    original = Asset.create!(:name => "original-photo", :upload_content_type => "image/png")
+    extra = Asset.create!(:name => "extra-photo", :upload_content_type => "image/png")
+    node.draft.assets << original
+
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+    node.autosave.assets << extra
+
+    node.autosave!({:title => "v2"}, user)
+
+    assert_includes node.autosave.reload.assets, original
+    assert_includes node.autosave.reload.assets, extra
+  end
+
+  test "autosave! carries over other-locale translations to the newly created autosave row" do
+    node = Node.root.children.create!(:slug => "autosave_translation_carryover_test")
+    user = User.find_by_login("quentin")
+
+    Globalize.with_locale(:en) { node.draft.update!(:title => "English title") }
+
+    node.lock_for_editing!(user)
+    Globalize.with_locale(:de) { node.autosave!({:title => "German edit"}, user) }
+
+    autosave = node.autosave.reload
+    assert_includes autosave.translated_locales, :en
+    assert_equal "English title", Globalize.with_locale(:en) { autosave.title }
+    assert_equal "German edit",   Globalize.with_locale(:de) { autosave.title }
+  end
+
+  test "autosave! does not reset other-locale translations already attached directly to an existing autosave" do
+    node = Node.root.children.create!(:slug => "autosave_translation_no_reset_test")
+    user = User.find_by_login("quentin")
+
+    Globalize.with_locale(:en) { node.draft.update!(:title => "Original English title") }
+
+    node.lock_for_editing!(user)
+    Globalize.with_locale(:de) { node.autosave!({:title => "v1"}, user) }
+    Globalize.with_locale(:en) { node.autosave.update!(:title => "Edited directly on autosave") }
+
+    Globalize.with_locale(:de) { node.autosave!({:title => "v2"}, user) }
+
+    autosave = node.autosave.reload
+    assert_equal "Edited directly on autosave", Globalize.with_locale(:en) { autosave.title }
+    assert_equal "v2",                          Globalize.with_locale(:de) { autosave.title }
   end
 end

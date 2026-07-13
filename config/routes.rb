@@ -20,41 +20,76 @@ Cccms::Application.routes.draw do
   scope '(:locale)', locale: /de|en/ do
 
     resources :tags
-    resources :occurrences
-    resources :events
 
-    resources :pages do
-      member do
-        get :preview
-        put :sort_images
+    resources :events do
+      collection do
+        get :without_node
       end
     end
 
-    resources :nodes do
-      member do
-        put :unlock
-        put :publish
-      end
+    get  'pages/:id/preview',     to: 'pages#preview',     as: :preview_page
+    put  'pages/:id/sort_images', to: 'pages#sort_images', as: :sort_images_page
 
-      resources :revisions do
-        collection do
-          post :diff
-        end
-        member do
-          put :restore
-        end
-      end
-    end
+    get 'preview/:token', to: 'shared_previews#show', as: :shared_preview
 
     scope '/admin' do
       resources :assets
+
+      resources :nodes do
+        collection do
+          get 'tags/:tags', action: :tags, as: :tags, constraints: { tags: /[^\/]+/ }
+          get :parameterize_preview
+          get :drafts
+          get :recent
+          get :mine
+          get :chapters
+          get :sitemap
+        end
+
+        member do
+          put :unlock
+          put :publish
+          put :generate_shared_preview
+          put :revoke_shared_preview
+          put :autosave
+          put :revert
+        end
+
+        resources :translations, controller: 'page_translations',
+          param: :translation_locale,
+          constraints: { translation_locale: /en/ },
+          only: [:index, :show, :edit, :update, :destroy] do
+          member do
+            put :autosave
+          end
+        end
+
+        resources :related_assets, only: [:create, :destroy, :update] do
+          collection do
+            get :search
+          end
+        end
+
+        resources :revisions do
+          collection do
+            post :diff
+            get  :diff
+          end
+          member do
+            put :restore
+          end
+        end
+      end
+
+      match ''                 => 'admin#index',            :as => :admin,                  :via => :get
+      match 'search'           => 'admin#search',           :as => :admin_search,           :via => :get
+      match 'menu_search'      => 'admin#menu_search',      :as => :admin_menu_search,      :via => :get
+      match 'conventions'      => 'admin#conventions',      :as => :admin_conventions,      :via => :get
+      match 'dashboard_search' => 'admin#dashboard_search', :as => :admin_dashboard_search, :via => :get
     end
 
     match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete
     match '/login'       => 'sessions#new',     :as => :login,        :via => :get
-    match 'admin'        => 'admin#index',      :as => :admin,        :via => :get
-    match 'admin/search' => 'admin#search',     :as => :admin_search, :via => :get
-    match 'admin/menu_search' => 'admin#menu_search', :as => :admin_menu_search, :via => :get
     match 'search'       => 'search#index',     :as => :search,       :via => :get
 
     resources :users

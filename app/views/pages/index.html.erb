@@ -1,4 +1,4 @@
-<h1>Listing pages</h1>
+<h1>Pages</h1>
 
 <table>
   <tr>
@@ -12,7 +12,9 @@
     <td><%=h page.title %></td>
     <td><%= link_to 'Show', content_path(:page_path => page.node.unique_path) %></td>
     <td><%= link_to 'Edit', edit_page_path(page) %></td>
-    <td><%= button_to 'Destroy', page, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
+    <td><%= button_to page, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } do %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+    <% end %></td>
   </tr>
 <% end %>
 </table>

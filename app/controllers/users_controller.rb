@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
+    @user = User.new(admin: params[:admin].present?)
   end
 
   def create

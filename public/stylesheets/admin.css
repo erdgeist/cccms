@@ -1,4 +1,6 @@
-/* Layout */
+/* ============================================================
+   Base elements
+   ============================================================ */
 
 body {
   font-family: Helvetica, Arial, sans-serif;
@@ -6,9 +8,16 @@ body {
   margin: 0px;
 }
 
+/* Plain link visibility: a light, desaturated squiggly underline
+   signals "clickable" at rest without the weight of a solid line. */
 a {
   color: #000000;
-  text-decoration: none;
+  text-decoration: underline;
+  -webkit-text-decoration-style: wavy;
+  text-decoration-style: wavy;
+  text-decoration-color: #b0b0b0;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
 
 a:hover {
@@ -19,29 +28,117 @@ th {
   text-transform: lowercase;
 }
 
+td {
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+}
+/* table#revisions td only overrides padding-right, so its rows still
+   depend on this rule for vertical padding. table.node_table td resets
+   padding-top/bottom to 0 explicitly and does not depend on it. */
+
+input[type=text], textarea {
+  font-size: 1rem;
+  font-family: Helvetica;
+  border: 1px solid #989898;
+}
+
+select {
+  font-size: 1rem;
+  border: 1px solid #989898;
+}
+
+summary {
+  cursor: pointer;
+}
+
+summary:hover {
+  background-color: #f7f7f7;
+}
+
+input[type=password] {
+  border: 1px solid #989898;
+}
+
+input[type=radio] {
+  border: 1px solid #989898;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+@media(min-width:1016px) {
+  #wrapper {
+    margin: 0 125px;
+  }
+  .node_action_bar.node_action_bar_save {
+    margin-left: 120px;
+  }
+
+  .standalone_action_bar {
+    margin-left: -125px;
+  }
+}
+@media(max-width:1015px) {
+  #wrapper {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #sitemap details details {
+    margin-left: 0.75rem;
+    padding-left: 0.5rem;
+  }
+}
+
 #metadata,
 #content {
   margin-left: 5px;
 }
 
-@media(min-width:1016px) {
-#wrapper {
-  margin: 0 125px;
-}
-}
-@media(max-width:1015px) {
-#wrapper {
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
+#metadata_details summary {
+  margin-bottom: 1em;
 }
 
+.right { text-align: right; }
+.clear_left { clear: left; }
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+
+#navigation {
+  position: relative;
+  margin-top: 10px;
+}
+
+.admin_content_spacer {
+  clear: both;
+  margin-bottom: 40px;
+}
+
+.node_action_bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+/* ============================================================
+   Flash / notices
+   ============================================================ */
 
 #flash {
-  height: 12px;
+  height: auto;
   line-height: 20px;
-  margin-top: 40px;
+  padding: 6px 10px;
+  border-left: 3px solid #969696;
+  background-color: #f1f1f1;
   margin-bottom: 20px;
   margin-left: 5px;
 }
@@ -51,7 +148,6 @@ th {
   margin-right: 10px;
   text-transform: lowercase;
 }
-
 
 #flash img {
   height: 12px;
@@ -68,62 +164,87 @@ span#flash_error, span.warning {
   padding-bottom: 1px;
 }
 
-/* Pagination */
+span.warning a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.error_messages {
+  border-left: 3px solid #cc0000;
+  background-color: #fdecea;
+  padding: 6px 10px;
+  margin-bottom: 1rem;
+}
+
+.error_messages ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ============================================================
+   Pagination
+   ============================================================ */
 
 div.pagination {
   padding-top: 5px;
   padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-div.pagination span.current, div.pagination a:hover {
+div.pagination a,
+div.pagination em.current,
+div.pagination span.gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  font-style: normal;
+}
+
+div.pagination a:hover {
   color: #ff9600;
 }
 
-/* Styles */
-
-.right {
-  text-align: right;
-}
-
-.clear_left {
-  clear: left;
-}
-
-#navigation {
-  position: relative;
-  margin-top: 10px;
-}
-
-#navigation div {
-  float: left;
-}
-
-#navigation a:hover {
+div.pagination em.current {
+  background-color: #ff9600;
   color: #ffffff;
-  background-color: #000000;
+  font-weight: bold;
 }
 
-#main_navigation a,
-#sub_navigation a,
-#metadata a,
-input[type=submit],
-#overview_toggle a {
-  letter-spacing: 1px;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  text-transform: lowercase;
+div.pagination span.gap {
+  color: #969696;
 }
 
-/* button_to forms: render submit inputs as plain links */
+div.pagination .previous_page.disabled,
+div.pagination .next_page.disabled {
+  color: #969696;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+/* button_to forms: render submit inputs/buttons as plain links,
+   orange on hover; .destructive variant is red. */
 form.button_to {
   display: inline;
   margin: 0;
   padding: 0;
 }
 
-form.button_to input[type="submit"] {
+form.button_to input[type="submit"],
+form.button_to button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  -webkit-appearance: none;
+  appearance: none;
   background: none;
   border: none;
   padding: 0;
@@ -131,80 +252,231 @@ form.button_to input[type="submit"] {
   font: inherit;
   color: inherit;
   cursor: pointer;
-  text-decoration: none
+  text-decoration: none;
 }
 
-form.button_to input[type="submit"]:hover {
+form.button_to.state_changing input[type="submit"],
+form.button_to.state_changing button[type="submit"] {
+  color: #0d47a1;
+  background-color: #e3f2fd;
+}
+
+form.button_to.state_changing input[type="submit"]:hover,
+form.button_to.state_changing button[type="submit"]:hover {
   color: #ffffff;
-  background-color: #ff9600;
+  background-color: #1565c0;
 }
 
-#admin_wizard {
-  margin-bottom: 2rem;
+form.button_to.destructive input[type="submit"],
+form.button_to.destructive button[type="submit"] {
+  color: #cc0000;
+  background-color: #fdecea;
 }
 
-#page_submit a,
-.admin_wizard_button a {
-  color: white !important;
+form.button_to.destructive input[type="submit"]:hover,
+form.button_to.destructive button[type="submit"]:hover {
+  color: #ffffff;
+  background-color: #cc0000;
 }
 
-#page_submit,
-.admin_wizard_button {
-  display: inline-block;
-  font-size: 1rem;
+form.button_to.computation input[type="submit"],
+form.button_to.computation button[type="submit"] {
+  color: #00838f;
+  background-color: #e0f2f1;
+}
+
+form.button_to.computation input[type="submit"]:hover,
+form.button_to.computation button[type="submit"]:hover {
+  color: #ffffff;
+  background-color: #00838f;
+}
+
+form.button_to.computation input[type="submit"]:disabled,
+form.button_to.computation button[type="submit"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Native (non-button_to) submit buttons -- Create/Save/Publish forms.
+   Lower specificity than form.button_to's own rule, so button_to forms
+   are correctly unaffected. If a button_to output ever loses its class
+   wrapper, it will silently fall through to this bordered style instead
+   of rendering as a plain link -- worth knowing, not necessarily fixing. */
+input[type="submit"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font: inherit;
   font-weight: bold;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  background-color: green;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-#page_submit:hover,
-.admin_wizard_button:hover {
-  background-color: lime !important;
-}
-
-#sub_navigation a {
-  color: #969696;
-}
-
-#sub_navigation a:hover, #metadata a:hover {
-  color: #ffffff;
-  background-color: #ff9600;
-}
-
-#sub_navigation a.selected {
-  color: #ffffff;
-  background-color: #ff9600;
-}
-
-#navigation a.selected, #metadata a.selected, #overview_toggle a.selected {
+input[type="submit"]:hover {
   color: #ffffff;
   background-color: #000000;
 }
 
-/* Nodes */
+/* ============================================================
+   Admin dashboard
+   ============================================================ */
 
-table.node_table {
+#main_navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#main_navigation a,
+#main_navigation form.button_to button {
+  display: inline-flex;
+  text-decoration: none;
+  align-items: center;
+  background-color: #f7f7f7;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 2px;
+}
+
+#main_navigation a:hover,
+#main_navigation form.button_to button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+#main_navigation svg,
+.action_button svg,
+form.button_to svg  {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+#dashboard_search {
+  margin-bottom: 1.5rem;
+}
+
+#dashboard_search input[type=text] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  border-radius: 2px;
+}
+
+.button_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button_row .action_button,
+.node_search_form .action_button {
+  margin-bottom: 0;
+}
+
+#dashboard_signposts {
+  margin-bottom: 2rem;
+}
+
+#dashboard_housekeeping h3 {
+  margin-bottom: 0.75rem;
+}
+
+#dashboard_widgets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard_widget {
+  flex: 1 1 300px;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+.dashboard_widget h3 {
+  margin-top: 0;
+}
+
+.dashboard_widget ul {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.dashboard_widget li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.dashboard_widget_meta {
+  white-space: nowrap;
+  color: #969696;
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+
+/* Generic fallback header row. Shadowed by table.node_table's own
+   tr.header (2rem) and duplicated (same values) by table#revisions's
+   own tr.header below. Applies as-is to #menu_item_list,
+   div#draft_list table, and table.user_table, none of which define
+   their own tr.header. */
+table tr.header {
+  height: 20px;
+  text-align: left;
+}
+
+table.node_table ,
+table.assets_table,
+table.user_table,
+table.events_table {
   border-collapse: collapse;
 }
 
 table.node_table tr {
-  min-height: 2rem;
   border-bottom: 1px solid #000000;
 }
 
+table.assets_table tr,
+table.user_table tr,
+table.events_table tr {
+  border-bottom: 1px solid #e8e8e8;
+}
+
 table.node_table th.node_id,
-table.node_table th.revision,
-table.node_table th.title {
+table.node_table th.revision {
   min-width: 4rem;
 }
 
+/* th.title's min-width is set to 4rem above and 12rem here -- the
+   later, equally-specific rule wins, so th.title ends up at 12rem and
+   the 4rem entry for it above is dead. Likely a copy/paste leftover. */
 table.node_table th.editor,
 table.node_table th.title {
   min-width: 12rem;
 }
 
-table.node_table tr.header {
+table.node_table tr.header,
+table.assets_table tr.header,
+table.user_table tr.header,
+table.events_table tr.header {
   height: 2rem;
   text-align: left;
 }
@@ -217,192 +489,388 @@ table.node_table td {
   min-width: 2rem;
 }
 
+table.assets_table td,
+table.user_table td,
+table.events_table td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 25px;
+  padding-left: 0px;
+  min-width: 2rem;
+}
+
 table.node_table .node_id {
   padding-left: 10px;
   padding-right: 15px;
-}
-
-table.node_table tr.header:hover {
-  background-color: #ffffff;
-}
-
-table.node_table tr:hover {
-  background-color: #f1f1f1;
 }
 
 table.node_table .actions {
   text-transform: lowercase;
 }
 
+table.node_table tr.header:hover,
+table.assets_table tr.header:hover,
+table.user_table tr.header:hover,
+table.events_table tr.header:hover {
+  background-color: #ffffff;
+}
+
+table.node_table tr:hover,
+table.assets_table tr:hover,
+table.user_table tr:hover,
+table.events_table tr:hover {
+  background-color: #f1f1f1;
+}
+
 #admin_sitemap_table .node_id:before {
   content: "• ";
 }
 
-/* Revisions */
-
-table#revisions {
+table.revisions_table {
   border-collapse: collapse;
 }
 
-table#revisions td {
-  padding-right: 25px;
+table.revisions_table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-table#revisions td.title {
-  width: 450px;
-}
-
-table#revisions td.date {
-  width: 175px;
-}
-
-table#revisions tr.header:hover {
-  background-color: #ffffff;
-}
-
-table#revisions tr.no_hover:hover {
-  background-color: #ffffff;
-}
-
-table#revisions tr:hover {
-  background-color: #f1f1f1;
-}
-
-table#revisions tr.header {
-  height: 20px;
+table.revisions_table th,
+table.revisions_table td {
+  padding: 0.4rem 0.75rem;
   text-align: left;
 }
 
-table#revisions tr {
-  height: 45px
-}
-
-/* Page Editor */
-
-input[type=text], textarea {
-  font-size: 1rem;
-  font-family: Helvetica;
-  border: 1px solid #989898;
-}
-
-select {
-  font-size: 1rem;
-  border: 1px solid #989898;
-}
-
-input[type=text]#tag_list,
-input[type=text]#node_staged_slug,
-input#move_to_search_term {
-  padding: 5px;
-}
-
-input[type=password] {
-  border: 1px solid #989898;
-}
-
-input[type=submit] {
-  border: none;
-  padding-top: 0px;
-  padding-bottom: 1px;
+table.revisions_table thead tr.header,
+table.revisions_table thead tr.diff_sticky_bar {
   background-color: #ffffff;
 }
 
-input[type=submit]:hover {
-  border: none;
-  color: #ffffff;
-  background-color: #ff9600;
+table.revisions_table .diff_sticky_bar td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e8e8e8;
 }
 
-input[type=radio] {
-  border: 1px solid #989898;
+#diff_selection_label {
+  margin-left: 0.75rem;
+  color: #969696;
+}
+table.revisions_table td.title {
+  width: 450px;
 }
 
-div#login_form input[type=text], div#login_form input[type=password] {
-  width: 150px;
+table.revisions_table td.date {
+  width: 175px;
 }
 
+table.revisions_table tr:not(.header):not(.no_hover) {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+table.revisions_table tr.header:hover {
+  background-color: #ffffff;
+}
+
+table.revisions_table tr.no_hover:hover {
+  background-color: #ffffff;
+}
+
+table.revisions_table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.events_table .rrule_text {
+  display: inline-block;
+  max-width: 300px;
+  overflow-wrap: break-word;
+}
+
+.events_table .truncate {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+#diffview del {
+  background: #ffd7d5;
+  color: #82071e;
+  text-decoration: line-through;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+#diffview ins {
+  background: #ccffd8;
+  color: #055d20;
+  text-decoration: none;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+#diffview .diff_side_by_side {
+  display: flex;
+  gap: 1rem;
+}
+
+#diffview .diff_column {
+  flex: 1;
+}
+
+#diffview del.diff_structural,
+#diffview ins.diff_structural {
+  cursor: help;
+}
+
+.diff_unchanged {
+  color: #969696;
+  font-style: italic;
+}
+
+.diff_set_list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* ============================================================
+   Translation compare view (page_translations#show)
+   ============================================================ */
+
+.translation_compare {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
 @media(min-width:1016px) {
-input#tag_list,
-input#node_staged_slug,
-input#move_to_search_term {
-  width: 690px;
+  .translation_compare {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .translation_compare_column {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
-input[type=text]#page_title {
-  width: 690px;
-  font-size: 1rem;
-  padding-top: 6px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  font-weight: bold;
+table.user_table td.user_login {
+  padding-right: 30px;
 }
 
-textarea#page_abstract {
-  width: 690px;
-  height: 150px;
-  padding: 5px;
-}
+/* ============================================================
+   Node display (nodes#show / nodes#new)
+   ============================================================ */
 
-#page_editor textarea#page_body {
-  width: 700px;
-  height: 600px;
-}
+@media(min-width:1016px) {
+  div.node_description {
+    float: left;
+    width: 110px;
+    min-height: 2rem;
+    text-align: right;
+    text-transform: lowercase;
+    vertical-align: top;
+  }
 
-#page_editor #metadata, #page_editor #content, #admin_overview {
-  margin-left: -125px;
+  div.node_content {
+    margin-left: 120px;
+    min-height: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
 }
-
-}
-
-/* Mobile */
 @media(max-width:1015px) {
-input#tag_list,
-input#node_staged_slug,
-input#move_to_search_term {
-  box-sizing: border-box;
-  width: 100%;
+  div.node_description {
+    min-height: 2rem;
+    width: 30em;
+    text-transform: lowercase;
+    vertical-align: top;
+  }
+
+  div.node_content {
+    min-height: 2rem;
+    margin-bottom: 1rem;
+  }
 }
 
-#page_editor #content,
-#page_editor #metadata {
-  padding-right: 5px;
+.node_content.node_info_group {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
 }
 
-#page_editor textarea#page_body {
-  box-sizing: border-box;
-  width: 800px;
-  height: 50rem;
+.node_info_group .disabled_action {
+  display: inline-block;
+  border: 1px solid #c0c0c0;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-weight: bold;
+  color: #969696;
+  cursor: not-allowed;
 }
 
-#page_editor textarea#page_abstract {
-  box-sizing: border-box;
-  height: 8rem;
-  width: 100%;
+.node_info_group_items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
 }
 
-input[type=text]#page_title {
+.node_info_item {
+  min-width: 140px;
+}
+
+.node_info_label {
+  display: block;
+  font-weight: normal;
+  color: #969696;
+  font-size: 0.85rem;
+  text-transform: lowercase;
+}
+
+.node_info_group ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.node_info_group li {
+  margin-bottom: 0.25rem;
+}
+
+.node_content.node_status {
+  border: 2px solid #000000;
+  background-color: #fafafa;
+}
+
+.node_status .node_info_group_items:first-child {
+  margin-bottom: 0.75rem;
+}
+
+.node_status .node_info_group_items + .node_info_group_items {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.node_status .field_hint {
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.action_button,
+form.button_to input[type="submit"],
+form.button_to button[type="submit"] {
+  padding: 4px 12px;
+  line-height: 1.2;
   box-sizing: border-box;
-  width: 100%;
-  font-size: 2rem;
-  padding-top: 6px;
+}
+
+form.button_to input[type="submit"],
+form.button_to button[type="submit"] {
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+.field_hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #969696;
   padding-bottom: 4px;
-  padding-left: 5px;
+}
+
+.action_button + .field_hint {
+  display: inline;
+  margin-left: 0.5rem;
+  margin-top: 0;
+}
+
+.revisions_full_history_link {
+  margin-bottom: 0;
+}
+
+.node_search_form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.node_search_form input[type=text] {
+  padding: 4px 12px;
+  box-sizing: border-box;
+  height: 2.25rem;
+  width: 22rem;
+  border-radius: 2px;
+}
+
+.node_search_form .action_button {
+  height: 2.25rem;
+  box-sizing: border-box;
+}
+
+/* Layout only -- the at-rest visibility (wavy underline) for these
+   links comes from the scoped rule in Base elements above. */
+.add_child_links {
+  margin-top: 0.5rem;
+}
+
+.add_child_links a {
+  white-space: nowrap;
+}
+
+.sitemap_node {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.sitemap_node h4 {
+  margin: 0;
+}
+
+.sitemap_node .field_hint {
+  display: block;
+  margin: 2px 0 0;
+}
+
+.sitemap_node p {
+  margin: 2px 0 0;
+}
+
+#sitemap details details {
+  margin-left: 1.5rem;
+  border-left: 1px solid #e8e8e8;
+  padding-left: 0.75rem;
+}
+
+#sitemap summary {
+  padding: 4px 0;
+}
+
+#sitemap details:not([open]) > summary {
+  color: #ff9600;
   font-weight: bold;
 }
 
-input[type=text], textarea {
-  font-size: 1.5rem;
-}
-select {
-  font-size: 1.5rem;
+.aligned_action_row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 0.5rem;
 }
 
-#metadata ul#image_box {
-  width: 100% !important;
+.aligned_action_row .action_button,
+.aligned_action_row form.button_to {
+  margin-top: -5px;
 }
-}
+
+/* ============================================================
+   Page editor / metadata forms
+   ============================================================ */
 
 #new_node {
   margin-left: -118px;
@@ -412,50 +880,157 @@ select {
   width: 350px;
 }
 
-tr {}
-
-td {
-  padding-top: 10px;
-  padding-bottom: 5px;
-  padding-right: 10px;
+div#login_form input[type=text], div#login_form input[type=password] {
+  width: 150px;
 }
 
-@media(min-width:1016px) {
-div.node_description {
-  float: left;
-  width: 110px;
-  min-height: 2rem;
-  text-align: right;
-  text-transform: lowercase;
-  vertical-align: top;
-}
-
-div.node_content {
-  margin-left: 120px;
-  min-height: 2rem;
-  display: block;
-  margin-bottom: 1rem;
-}
-}
-@media(max-width:1015px) {
-div.node_description {
-  min-height: 2rem;
-  width: 30em;
-  text-transform: lowercase;
-  vertical-align: top;
-}
-
-div.node_content {
-  min-height: 2rem;
-  margin-bottom: 1rem;
-}
-
+input[type=text]#tag_list,
+input[type=text]#node_staged_slug,
+input#move_to_search_term {
+  padding: 5px;
 }
 
 div#page_editor {
   margin-top: 0px;
   margin-left: 10px;
 }
+
+#page_editor a.action_button,
+.action_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #000000;
+  margin-bottom: 1rem;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+#page_editor a.action_button:hover,
+.action_button:hover {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+#page_editor input[type=text],
+#page_editor input[type=password],
+#page_editor textarea {
+  padding: 5px;
+}
+
+@media(min-width:1016px) {
+  input#tag_list,
+  input#menu_search_term,
+  input#menu_item_node_id,
+  input#menu_item_path,
+  input#menu_item_title,
+  input#node_staged_slug,
+  input#move_to_search_term {
+    width: 690px;
+  }
+
+  input[type=text]#page_title {
+    width: 690px;
+    font-size: 1rem;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-weight: bold;
+  }
+
+  textarea#page_abstract {
+    width: 690px;
+    height: 150px;
+    padding: 5px;
+  }
+
+  #page_editor textarea#page_body {
+    width: 700px;
+    height: 600px;
+  }
+
+  #page_editor #metadata, #page_editor #content, #admin_overview {
+    margin-left: -125px;
+  }
+
+  #page_editor input[type=text],
+  #page_editor input[type=password],
+  #page_editor textarea {
+    width: 690px;
+  }
+}
+
+@media(max-width:1015px) {
+  input#tag_list,
+  input#node_staged_slug,
+  input#move_to_search_term {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  #page_editor #content,
+  #page_editor #metadata {
+    padding-right: 5px;
+  }
+
+  /* Fixed 800px width will overflow narrow viewports despite
+     border-box -- every sibling rule in this block uses 100% instead.
+     Worth checking on an actual phone; looks unfinished rather than
+     intentional. Not changed here since it wasn't part of what you
+     asked to fix. */
+  #page_editor textarea#page_body {
+    box-sizing: border-box;
+    width: 800px;
+    height: 50rem;
+  }
+
+  #page_editor textarea#page_abstract {
+    box-sizing: border-box;
+    height: 8rem;
+    width: 100%;
+  }
+
+  input[type=text]#page_title {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 2rem;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    padding-left: 5px;
+    font-weight: bold;
+  }
+
+  #page_editor input[type=text],
+  #page_editor input[type=password],
+  #page_editor textarea {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  input[type=text], textarea {
+    font-size: 1.5rem;
+  }
+  select {
+    font-size: 1.5rem;
+  }
+
+  #metadata ul#image_box {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   Draft list (dashboard widget)
+   ============================================================ */
 
 div#draft_list {
   border: 1px solid #000000;
@@ -472,32 +1047,61 @@ div#draft_list table tr.header:hover {
   background-color: #ffffff;
 }
 
+div#draft_list table tr:hover {
+  background-color: #f1f1f1;
+}
+
 div#draft_list table td.actions {
   text-transform: lowercase;
   white-space: nowrap;
 }
 
+/* Layout only -- the at-rest visibility (wavy underline) for these
+   links comes from the scoped rule in Base elements above. */
 div#draft_list table td.actions a {
   letter-spacing: 1px;
   padding-left: 5px;
   padding-right: 5px;
 }
 
-div#draft_list table tr:hover {
-  background-color: #f1f1f1;
+.search_results_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-table tr.header {
-  height: 20px;
-  text-align: left;
+.search_results_list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f1f1;
 }
+
+.search_tag_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.search_tag_pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background-color: #f1f1f1;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+/* ============================================================
+   Search widgets
+   ============================================================ */
 
 #search_widget {
   position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 2.75rem;
+  left: 0;
   width: min(520px, 90vw);
+  border-radius: 2px;
   border: 1px solid #000000;
   -webkit-box-shadow: 3px 3px 5px #b1b1b1;
   box-shadow: 3px 3px 5px #b1b1b1;
@@ -507,23 +1111,27 @@ table tr.header {
 }
 
 #search_widget input {
-  width: calc(100% - 70px);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 2px;
   font-size: 18px;
 }
 
-#search_results p {
+.search_results p {
   margin: 0;
   padding: 4px 4px 0 4px;
   border-bottom: 1px solid #e8e8e8;
 }
 
-#search_results p a {
+.search_results p a {
+  text-decoration: none;
   display: block;
   font-weight: bold;
   font-size: 0.95rem;
 }
 
-#search_results p span.result_path {
+.search_results p span.result_path {
   display: block;
   margin-top: 2px;
   font-size: 0.75rem;
@@ -532,7 +1140,7 @@ table tr.header {
   padding-bottom: 4px;
 }
 
-#search_results p.search_more {
+.search_results p.search_more {
   margin: 0;
   padding: 6px 4px;
   font-size: 0.8rem;
@@ -541,13 +1149,19 @@ table tr.header {
   border-bottom: none;
 }
 
-table#content th.description {
-  width: 100px;
+.search_results p.search_group_label {
+  margin: 8px 0 2px;
+  padding: 0;
+  border-bottom: none;
+  font-size: 0.75rem;
+  color: #969696;
+  text-transform: lowercase;
+  font-weight: normal;
 }
 
-table#content th.content {
-  width: 690px;
-}
+/* ============================================================
+   Menu items (navigation editor)
+   ============================================================ */
 
 #menu_item_list {
   border-collapse: collapse;
@@ -563,6 +1177,10 @@ table#content th.content {
 
 #menu_item_list td {
   height: 20px;
+}
+
+#menu_item_list td.menu_item_title {
+  width: 200px;
 }
 
 #menu_item_list td.menu_sort_handle div {
@@ -583,13 +1201,13 @@ table#content th.content {
   cursor: grab;
 }
 
-#menu_item_list td.menu_item_title {
-  width: 200px;
-}
-
-.ui-state-highlight td{
+.ui-state-highlight td {
   height: 20px;
 }
+
+/* ============================================================
+   Image box / browser
+   ============================================================ */
 
 #metadata ul#image_box {
   box-sizing: border-box;
@@ -616,7 +1234,77 @@ div#image_browser ul li {
   list-style-type: none;
 }
 
-table.user_list td.user_login {
-  padding-right: 30px;
+.thumbnail_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.thumbnail_list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.thumbnail_list img {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.related_asset_handle {
+  display: flex;
+  color: #969696;
+  cursor: grab;
+}
+
+.related_asset_handle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.related_asset_remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #969696;
+}
+
+.related_asset_remove svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.related_asset_remove:hover {
+  color: #cc0000;
+}
+
+.related_asset_result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px;
+  border-bottom: 1px solid #e8e8e8;
+  text-decoration: none;
+}
+
+.related_asset_result img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 

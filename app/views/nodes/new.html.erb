@@ -6,48 +6,47 @@
   </div>
 <% end %>
 
-<p>What kind of node do you want to create?</p>
-
 <%= form_tag nodes_path do %>
-<table id="new_node">
-  <tr>
-    <td class="description">Type</td>
-    <td>
-      <div>
-        <%= radio_button_tag :kind, "top_level" %>
-        Top Level
-      </div>
+<div id="new_node">
+
+  <div class="node_description">Type</div>
+  <div class="node_content">
+    <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
-        <%= radio_button_tag :kind, "generic", :selected => true %>
-        Generic ( can be created anywhere )
+        <%= radio_button_tag :kind, kind, kind == @selected_kind,
+          data: { path_prefix: resolve_kind_text(config[:path_prefix]) } %>
+        <%= resolve_kind_text(config[:label]) %>
+        <% if config[:hint] %>
+          <span class="field_hint"><%= resolve_kind_text(config[:hint]) %></span>
+        <% end %>
       </p>
-      <p>
-        <%= radio_button_tag :kind, "update" %>
-        Update ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tag "update" )
-      </p>
-      <p>
-        <%= radio_button_tag :kind, "press_release" %>
-        Pressemitteilung ( is automatically created in /updates/<%= Time.now.year.to_s %>/ and gets tags "update, pressemitteilung" )
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td class="description">Title</td>
-    <td><%= text_field_tag :title %></td>
-  </tr>
-  <tr id="parent_search_field">
-    <td class="description">Parent</td>
-    <td>
+    <% end %>
+  </div>
+
+  <div class="node_description">Title</div>
+  <div class="node_content">
+    <%= text_field_tag :title, nil, required: true %>
+    <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
+  </div>
+
+  <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
+    <div class="node_description">Parent</div>
+    <div class="node_content">
       <%= text_field_tag :parent_search_term, @parent_name %>
       <%= hidden_field_tag :parent_id, @parent_id %>
-      <div id="search_results">
+      <div id="parent_search_results" class="search_results"></div>
+    </div>
+  </div>
 
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td class="right"><%= submit_tag "Create" %></td>
-  </tr>
-</table>
+  <div class="node_description">Resulting path</div>
+  <div class="node_content">
+    <span id="resulting_path">—</span>
+    <button type="button" id="copy_resulting_path" class="unselected">copy</button>
+    <span class="field_hint">This preview updates as you type. The final path can still be changed afterward by editing the title (for the last segment) or moving the node to a different parent (for everything before it).</span>
+  </div>
+
+  <div class="node_description"></div>
+  <div class="node_content"><%= submit_tag "Create" %></div>
+
+</div>
 <% end %>

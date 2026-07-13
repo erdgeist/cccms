@@ -1,14 +1,27 @@
-<table class="user_list">
-  <tr>
-    <td><h1>Admins</h1></td>
+<h1>Admins</h1>
+<%= link_to new_user_path(admin: true), class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create admin user
+<% end %>
+<table class="user_table">
+  <tr class="header">
+    <th>Login</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </tr>
   <%= render :partial => "user", :locals => {:users => @users[:admin] ||= []} %>
-  <tr>
-    <td><h1>Users</h1></td>
+</table>
+
+<h1>Users</h1>
+<%= link_to new_user_path, class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create user
+<% end %>
+<table class="user_table">
+  <tr class="header">
+    <th>Login</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </tr>
   <%= render :partial => "user", :locals => {:users => @users[:user] ||= []} %>
 </table>
-
-<% content_for :subnavigation do %>
-  <%= link_to "create", new_user_path %>
-<% end %>

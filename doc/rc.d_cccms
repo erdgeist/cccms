@@ -11,10 +11,14 @@ rcvar="cccms_enable"
 desc="CCC CMS unicorn server"
 
 cccms_dir="${cccms_dir:-/usr/local/www/cccms}"
+rvm_ruby_version=$(cat ${cccms_dir}/.ruby-version 2>/dev/null || echo "ruby-3.2.11")
+rvm_gemset=$(cat ${cccms_dir}/.ruby-gemset 2>/dev/null || echo "rails8-upgrade")
+rvm_gemset_path="/usr/local/rvm/gems/${rvm_ruby_version}@${rvm_gemset}"
+
+command="${rvm_gemset_path}/wrappers/unicorn"
+
 cccms_unicorn_config="${cccms_unicorn_config:-/usr/local/etc/unicorn.rb}"
 
-# command="/usr/local/rvm/gems/ruby-3.2.11@rails7-upgrade/wrappers/unicorn"
-command="/usr/local/rvm/gems/ruby-3.2.11@rails8-upgrade/wrappers/unicorn"
 command_args="-c ${cccms_unicorn_config} -E production -D"
 cccms_chdir="${cccms_dir}"
 
@@ -23,8 +27,20 @@ procname="ruby"
 
 required_dirs="${cccms_dir}"
 
-extra_commands="reload"
+extra_commands="reload regenerate_occurrences"
 sig_reload="USR2"
+
+regenerate_occurrences_cmd="cccms_regenerate_occurrences"
+cccms_regenerate_occurrences()
+{
+    cd ${cccms_dir} && \
+    ${rvm_gemset_path}/wrappers/bundle \
+        exec rails runner \
+        'Event.find_each { |e| Occurrence.generate(e) }' \
+        >> /var/log/unicorn.stderr.log 2>&1 && \
+    touch /var/db/cccms_occurrences_regenerated
+    echo "Occurrences regenerated."
+}
 
 start_precmd="cccms_prestart"
 cccms_prestart()
@@ -32,6 +48,15 @@ cccms_prestart()
     mkdir -p /usr/local/www/cccms/tmp/pids /var/log
     touch /var/log/unicorn.stderr.log
     chown www:www /var/log/unicorn.stderr.log
+}
+
+start_postcmd="cccms_poststart"
+cccms_poststart()
+{
+    if [ -z "$(find /var/db/cccms_occurrences_regenerated -mtime -365 2>/dev/null)" ]; then
+        echo "Occurrences stale or missing, regenerating..."
+        cccms_regenerate_occurrences
+    fi
 }
 
 export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin

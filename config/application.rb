@@ -17,6 +17,7 @@ module Cccms
     config.time_zone = 'Berlin'
 
     config.i18n.default_locale = :de
+    config.i18n.available_locales = [:de, :en]
     config.i18n.fallbacks = { en: [:en, :de] }
 
     config.filter_parameters += [:password, :password_confirmation]

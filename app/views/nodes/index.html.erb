@@ -1,7 +1,11 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Create', new_node_path %>
-<% end %>
 <h1>Nodes</h1>
+
+<div>
+  <%= link_to new_node_path, class: 'action_button' do %>
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create node
+  <% end %>
+  <span class="field_hint">Creates a node with no parent or kind set — for a specific page, use the wizard's create flow or "add child" from an existing node instead.</span>
+</div>
 
 <%= will_paginate @nodes %>
   <table class="node_table">
@@ -21,7 +25,8 @@
       </td>
       <td class="actions">
         <%= link_to 'show',      node_path(node) %>
-        <%= link_to 'Revisions', node_revisions_path(node) %>
+        <%= link_to 'edit',      edit_node_path(node) %>
+        <%= link_to 'revisions', node_revisions_path(node) %>
       </td>
       <td>
         <%= node.lock_owner.login if node.lock_owner %>

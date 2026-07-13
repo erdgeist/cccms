@@ -1,0 +1,11 @@
+<h1>Chapters</h1>
+
+<%= form_tag chapters_nodes_path, method: :get, class: "node_search_form" do %>
+  <label><%= check_box_tag 'kinds[]', 'erfa', @kind_keys.include?('erfa') %> Erfa</label>
+  <label><%= check_box_tag 'kinds[]', 'chaostreff', @kind_keys.include?('chaostreff') %> Chaostreff</label>
+  <%= button_tag type: "submit", class: "action_button" do %>
+    <%= icon("filter", library: "tabler", "aria-hidden": true) %> Filter
+  <% end %>
+<% end %>
+
+<%= render 'node_list' %>

@@ -23,6 +23,26 @@ module ContentHelper
     )
   end
 
+  def open_erfas_today
+    occurrences = Occurrence
+      .find_in_range(Time.now.beginning_of_day, Time.now.end_of_day)
+      .joins(event: :tags)
+      .where(tags: { name: 'open-day' })
+      .reject { |o| o.node.nil? || o.node.head.nil? }
+      .sample(3)
+
+    return if occurrences.empty?
+
+    render(
+      :partial => 'content/open_erfas_today',
+      :locals  => { :occurrences => occurrences }
+    )
+  end
+
+  def weekday_abbr(time)
+    RruleHumanizer.wday_abbr(time, I18n.locale)
+  end
+
   def tags
     render :partial => 'content/tags'
   end
@@ -67,11 +87,14 @@ module ContentHelper
   # Syntax of the [aggregate ] short code:
   #
   # [aggregate
-  #   flags="update, pressemitteilung"
+  #   children="all" | children="direct" # optional, at least one of children
+  #   tags="update, pressemitteilung"    # or tags is required
   #   limit="20"
   #   order_by="published_at"
   #   order_direction="DESC"
   # ]
+
+
   def aggregate? content
     options = {}
 
@@ -80,7 +103,7 @@ module ContentHelper
     begin
       if content =~ /\[aggregate([^\]]*)\]/
         tag = $~.to_s
-        matched_data = $1.scan(/\w+\="[a-zA-Z\s\/_\d,.=]*"/)
+        matched_data = $1.scan(/\w+\="[a-zA-Z\s\/_\d,.=-]*"/)
 
         matched_data.each do |data|
           splitted_data = data.split("=", 2)
@@ -88,6 +111,7 @@ module ContentHelper
         end
 
         options[:partial] = select_partial(options[:partial])
+        options[:node] = @page.node if options[:children].present?
 
         sanitize(content.sub(tag, render_collection(options)), :attributes => cccms_attributes)
       else

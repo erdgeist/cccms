@@ -7,6 +7,17 @@ de:
   sponsors: Sponsoren
   show_tag_headline: "Seiten mit dem Tag:"
   old_ccc_de: das alte ccc.de
+  event_schedule_time: "um %{time} Uhr"
+  event_schedule_unrecognized: "Termin-Regel nicht automatisch lesbar"
+  event_schedule_none: "Kein Termin"
+  open_days: "Offene Tage"
+  open_days_label: "Offene Tage"
+  upcoming_events: "Weitere Termine"
+  open_today: "Das Chaos, lokal und heute offen"
+  published: "veröffentlicht"
+  published_by: "veröffentlicht durch %{editor}"
+  editor_self: "du"
+  publisher_self: "dich"
   date:
     formats:
       default: "%d.%m.%Y"
@@ -22,7 +33,6 @@ de:
       - :day
       - :month
       - :year
-
   time:
     formats:
       default: "%A, %e. %B %Y, %H:%M Uhr"
@@ -33,42 +43,6 @@ de:
 
     am: "vormittags"
     pm: "nachmittags"
-
-  datetime:
-    distance_in_words:
-      half_a_minute: 'eine halbe Minute'
-      less_than_x_seconds:
-        zero: 'weniger als 1 Sekunde'
-        one: 'weniger als 1 Sekunde'
-        other: 'weniger als {{count}} Sekunden'
-      x_seconds:
-        one: '1 Sekunde'
-        other: '{{count}} Sekunden'
-      less_than_x_minutes:
-        zero: 'weniger als 1 Minute'
-        one: 'weniger als eine Minute'
-        other: 'weniger als {{count}} Minuten'
-      x_minutes:
-        one: '1 Minute'
-        other: '{{count}} Minuten'
-      about_x_hours:
-        one: 'etwa 1 Stunde'
-        other: 'etwa {{count}} Stunden'
-      x_days:
-        one: '1 Tag'
-        other: '{{count}} Tage'
-      about_x_months:
-        one: 'etwa 1 Monat'
-        other: 'etwa {{count}} Monate'
-      x_months:
-        one: '1 Monat'
-        other: '{{count}} Monate'
-      about_x_years:
-        one: 'etwa 1 Jahr'
-        other: 'etwa {{count}} Jahre'
-      over_x_years:
-        one: 'mehr als 1 Jahr'
-        other: 'mehr als {{count}} Jahre'
 
   number:
     format:
@@ -98,31 +72,11 @@ de:
       sentence_connector: "und"
       skip_last_comma: true
 
-  activerecord:
-    errors:
-      template:
-        header:
-          one: 1 error prohibited this {{model}} from being saved
-          other: "{{count}} errors prohibited this {{model}} from being saved"
-        body: "There were problems with the following fields:"
-
-      messages:
-        inclusion: "is not included in the list"
-        exclusion: "is reserved"
-        invalid: "is invalid"
-        confirmation: "doesn't match confirmation"
-        accepted: "must be accepted"
-        empty: "can't be empty"
-        blank: "can't be blank"
-        too_long: "is too long (maximum is {{count}} characters)"
-        too_short: "is too short (minimum is {{count}} characters)"
-        wrong_length: "is the wrong length (should be {{count}} characters)"
-        taken: "has already been taken"
-        not_a_number: "is not a number"
-        greater_than: "must be greater than {{count}}"
-        greater_than_or_equal_to: "must be greater than or equal to {{count}}"
-        equal_to: "must be equal to {{count}}"
-        less_than: "must be less than {{count}}"
-        less_than_or_equal_to: "must be less than or equal to {{count}}"
-        odd: "must be odd"
-        even: "must be even"
+  will_paginate:
+    previous_label: "&#8592; Zurück"
+    previous_aria_label: "Vorherige Seite"
+    next_label: "Weiter &#8594;"
+    next_aria_label: "Nächste Seite"
+    page_gap: "&hellip;"
+    container_aria_label: "Seitennavigation"
+    page_aria_label: "Seite %{page}"

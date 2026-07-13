@@ -1,49 +1,80 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Edit', edit_node_path(@node) %>
-<% end %>
-
 <h2>Revisions for Node: <%= @node.unique_name %></h2>
 
-<table id="revisions">
-  <tr class="header">
-    <th>First</th>
-    <th>Last</th>
-    <th>Rev.</th>
-    <th>Title</th>
-    <th>Editor</th>
-    <th>Date</th>
-    <th></th>
-    <th></th>
-  </tr>
-<% (@pages || @node.pages.all).reverse.each do |page| %>
-  <tr>
-    <td><%= radio_button_tag :start_revision, page.revision %></td>
-    <td><%= radio_button_tag :end_revision, page.revision %></td>
-    <td class="revision"><%= page.revision %></td>
-    <td class="title"><%= page.title %></td>
-    <td class="user"><%= page.editor.try(:login) %></td>
-    <td class="date"><%= page.updated_at %></td>
-    <td><%= link_to 'show', node_revision_path(@node, page) %></td>
-    <td>
-      <%= button_to 'restore', restore_node_revision_path(@node, page),
-            method: :put,
-            form: { data: { confirm: "Restore this revision?" } } %>
-    </td>
-  </tr>
-<% end %>
-  <tr class="no_hover">
-    <td colspan="8" class="right">
-      <%= button_to 'Diff revisions', diff_node_revisions_path(@node),
-            method: :post,
-            form: { id: 'diff_form' } %>
-    </td>
-  </tr>
+<p class="node_action_bar standalone_action_bar">
+  <%= link_to 'Back to node', node_path(@node) %>
+</p>
+
+<table id="revisions" class="revisions_table">
+  <thead>
+    <tr class="header">
+      <th>First</th>
+      <th>Last</th>
+      <th>Rev.</th>
+      <th>Title</th>
+      <th>Editor</th>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr class="no_hover diff_sticky_bar">
+      <td colspan="8">
+        <%= button_to 'Diff revisions', diff_node_revisions_path(@node),
+              method: :post,
+              form: { id: 'diff_form', class: 'button_to computation' },
+              disabled: true %>
+        <span id="diff_selection_label"></span>
+        <label><%= radio_button_tag :view, 'inline', true %> Inline</label>
+        <label><%= radio_button_tag :view, 'side_by_side', false %> Side by side</label>
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+  <% pages = (@pages || @node.pages.all).reverse %>
+  <% pages.each_with_index do |page, index| %>
+    <tr>
+      <td><%= radio_button_tag :start_revision, page.revision, index == 1 %></td>
+      <td><%= radio_button_tag :end_revision, page.revision, index == 0 %></td>
+      <td class="revision"><%= page.revision %></td>
+      <td class="title"><%= page.title %></td>
+      <td class="user"><%= page.editor.try(:login) %></td>
+      <td class="date"><%= page.updated_at %></td>
+      <td><%= link_to 'show', node_revision_path(@node, page) %></td>
+      <td>
+        <%= button_to 'restore', restore_node_revision_path(@node, page),
+              method: :put,
+              form: { data: { confirm: "Restore this revision?" }, class: 'button_to state_changing' } %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
 </table>
 
 <script>
+  function update_diff_button_state() {
+    var start = document.querySelector('input[name="start_revision"]:checked');
+    var end = document.querySelector('input[name="end_revision"]:checked');
+    var valid = start && end && start.value !== end.value;
+    document.querySelector('#diff_form button[type="submit"]').disabled = !valid;
+
+    var label = document.getElementById('diff_selection_label');
+    if (start && end) {
+      label.textContent = start.value + ' against ' + end.value;
+    } else if (start || end) {
+      label.textContent = (start || end).value + ' selected';
+    } else {
+      label.textContent = '';
+    }
+  }
+
+  document.querySelectorAll('input[name="start_revision"], input[name="end_revision"]')
+    .forEach(function(radio) { radio.addEventListener('change', update_diff_button_state); });
+
+  update_diff_button_state();
+
   document.getElementById('diff_form').addEventListener('submit', function(e) {
     var start = document.querySelector('input[name="start_revision"]:checked');
     var end = document.querySelector('input[name="end_revision"]:checked');
+    var view = document.querySelector('input[name="view"]:checked');
     if (start) {
       var s = document.createElement('input');
       s.type = 'hidden'; s.name = 'start_revision'; s.value = start.value;
@@ -53,6 +84,11 @@
       var en = document.createElement('input');
       en.type = 'hidden'; en.name = 'end_revision'; en.value = end.value;
       this.appendChild(en);
+    }
+    if (view) {
+      var v = document.createElement('input');
+      v.type = 'hidden'; v.name = 'view'; v.value = view.value;
+      this.appendChild(v);
     }
   });
 </script>

@@ -1,20 +1,25 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'Edit', edit_user_path(@user) %>
-<% end %>
+<div id="page_editor">
+  <h1><%= @user.login %></h1>
 
-<h1>User: <%= @user.login %></h1>
+  <div id="content">
+    <div class="node_description">Actions</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+        <%= link_to edit_user_path(@user), class: 'action_button' do %>
+          <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+        <% end %>
+        </div>
+      </div>
+    </div>
 
-<table id="new_node">
-  <tr>
-    <td class="description">Login</td>
-    <td><%= @user.login %></td>
-  </tr>
-  <tr>
-    <td class="description">E-Mail</td>
-    <td><%= @user.email %></td>
-  </tr>
-  <tr>
-    <td class="description">Admin?</td>
-    <td><%= @user.admin ? "yes" : "no" %></td>
-  </tr>
-</table>
+    <div class="node_description">Login</div>
+    <div class="node_content"><%= @user.login %></div>
+
+    <div class="node_description">E-Mail</div>
+    <div class="node_content"><%= @user.email %></div>
+
+    <div class="node_description">Admin?</div>
+    <div class="node_content"><%= @user.admin ? "yes" : "no" %></div>
+  </div>
+</div>

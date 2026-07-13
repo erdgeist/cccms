@@ -1,147 +1,81 @@
-<div id="admin_wizard">
-  <div class="admin_wizard_button"><%= link_to 'Create Update or Pressemitteilung', new_node_path, :only_path => false %></div>
-  <div class="admin_wizard_button"><a href="#" id="admin_wizard_my_work" class="button">Continue my work</a></div>
-  <div class="admin_wizard_button"><a href="#" id="admin_wizard_create_page" class="button">Add a page in the page tree</a></div>
-  <div class="admin_wizard_button"><%= link_to("Upload a new asset", new_asset_path, :only_path => false) %></div>
+<h1>cccms dashboard</h1>
+<div id="dashboard_search">
+  <%= form_tag admin_search_path, method: :get do %>
+    <%= text_field_tag :search_term, nil, id: "dashboard_search_term", placeholder: "Search nodes and tags…", autocomplete: "off" %>
+  <% end %>
+  <div id="dashboard_search_results" class="search_results"></div>
 </div>
 
-<p id="overview_toggle">
-  <a href="#" id="recent_changes_toggle" class="button">recent changes</a>
-  <a href="#" id="my_work_toggle" class="button">my work</a>
-  <a href="#" id="current_drafts_toggle" class="button">current drafts (<%= @drafts_count %>)</a>
-  <a href="#" id="admin_sitemap_toggle" class="button">site map</a>
-</p>
+<div id="dashboard_signposts" class="button_row">
+  <%= link_to new_node_path, class: "action_button" do %>
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create post
+  <% end %>
+  <%= link_to chapters_nodes_path, class: "action_button" do %>
+    <%= icon("map-pin", library: "tabler", "aria-hidden": true) %> Find a chapter
+  <% end %>
+  <%= link_to new_asset_path, class: "action_button" do %>
+    <%= icon("upload", library: "tabler", "aria-hidden": true) %> Upload asset
+  <% end %>
+  <%= link_to sitemap_nodes_path, class: "action_button" do %>
+    <%= icon("list-tree", library: "tabler", "aria-hidden": true) %> Add a page in the page tree
+  <% end %>
+</div>
 
-<div id="recent_changes_table">
-  
-  <h1>Recent Changes</h1>
+<div id="dashboard_widgets">
+  <div class="dashboard_widget">
+    <h3>Drafts and autosaves</h3>
+    <ul>
+      <% @drafts.each do |node| %>
+        <li>
+          <div>
+            <%= link_to title_for_node(node), node_path(node) %>
+            <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
+          </div>
+          <span class="dashboard_widget_meta">
+            <% if (editor = node_last_editor(node)) %><%= editor %>, <% end %><%= relative_time_phrase(node.updated_at) %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+    <%= link_to "See all drafts →", drafts_nodes_path %>
+  </div>
 
-  <table class="node_table">
-    <tr class="header">
-      <th class="node_id">ID</th>
-      <th class="title">Title</th>
-      <th class="actions">Actions</th>
-      <th class="editor">Locked by</th>
-      <th class="revision">Rev.</th>
-    </tr>
+  <div class="dashboard_widget">
+    <h3>Recent changes</h3>
+    <ul>
     <% @recent_changes.each do |node| %>
-    <tr class="<%= cycle("even", "odd") %>">
-      <td class="node_id"><%= node.id %></td>
-      <td class="title">
-        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
-        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
-      </td>
-      <td class="actions">
-        <%= link_to 'show',      node_path(node) %>
-        <%= link_to 'Revisions', node_revisions_path(node) %>
-      </td>
-      <td>
-        <%= node.lock_owner.login if node.lock_owner %>
-      </td>
-      <td>
-        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
-      </td>
-    </tr>
+      <li>
+        <div>
+          <%= link_to title_for_node(node), node_path(node) %>
+          <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
+        </div>
+        <span class="dashboard_widget_meta">
+          <%= (editor = node_head_editor(node)) ? t("published_by", editor: editor) : t("published") %>, <%= relative_time_phrase(node.head.updated_at) %>
+        </span>
+      </li>
     <% end %>
-  </table>
+    </ul>
+    <%= link_to "See all recent changes →", recent_nodes_path %>
+  </div>
 </div>
 
-<div id="my_work_table">
-  
-  <h1>My Work</h1>
-
-  <table class="node_table">
-    <tr class="header">
-      <th class="node_id">ID</th>
-      <th class="title">Title</th>
-      <th class="actions">Actions</th>
-      <th class="editor">Locked by</th>
-      <th class="revision">Rev.</th>
-    </tr>
-    <% @mynodes.each do |node| %>
-    <tr class="<%= cycle("even", "odd") %>">
-      <td class="node_id"><%= node.id %></td>
-      <td class="title">
-        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
-        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
-      </td>
-      <td class="actions">
-        <%= link_to 'show',      node_path(node) %>
-        <%= link_to 'Revisions', node_revisions_path(node) %>
-      </td>
-      <td>
-        <%= node.lock_owner.login if node.lock_owner %>
-      </td>
-      <td>
-        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
-      </td>
-    </tr>
+<div id="dashboard_housekeeping">
+  <h3>Housekeeping</h3>
+  <div class="button_row">
+    <%= link_to nodes_path, class: "action_button" do %>
+      <%= icon("list", library: "tabler", "aria-hidden": true) %> Nodes
     <% end %>
-  </table>
-</div>
-
-<div id="current_drafts_table">
-  
-  <h1>Current Drafts (<%= @drafts_count %>)</h1>
-  
-  <table class="node_table">
-    <tr class="header">
-      <th class="node_id">ID</th>
-      <th class="title">Title</th>
-      <th class="actions">Actions</th>
-      <th class="editor">Locked by</th>
-      <th class="revision">Rev.</th>
-    </tr>
-    <% @drafts.each do |node| %>
-    <tr class="<%= cycle("even", "odd") %>">
-      <td class="node_id"><%= node.id %></td>
-      <td class="title">
-        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
-        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
-      </td>
-      <td class="actions">
-        <%= link_to 'show',      node_path(node) %>
-        <%= link_to 'Revisions', node_revisions_path(node) %>
-      </td>
-      <td>
-        <%= node.lock_owner.login if node.lock_owner %>
-      </td>
-      <td>
-        <%= link_to ( node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY" ) ), node_revisions_path(node) %>
-      </td>
-    </tr>
+    <%= link_to events_path, class: "action_button" do %>
+      <%= icon("calendar", library: "tabler", "aria-hidden": true) %> Events
     <% end %>
-  </table>
-</div>
-
-<div id="admin_sitemap_table">
-
-  <h1>Sitemap</h1>
-
-  <table class="node_table">
-    <tr class="header">
-      <th class="node_id">ID</th>
-      <th class="title">Title</th>
-      <th class="actions">Actions</th>
-      <th class="editor">Locked by</th>
-    </tr>
-    <% @sitemap.each do |node| %>
-    <% if !node.nil? %>
-      <tr class="<%= cycle("even", "odd") %>">
-      <td class="node_id" style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;"><%= node.id %></td>
-      <td class="title"  style="padding-left: <%= @sitemap_depth[node.id] * 30 %>px;">
-        <h4><%= link_to title_for_node(node), node_path(node) %></h4>
-        <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
-      </td>
-      <td class="actions">
-        <%= link_to 'create subpage', new_node_path(:parent_id => node.id) %>
-        <%= link_to 'Revisions',      node_revisions_path(node) %>
-      </td>
-      <td>
-        <%= node.lock_owner.login if node.lock_owner %>
-      </td>
-    </tr>
+    <%= link_to assets_path, class: "action_button" do %>
+      <%= icon("folder", library: "tabler", "aria-hidden": true) %> Assets
     <% end %>
+    <%= link_to users_path, class: "action_button" do %>
+      <%= icon("users", library: "tabler", "aria-hidden": true) %> Users
     <% end %>
-  </table>
+    <%= link_to menu_items_path, class: "action_button" do %>
+      <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> Navigation
+    <% end %>
+  </div>
 </div>

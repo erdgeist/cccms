@@ -1,13 +1,14 @@
 class Node < ApplicationRecord
   # Mixins and Plugins
-  acts_as_nested_set
+  include NestedTree
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
   belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy, optional: true
   belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy, optional: true
+  belongs_to  :autosave, :class_name => "Page", :foreign_key => :autosave_id, :dependent => :destroy, optional: true
   has_many    :permissions, :dependent => :destroy
-  has_one     :event, :dependent => :destroy
+  has_many    :events, :dependent => :destroy
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
 
   # Callbacks
@@ -16,20 +17,10 @@ class Node < ApplicationRecord
   after_save    :update_unique_names_of_children
 
   # Validations
-  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? }
+  validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? || slug.blank? }
   validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
-
-  validate :borders       # This should never ever happen.
-
-  # Index for Fulltext Search
-  # define_index do
-  #   indexes head.translations.title
-  #   indexes slug
-  #   indexes unique_name
-  #   indexes head.translations.body
-  # end
 
   # Class methods
 
@@ -58,6 +49,101 @@ class Node < ApplicationRecord
   end
 
   # Instance Methods
+
+  # Acquires (or reaffirms) the editing lock without creating a draft or
+  # an autosave -- both are now deferred until there is real content to
+  # hold.
+  def lock_for_editing! current_user
+    if self.lock_owner.nil? || self.lock_owner == current_user
+      lock_for! current_user
+      if self.draft
+        self.draft.user = current_user if self.draft.user.nil?
+        self.draft.editor = current_user
+        self.draft.save!
+      end
+      self
+    else
+      raise(
+        LockedByAnotherUser,
+        "Page is locked by another user who is working on it! " \
+        "Last modification: #{(self.autosave || self.draft || self.head).updated_at.to_fs(:db)}"
+      )
+    end
+  end
+
+  # Creates or updates the autosave buffer from the given attributes.
+  # Autosave rows are never associated to the node via node_id -- they
+  # must never appear in self.pages / the revisions list, which is the
+  # whole reason autosave exists as a separate, unversioned layer.
+  def autosave! attributes, current_user
+    assert_locked_by! current_user
+
+    unless self.autosave
+      self.autosave = Page.create!(:editor => current_user)
+      self.autosave.clone_attributes_from(self.draft || self.head) if self.draft || self.head
+      self.save!
+    end
+    self.autosave.assign_attributes(attributes)
+    self.autosave.save!
+    self.autosave
+  end
+
+  # Promotes the current autosave into the draft (creating the draft if
+  # none exists yet) and destroys the autosave afterward. This is what
+  # the explicit "Save" action does; it never creates a new revision --
+  # same as any other in-place draft edit. The new draft is created via
+  # self.pages.create! rather than by repointing the autosave's own
+  # node_id, because acts_as_list assigns the revision number at create
+  # time, scoped to node_id -- a page created with node_id nil and
+  # reassigned afterward would carry a wrong or missing revision number.
+  def save_draft! current_user
+    assert_locked_by! current_user
+    return unless self.autosave
+
+    if self.draft
+      preserved_published_at = self.draft.published_at
+      self.draft.clone_attributes_from self.autosave
+      self.draft.published_at = preserved_published_at
+      self.draft.user_id = self.autosave.user_id if self.autosave.user_id
+      self.draft.editor  = current_user
+      self.draft.save!
+    else
+      empty_page = self.pages.create!
+      empty_page.clone_attributes_from self.autosave
+      empty_page.user         = self.autosave.user_id ? self.autosave.user : (self.head ? self.head.user : current_user)
+      empty_page.editor       = current_user
+      empty_page.published_at = self.head.published_at if self.head
+      empty_page.save!
+      self.draft = empty_page
+      self.save!
+    end
+
+    self.autosave.destroy
+    self.autosave_id = nil
+    self.save!
+    self.draft.reload
+  end
+
+  def resolve_page_reference ref
+    case ref.to_s
+    when "head" then head
+    when "draft" then draft
+    when "autosave" then autosave
+    else pages.find_by_revision(ref)
+    end
+  end
+
+  # Which layer-pairs are meaningful to compare right now, given this
+  # node's actual state. Head vs autosave only shows up when no draft
+  # sits between them -- with a draft present, autosave is compared
+  # against the draft, never past it straight to head.
+  def available_layer_pairs
+    pairs = []
+    pairs << [:head, :draft]     if head && draft
+    pairs << [:draft, :autosave] if draft && autosave
+    pairs << [:head, :autosave]  if head && autosave && !draft
+    pairs
+  end
 
   def find_or_create_draft current_user
     self.wipe_draft!
@@ -94,6 +180,36 @@ class Node < ApplicationRecord
     self.draft.reload
   end
 
+  # Discards exactly the topmost non-empty layer -- autosave if present,
+  # else draft -- and reveals whatever's beneath it. Releases the lock
+  # only once nothing is left to protect (no draft survives); leaves it
+  # alone whenever a draft remains, since #edit still has real content
+  # open.
+  def revert! current_user
+    assert_locked_by! current_user
+
+    if self.autosave
+      self.autosave.destroy
+      self.autosave_id = nil
+      self.save!
+    elsif self.draft && self.head
+      self.draft.destroy
+      self.draft_id = nil
+      self.save!
+    end
+
+    self.unlock! unless self.draft
+    self.reload
+  end
+
+  def staged_slug=(value)
+    if head.blank?
+      self.slug = value
+    else
+      super
+    end
+  end
+
   def publish_draft!
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
@@ -112,6 +228,11 @@ class Node < ApplicationRecord
 
     if staged_parent_id && (staged_parent_id != parent_id)
       new_parent = Node.find(staged_parent_id)
+
+      if new_parent == self || self.descendants.include?(new_parent)
+        raise ActiveRecord::RecordInvalid.new(self), "Cannot move a node under itself or one of its own descendants"
+      end
+
       self.staged_parent_id = nil
       self.save!
       self.move_to_child_of(new_parent)
@@ -128,11 +249,22 @@ class Node < ApplicationRecord
     self
   end
 
-  # removes a draft and the lock if it is older than a day and still
-  # identical to head
+  # Releases whatever's stale and abandoned; never anything actively in
+  # use. Three independent cases share one rule -- nothing is touched
+  # unless it's been sitting untouched for over a day:
+  #  - a lock held with no draft or autosave at all (the editor opened
+  #    the page and never actually wrote anything)
+  #  - a fresh autosave older than a day, never promoted to a draft
+  #  - a draft older than a day that's still identical to head
   def wipe_draft!
+    return if self.autosave && self.autosave.updated_at > 1.day.ago
+
     unless self.draft
+      return if self.autosave.nil? && self.locked? && self.updated_at > 1.day.ago
+      self.autosave&.destroy
+      self.autosave_id = nil
       self.unlock!
+      self.save!
       return
     end
     return unless self.head
@@ -203,6 +335,10 @@ class Node < ApplicationRecord
     unique_path.length == 3 && unique_path[0] == "updates"
   end
 
+  def editable_page
+    autosave || draft || head
+  end
+
   # Returns immutable node id for all new nodes so that the atom feed entry ids
   # stay the same eventhough the slug or positions changes.
   # Can be removed after a year or so ;)
@@ -220,10 +356,57 @@ class Node < ApplicationRecord
       .distinct
   end
 
+  # This one is for admin-only views, where finding a draft is the point.
+  # Substring match on whichever of head/draft is present.
+  def self.editor_search(term)
+    words = term.to_s.split(/\s+/).reject(&:blank?)
+    return none if words.empty?
+
+    conditions = []
+    binds = {}
+
+    words.each_with_index do |word, i|
+      key = "term#{i}"
+      binds[key.to_sym] = "%#{sanitize_sql_like(word)}%"
+      conditions << "(head_translations.title ILIKE :#{key} OR head_translations.abstract ILIKE :#{key} " \
+                    "OR draft_translations.title ILIKE :#{key} OR draft_translations.abstract ILIKE :#{key})"
+    end
+
+    joins("LEFT JOIN page_translations head_translations ON head_translations.page_id = nodes.head_id")
+      .joins("LEFT JOIN page_translations draft_translations ON draft_translations.page_id = nodes.draft_id")
+      .where(conditions.join(" AND "), binds)
+      .distinct
+  end
+
+  def self.drafts_and_autosaves(current_user_id: nil)
+    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
+    return scope.order("updated_at DESC") unless current_user_id
+
+    scope.order(
+      Arel.sql(sanitize_sql_array(["CASE WHEN locking_user_id = ? THEN 0 ELSE 1 END, updated_at DESC", current_user_id]))
+    )
+  end
+
+  def self.recently_changed
+    includes(:head).where(
+      "pages.updated_at < ? AND pages.updated_at > ? AND nodes.parent_id IS NOT NULL",
+      Time.now, Time.now - 14.days
+    ).order("pages.updated_at desc").references(:head)
+  end
+
   protected
     def lock_for! current_user
       self.lock_owner = current_user
       self.save
+    end
+
+    def assert_locked_by! current_user
+      return if self.lock_owner == current_user
+      raise(
+        LockedByAnotherUser,
+        "Page is locked by another user who is working on it! " \
+        "Last modification: #{(self.autosave || self.draft || self.head).updated_at.to_fs(:db)}"
+      )
     end
 
     # Creates an empty page and associates it to the given node. This means
@@ -246,21 +429,18 @@ class Node < ApplicationRecord
     # Watch out recursion ahead! update_unique_name itself triggers this
     # after_save callback which invokes update_unique_name on its children.
     # Hopefully until no childrens occur
+    #
+    # Queries parent_id directly rather than the NestedTree#children
+    # association out of habit from the old awesome_nested_set-avoidance
+    # workaround - no longer strictly necessary now that children is
+    # equally safe, but left as-is since it already works correctly.
     def update_unique_names_of_children
       unless root?
-        # Use parent_id-based traversal instead of lft/rgt descendants
-        # due to awesome_nested_set not refreshing parent lft/rgt in memory
         Node.where(:parent_id => self.id).each do |child|
           child.reload
           child.update_unique_name
           child.send(:update_unique_names_of_children)
         end
-      end
-    end
-
-    def borders
-      if lft && rgt && (lft > rgt)
-        errors.add("Fuck!. lft should never be smaller than rgt")
       end
     end
 end

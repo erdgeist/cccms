@@ -1,0 +1,19 @@
+<div class="article_partial chapter_partial" lang="<%= page.effective_lang %>">
+  <h2 class="headline"><%= link_to_path page.title, page.node.unique_name %></h2>
+  <% if page.abstract.present? %>
+    <div class="chapter_location"><%= page.abstract %></div>
+  <% end %>
+  <% if page.node.external_url.present? %>
+    <div class="chapter_url"><%= link_to page.node.external_url, page.node.external_url, target: '_blank', rel: 'noopener' %></div>
+  <% end %>
+  <% open_days = page.node.events.tagged_with('open-day').order(:start_time) %>
+  <% if open_days.any? %>
+    <div class="chapter_open_days">
+      <span class="open_days_label"><%= t(:open_days_label) %>: </span>
+      <% open_days.each do |event| %>
+        <span class="event_schedule"><%= event_schedule_text(event) %></span>
+      <% end %>
+    </div>
+  <% end %>
+  <p class="excerpt"><%= sanitize page.body %></p>
+</div>

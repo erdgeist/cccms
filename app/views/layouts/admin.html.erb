@@ -10,12 +10,15 @@
     <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
     <%= javascript_include_tag 'admin_bundle' %>
     <%= tinymce_assets %>
-    <link rel="stylesheet" href="/stylesheets/admin.css">
-    <script src="/javascripts/admin_search.js"></script>
-    <script src="/javascripts/admin_interface.js"></script>
+    <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/admin.css') %>">
+    <script src="<%= mtime_busted_path('/javascripts/admin_search.js') %>"></script>
+    <script src="<%= mtime_busted_path('/javascripts/admin_interface.js') %>"></script>
+    <script src="<%= mtime_busted_path('/javascripts/related_assets.js') %>"></script>
     <script>
       var ADMIN_SEARCH_URL = "<%= admin_search_path %>";
       var ADMIN_MENU_SEARCH_URL = "<%= admin_menu_search_path %>";
+      var PARAMETERIZE_PREVIEW_URL = "<%= parameterize_preview_nodes_path %>";
+      var DASHBOARD_SEARCH_URL = "<%= admin_dashboard_search_path %>";
     </script>
   </head>
   
@@ -25,33 +28,36 @@
         <div id="main_navigation">
           <%= render :partial => 'admin/menu' if current_user %>
         </div>
-        <div id="sub_navigation">
-          <%= yield :subnavigation %>
+        <div id="search_widget" style="display: none;">
+          <div>
+            <%= form_tag admin_search_path, method: :get do %>
+              <%= text_field_tag :search_term, nil, placeholder: "Search nodes…", autocomplete: "off" %>
+            <% end %>
+          </div>
+          <div id="menu_search_results" class="search_results" style="display: none"></div>
         </div>
       </div>
-      <div style="clear: both;"></div>
+      <div class="admin_content_spacer"></div>
+      <% if flash[:notice].present? || flash[:error].present? %>
       <div id="flash">
         <%= flash[:notice] %>
+        <% if flash[:status_path] %>
+          <%= link_to 'Go to Status', flash[:status_path] %>
+        <% end %>
+        <% if flash[:stale_locale_path] %>
+          The <%= flash[:stale_locale] %> translation may be out of date —
+          <%= link_to 'review it', flash[:stale_locale_path] %> too.
+        <% end %>
         <% if flash[:error] %>
           <span id="flash_error"><%= flash[:error] %></span>
         <% end %>
       </div>
+      <% end %>
       <div id="content">
         <%= yield %>
       </div>
       
       <div id="results"></div>
-    </div>
-    
-    <div id="search_widget" style="display: none;">
-      <div>
-        <%= form_tag admin_search_path, method: :get do %>
-          <span>Search: </span><%= text_field_tag :search_term, nil, autocomplete: "off" %>
-        <% end %>
-      </div>
-      <div id="search_results" style="display: none">
-        
-      </div>
     </div>
   </body>
 </html>

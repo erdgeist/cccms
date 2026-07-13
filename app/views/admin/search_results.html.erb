@@ -1,7 +1,10 @@
 <h1>Search Results</h1>
 
-<ul>
-<%- @results.each do |result| %>
-  <li><%= link_to "#{result.title} (#{result.unique_name})", edit_node_path(result) %></li>
-<% end %>
+<ul class="search_results_list">
+  <% @results.each do |result| %>
+    <li>
+      <%= link_to title_for_node(result), node_path(result) %>
+      <span class="field_hint"><%= link_to_path("#{result.unique_name} ↗", result.unique_name) %></span>
+    </li>
+  <% end %>
 </ul>

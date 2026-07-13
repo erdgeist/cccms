@@ -1,8 +1,5 @@
-<%= language_selector %>
-<%= button_to 'Logout', logout_path, method: :delete %>
-<%= link_to 'Overview', admin_path %>
-<a href="#" onclick="admin_search.display_toggle(); return false;">search</a>
-<%= link_to 'Nodes', nodes_path, selected?('nodes') %>
-<%= link_to 'Assets', assets_path, selected?('assets') %>
-<%= link_to 'User', users_path, selected?('users') %>
-<%= link_to 'Navigation', menu_items_path, selected?('menu_items') %> &gt;&nbsp;
+<%= link_to icon("home", library: "tabler", "aria-hidden": true), admin_path, "aria-label": "Dashboard" %>
+<a href="#" onclick="admin_search.display_toggle(); return false;" aria-label="Search"><%= icon("search", library: "tabler", "aria-hidden": true) %></a>
+<%= button_to logout_path, method: :delete, aria: { label: "Log out" } do %>
+  <%= icon("logout", library: "tabler", "aria-hidden": true) %>
+<% end %>

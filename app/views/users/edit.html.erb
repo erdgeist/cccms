@@ -2,38 +2,32 @@
 
 <% if @user.errors.any? %>
   <div class="error_messages">
-    <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg.gsub("Slug", "Title") %></li><% end %></ul>
+    <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
   </div>
 <% end %>
 
+<div id="page_editor">
+  <%= form_for @user do |f| %>
+  <div id="content">
+    <div class="node_description">Login</div>
+    <div class="node_content"><%= f.text_field :login %></div>
 
-<%= form_for @user do |f| %>
-<table id="new_node">
-  <tr>
-    <td class="description">Login</td>
-    <td><%= f.text_field :login %></td>
-  </tr>
-  <tr>
-    <td class="description">E-Mail</td>
-    <td><%= f.text_field :email %></td>
-  </tr>
-  <tr>
-    <td class="description">Password</td>
-    <td><%= f.password_field :password %></td>
-  </tr>
-  <tr>
-    <td class="description">Confirm</td>
-    <td><%= f.password_field :password_confirmation %></td>
-  </tr>
-  <% if current_user.admin? %>
-  <tr>
-    <td class="description">Admin?</td>
-    <td><%= f.check_box :admin %></td>
-  </tr>
+    <div class="node_description">E-Mail</div>
+    <div class="node_content"><%= f.text_field :email %></div>
+
+    <div class="node_description">Password</div>
+    <div class="node_content"><%= f.password_field :password %></div>
+
+    <div class="node_description">Confirm</div>
+    <div class="node_content"><%= f.password_field :password_confirmation %></div>
+
+    <% if current_user.admin? %>
+    <div class="node_description">Admin?</div>
+    <div class="node_content"><%= f.check_box :admin %></div>
+    <% end %>
+
+    <div class="node_description"></div>
+    <div class="node_content"><%= f.submit "Update" %></div>
   <% end %>
-  <tr>
-    <td class="description"></td>
-    <td class="right"><%= f.submit "Update" %></td>
-  </tr>
-</table>
-<% end %>
+  </div>
+</div>

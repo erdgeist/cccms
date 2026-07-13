@@ -1,46 +1,55 @@
-<% content_for :subnavigation do %>
-  <%= link_to 'back', edit_node_path(@event.node) %>
-  <%= link_to 'edit', edit_event_path(@event) %>
-<% end %>
+<div id="page_editor" class="show_node">
+  <h1><%= @event.node ? "Event for node #{@event.node.unique_name}" : "Event" %></h1>
 
-<h2>Event for node <%= @event.node.unique_name %></h2>
+  <div id="content">
+    <div class="node_description">Actions</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <% if @event.node %>
+          <div class="node_info_item">
+            <%= link_to 'Node', node_path(@event.node) %>
+          </div>
+        <% end %>
+        <div class="node_info_item">
+          <%= link_to edit_event_path(@event, return_to: request.path), class: 'action_button' do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+          <% end %>
+        </div>
+        <div class="node_info_item">
+          <%= button_to event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } do %>
+            <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+          <% end %>
+        </div>
+      </div>
+    </div>
 
-<p>
-  <b>Start time:</b>
-  <%=h @event.start_time %>
-</p>
+    <div class="node_description">Start time</div>
+    <div class="node_content"><%=h @event.start_time %></div>
 
-<p>
-  <b>End time:</b>
-  <%=h @event.end_time %>
-</p>
+    <div class="node_description">End time</div>
+    <div class="node_content"><%=h @event.end_time %></div>
 
-<p>
-  <b>Rrule:</b>
-  <%=h @event.rrule %>
-</p>
+    <div class="node_description">Rrule</div>
+    <div class="node_content"><%=h @event.rrule %></div>
 
-<p>
-  <b>Custom rrule:</b>
-  <%=h @event.custom_rrule %>
-</p>
+    <% if (human = @event.humanize_rrule(I18n.locale)) %>
+      <div class="node_description">Recurrence</div>
+      <div class="node_content"><em><%= human %></em></div>
+    <% end %>
 
-<p>
-  <b>Allday:</b>
-  <%=h @event.allday %>
-</p>
+    <div class="node_description">Tags</div>
+    <div class="node_content"><%=h @event.tag_list %></div>
 
-<p>
-  <b>Url:</b>
-  <%=h @event.url %>
-</p>
+    <div class="node_description">Allday</div>
+    <div class="node_content"><%=h @event.allday %></div>
 
-<p>
-  <b>Latitude:</b>
-  <%=h @event.latitude %>
-</p>
+    <div class="node_description">Url</div>
+    <div class="node_content"><%=h @event.url %></div>
 
-<p>
-  <b>Longitude:</b>
-  <%=h @event.longitude %>
-</p>
+    <div class="node_description">Latitude</div>
+    <div class="node_content"><%=h @event.latitude %></div>
+
+    <div class="node_description">Longitude</div>
+    <div class="node_content"><%=h @event.longitude %></div>
+  </div>
+</div>

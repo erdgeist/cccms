@@ -1,9 +1,8 @@
-<% content_for :subnavigation do %>
-  <%= link_to "new", new_menu_item_path %>
-<% end %>
-
-
 <h1>Menu Items</h1>
+
+<%= link_to new_menu_item_path, class: 'action_button' do %>
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create menu item
+<% end %>
 
 <table id="menu_item_list">
   <% @menu_items.each do |menu_item| %>
@@ -14,9 +13,10 @@
     <td class="menu_item_title"><%= menu_item.title %></td>
     <td><%= link_to "Edit", edit_menu_item_path(menu_item) %></td>
     <td>
-      <%= button_to "Delete", menu_item_path(menu_item),
-            method: :delete,
-            form: { data: { confirm: "Are you sure?" } } %>
+      <%= button_to menu_item_path(menu_item), method: :delete,
+            form: { data: { confirm: "Do you really want to destroy the menu entry?" }, class: 'button_to destructive' } do %>
+        <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+      <% end %>
     </td>
   </tr>
   <% end %>

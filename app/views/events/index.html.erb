@@ -1,36 +1,40 @@
-<h1>Listing events</h1>
+<h1>Events</h1>
 
-<table>
-  <tr>
+<div class="button_row">
+  <%= link_to new_event_path, class: 'action_button' do %>
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create event
+  <% end %>
+  <%= link_to 'View events without a page →', without_node_events_path %>
+</div>
+
+<%= will_paginate @events %>
+
+<table class="events_table">
+  <tr class="header">
+    <th>Title</th>
     <th>Start time</th>
     <th>End time</th>
     <th>Rrule</th>
-    <th>Custom rrule</th>
     <th>Allday</th>
     <th>Url</th>
-    <th>Latitude</th>
-    <th>Longitude</th>
     <th>Node</th>
+    <th></th>
   </tr>
 
 <% @events.each do |event| %>
   <tr>
+    <td><%= link_to event.display_title, event %></td>
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
-    <td><%=h event.rrule %></td>
-    <td><%=h event.custom_rrule %></td>
+    <td class="rrule_cell"><span class="rrule_text"><%= rrule_with_break_opportunities(event.rrule) %></span></td>
     <td><%=h event.allday %></td>
-    <td><%=h event.url %></td>
-    <td><%=h event.latitude %></td>
-    <td><%=h event.longitude %></td>
-    <td><%=h event.node_id %></td>
-    <td><%= link_to 'Show', event %></td>
-    <td><%= link_to 'Edit', edit_event_path(event) %></td>
-    <td><%= button_to 'Destroy', event, method: :delete, form: { data: { confirm: 'Are you sure?' } } %></td>
+    <td class="url_cell">
+    <% if event.url.present? %>
+    <span class="truncate"><%= link_to event.url, event.url %></span>
+    <% end %>
+    </td>
+    <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>
+    <td><%= link_to 'edit', edit_event_path(event) %></td>
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New event', new_event_path %>

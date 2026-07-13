@@ -12,13 +12,7 @@ module ApplicationHelper
     end
   end
 
-  def safe_return_to(url)
-    return events_path if url.blank?
-    uri = URI.parse(url)
-    return events_path if uri.host.present?
-    return events_path unless url.start_with?('/')
-    url
-  rescue URI::InvalidURIError
-    events_path
+  def resolve_kind_text(value)
+    value.respond_to?(:call) ? value.call : value
   end
 end

@@ -63,13 +63,48 @@ class Page < ApplicationRecord
       end
     end
 
-    scope.order("#{options[:order_by]} #{options[:order_direction]}")
+    if options[:node] && options[:children] == "direct"
+      scope = scope.where(nodes: { parent_id: options[:node].id })
+    elsif options[:node] && options[:children] == "all"
+      scope = scope.where(nodes: { id: options[:node].descendants.pluck(:id) })
+    end
+
+    direction = %w[ASC DESC].include?(options[:order_direction]&.upcase) ? options[:order_direction].upcase : "ASC"
+
+    if options[:order_by] == "title"
+      return scope
+        .order(Arel.sql("(SELECT pt.title FROM page_translations pt WHERE pt.page_id = pages.id AND pt.locale = #{ActiveRecord::Base.connection.quote(I18n.locale.to_s)}) #{direction}"))
+        .paginate(:page => page, :per_page => options[:limit])
+    end
+
+    scope.order("#{options[:order_by]} #{direction}")
       .paginate(:page => page, :per_page => options[:limit])
   end
 
   def self.custom_templates
     files = Dir.entries(FULL_PUBLIC_TEMPLATE_PATH).select do |x|
       x if x.gsub!(".html.erb", "")
+    end
+  end
+
+  def self.non_default_locales
+    I18n.available_locales - [:root, I18n.default_locale]
+  end
+
+  # One row per non-default locale, read from the actual translation
+  # row -- never through the locale-dependent accessor, so a locale
+  # with no real translation yet reports as absent rather than quietly
+  # showing a fallback value borrowed from another locale.
+  def translation_summary
+    Page.non_default_locales.map do |locale|
+      translation = translations.find_by(:locale => locale)
+      {
+        :locale     => locale,
+        :exists     => translation.present?,
+        :title      => translation&.title,
+        :updated_at => translation&.updated_at,
+        :outdated   => translation.present? && outdated_translations?(:locale => locale)
+      }
     end
   end
 
@@ -128,28 +163,101 @@ class Page < ApplicationRecord
     "/#{node.unique_name}"
   end
 
+  def ensure_preview_token!
+    update!(preview_token: SecureRandom.urlsafe_base64(24)) unless preview_token.present?
+    preview_token
+  end
+
+  def revoke_preview_token!
+    update!(preview_token: nil)
+  end
+
   def clone_attributes_from page
     return nil unless page
 
     self.reload
+    page.translations.reload
 
     # Clone untranslated attributes
     self.tag_list         = page.tag_list
     self.template_name  ||= page.template_name
     self.published_at     = page.published_at
 
-    # Getting rid of the auto-generated empty translations
-    self.translations.delete_all
+    # Clone translated attributes -- update each locale in place rather
+    # than delete-and-recreate, so a locale whose content is genuinely
+    # unchanged keeps its real created_at/updated_at instead of looking
+    # freshly touched on every single save (which was silently defeating
+    # Page.find_with_outdated_translations' whole staleness comparison).
+    # search_vector is excluded deliberately: it's DB-trigger-maintained
+    # from title/abstract, not real content, and comparing a precomputed
+    # tsvector risked a false "changed" from representation noise alone.
+    source_locales = page.translations.map(&:locale)
+    self.translations.where.not(:locale => source_locales).destroy_all
 
-    # Clone translated attributes
-    page.translations.each do |translation|
-      self.translations.create!(translation.attributes.except("id", "page_id", "created_at", "updated_at"))
+    page.translations.each do |source_translation|
+      attrs = source_translation.attributes.except("id", "page_id", "created_at", "updated_at", "search_vector")
+      mine  = self.translations.find_by(:locale => source_translation.locale)
+
+      if mine
+        changed_attrs = attrs.reject { |k, v| mine.public_send(k) == v }
+        mine.update!(changed_attrs) if changed_attrs.any?
+      else
+        self.translations.create!(attrs)
+      end
     end
 
     # Clone asset references
     self.assets = page.assets
 
     self.save
+  end
+
+  def diff_against other, view: :inline, locale: nil
+    if locale
+      mine, theirs = translations.find_by(:locale => locale), other.translations.find_by(:locale => locale)
+      my_title, my_abstract, my_body          = mine&.title,   mine&.abstract,   mine&.body
+      their_title, their_abstract, their_body = theirs&.title, theirs&.abstract, theirs&.body
+    else
+      my_title, my_abstract, my_body          = title, abstract, body
+      their_title, their_abstract, their_body = other.title, other.abstract, other.body
+    end
+
+    text_diffs =
+      if view == :side_by_side
+        {
+          title:    HtmlWordDiff.side_by_side(their_title.to_s,    my_title.to_s),
+          abstract: HtmlWordDiff.side_by_side(their_abstract.to_s, my_abstract.to_s),
+          body:     HtmlWordDiff.side_by_side(their_body.to_s,     my_body.to_s)
+        }
+      else
+        {
+          title:    HtmlWordDiff.inline(their_title.to_s,    my_title.to_s),
+          abstract: HtmlWordDiff.inline(their_abstract.to_s, my_abstract.to_s),
+          body:     HtmlWordDiff.inline(their_body.to_s,     my_body.to_s)
+        }
+      end
+
+    text_diffs.merge(
+      tags:          { added: tag_list.to_a - other.tag_list.to_a, removed: other.tag_list.to_a - tag_list.to_a },
+      template_name: { from: other.template_name, to: template_name, changed: template_name != other.template_name },
+      assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a }
+    )
+  end
+
+  def locale_diff_summary other
+    (translated_locales | other.translated_locales).sort_by(&:to_s).map do |locale|
+      mine   = translations.find_by(:locale => locale)
+      theirs = other.translations.find_by(:locale => locale)
+      {
+        :locale       => locale,
+        :exists_here  => mine.present?,
+        :exists_there => theirs.present?,
+        :changed      => mine.present? != theirs.present? ||
+                          mine&.title != theirs&.title ||
+                          mine&.abstract != theirs&.abstract ||
+                          mine&.body != theirs&.body
+      }
+    end
   end
 
   def public?
@@ -208,46 +316,60 @@ class Page < ApplicationRecord
 
   end
 
+  # Installs (or re-installs) the trigger that keeps page_translations'
+  # search_vector in sync. Idempotent, safe to call on every boot.
+  # search_vector is populated by a raw Postgres trigger, not anything
+  # Rails' schema dumper can represent -- a database rebuilt from
+  # schema.rb rather than replayed migrations silently loses it.
+  def self.ensure_search_vector_trigger!
+    connection.execute(<<~SQL)
+      CREATE OR REPLACE FUNCTION page_translations_search_vector_update()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.search_vector := to_tsvector(
+          'simple',
+          coalesce(NEW.title, '') || ' ' ||
+          coalesce(NEW.abstract, '') || ' ' ||
+          coalesce(NEW.body, '')
+        );
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      CREATE OR REPLACE TRIGGER page_translations_search_vector_trigger
+      BEFORE INSERT OR UPDATE ON page_translations
+      FOR EACH ROW EXECUTE PROCEDURE page_translations_search_vector_update();
+    SQL
+  end
+
   private
 
     def set_page_title
-      if title.nil?
-        title = "Untitled"
-      end
+      self.title = "Untitled" if title.nil?
     end
 
     def set_template
-      if node && node.update?
-        self.template_name = "update"
-      end
+      return if template_name.present?
+      self.template_name = node&.default_template_name || (node&.update? ? "update" : nil)
     end
 
     def rewrite_links_in_body
-      begin
-        if self.body
-          tmp_body    = "<div>#{self.body}</div>"
-          xml_string  = XML::Parser.string( tmp_body )
-          xml_doc     = xml_string.parse
-          links       = xml_doc.find("//a[not(starts-with(@href, 'http://'))]")
-          links       = links.reject { |l| l[:href] =~ /system\/uploads/ }
-          locales     = I18n.available_locales.reject {|l| l == :root}
+      return unless self.body
 
-          links.each do |link|
-            unless locales.include? link[:href].slice(1,2).to_sym
-              unless link[:href] =~ /sytem\/uploads/
-                link[:href] = link[:href].sub(/^\//, "/#{I18n.locale}/")
-              end
-            end
-          end
+      doc = Nokogiri::HTML::DocumentFragment.parse(self.body)
+      locales = I18n.available_locales.reject { |l| l == :root }
 
-          tmp_body = xml_doc.to_s.gsub(/(\n\<div\>|\<\/div\>\n)/, "")
-          tmp_body.gsub!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "")
+      doc.css('a').each do |link|
+        href = link['href']
+        next unless href
+        next if href.start_with?('http://', 'https://')
+        next if href =~ /system\/uploads/
 
-          self.body = tmp_body
+        unless locales.include?(href.slice(1, 2)&.to_sym)
+          link['href'] = href.sub(/^\//, "/#{I18n.locale}/")
         end
-      rescue
-        nil
       end
-    end
 
+      self.body = doc.to_html
+    end
 end

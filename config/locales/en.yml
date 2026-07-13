@@ -8,7 +8,27 @@ en:
   hello: "Hello world"
   show_tag_headline: "Pages tagged with:"
   old_ccc_de: the old ccc.de
+  event_schedule_time: "at %{time}"
+  event_schedule_unrecognized: "Schedule not automatically readable"
+  event_schedule_none: "No schedule"
+  open_days: "Open days"
+  open_days_label: "Open days"
+  upcoming_events: "Upcoming events"
+  open_today: "Open today"
+  published: "published"
+  published_by: "published by %{editor}"
+  publisher_self: "you"
+  editor_self: "you"
 
   time:
     formats:
       ccc: "%d %B, %Y %H:%M"
+
+  will_paginate:
+    previous_label: "&#8592; Previous"
+    previous_aria_label: "Previous page"
+    next_label: "Next &#8594;"
+    next_aria_label: "Next page"
+    page_gap: "&hellip;"
+    container_aria_label: "Pagination"
+    page_aria_label: "Page %{page}"

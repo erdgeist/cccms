@@ -1,0 +1,32 @@
+<h1>Sitemap</h1>
+
+<div id="sitemap">
+<%
+  open_details = [] # levels with a currently-open <details>
+%>
+<% @sitemap.each_with_index do |(node, level), index| %>
+  <% while open_details.any? && open_details.last >= level %>
+    </details>
+    <% open_details.pop %>
+  <% end %>
+
+  <div class="sitemap_node">
+    <h4><%= link_to title_for_node(node), node_path(node) %></h4>
+    <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
+    <p class="sitemap_node_actions">
+      <%= link_to 'Show', node_path(node) %>
+      <%= link_to 'Create Child', new_node_path(:parent_id => node.id) %>
+    </p>
+  </div>
+
+  <% next_level = @sitemap[index + 1]&.last %>
+  <% if next_level && next_level > level %>
+    <details<%= ' open' if sitemap_node_open?(node) %>>
+      <summary>
+        <%= pluralize(@sitemap_descendant_counts[node.id], 'descendant', 'descendants') %>
+      </summary>
+    <% open_details.push(level) %>
+  <% end %>
+<% end %>
+<% open_details.length.times { %></details><% } %>
+</div>

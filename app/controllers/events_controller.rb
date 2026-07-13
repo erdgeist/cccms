@@ -9,18 +9,24 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.xml
   def index
-    @events = Event.all
+    @events = Event.order(:id)
 
     respond_to do |format|
-      format.html # index.html.erb
+      format.html { @events = @events.paginate(page: params[:page], per_page: 25) }
       format.xml  { render :xml => @events }
     end
+  end
+
+  # GET /events/without_node
+  def without_node
+    @events = Event.where(node_id: nil).order(:start_time).paginate(page: params[:page], per_page: 25)
   end
 
   # GET /events/1
   # GET /events/1.xml
   def show
     @event = Event.find(params[:id])
+    @return_to = params[:return_to] || events_path
 
     respond_to do |format|
       format.html # show.html.erb
@@ -31,7 +37,14 @@ class EventsController < ApplicationController
   # GET /events/new
   # GET /events/new.xml
   def new
-    @event = Event.new(:node_id => params[:node_id])
+    @event = Event.new(
+      node_id:  params[:node_id],
+      tag_list: params[:tag_list]
+    )
+
+    if params[:tag_list].present? && params[:auto_tag_source].present?
+      flash.now[:notice] = "Tag '#{params[:tag_list]}' was pre-filled because this page is tagged '#{params[:auto_tag_source]}'. You can remove it below."
+    end
 
     respond_to do |format|
       format.html # new.html.erb
@@ -53,7 +66,7 @@ class EventsController < ApplicationController
     respond_to do |format|
       if @event.save
         flash[:notice] = 'Event was successfully created.'
-        format.html { redirect_to(@event.node ? edit_node_path(@event.node) : edit_event_path(@event)) }
+        format.html { redirect_to(safe_return_to(params[:return_to] || (@event.node ? edit_node_path(@event.node) : edit_event_path(@event)))) }
         format.xml  { render :xml => @event, :status => :created, :location => @event }
       else
         format.html { render :action => "new" }
@@ -94,6 +107,6 @@ class EventsController < ApplicationController
   private
 
     def event_params
-      params.require(:event).permit(:start_time, :end_time, :rrule, :custom_rrule, :allday, :url, :latitude, :longitude, :node_id, :location)
+      params.require(:event).permit(:title, :description, :start_time, :end_time, :rrule, :allday, :url, :latitude, :longitude, :node_id, :location, :tag_list)
     end
 end

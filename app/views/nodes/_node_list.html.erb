@@ -1,0 +1,41 @@
+<%= form_tag url_for(controller: params[:controller], action: params[:action]), method: :get, class: "node_search_form" do %>
+  <% Array(params[:kinds]).each do |kind| %>
+    <%= hidden_field_tag "kinds[]", kind %>
+  <% end %>
+  <%= hidden_field_tag :tags, params[:tags] if params[:tags].present? %>
+  <%= text_field_tag :q, params[:q], placeholder: "Search title, abstract, body…" %>
+  <%= button_tag type: "submit", class: "action_button" do %>
+    <%= icon("search", library: "tabler", "aria-hidden": true) %> Search
+  <% end %>
+  <% if params[:q].present? || params[:kinds].present? || params[:tags].present? %>
+    <%= link_to "Reset", url_for(controller: params[:controller], action: params[:action]) %>
+  <% end %>
+<% end %>
+
+<%= will_paginate @nodes %>
+<table class="node_table">
+  <tr class="header">
+    <th class="node_id">ID</th>
+    <th class="title">Title</th>
+    <th class="actions">Actions</th>
+    <th class="editor">Locked by</th>
+    <th class="revision">Rev.</th>
+  </tr>
+  <% @nodes.each do |node| %>
+  <tr class="<%= cycle("even", "odd") %>">
+    <td class="node_id"><%= node.id %></td>
+    <td class="title">
+      <h4><%= link_to title_for_node(node), node_path(node) %></h4>
+      <p><%= link_to_path(node.unique_name, node.unique_name) %></p>
+    </td>
+    <td class="actions">
+      <%= link_to 'show',      node_path(node) %>
+      <%= link_to 'edit',      edit_node_path(node) %>
+      <%= link_to 'revisions', node_revisions_path(node) %>
+    </td>
+    <td><%= node.lock_owner.login if node.lock_owner %></td>
+    <td><%= node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY") %></td>
+  </tr>
+  <% end %>
+</table>
+<%= will_paginate @nodes %>
