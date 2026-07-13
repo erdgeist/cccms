@@ -80,6 +80,7 @@ class Node < ApplicationRecord
 
     unless self.autosave
       self.autosave = Page.create!(:editor => current_user)
+      self.autosave.assets = (self.draft || self.head).assets if self.draft || self.head
       self.save!
     end
     self.autosave.assign_attributes(attributes)

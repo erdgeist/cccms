@@ -59,6 +59,10 @@ $(document).ready(function () {
     event_search.initialize_search();
   }
 
+  if ($("#related_asset_search_term").length != 0) {
+    related_assets.initialize();
+  }
+
   if ($("#rrule_builder").length != 0) {
     rrule_builder.initialize();
   }

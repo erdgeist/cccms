@@ -585,4 +585,33 @@ class NodeTest < ActiveSupport::TestCase
 
     assert_not_includes Node.recently_changed, node
   end
+
+  test "autosave! carries over the current related assets to the newly created autosave row" do
+    node = Node.root.children.create!(:slug => "autosave_asset_carryover_test")
+    user = User.find_by_login("quentin")
+    asset = Asset.create!(:name => "carryover-photo", :upload_content_type => "image/png")
+    node.draft.assets << asset
+
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+
+    assert_includes node.autosave.reload.assets, asset
+  end
+
+  test "autosave! does not reset assets already attached directly to an existing autosave" do
+    node = Node.root.children.create!(:slug => "autosave_asset_no_reset_test")
+    user = User.find_by_login("quentin")
+    original = Asset.create!(:name => "original-photo", :upload_content_type => "image/png")
+    extra = Asset.create!(:name => "extra-photo", :upload_content_type => "image/png")
+    node.draft.assets << original
+
+    node.lock_for_editing!(user)
+    node.autosave!({:title => "v1"}, user)
+    node.autosave.assets << extra
+
+    node.autosave!({:title => "v2"}, user)
+
+    assert_includes node.autosave.reload.assets, original
+    assert_includes node.autosave.reload.assets, extra
+  end
 end

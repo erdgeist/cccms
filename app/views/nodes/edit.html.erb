@@ -76,24 +76,35 @@
 
       <div class="node_description">Images</div>
       <div class="node_content">
-        <ul id="image_box" rel="<%= @page.id %>">
-          <% @page.assets.images.each do |image| %>
-            <li rel="images_<%= image.id %>">
-              <%= image_tag(image.upload.url(:thumb)) %>
-            </li>
-          <% end %>
-        </ul>
-        <div class="clear_left right">
-          <a id="image_browser_toggle" class="unselected" href="#">image browser</a>
-        </div>
-        <div id="image_browser">
-          <ul>
-            <% Asset.images.each do |image| %>
-            <li rel="images_<%= image.id %>"><%= image_tag(image.upload.url(:thumb)) %></li>
+        <div id="related_assets"
+             data-search-url="<%= search_node_related_assets_path(@node) %>"
+             data-create-url="<%= node_related_assets_path(@node) %>">
+          <ul id="related_asset_list" class="thumbnail_list">
+            <% @page.related_assets.includes(:asset).each do |related| %>
+              <li data-url="<%= node_related_asset_path(@node, related) %>">
+                <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
+                <%= image_tag related.asset.upload.url(:thumb) %>
+                <button type="button" class="related_asset_remove" aria-label="Remove image">
+                  <%= icon("x", library: "tabler", "aria-hidden": true) %>
+                </button>
+              </li>
             <% end %>
           </ul>
+          <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: "Search images to attach…", autocomplete: "off" %>
+          <div id="related_asset_search_results" class="search_results"></div>
         </div>
       </div>
+
+      <template id="related_asset_template">
+        <li>
+          <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
+          <img src="">
+          <button type="button" class="related_asset_remove" aria-label="Remove image">
+            <%= icon("x", library: "tabler", "aria-hidden": true) %>
+          </button>
+        </li>
+      </template>
+
     </div>
   </details>
 

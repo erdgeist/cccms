@@ -44,6 +44,8 @@ class RelatedAssetsControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_includes node.draft.reload.related_assets.map(&:asset_id), asset.id
+    json = JSON.parse(response.body)
+    assert json["url"].present?
   end
 
   test "create does not duplicate an already-attached asset" do

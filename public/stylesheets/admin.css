@@ -1210,3 +1210,78 @@ div#image_browser {
 div#image_browser ul li {
   list-style-type: none;
 }
+
+.thumbnail_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.thumbnail_list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.thumbnail_list img {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.related_asset_handle {
+  display: flex;
+  color: #969696;
+  cursor: grab;
+}
+
+.related_asset_handle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.related_asset_remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #969696;
+}
+
+.related_asset_remove svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.related_asset_remove:hover {
+  color: #cc0000;
+}
+
+.related_asset_result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px;
+  border-bottom: 1px solid #e8e8e8;
+  text-decoration: none;
+}
+
+.related_asset_result img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+

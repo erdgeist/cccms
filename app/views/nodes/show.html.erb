@@ -152,6 +152,17 @@
     <div class="node_description">Tags</div>
     <div class="node_content node_info_group"><%= @page.tag_list %></div>
 
+    <% if @page.assets.images.any? %>
+      <div class="node_description">Images</div>
+      <div class="node_content node_info_group">
+        <ul class="thumbnail_list">
+          <% @page.assets.images.each do |asset| %>
+            <li><%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
     <div class="node_description">Events</div>
     <div class="node_content node_info_group">
       <ul>
