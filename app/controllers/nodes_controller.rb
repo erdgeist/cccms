@@ -62,7 +62,6 @@ class NodesController < ApplicationController
 
   def show
     @page = @node.draft || @node.head
-    @default_translation = @page.translations.find_by(:locale => I18n.default_locale)
     @translations = @page.translation_summary
   end
 

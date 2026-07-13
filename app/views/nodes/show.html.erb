@@ -73,10 +73,6 @@
     <div class="node_description">Translations</div>
     <div class="node_content node_info_group">
       <div class="node_info_group_items">
-        <div class="node_info_item">
-          <span class="node_info_label"><%= I18n.default_locale.to_s.upcase %> (default)</span>
-          <%= @page.title %> — updated <%= @default_translation&.updated_at || @page.updated_at %>
-        </div>
         <% @translations.each do |t| %>
           <div class="node_info_item">
             <span class="node_info_label"><%= t[:locale].to_s.upcase %></span>
