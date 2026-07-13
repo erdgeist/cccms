@@ -56,7 +56,7 @@
 <% end %>
 
 <% if @available_layer_pairs.present? %>
-  <p class="node_action_bar standalone_action_bar">
+  <div class="node_action_bar standalone_action_bar">
     <% @available_layer_pairs.each do |pair| %>
       <% next if [params[:start_revision].to_s, params[:end_revision].to_s].sort == pair.map(&:to_s).sort %>
       <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
@@ -73,7 +73,7 @@
         <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
       <% end %>
     <% end %>
-  </p>
+  </div>
 <% end %>
 
 <div id="diffview">
