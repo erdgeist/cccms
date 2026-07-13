@@ -13,13 +13,15 @@ class SessionsController < ApplicationController
     logout_keeping_session!
     user = User.authenticate(params[:login], params[:password])
     if user
+      return_to = session[:return_to]
+
       # Protects against session fixation attacks, causes request forgery
       # protection if user resubmits an earlier form using back
       # button. Uncomment if you understand the tradeoffs.
       reset_session
       
       self.current_user = user
-      redirect_back_or_default('/de/admin')   # TODO: insert appropriate path to cms main page
+      redirect_to safe_return_to(return_to, :default => admin_path)
       flash[:notice] = "Logged in successfully"
     else
       note_failed_signin

@@ -21,13 +21,13 @@ class ApplicationController < ActionController::Base
     { locale: I18n.locale == I18n.default_locale ? nil : I18n.locale }
   end
 
-  def safe_return_to(url)
-    return events_path if url.blank?
+  def safe_return_to(url, default: events_path)
+    return default if url.blank?
     uri = URI.parse(url)
-    return events_path if uri.host.present?
-    return events_path unless url.start_with?('/')
+    return default if uri.host.present?
+    return default unless url.start_with?('/')
     url
   rescue URI::InvalidURIError
-    events_path
+    default
   end
 end
