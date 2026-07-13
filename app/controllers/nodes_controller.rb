@@ -16,6 +16,8 @@ class NodesController < ApplicationController
                               :revert
                             ]
 
+  around_action :pin_to_default_locale, :only => [:show, :edit, :update, :autosave]
+
   def index
     @nodes = Node.root.descendants.includes(:head, :draft)
       .order('id DESC')
@@ -59,9 +61,9 @@ class NodesController < ApplicationController
   end
 
   def show
-    node = Node.find(params[:id])
-    node.wipe_draft!
-    @page = node.draft || node.head
+    @page = @node.draft || @node.head
+    @default_translation = @page.translations.find_by(:locale => I18n.default_locale)
+    @translations = @page.translation_summary
   end
 
   def edit
@@ -246,6 +248,10 @@ class NodesController < ApplicationController
         config = CccConventions::NODE_KINDS[params[:kind]]
         config && config[:parent] ? config[:parent].call.id : nil
       end
+    end
+
+    def pin_to_default_locale
+      Globalize.with_locale(I18n.default_locale) { yield }
     end
 
     def descendant_counts_for(ordered_with_level)

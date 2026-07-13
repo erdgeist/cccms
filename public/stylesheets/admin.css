@@ -637,6 +637,28 @@ table.revisions_table tr:hover {
   margin: 0;
 }
 
+/* ============================================================
+   Translation compare view (page_translations#show)
+   ============================================================ */
+
+.translation_compare {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media(min-width:1016px) {
+  .translation_compare {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  .translation_compare_column {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 table.user_table td.user_login {
   padding-right: 30px;
 }
@@ -834,14 +856,15 @@ form.button_to button[type="submit"] {
   font-weight: bold;
 }
 
-.preview_link_row {
+.aligned_action_row {
   display: flex;
   flex-wrap: wrap;
   align-items: start;
   gap: 0.5rem;
 }
 
-.preview_link_row form.button_to {
+.aligned_action_row .action_button,
+.aligned_action_row form.button_to {
   margin-top: -5px;
 }
 

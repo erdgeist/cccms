@@ -55,6 +55,12 @@ Cccms::Application.routes.draw do
           put :revert
         end
 
+        resources :translations, controller: 'page_translations',
+          param: :translation_locale,
+          constraints: { translation_locale: /en/ },
+          only: [:index, :show, :edit, :update, :destroy]
+
+
         resources :related_assets, only: [:create, :destroy, :update] do
           collection do
             get :search

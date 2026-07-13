@@ -87,6 +87,27 @@ class Page < ApplicationRecord
     end
   end
 
+  def self.non_default_locales
+    I18n.available_locales - [:root, I18n.default_locale]
+  end
+
+  # One row per non-default locale, read from the actual translation
+  # row -- never through the locale-dependent accessor, so a locale
+  # with no real translation yet reports as absent rather than quietly
+  # showing a fallback value borrowed from another locale.
+  def translation_summary
+    Page.non_default_locales.map do |locale|
+      translation = translations.find_by(:locale => locale)
+      {
+        :locale     => locale,
+        :exists     => translation.present?,
+        :title      => translation&.title,
+        :updated_at => translation&.updated_at,
+        :outdated   => translation.present? && outdated_translations?(:locale => locale)
+      }
+    end
+  end
+
   def self.untranslated(options = {:locale => :de})
     PageTranslation.all.group_by(&:page_id).select do |k,v|
       v.size == 1 && v.map{|x| x.locale}.include?(options[:locale])

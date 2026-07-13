@@ -1,0 +1,39 @@
+<div class="translation_banner">
+  Editing the <strong><%= @locale.to_s.upcase %></strong> translation of <strong><%= title_for_node(@node) %></strong>.
+</div>
+
+<p class="field_hint">
+  Metadata such as images, tags, template, and author belong to the page
+  as a whole, not to a single translation — change those from the
+  <%= link_to 'default-locale editor', edit_node_path(@node) %>.
+</p>
+
+<div class="node_action_bar">
+  <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
+        form: { class: 'button_to state_changing' },
+        disabled: @node.autosave.present? %>
+  <%= submit_tag "Save #{@locale.to_s.upcase} translation", form: "translation_edit_form" %>
+  <%= submit_tag "Save + Unlock + Exit", form: "translation_edit_form" %>
+  <%= link_to "Preview ↗", preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
+</div>
+
+<div id="page_editor">
+  <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form" do |f| %>
+    <div id="content">
+      <div class="node_description">Title</div>
+      <div class="node_content">
+        <%= text_field_tag "page[title]", @translation&.title %>
+      </div>
+
+      <div class="node_description">Abstract</div>
+      <div class="node_content">
+        <%= text_area_tag "page[abstract]", @translation&.abstract %>
+      </div>
+
+      <div class="node_description">Body</div>
+      <div class="node_content">
+        <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
+      </div>
+    </div>
+  <% end %>
+</div>

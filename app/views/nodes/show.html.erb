@@ -1,6 +1,6 @@
 <% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
 <div id="page_editor" class="show_node">
-  <h1><%= title_for_node(@node) %></h1>
+  <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
   <div id="content">
     <div class="node_description">Status</div>
     <div class="node_content node_info_group node_status">
@@ -70,6 +70,46 @@
       <% end %>
     </div>
 
+    <div class="node_description">Translations</div>
+    <div class="node_content node_info_group">
+      <div class="node_info_group_items">
+        <div class="node_info_item">
+          <span class="node_info_label"><%= I18n.default_locale.to_s.upcase %> (default)</span>
+          <%= @page.title %> — updated <%= @default_translation&.updated_at || @page.updated_at %>
+        </div>
+        <% @translations.each do |t| %>
+          <div class="node_info_item">
+            <span class="node_info_label"><%= t[:locale].to_s.upcase %></span>
+            <div class="aligned_action_row">
+              <% if t[:exists] %>
+                <%= link_to t[:title], node_translation_path(@node, t[:locale]) %> — updated <%= t[:updated_at] %>
+                <% if t[:outdated] %>
+                  <span class="warning">may be outdated</span>
+                <% end %>
+              <% else %>
+                <span class="field_hint">Not yet translated.</span>
+              <% end %>
+              <% if locked_by_other %>
+                <span class="disabled_action"><%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %></span>
+              <% else %>
+                <%= link_to edit_node_translation_path(@node, t[:locale]), class: "action_button" do %>
+                  <%= icon(t[:exists] ? "edit" : "language", library: "tabler", "aria-hidden": true) %>
+                  <%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %>
+                <% end %>
+                <% if t[:exists] %>
+                  <%= button_to node_translation_path(@node, t[:locale]), method: :delete,
+                        form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+                    <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+                    Destroy Translation
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
     <div class="node_description">People</div>
     <div class="node_content node_info_group">
       <div class="node_info_group_items">
@@ -122,7 +162,7 @@
           <div class="node_info_item">
             <span class="node_info_label">Public Preview</span>
             <% if @node.draft.preview_token.present? %>
-              <div class="preview_link_row">
+              <div class="aligned_action_row">
                 <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
                 <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." }, class: 'button_to state_changing' } %>
               </div>
@@ -205,12 +245,11 @@
       </div>
     <% end %>
 
-    <div class="node_description">Abstract</div>
+    <div class="node_description">Abstract (<%= I18n.default_locale.to_s.upcase %>)</div>
     <div class="node_content"><%= sanitize(@page.abstract) %></div>
 
-    <div class="node_description">Body</div>
+    <div class="node_description">Body (<%= I18n.default_locale.to_s.upcase %>)</div>
     <div class="node_content"><%= sanitize(@page.body) %></div>
-    <%# Assets not yet addressed - no confirmed model/association seen for this page's attached assets %>
 
   </div>
 </div>
