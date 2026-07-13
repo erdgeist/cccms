@@ -249,12 +249,18 @@ class Node < ApplicationRecord
     self
   end
 
-  # removes a draft and the lock if it is older than a day and still
-  # identical to head
+  # Releases whatever's stale and abandoned; never anything actively in
+  # use. Three independent cases share one rule -- nothing is touched
+  # unless it's been sitting untouched for over a day:
+  #  - a lock held with no draft or autosave at all (the editor opened
+  #    the page and never actually wrote anything)
+  #  - a fresh autosave older than a day, never promoted to a draft
+  #  - a draft older than a day that's still identical to head
   def wipe_draft!
     return if self.autosave && self.autosave.updated_at > 1.day.ago
 
     unless self.draft
+      return if self.autosave.nil? && self.locked? && self.updated_at > 1.day.ago
       self.autosave&.destroy
       self.autosave_id = nil
       self.unlock!
