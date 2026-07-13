@@ -167,6 +167,7 @@ cccms = {
     jQuery.fn.submitWithAjax = function(options) {
       if (page.title_has_changed() || page.abstract_has_changed() || page.body_has_changed()) {
 
+        tinymce.triggerSave();
         page.cached_title      = elements.title.val();
         page.cached_abstract   = elements.abstract.val();
         page.cached_body       = elements.body.html();
