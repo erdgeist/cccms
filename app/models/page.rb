@@ -176,18 +176,34 @@ class Page < ApplicationRecord
     return nil unless page
 
     self.reload
+    page.translations.reload
 
     # Clone untranslated attributes
     self.tag_list         = page.tag_list
     self.template_name  ||= page.template_name
     self.published_at     = page.published_at
 
-    # Getting rid of the auto-generated empty translations
-    self.translations.delete_all
+    # Clone translated attributes -- update each locale in place rather
+    # than delete-and-recreate, so a locale whose content is genuinely
+    # unchanged keeps its real created_at/updated_at instead of looking
+    # freshly touched on every single save (which was silently defeating
+    # Page.find_with_outdated_translations' whole staleness comparison).
+    # search_vector is excluded deliberately: it's DB-trigger-maintained
+    # from title/abstract, not real content, and comparing a precomputed
+    # tsvector risked a false "changed" from representation noise alone.
+    source_locales = page.translations.map(&:locale)
+    self.translations.where.not(:locale => source_locales).destroy_all
 
-    # Clone translated attributes
-    page.translations.each do |translation|
-      self.translations.create!(translation.attributes.except("id", "page_id", "created_at", "updated_at"))
+    page.translations.each do |source_translation|
+      attrs = source_translation.attributes.except("id", "page_id", "created_at", "updated_at", "search_vector")
+      mine  = self.translations.find_by(:locale => source_translation.locale)
+
+      if mine
+        changed_attrs = attrs.reject { |k, v| mine.public_send(k) == v }
+        mine.update!(changed_attrs) if changed_attrs.any?
+      else
+        self.translations.create!(attrs)
+      end
     end
 
     # Clone asset references
@@ -196,19 +212,28 @@ class Page < ApplicationRecord
     self.save
   end
 
-  def diff_against other, view: :inline
+  def diff_against other, view: :inline, locale: nil
+    if locale
+      mine, theirs = translations.find_by(:locale => locale), other.translations.find_by(:locale => locale)
+      my_title, my_abstract, my_body          = mine&.title,   mine&.abstract,   mine&.body
+      their_title, their_abstract, their_body = theirs&.title, theirs&.abstract, theirs&.body
+    else
+      my_title, my_abstract, my_body          = title, abstract, body
+      their_title, their_abstract, their_body = other.title, other.abstract, other.body
+    end
+
     text_diffs =
       if view == :side_by_side
         {
-          title:    HtmlWordDiff.side_by_side(other.title.to_s,    title.to_s),
-          abstract: HtmlWordDiff.side_by_side(other.abstract.to_s, abstract.to_s),
-          body:     HtmlWordDiff.side_by_side(other.body.to_s,     body.to_s)
+          title:    HtmlWordDiff.side_by_side(their_title.to_s,    my_title.to_s),
+          abstract: HtmlWordDiff.side_by_side(their_abstract.to_s, my_abstract.to_s),
+          body:     HtmlWordDiff.side_by_side(their_body.to_s,     my_body.to_s)
         }
       else
         {
-          title:    HtmlWordDiff.inline(other.title.to_s,    title.to_s),
-          abstract: HtmlWordDiff.inline(other.abstract.to_s, abstract.to_s),
-          body:     HtmlWordDiff.inline(other.body.to_s,     body.to_s)
+          title:    HtmlWordDiff.inline(their_title.to_s,    my_title.to_s),
+          abstract: HtmlWordDiff.inline(their_abstract.to_s, my_abstract.to_s),
+          body:     HtmlWordDiff.inline(their_body.to_s,     my_body.to_s)
         }
       end
 
@@ -217,6 +242,22 @@ class Page < ApplicationRecord
       template_name: { from: other.template_name, to: template_name, changed: template_name != other.template_name },
       assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a }
     )
+  end
+
+  def locale_diff_summary other
+    (translated_locales | other.translated_locales).sort_by(&:to_s).map do |locale|
+      mine   = translations.find_by(:locale => locale)
+      theirs = other.translations.find_by(:locale => locale)
+      {
+        :locale       => locale,
+        :exists_here  => mine.present?,
+        :exists_there => theirs.present?,
+        :changed      => mine.present? != theirs.present? ||
+                          mine&.title != theirs&.title ||
+                          mine&.abstract != theirs&.abstract ||
+                          mine&.body != theirs&.body
+      }
+    end
   end
 
   def public?

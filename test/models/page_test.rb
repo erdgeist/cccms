@@ -177,6 +177,56 @@ class PageTest < ActiveSupport::TestCase
     assert first_page.published_at.present?
   end
 
+  test "clone_attributes_from preserves an unchanged locale's original timestamp" do
+    n = Node.root.children.create!(:slug => "clone_preserve_timestamp_test")
+    source = n.draft
+    Globalize.with_locale(:de) { source.update!(:title => "Deutscher Titel") }
+    Globalize.with_locale(:en) { source.update!(:title => "English Title") }
+
+    target = Page.create!
+    target.clone_attributes_from(source)
+    original_en_updated_at = target.translations.find_by(:locale => :en).updated_at
+
+    Globalize.with_locale(:de) { source.update!(:title => "Deutscher Titel (bearbeitet)") }
+    target.clone_attributes_from(source)
+
+    en_translation = target.translations.find_by(:locale => :en)
+    assert_equal "English Title", en_translation.title
+    assert_equal original_en_updated_at, en_translation.updated_at
+  end
+
+  test "clone_attributes_from gives a genuinely changed locale a fresh timestamp" do
+    n = Node.root.children.create!(:slug => "clone_fresh_timestamp_test")
+    source = n.draft
+    Globalize.with_locale(:de) { source.update!(:title => "Erste Version") }
+
+    target = Page.create!
+    target.clone_attributes_from(source)
+    original_de_updated_at = target.translations.find_by(:locale => :de).updated_at
+
+    Globalize.with_locale(:de) { source.update!(:title => "Zweite Version") }
+    target.clone_attributes_from(source)
+
+    de_translation = target.translations.find_by(:locale => :de)
+    assert_equal "Zweite Version", de_translation.title
+    assert_operator de_translation.updated_at, :>, original_de_updated_at
+  end
+
+  test "clone_attributes_from removes a locale no longer present in the source" do
+    n = Node.root.children.create!(:slug => "clone_removed_locale_test")
+    source = n.draft
+    Globalize.with_locale(:en) { source.update!(:title => "English Title") }
+
+    target = Page.create!
+    target.clone_attributes_from(source)
+    assert_includes target.translations.map(&:locale), :en
+
+    source.translations.where(:locale => :en).delete_all
+    target.clone_attributes_from(source)
+
+    assert_not_includes target.reload.translations.map(&:locale), :en
+  end
+
   def test_diff_against_inline_keeps_tags_and_marks_only_the_changed_word
     n = Node.root.children.create! :slug => "diff_against_test"
     d = n.find_or_create_draft @user1
@@ -270,5 +320,54 @@ class PageTest < ActiveSupport::TestCase
 
     assert_equal [added_asset], diff[:assets][:added]
     assert_equal [removed_asset], diff[:assets][:removed]
+  end
+
+  test "diff_against with an explicit locale compares that locale's own translation on each side" do
+    n = Node.root.children.create!(:slug => "diff_locale_test")
+    d = n.find_or_create_draft(@user1)
+    Globalize.with_locale(:en) { d.update!(:title => "Old English") }
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft(@user1)
+    Globalize.with_locale(:en) { d2.update!(:title => "New English") }
+    d2.save!
+
+    diff = d2.diff_against(n.head, :locale => :en)
+
+    assert_match "<del>Old</del>", diff[:title]
+    assert_match "<ins>New</ins>", diff[:title]
+  end
+
+  test "diff_against with an explicit locale ignores content in other locales entirely" do
+    n = Node.root.children.create!(:slug => "diff_locale_isolation_test")
+    d = n.find_or_create_draft(@user1)
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft(@user1)
+    Globalize.with_locale(:de) { d2.update!(:title => "Nur Deutsch geändert") }
+    d2.save!
+
+    diff = d2.diff_against(n.head, :locale => :en)
+
+    assert_no_match(/Deutsch/, diff[:title])
+  end
+
+  test "locale_diff_summary flags a locale that only exists on one side as changed" do
+    n = Node.root.children.create!(:slug => "diff_locale_summary_test")
+    d = n.find_or_create_draft(@user1)
+    d.save!
+    n.publish_draft!
+
+    d2 = n.find_or_create_draft(@user1)
+    Globalize.with_locale(:en) { d2.update!(:title => "New English translation") }
+    d2.save!
+
+    summary = d2.locale_diff_summary(n.head)
+    en_entry = summary.find { |s| s[:locale] == :en }
+
+    assert en_entry[:changed]
+    refute en_entry[:exists_there]
   end
 end
