@@ -20,8 +20,8 @@
 </div>
 
 <div id="page_editor">
-    <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
-          data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
+  <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
+        data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
     <div id="content">
       <div class="node_description">Title</div>
       <div class="node_content">
@@ -34,8 +34,24 @@
       </div>
 
       <div class="node_description">Body</div>
-      <div class="node_content">
-        <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
+      <div class="body_toolbar_row">
+        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
+          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
+        </button>
+        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="Force preview render" title="Force preview render">
+          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span>Force refresh</span>
+        </button>
+      </div>
+
+      <div id="editor_and_preview">
+        <div class="preview_content">
+          <div class="node_content">
+            <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
+          </div>
+        </div>
+        <div id="preview_panel" style="display:none">
+          <iframe id="live_preview_iframe" title="Live preview" data-src="<%= preview_page_path(@page, :locale => @locale) %>"></iframe>
+        </div>
       </div>
     </div>
   <% end %>

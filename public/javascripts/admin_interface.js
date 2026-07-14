@@ -67,6 +67,10 @@ $(document).ready(function () {
     rrule_builder.initialize();
   }
 
+  if ($("#preview_panel").length != 0) {
+    cccms.preview.initialize();
+  }
+
   if ($('#recent_changes_toggle').length != 0) {
     hide_all();
     $('#recent_changes_toggle').attr("class", "selected");
@@ -165,7 +169,8 @@ cccms = {
     }
 
     jQuery.fn.submitWithAjax = function(options) {
-      if (page.title_has_changed() || page.abstract_has_changed() || page.body_has_changed()) {
+      options = options || {};
+      if (options.force || page.title_has_changed() || page.abstract_has_changed() || page.body_has_changed()) {
 
         tinymce.triggerSave();
         page.cached_title      = elements.title.val();
@@ -181,6 +186,9 @@ cccms = {
           type: "POST",
           url: this.attr("data-autosave-url"),
           data: data,
+          success: function() {
+            cccms.preview.refresh_if_open();
+          },
           error: function(xhr) {
             if (xhr.status === 423) {
               clearInterval(cccms.autosave_timer);
@@ -211,6 +219,39 @@ cccms = {
     $banner.append(".");
 
     $flash.html($banner);
+  },
+
+  preview : {
+    is_open : false,
+
+    initialize : function() {
+      var $panel  = $('#preview_panel');
+      var $toggle = $('#preview_toggle');
+      var $force  = $('#preview_force_render');
+
+      $toggle.on('click', function() {
+        cccms.preview.is_open = !cccms.preview.is_open;
+        $panel.toggle(cccms.preview.is_open);
+        $force.toggle(cccms.preview.is_open);
+        $toggle.attr('aria-pressed', cccms.preview.is_open);
+        if (cccms.preview.is_open) cccms.preview.refresh();
+      });
+
+      $force.on('click', function() {
+        $("#page_editor > form").submitWithAjax({ force: true });
+      });
+    },
+
+    refresh : function() {
+      var $iframe = $('#live_preview_iframe');
+      if ($iframe.length === 0) return;
+      var base = $iframe.data('src');
+      $iframe.attr('src', base + (base.indexOf('?') === -1 ? '?' : '&') + '_t=' + Date.now());
+    },
+
+    refresh_if_open : function() {
+      if (cccms.preview.is_open) cccms.preview.refresh();
+    }
   }
 }
 

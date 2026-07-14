@@ -116,10 +116,27 @@
     <div class="node_content"><%= d.text_area :abstract %></div>
 
     <div class="node_description">Body</div>
-    <div class="node_content"><%= d.text_area :body, :class => 'with_editor' %></div>
+    <div class="body_toolbar_row">
+      <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
+        <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
+      </button>
+      <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="Force preview render" title="Force preview render">
+        <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span>Force refresh</span>
+      </button>
+    </div>
+
+    <div id="editor_and_preview">
+      <div class="preview_content">
+        <div class="node_content"><%= d.text_area :body, :class => 'with_editor' %></div>
+      </div>
+      <div id="preview_panel" style="display:none">
+        <iframe id="live_preview_iframe" title="Live preview" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>
+      </div>
+    </div>
+  </div>
   <% end %>
 
-  <div class="node_action_bar node_action_bar_save">
+  <div class="node_action_bar">
     <%= f.submit 'Save Draft' %>
     <%= f.submit 'Save + Unlock + Exit' %>
   </div>
