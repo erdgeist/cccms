@@ -1,5 +1,6 @@
 <div class="article" lang="<%= @page.effective_lang %>">
   <h2 class="headline"><%= @page.title %></h2>
+  <%= headline_image %>
   <% if @page.node.external_url.present? %>
     <div class="chapter_url"><%= link_to @page.node.external_url, @page.node.external_url, target: '_blank', rel: 'noopener' %></div>
   <% end %>

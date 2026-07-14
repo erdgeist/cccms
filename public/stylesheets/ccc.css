@@ -610,3 +610,20 @@ label[for=light-mode] {
   }
 }
 
+.chapter_partial_layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.chapter_thumbnail img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.chapter_partial_content {
+  min-width: 0;
+}
