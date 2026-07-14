@@ -10,10 +10,10 @@
     <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
 
     <title><%= page_title %></title>
-    <link rel="stylesheet" href="/stylesheets/ccc.css">
-    <link rel="stylesheet" href="/stylesheets/glightbox.min.css">
-    <script src="/javascripts/glightbox.min.js"></script>
-    <script src="/javascripts/public.js"></script>
+    <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/ccc.css') %>">
+    <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/glightbox.min.css') %>">
+    <script src="<%= mtime_busted_path('/javascripts/glightbox.min.js') %>"></script>
+    <script src="<%= mtime_busted_path('/javascripts/public.js') %>"></script>
 
     <%= auto_discovery_link_tag(:atom, '/rss/updates.xml', title: "ATOM") %>
     <%= auto_discovery_link_tag(:rss,  '/rss/updates.rdf', title: "RSS") %>
