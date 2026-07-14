@@ -5,11 +5,6 @@ class PageTranslationsController < ApplicationController
   before_action :find_node
   before_action :find_locale, :only => [:show, :edit, :update, :autosave, :destroy]
 
-  def index
-    page = @node.draft || @node.head
-    @translations = page ? page.translation_summary : []
-  end
-
   def show
     @page = @node.draft || @node.head
     @translation         = @page.translations.find_by(:locale => @locale)

@@ -1,12 +1,13 @@
+<% translation = @page.translations.find_by(:locale => @locale) %>
 <div id="page_editor" class="show_node">
-  <h1>Revision <%= @page.revision %>: <%= @page.title %></h1>
+  <h1>Revision <%= @page.revision %>: <%= translation&.title %> <small>(<%= @locale.to_s.upcase %>)</small></h1>
 
   <div id="content">
     <div class="node_description">Actions</div>
     <div class="node_content node_info_group">
       <div class="node_info_group_items">
         <div class="node_info_item">
-          <%= link_to 'Show all revisions', node_revisions_path(@node) %>
+          <%= link_to 'Show all revisions', node_revisions_path(@node, :locale => @locale) %>
         </div>
       </div>
     </div>
@@ -27,12 +28,12 @@
     <div class="node_content"><%= @page.published_at %></div>
 
     <div class="node_description">Title</div>
-    <div class="node_content"><%= @page.title %></div>
+    <div class="node_content"><%= translation&.title %></div>
 
     <div class="node_description">Abstract</div>
-    <div class="node_content"><%= @page.abstract %></div>
+    <div class="node_content"><%= translation&.abstract %></div>
 
     <div class="node_description">Body</div>
-    <div class="node_content"><%= raw @page.body %></div>
+    <div class="node_content"><%= raw translation&.body %></div>
   </div>
 </div>

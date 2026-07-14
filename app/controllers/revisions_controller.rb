@@ -5,10 +5,11 @@ class RevisionsController < ApplicationController
   before_action :login_required
   
   layout 'admin'
-  
+
   def index
-    @node = Node.find(params[:node_id])
-    @pages = @node.pages.all
+    @node   = Node.find(params[:node_id])
+    @pages  = @node.pages.all
+    @locale = resolve_locale(params[:locale])
   end
 
   def diff
@@ -43,6 +44,7 @@ class RevisionsController < ApplicationController
   def show
     @node     = Node.find(params[:node_id])
     @page     = @node.pages.find(params[:id])
+    @locale   = resolve_locale(params[:locale])
   end
 
   def restore
@@ -51,4 +53,12 @@ class RevisionsController < ApplicationController
     flash[:notice] = "Revision #{page.revision} restored"
     redirect_to node_path(page.node)
   end
+
+  private
+
+    def resolve_locale(requested)
+      candidate = requested.presence&.to_sym
+      allowed   = [I18n.default_locale] + Page.non_default_locales
+      allowed.include?(candidate) ? candidate : I18n.default_locale
+    end
 end

@@ -4,6 +4,20 @@
   <%= link_to 'Back to node', node_path(@node) %>
 </p>
 
+<% if Page.non_default_locales.any? %>
+  <p class="diff_locale_toggle">
+    Locale:
+    <% ([I18n.default_locale] + Page.non_default_locales).each_with_index do |locale, i| %>
+      <%= " &middot; ".html_safe if i > 0 %>
+      <% if locale == @locale %>
+        <strong><%= locale.to_s.upcase %></strong>
+      <% else %>
+        <%= link_to locale.to_s.upcase, node_revisions_path(@node, :locale => locale) %>
+      <% end %>
+    <% end %>
+  </p>
+<% end %>
+
 <table id="revisions" class="revisions_table">
   <thead>
     <tr class="header">
@@ -20,6 +34,7 @@
       <td colspan="8">
         <%= button_to 'Diff revisions', diff_node_revisions_path(@node),
               method: :post,
+              params: { locale: @locale },
               form: { id: 'diff_form', class: 'button_to computation' },
               disabled: true %>
         <span id="diff_selection_label"></span>
@@ -35,10 +50,10 @@
       <td><%= radio_button_tag :start_revision, page.revision, index == 1 %></td>
       <td><%= radio_button_tag :end_revision, page.revision, index == 0 %></td>
       <td class="revision"><%= page.revision %></td>
-      <td class="title"><%= page.title %></td>
+      <td class="title"><%= page.translations.find_by(:locale => @locale)&.title || "—" %></td>
       <td class="user"><%= page.editor.try(:login) %></td>
       <td class="date"><%= page.updated_at %></td>
-      <td><%= link_to 'show', node_revision_path(@node, page) %></td>
+      <td><%= link_to 'show', node_revision_path(@node, page, :locale => @locale) %></td>
       <td>
         <%= button_to 'restore', restore_node_revision_path(@node, page),
               method: :put,

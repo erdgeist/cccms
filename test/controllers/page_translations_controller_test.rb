@@ -1,18 +1,6 @@
 require 'test_helper'
 
 class PageTranslationsControllerTest < ActionController::TestCase
-  test "index lists the default locale's existing translation and flags a missing one" do
-    login_as :quentin
-    node = Node.root.children.create!(:slug => "translations_index_test")
-    node.publish_draft!
-
-    get :index, params: { :node_id => node.id }
-
-    assert_response :success
-    assert_equal [:en], assigns(:translations).map { |t| t[:locale] }
-    assert_equal false, assigns(:translations).first[:exists]
-  end
-
   test "update creates a first-time translation on a fresh draft, leaving head untouched" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "translations_create_test")

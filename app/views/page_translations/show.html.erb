@@ -1,5 +1,7 @@
 <h1>Compare — <%= title_for_node(@node) %></h1>
 
+<p class="node_action_bar standalone_action_bar"><%= link_to 'View revision history', node_revisions_path(@node, :locale => @locale) %></p>
+
 <div class="translation_compare">
   <div class="translation_compare_column">
     <h2><%= @locale.to_s.upcase %></h2>

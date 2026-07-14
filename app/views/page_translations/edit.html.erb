@@ -2,6 +2,8 @@
   Editing the <strong><%= @locale.to_s.upcase %></strong> translation of <strong><%= title_for_node(@node) %></strong>.
 </div>
 
+<p class="node_action_bar standalone_action_bar"><%= link_to 'View revision history', node_revisions_path(@node, :locale => @locale) %></p>
+
 <p class="field_hint">
   Metadata such as images, tags, template, and author belong to the page
   as a whole, not to a single translation — change those from the

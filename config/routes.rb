@@ -58,7 +58,7 @@ Cccms::Application.routes.draw do
         resources :translations, controller: 'page_translations',
           param: :translation_locale,
           constraints: { translation_locale: /en/ },
-          only: [:index, :show, :edit, :update, :destroy] do
+          only: [:show, :edit, :update, :destroy] do
           member do
             put :autosave
           end
