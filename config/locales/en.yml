@@ -17,6 +17,8 @@ en:
   open_today: "Open today"
   published: "published"
   published_by: "published by %{editor}"
+  last_edited: "last edited"
+  last_edited_by: "last edited by %{editor}"
   publisher_self: "you"
   editor_self: "you"
 

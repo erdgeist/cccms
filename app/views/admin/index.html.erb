@@ -43,17 +43,7 @@
   <div class="dashboard_widget">
     <h3>Recent changes</h3>
     <ul>
-    <% @recent_changes.each do |node| %>
-      <li>
-        <div>
-          <%= link_to title_for_node(node), node_path(node) %>
-          <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
-        </div>
-        <span class="dashboard_widget_meta">
-          <%= (editor = node_head_editor(node)) ? t("published_by", editor: editor) : t("published") %>, <%= relative_time_phrase(node.head.updated_at) %>
-        </span>
-      </li>
-    <% end %>
+      <%= render partial: "nodes/recent_change_item", collection: @recent_changes, as: :node %>
     </ul>
     <%= link_to "See all recent changes →", recent_nodes_path %>
   </div>

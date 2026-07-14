@@ -16,6 +16,8 @@ de:
   open_today: "Das Chaos, lokal und heute offen"
   published: "veröffentlicht"
   published_by: "veröffentlicht durch %{editor}"
+  last_edited: "zuletzt bearbeitet"
+  last_edited_by: "zuletzt bearbeitet durch %{editor}"
   editor_self: "du"
   publisher_self: "dich"
   date:
