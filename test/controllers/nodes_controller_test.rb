@@ -89,7 +89,7 @@ class NodesControllerTest < ActionController::TestCase
 
     assert_equal 1, node.pages.length
 
-    draft = node.find_or_create_draft( User.first )
+    draft = find_or_create_draft(node, User.first)
     draft.title = "Hello"
     draft.body = "World"
     draft.save
@@ -102,8 +102,8 @@ class NodesControllerTest < ActionController::TestCase
 
     node.reload
     assert_equal 1, node.pages.length
-    assert_equal "Hello", node.find_or_create_draft( User.first ).title
-    assert_equal "World", node.find_or_create_draft( User.first ).body
+    assert_equal "Hello", find_or_create_draft(node, User.first).title
+    assert_equal "World", find_or_create_draft(node, User.first).body
   end
 
   test "editing a locked node raises LockedByAnotherUser Exception" do
@@ -228,7 +228,7 @@ class NodesControllerTest < ActionController::TestCase
   test "unlocking a locked node" do
     login_as :quentin
     node = create_node_with_published_page
-    node.find_or_create_draft User.first
+    find_or_create_draft(node, User.first)
 
     assert node.locked?
 
@@ -250,7 +250,7 @@ class NodesControllerTest < ActionController::TestCase
     Node.root.descendants.destroy_all
     login_as :quentin
     node = create_node_with_published_page
-    node.find_or_create_draft User.first
+    find_or_create_draft(node, User.first)
 
     other_node = Node.root.children.create( :slug => "other" )
 
@@ -274,7 +274,7 @@ class NodesControllerTest < ActionController::TestCase
     Node.root.descendants.destroy_all
     node  = create_node_with_published_page
     assert_equal "quentin", node.head.user.login
-    node.find_or_create_draft users(:quentin)
+    find_or_create_draft(node, users(:quentin))
     assert node.draft.valid?
     assert node.valid?
 
@@ -336,7 +336,7 @@ class NodesControllerTest < ActionController::TestCase
 
   test "unlocking and relocking changes editor if done by another user" do
     node  = create_node_with_published_page
-    draft = node.find_or_create_draft users(:quentin)
+    draft = find_or_create_draft(node, users(:quentin))
     assert_equal draft.user.login, draft.editor.login
     assert node.locked?
     node.unlock!
@@ -481,13 +481,13 @@ class NodesControllerTest < ActionController::TestCase
 
   test "chapters filters by kind, matching head or draft, and shows both by default" do
     erfa_node = Node.root.children.create!(:slug => "chapters_erfa_test")
-    erfa_node.find_or_create_draft(@user1)
+    find_or_create_draft(erfa_node, @user1)
     erfa_node.draft.tag_list = "erfa-detail"
     erfa_node.draft.save!
     erfa_node.publish_draft!
 
     chaostreff_node = Node.root.children.create!(:slug => "chapters_chaostreff_test")
-    chaostreff_node.find_or_create_draft(@user1)
+    find_or_create_draft(chaostreff_node, @user1)
     chaostreff_node.draft.tag_list = "chaostreff-detail"
     chaostreff_node.draft.save!
     chaostreff_node.publish_draft!
@@ -549,13 +549,13 @@ class NodesControllerTest < ActionController::TestCase
 
   test "tags path filters by an arbitrary raw tag, generalizing chapters" do
     presse_node = Node.root.children.create!(:slug => "tags_path_presse_test")
-    presse_node.find_or_create_draft(@user1)
+    find_or_create_draft(presse_node, @user1)
     presse_node.draft.tag_list = "pressemitteilung"
     presse_node.draft.save!
     presse_node.publish_draft!
 
     erfa_node = Node.root.children.create!(:slug => "tags_path_erfa_test")
-    erfa_node.find_or_create_draft(@user1)
+    find_or_create_draft(erfa_node, @user1)
     erfa_node.draft.tag_list = "erfa-detail"
     erfa_node.draft.save!
     erfa_node.publish_draft!
@@ -572,13 +572,13 @@ class NodesControllerTest < ActionController::TestCase
 
   test "tags path with multiple tags matches any of them, not all" do
     erfa_node = Node.root.children.create!(:slug => "tags_path_multi_erfa_test")
-    erfa_node.find_or_create_draft(@user1)
+    find_or_create_draft(erfa_node, @user1)
     erfa_node.draft.tag_list = "erfa-detail"
     erfa_node.draft.save!
     erfa_node.publish_draft!
 
     chaostreff_node = Node.root.children.create!(:slug => "tags_path_multi_chaostreff_test")
-    chaostreff_node.find_or_create_draft(@user1)
+    find_or_create_draft(chaostreff_node, @user1)
     chaostreff_node.draft.tag_list = "chaostreff-detail"
     chaostreff_node.draft.save!
     chaostreff_node.publish_draft!

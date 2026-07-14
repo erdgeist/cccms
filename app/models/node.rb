@@ -145,28 +145,6 @@ class Node < ApplicationRecord
     pairs
   end
 
-  def find_or_create_draft current_user
-    self.wipe_draft!
-    if draft && self.lock_owner == current_user
-      draft
-    elsif draft && self.lock_owner.nil?
-      lock_for! current_user
-      draft.user    = current_user if draft.user.nil?
-      draft.editor  = current_user
-      draft.save
-      draft
-    elsif draft && self.lock_owner != current_user
-      raise(
-        LockedByAnotherUser,
-        "Page is locked by another user who is working on it! " \
-        "Last modification: #{draft.updated_at.to_fs(:db)}"
-      )
-    else
-      lock_for! current_user
-      create_new_draft current_user
-    end
-  end
-
   def create_new_draft user
     empty_page        = self.pages.create!
     empty_page.user   = (self.head ? self.head.user : user)
@@ -247,35 +225,6 @@ class Node < ApplicationRecord
     self.send(:update_unique_names_of_children)
     self.unlock!
     self
-  end
-
-  # Releases whatever's stale and abandoned; never anything actively in
-  # use. Three independent cases share one rule -- nothing is touched
-  # unless it's been sitting untouched for over a day:
-  #  - a lock held with no draft or autosave at all (the editor opened
-  #    the page and never actually wrote anything)
-  #  - a fresh autosave older than a day, never promoted to a draft
-  #  - a draft older than a day that's still identical to head
-  def wipe_draft!
-    return if self.autosave && self.autosave.updated_at > 1.day.ago
-
-    unless self.draft
-      return if self.autosave.nil? && self.locked? && self.updated_at > 1.day.ago
-      self.autosave&.destroy
-      self.autosave_id = nil
-      self.unlock!
-      self.save!
-      return
-    end
-    return unless self.head
-    return unless self.draft.updated_at < 1.day.ago
-    return if self.head.has_changes_to? self.draft
-
-    self.draft.destroy
-    self.draft_id = nil
-    self.unlock!
-    self.save!
-    self.reload
   end
 
   def restore_revision! revision

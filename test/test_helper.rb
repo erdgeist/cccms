@@ -67,4 +67,9 @@ class ActiveSupport::TestCase
     node.reload
     node
   end
+
+  def find_or_create_draft(node, user)
+    node.lock_for_editing!(user)
+    node.draft || node.create_new_draft(user)
+  end
 end

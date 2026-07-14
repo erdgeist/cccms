@@ -10,7 +10,7 @@ class RevisionsControllerTest < ActionController::TestCase
     draft = @node.draft
     draft.body = "first"
     @node.publish_draft!
-    @node.find_or_create_draft @user
+    find_or_create_draft(@node, @user)
     draft = @node.draft
     draft.update(:body => "second")
     @node.publish_draft!
@@ -103,7 +103,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
   test "diffing head against draft by name" do
     login_as :quentin
-    @node.find_or_create_draft(@user)
+    find_or_create_draft(@node, @user)
     @node.draft.update(:body => "draft body")
 
     post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
@@ -119,7 +119,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
   test "diffing by name shows a clear comparison label instead of a misleading revision picker" do
     login_as :quentin
-    @node.find_or_create_draft(@user)
+    find_or_create_draft(@node, @user)
 
     post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
     assert_response :success
@@ -130,7 +130,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
   test "pair-switcher buttons carry their params as real hidden fields, not a query string" do
     login_as :quentin
-    @node.find_or_create_draft(@user)
+    find_or_create_draft(@node, @user)
     @node.lock_for_editing!(@user)
     @node.autosave!({ :body => "unsaved" }, @user)
 
@@ -142,7 +142,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
   test "the view toggle is available even when comparing named layers" do
     login_as :quentin
-    @node.find_or_create_draft(@user)
+    find_or_create_draft(@node, @user)
 
     post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
     assert_response :success
@@ -151,7 +151,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
   test "diffing two revisions also shows tag, template, and asset changes" do
     login_as :quentin
-    @node.find_or_create_draft(@user)
+    find_or_create_draft(@node, @user)
     @node.draft.tag_list = "update"
     @node.draft.save!
 
@@ -175,7 +175,7 @@ class RevisionsControllerTest < ActionController::TestCase
     node.draft.save!
     node.publish_draft!
 
-    node.find_or_create_draft(@user)
+    find_or_create_draft(node, @user)
     Globalize.with_locale(:en) { node.draft.update!(:title => "Changed in English only") }
     node.draft.save!
 
@@ -191,7 +191,7 @@ class RevisionsControllerTest < ActionController::TestCase
     node.draft.save!
     node.publish_draft!
 
-    node.find_or_create_draft(@user)
+    find_or_create_draft(node, @user)
     Globalize.with_locale(:en) { node.draft.update!(:title => "English changed") }
     node.draft.save!
 

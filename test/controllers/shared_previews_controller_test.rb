@@ -13,7 +13,7 @@ class SharedPreviewsControllerTest < ActionController::TestCase
   test "renders the preview for a brand-new draft on an already-published node" do
     node = Node.root.children.create!(:slug => "shared_preview_published_node_test")
     node.publish_draft!
-    node.find_or_create_draft(User.first)
+    find_or_create_draft(node, User.first)
     node.draft.ensure_preview_token!
 
     get :show, params: { :token => node.draft.preview_token }

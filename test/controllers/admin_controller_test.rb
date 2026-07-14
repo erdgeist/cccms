@@ -17,7 +17,7 @@ class AdminControllerTest < ActionController::TestCase
 
   test "dashboard_search returns matching tags and nodes grouped separately" do
     node = Node.root.children.create!(:slug => "dashboard_search_test")
-    node.find_or_create_draft(User.find_by_login("aaron"))
+    find_or_create_draft(node, User.find_by_login("aaron"))
     node.draft.update(:title => "Biometrics Workshop")
     node.draft.tag_list = "biometrics-workshop"
     node.draft.save!

@@ -13,15 +13,15 @@ class PageTest < ActiveSupport::TestCase
     n2 = Node.root.children.create! :slug => "two"
     
     # get the drafts and assign a user to it
-    assert_not_nil d1 = n1.find_or_create_draft( @user1 )
-    assert_not_nil d3 = n2.find_or_create_draft( @user1 )
+    assert_not_nil d1 = find_or_create_draft(n1, @user1)
+    assert_not_nil d3 = find_or_create_draft(n2, @user1)
     
     # tag and double publish so we have 4 pages tagged with "update"
     d1.tag_list = "update"
     d1.save
     n1.publish_draft!
   
-    d2 = n1.find_or_create_draft @user1
+    d2 = find_or_create_draft(n1, @user1)
     n1.publish_draft!
     
     
@@ -29,7 +29,7 @@ class PageTest < ActiveSupport::TestCase
     d3.save
     n2.publish_draft!
   
-    d4 = n2.find_or_create_draft @user1
+    d4 = find_or_create_draft(n2, @user1)
     n2.publish_draft!
     
     # Set up two options hashes for the assertions
@@ -49,7 +49,7 @@ class PageTest < ActiveSupport::TestCase
   
   def test_before_save_rewrite_links_in_body
     n = Node.root.children.create :slug => "link_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     
     before = "<h1>Hello World</h1>\n" \
              "<a href=\"/club\" target=\"_blank\">Linkme</a>"
@@ -67,7 +67,7 @@ class PageTest < ActiveSupport::TestCase
   
   def test_before_save_rewrite_links_in_body_if_no_locale_prefix_present
     n = Node.root.children.create :slug => "link_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     
     before = "<h1>Hello World</h1>\n" \
              "<a href=\"/de/club\" target=\"_blank\">Linkme</a>"
@@ -85,7 +85,7 @@ class PageTest < ActiveSupport::TestCase
   
   def test_before_save_rewrite_links_skips_on_external_links
     n = Node.root.children.create :slug => "link_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     
     before = "<h1>Hello World</h1>\n" \
              "<a href=\"http://www.ccc.de/club\" target=\"_blank\">Linkme</a>"
@@ -145,7 +145,7 @@ class PageTest < ActiveSupport::TestCase
 
   test "a page scheduled for future publication is not yet public even after being published" do
     node = Node.root.children.create!(slug: "preview-scheduled-test")
-    draft = node.find_or_create_draft(@user1)
+    draft = find_or_create_draft(node, @user1)
     draft.title = "Scheduled test"
     draft.published_at = 1.day.from_now
     draft.save!
@@ -160,13 +160,13 @@ class PageTest < ActiveSupport::TestCase
 
   test "a superseded page is no longer the head, even though it was once published" do
     node = Node.root.children.create!(slug: "preview-superseded-test")
-    first_draft = node.find_or_create_draft(@user1)
+    first_draft = find_or_create_draft(node, @user1)
     first_draft.title = "First version"
     first_draft.save!
     first_token = first_draft.ensure_preview_token!
     node.publish_draft!
 
-    second_draft = node.find_or_create_draft(@user1)
+    second_draft = find_or_create_draft(node, @user1)
     second_draft.title = "Second version"
     second_draft.save!
     node.publish_draft!
@@ -229,12 +229,12 @@ class PageTest < ActiveSupport::TestCase
 
   def test_diff_against_inline_keeps_tags_and_marks_only_the_changed_word
     n = Node.root.children.create! :slug => "diff_against_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     d.title = "Old heading"
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft @user1
+    d2 = find_or_create_draft(n, @user1)
     d2.title = "New heading"
     d2.save!
 
@@ -246,12 +246,12 @@ class PageTest < ActiveSupport::TestCase
 
   def test_diff_against_side_by_side_returns_two_annotated_strings
     n = Node.root.children.create! :slug => "diff_against_sbs_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     d.title = "Old heading"
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft @user1
+    d2 = find_or_create_draft(n, @user1)
     d2.title = "New heading"
     d2.save!
 
@@ -263,12 +263,12 @@ class PageTest < ActiveSupport::TestCase
 
   test "diff_against handles an inserted paragraph split without corrupting the document" do
     n = Node.root.children.create! :slug => "paragraph_split_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     d.body = "<p>Der Vortragsraum ist ab 19 Uhr geöffnet, der Zugang erfolgt über den Hinterhof.</p>"
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft @user1
+    d2 = find_or_create_draft(n, @user1)
     d2.body = "<p>Der Vortragsraum ist ab 19 Uhr geöffnet,</p>\n<p>der Zugang erfolgt über den Hinterhof.</p>"
     d2.save!
 
@@ -281,13 +281,13 @@ class PageTest < ActiveSupport::TestCase
 
   test "diff_against reports tag and template changes" do
     n = Node.root.children.create! :slug => "field_diff_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     d.tag_list = "update"
     d.template_name = "standard_template"
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft @user1
+    d2 = find_or_create_draft(n, @user1)
     d2.tag_list = "update, pressemitteilung"
     d2.template_name = "title_only"
     d2.save!
@@ -303,7 +303,7 @@ class PageTest < ActiveSupport::TestCase
 
   test "diff_against reports added and removed assets by filename" do
     n = Node.root.children.create! :slug => "asset_diff_test"
-    d = n.find_or_create_draft @user1
+    d = find_or_create_draft(n, @user1)
     d.save!
     n.publish_draft!
 
@@ -311,7 +311,7 @@ class PageTest < ActiveSupport::TestCase
     removed_asset = Asset.create!(:upload_file_name => "removed.pdf", :upload_content_type => "application/pdf", :upload_file_size => 1)
     n.head.update_assets([kept_asset.id, removed_asset.id])
 
-    d2 = n.find_or_create_draft @user1
+    d2 = find_or_create_draft(n, @user1)
     added_asset = Asset.create!(:upload_file_name => "added.png", :upload_content_type => "image/png", :upload_file_size => 1)
     d2.update_assets([kept_asset.id, added_asset.id])
     d2.save!
@@ -324,12 +324,12 @@ class PageTest < ActiveSupport::TestCase
 
   test "diff_against with an explicit locale compares that locale's own translation on each side" do
     n = Node.root.children.create!(:slug => "diff_locale_test")
-    d = n.find_or_create_draft(@user1)
+    d = find_or_create_draft(n, @user1)
     Globalize.with_locale(:en) { d.update!(:title => "Old English") }
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft(@user1)
+    d2 = find_or_create_draft(n, @user1)
     Globalize.with_locale(:en) { d2.update!(:title => "New English") }
     d2.save!
 
@@ -341,11 +341,11 @@ class PageTest < ActiveSupport::TestCase
 
   test "diff_against with an explicit locale ignores content in other locales entirely" do
     n = Node.root.children.create!(:slug => "diff_locale_isolation_test")
-    d = n.find_or_create_draft(@user1)
+    d = find_or_create_draft(n, @user1)
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft(@user1)
+    d2 = find_or_create_draft(n, @user1)
     Globalize.with_locale(:de) { d2.update!(:title => "Nur Deutsch geändert") }
     d2.save!
 
@@ -356,11 +356,11 @@ class PageTest < ActiveSupport::TestCase
 
   test "locale_diff_summary flags a locale that only exists on one side as changed" do
     n = Node.root.children.create!(:slug => "diff_locale_summary_test")
-    d = n.find_or_create_draft(@user1)
+    d = find_or_create_draft(n, @user1)
     d.save!
     n.publish_draft!
 
-    d2 = n.find_or_create_draft(@user1)
+    d2 = find_or_create_draft(n, @user1)
     Globalize.with_locale(:en) { d2.update!(:title => "New English translation") }
     d2.save!
 

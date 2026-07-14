@@ -6,7 +6,7 @@ class TagsControllerTest < ActionController::TestCase
     @user = User.create :login => 'tagtest', :email => 'tagtest@example.com',
                         :password => 'foobar', :password_confirmation => 'foobar'
     @node = Node.root.children.create! :slug => 'tag_test_node'
-    draft = @node.find_or_create_draft @user
+    draft = find_or_create_draft(@node, @user)
     draft.title = "Tagged Article"
     draft.tag_list = "testtag"
     draft.save

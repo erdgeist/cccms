@@ -31,7 +31,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_nil test_node.draft.user
     
     3.times do 
-      test_node.find_or_create_draft @user1
+      find_or_create_draft(test_node, @user1)
     end
     
     assert_equal 1, test_node.pages.length
@@ -40,7 +40,7 @@ class NodeTest < ActiveSupport::TestCase
   def test_user_gets_assigned_to_unlocked_draft
     assert_not_nil @first_child.draft
     assert_nil @first_child.draft.user
-    @first_child.find_or_create_draft @user1
+    find_or_create_draft(@first_child, @user1)
     assert_equal @user1, @first_child.lock_owner
   end
   
@@ -77,7 +77,7 @@ class NodeTest < ActiveSupport::TestCase
     
     @first_child.publish_draft!
     
-    draft1 = @first_child.find_or_create_draft(@user1)
+    draft1 = find_or_create_draft(@first_child, @user1)
     
     I18n.locale = :de
     assert_equal "Hallo",   draft1.title
@@ -109,15 +109,15 @@ class NodeTest < ActiveSupport::TestCase
   def test_find_or_create_draft_if_no_draft_exists
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
-    assert_not_nil node.find_or_create_draft( @user1 )
+    assert_not_nil find_or_create_draft(node, @user1)
   end
 
   def test_find_or_create_draft_if_draft_exists_and_is_owned_by_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
 
-    first_call  = node.find_or_create_draft @user1
-    second_call = node.find_or_create_draft @user1
+    first_call  = find_or_create_draft(node, @user1)
+    second_call = find_or_create_draft(node, @user1)
 
     assert_equal first_call, second_call
     assert_equal 2, node.pages.count
@@ -127,10 +127,10 @@ class NodeTest < ActiveSupport::TestCase
   def test_exception_if_draft_exists_but_locked_by_another_user
     node = Node.root.children.create :slug => "xyz"
     node.publish_draft!
-    node.find_or_create_draft @user1
+    find_or_create_draft(node, @user1)
     assert_equal @user1, node.lock_owner
     assert_raise(LockedByAnotherUser) do
-      node.find_or_create_draft @user2
+      find_or_create_draft(node, @user2)
     end
   end
   
@@ -222,7 +222,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal 1, test_node.pages.length
     assert_not_nil test_node.head
     assert_nil test_node.draft
-    test_node.find_or_create_draft @user1
+    find_or_create_draft(test_node, @user1)
     test_node.reload
     assert_equal 2, test_node.pages.length
     assert_not_nil test_node.draft
@@ -232,7 +232,7 @@ class NodeTest < ActiveSupport::TestCase
   test "restoring a revision" do
     test_node = Node.root.children.create! :slug => "test_node"
     create_revisions( test_node, 3 )
-    test_node.find_or_create_draft @user1
+    find_or_create_draft(test_node, @user1)
     test_node.reload
     
     assert_equal 4, test_node.pages.count
@@ -250,7 +250,7 @@ class NodeTest < ActiveSupport::TestCase
     draft.user = users(:aaron)
     draft.save
     node.publish_draft!
-    new_draft = node.find_or_create_draft( users(:quentin) )
+    new_draft = find_or_create_draft(node, users(:quentin))
     assert_equal "aaron", new_draft.user.login
   end
   
@@ -261,7 +261,7 @@ class NodeTest < ActiveSupport::TestCase
     draft.user = users(:aaron)
     draft.save!
     node.publish_draft!
-    new_draft = node.find_or_create_draft( users(:quentin) )
+    new_draft = find_or_create_draft(node, users(:quentin))
     new_draft.user_id = users(:quentin).id
     new_draft.save
     node.publish_draft!
@@ -359,31 +359,6 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal @user1, node.reload.lock_owner
   end
 
-  test "wipe_draft! leaves a fresh autosave and its lock untouched" do
-    node = create_node_with_published_page
-    node.lock_for_editing!(@user1)
-    node.autosave!({ :title => "still typing" }, @user1)
-
-    node.wipe_draft!
-    node.reload
-
-    assert_not_nil node.autosave
-    assert_equal @user1, node.lock_owner
-  end
-
-  test "wipe_draft! destroys a stale, orphaned autosave and releases its lock" do
-    node = create_node_with_published_page
-    node.lock_for_editing!(@user1)
-    node.autosave!({ :title => "abandoned mid-session" }, @user1)
-    node.autosave.update_column(:updated_at, 2.days.ago)
-
-    node.wipe_draft!
-    node.reload
-
-    assert_nil node.autosave
-    assert_nil node.lock_owner
-  end
-
   test "revert! is a safe no-op on a fresh node with only a draft" do
     node = create_node_with_draft
     node.lock_for_editing!(@user1)
@@ -473,7 +448,7 @@ class NodeTest < ActiveSupport::TestCase
   
   def create_revisions node, count
     count.times do
-      node.find_or_create_draft @user1
+      find_or_create_draft(node, @user1)
       node.publish_draft!
     end
   end
@@ -514,7 +489,7 @@ class NodeTest < ActiveSupport::TestCase
 
   test "editor_search matches a partial substring, not just a whole word" do
     node = Node.root.children.create!(:slug => "editor_search_substring_test")
-    node.find_or_create_draft(@user1)
+    find_or_create_draft(node, @user1)
     node.draft.update(:title => "Biometrics Conference")
     node.publish_draft!
 
@@ -530,7 +505,7 @@ class NodeTest < ActiveSupport::TestCase
 
   test "editor_search requires every word to match, but each word can match a different field" do
     node = Node.root.children.create!(:slug => "editor_search_multiword_test")
-    node.find_or_create_draft(@user1)
+    find_or_create_draft(node, @user1)
     node.draft.update(:title => "Backspace e.V. Bamberg", :abstract => "Spiegelgraben 41, 96052 Bamberg")
     node.publish_draft!
 
@@ -540,9 +515,9 @@ class NodeTest < ActiveSupport::TestCase
 
   test "drafts_and_autosaves without a user sorts by recency only" do
     older = Node.root.children.create!(:slug => "drafts_order_older")
-    older.find_or_create_draft(@user1)
+    find_or_create_draft(older, @user1)
     newer = Node.root.children.create!(:slug => "drafts_order_newer")
-    newer.find_or_create_draft(@user1)
+    find_or_create_draft(newer, @user1)
 
     result = Node.drafts_and_autosaves.to_a
     assert result.index(newer) < result.index(older)
@@ -564,7 +539,7 @@ class NodeTest < ActiveSupport::TestCase
 
   test "recently_changed includes a node whose head was recently published" do
     node = Node.root.children.create!(:slug => "recent_changed_published")
-    node.find_or_create_draft(@user1)
+    find_or_create_draft(node, @user1)
     node.autosave!({:title => "v1"}, @user1)
     node.save_draft!(@user1)
     node.publish_draft!
@@ -574,7 +549,7 @@ class NodeTest < ActiveSupport::TestCase
 
   test "recently_changed excludes a node only touched by locking or unlocking after an old publish" do
     node = Node.root.children.create!(:slug => "recent_changed_lock_only")
-    node.find_or_create_draft(@user1)
+    find_or_create_draft(node, @user1)
     node.autosave!({:title => "v1"}, @user1)
     node.save_draft!(@user1)
     node.publish_draft!

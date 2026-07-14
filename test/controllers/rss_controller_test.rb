@@ -6,7 +6,7 @@ class RssControllerTest < ActionController::TestCase
     @user = User.create :login => 'rsstest', :email => 'rsstest@example.com',
                         :password => 'foobar', :password_confirmation => 'foobar'
     @node = Node.root.children.create! :slug => 'rss_test_node'
-    draft = @node.find_or_create_draft @user
+    draft = find_or_create_draft(@node, @user)
     draft.title = "RSS Update Article"
     draft.tag_list = "update"
     draft.save

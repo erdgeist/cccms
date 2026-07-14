@@ -39,7 +39,7 @@ class ContentControllerTest < ActionController::TestCase
     fill_pages_with_content
 
     new_node = create_node_under_root "fnord"
-    draft = new_node.find_or_create_draft @user1
+    draft = find_or_create_draft(new_node, @user1)
     draft.body = '[aggregate tags="update" limit="20"]'
     draft.save
     new_node.publish_draft!
@@ -58,7 +58,7 @@ class ContentControllerTest < ActionController::TestCase
     fill_pages_with_content
     
     new_node = create_node_under_root "fnord"
-    draft = new_node.find_or_create_draft @user1
+    draft = find_or_create_draft(new_node, @user1)
     draft.body = '[aggregate tags="update" limit="20" partial="sidebar_title_only"]'
     draft.save
     new_node.publish_draft!
@@ -72,7 +72,7 @@ class ContentControllerTest < ActionController::TestCase
   
   def test_nonexistant_custom_template_defaults_to_standard_template
     new_node = create_node_under_root "fnord"
-    draft = new_node.find_or_create_draft @user1
+    draft = find_or_create_draft(new_node, @user1)
     draft.template_name = "huchibu"
     draft.save
     new_node.publish_draft!
@@ -84,7 +84,7 @@ class ContentControllerTest < ActionController::TestCase
   
   def test_custom_template_no_date_and_author
     new_node = create_node_under_root "fnord"
-    draft = new_node.find_or_create_draft @user1
+    draft = find_or_create_draft(new_node, @user1)
     draft.template_name = "no_date_and_author"
     draft.save
     new_node.publish_draft!
@@ -96,7 +96,7 @@ class ContentControllerTest < ActionController::TestCase
 
   def test_aggregator_without_fill
     new_node = create_node_under_root "fnord"
-    draft = new_node.find_or_create_draft @user1
+    draft = find_or_create_draft(new_node, @user1)
     draft.body = '<aggregate tags="xyzzy_unique_test_tag" limit="20" />'
     draft.save
     new_node.publish_draft!
@@ -114,13 +114,13 @@ class ContentControllerTest < ActionController::TestCase
     end
 
     def fill_pages_with_content
-      d1 = @first_child.find_or_create_draft @user1
+      d1 = find_or_create_draft(@first_child, @user1)
       d1.title = "one"
       d1.tag_list = "update"
       d1.save
       @first_child.publish_draft!
 
-      d2 = @second_child.find_or_create_draft @user1
+      d2 = find_or_create_draft(@second_child, @user1)
       d2.title = "two"
       d2.tag_list = "update"
       d2.save
