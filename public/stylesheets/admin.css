@@ -764,6 +764,15 @@ table.user_table td.user_login {
   display: block;
 }
 
+.node_content .inline-image--full,
+.node_content .inline-image--half {
+  max-width: 300px;
+  width: auto;
+  float: none;
+  display: block;
+  margin: 0.5rem 0;
+}
+
 .action_button,
 form.button_to input[type="submit"],
 form.button_to button[type="submit"] {
@@ -1292,6 +1301,15 @@ div#image_browser ul li {
   height: 1rem;
 }
 
+.related_asset_headline_badge {
+  background: #fff3cd;
+  color: #6b5900;
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75em;
+  white-space: nowrap;
+}
+
 .related_asset_remove {
   display: flex;
   align-items: center;
@@ -1391,4 +1409,69 @@ div#image_browser ul li {
   background: #dde8f5;
   border-color: #a9c6e8;
   color: #1a4d8f;
+}
+
+/* ============================================================
+   Image picker
+   ============================================================ */
+
+#inline_image_picker {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  max-width: 480px;
+  max-height: 70vh;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+#inline_image_picker_grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.inline_image_picker_item {
+  position: relative;
+}
+
+#inline_image_picker_grid img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  display: block;
+}
+
+.inline_image_picker_headline_badge {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  right: 2px;
+  background: rgba(255, 243, 205, 0.95);
+  color: #6b5900;
+  font-size: 0.65em;
+  text-align: center;
+  border-radius: 3px;
+  padding: 1px 0;
+  pointer-events: none;
+}
+
+#inline_image_picker_grid img.selected {
+  border-color: #1a4d8f;
+}
+
+#inline_image_picker_actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }

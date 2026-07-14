@@ -19,14 +19,28 @@ $(document).ready(function () {
     promotion: false,
     menubar: false,
     plugins: 'code link lists visualblocks',
-    toolbar: 'bold italic underline | bullist numlist | link unlink | blocks | code',
-    extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions]',
+    toolbar: 'bold italic underline | bullist numlist | link unlink | insertpageimage | blocks | code',
+    extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions],a[href|target|rel|class|data-gallery],img[class|src|alt|title|width|height|style|border]',
     relative_urls: false,
     entity_encoding: 'raw',
-    valid_classes: { '*': '' },
+    content_style: '.inline-image--full { width: 100%; margin: 1rem 0; } .inline-image--half { width: 48%; margin-bottom: 1rem; } .inline-image--left { float: left; margin-right: 1rem; } .inline-image--right { float: right; margin-left: 1rem; }',
+    valid_classes: {
+      '*': '',
+      'img': 'inline-image inline-image--full inline-image--half inline-image--left inline-image--right',
+      'a': 'glightbox'
+    },
     setup: function(editor) {
       editor.on('init', function() {
         cccms.setup_autosave();
+      });
+
+      editor.ui.registry.addButton('insertpageimage', {
+        icon: 'image',
+        text: 'Insert image',
+        tooltip: "Insert one of this page's attached images",
+        onAction: function() {
+          cccms.inline_images.open(editor);
+        }
       });
     }
   });
@@ -172,6 +186,10 @@ cccms = {
       options = options || {};
       if (options.force || page.title_has_changed() || page.abstract_has_changed() || page.body_has_changed()) {
 
+        elements.body.find('a.glightbox').each(function() {
+          if ($(this).find('img').length === 0) { $(this).remove(); }
+        });
+
         tinymce.triggerSave();
         page.cached_title      = elements.title.val();
         page.cached_abstract   = elements.abstract.val();
@@ -251,6 +269,96 @@ cccms = {
 
     refresh_if_open : function() {
       if (cccms.preview.is_open) cccms.preview.refresh();
+    }
+  },
+
+  inline_images: {
+    ensure_overlay: function() {
+      if ($('#inline_image_picker').length) return;
+
+      var overlay = $(
+        '<div id="inline_image_picker" style="display:none">' +
+          '<div id="inline_image_picker_grid"></div>' +
+          '<div id="inline_image_picker_actions">' +
+            '<button type="button" data-placement="full">Insert full width</button>' +
+            '<button type="button" data-placement="left">Insert, align left</button>' +
+            '<button type="button" data-placement="right">Insert, align right</button>' +
+            '<button type="button" id="inline_image_picker_cancel">Cancel</button>' +
+          '</div>' +
+        '</div>'
+      );
+      $('body').append(overlay);
+
+      overlay.on('click', '#inline_image_picker_grid img', function() {
+        overlay.find('#inline_image_picker_grid img').removeClass('selected');
+        $(this).addClass('selected');
+        cccms.inline_images.selected_index = $(this).data('index');
+      });
+
+      overlay.on('click', '[data-placement]', function() {
+        cccms.inline_images.insert($(this).data('placement'));
+      });
+
+      overlay.on('click', '#inline_image_picker_cancel', function() {
+        overlay.hide();
+      });
+    },
+
+    open: function(editor) {
+      cccms.inline_images.ensure_overlay();
+      cccms.inline_images.editor = editor;
+
+      var showUrl = $("#page_editor > form").attr("data-show-url") || "";
+      var match = showUrl.match(/(\d+)$/);
+      cccms.inline_images.node_id = match ? match[1] : "";
+
+      var items = $('#related_asset_list li').map(function() {
+        return {
+          thumb: $(this).find('img').attr('src'),
+          large: $(this).data('large-url'),
+          original: $(this).data('original-url'),
+          name: $(this).data('name')
+        };
+      }).get();
+      cccms.inline_images.items = items;
+
+    var grid = $('#inline_image_picker_grid').empty();
+      if (items.length === 0) {
+        grid.append('<p>No images are attached to this page yet -- attach one from the Images section first.</p>');
+        cccms.inline_images.selected_index = null;
+      } else {
+        items.forEach(function(item, i) {
+          var wrapper = $('<div class="inline_image_picker_item"></div>');
+          wrapper.append($('<img>').attr('src', item.thumb).attr('data-index', i));
+          if (i === 0) {
+            wrapper.append($('<span>', { "class": "inline_image_picker_headline_badge" }).text("Headline"));
+          }
+          grid.append(wrapper);
+        });
+        cccms.inline_images.selected_index = 0;
+        grid.find('img').first().addClass('selected');
+      }
+
+      $('#inline_image_picker').show();
+    },
+
+    escape_attr: function(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    },
+
+    insert: function(placement) {
+      var item = cccms.inline_images.items[cccms.inline_images.selected_index];
+      if (!item) return;
+
+      var classes = placement === 'full'
+        ? 'inline-image inline-image--full'
+        : 'inline-image inline-image--half inline-image--' + placement;
+
+      var html = '<a href="' + item.original + '" class="glightbox" data-gallery="page-' + cccms.inline_images.node_id + '">' +
+                  '<img src="' + item.large + '" class="' + classes + '" alt="' + cccms.inline_images.escape_attr(item.name) + '"></a>';
+
+      cccms.inline_images.editor.insertContent(html);
+      $('#inline_image_picker').hide();
     }
   }
 }
