@@ -23,10 +23,10 @@ module FileAttachment
   extend ActiveSupport::Concern
 
   STYLES = {
-    medium:   { geometry: "300x300>",   format: nil },
-    thumb:    { geometry: "100x100>",   format: nil },
-    headline: { geometry: "460x250!",   format: nil },
-    large:    { geometry: "1600x1600>", format: nil }
+    medium:   { args: ["-resize", "300x300>"] },
+    thumb:    { args: ["-resize", "100x100>"] },
+    headline: { args: ["-resize", "460x250^", "-gravity", "center", "-extent", "460x250"] },
+    large:    { args: ["-resize", "1600x1600>"] }
   }.freeze
 
   IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
@@ -81,7 +81,7 @@ module FileAttachment
     STYLES.each do |style, options|
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
-      system("magick", original_path, "-resize", options[:geometry], dest_path)
+      system("magick", original_path, *options[:args], dest_path)
     end
   end
 
