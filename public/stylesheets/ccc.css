@@ -627,3 +627,24 @@ label[for=light-mode] {
 .chapter_partial_content {
   min-width: 0;
 }
+
+
+.inline-image--full {
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.inline-image--half {
+  width: 48%;
+  margin-bottom: 1rem;
+}
+
+.inline-image--left {
+  float: left;
+  margin-right: 1rem;
+}
+
+.inline-image--right {
+  float: right;
+  margin-left: 1rem;
+}

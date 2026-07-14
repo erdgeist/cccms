@@ -20,6 +20,15 @@
 </div>
 
 <div id="page_editor">
+  <ul id="related_asset_list" style="display:none">
+    <% @page.related_assets.includes(:asset).each do |related| %>
+      <li data-large-url="<%= related.asset.upload.url(:large) %>"
+          data-original-url="<%= related.asset.upload.url %>"
+          data-name="<%= related.asset.name %>">
+        <%= image_tag related.asset.upload.url(:thumb) %>
+      </li>
+    <% end %>
+  </ul>
   <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
         data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
     <div id="content">

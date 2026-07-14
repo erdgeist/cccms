@@ -81,7 +81,10 @@
              data-create-url="<%= node_related_assets_path(@node) %>">
           <ul id="related_asset_list" class="thumbnail_list">
             <% @page.related_assets.includes(:asset).each do |related| %>
-              <li data-url="<%= node_related_asset_path(@node, related) %>">
+              <li data-url="<%= node_related_asset_path(@node, related) %>"
+                  data-large-url="<%= related.asset.upload.url(:large) %>"
+                  data-original-url="<%= related.asset.upload.url %>"
+                  data-name="<%= related.asset.name %>">
                 <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
                 <%= image_tag related.asset.upload.url(:thumb) %>
                 <button type="button" class="related_asset_remove" aria-label="Remove image">

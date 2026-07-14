@@ -27,6 +27,8 @@ class RelatedAssetsController < ApplicationController
       asset_id: asset.id,
       name: asset.name,
       thumb_url: asset.upload.url(:thumb),
+      large_url: asset.upload.url(:large),
+      original_url: asset.upload.url,
       url: node_related_asset_path(@node, related)
     }
   end
