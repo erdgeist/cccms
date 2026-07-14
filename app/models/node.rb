@@ -170,10 +170,12 @@ class Node < ApplicationRecord
       self.autosave.destroy
       self.autosave_id = nil
       self.save!
+      NodeAction.record!(:node => self, :user => current_user, :action => "discard_autosave")
     elsif self.draft && self.head
       self.draft.destroy
       self.draft_id = nil
       self.save!
+      NodeAction.record!(:node => self, :user => current_user, :action => "destroy_draft")
     end
 
     self.unlock! unless self.draft
@@ -188,43 +190,50 @@ class Node < ApplicationRecord
     end
   end
 
-  def publish_draft!
+  def publish_draft! current_user = nil
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
 
-    if self.draft
-      self.head = self.draft
-      self.head.published_at ||= Time.now
-      self.head.save!
-      self.draft = nil
-    end
+    ActiveRecord::Base.transaction do
+      if self.draft
+        previous_title = self.head ? Globalize.with_locale(I18n.default_locale) { self.head.title } : nil
+        self.head = self.draft
+        self.head.published_at ||= Time.now
+        self.head.save!
+        self.draft = nil
 
-    if staged_slug && (staged_slug != slug)
-      self.slug = staged_slug
-      self.staged_slug = nil
-    end
-
-    if staged_parent_id && (staged_parent_id != parent_id)
-      new_parent = Node.find(staged_parent_id)
-
-      if new_parent == self || self.descendants.include?(new_parent)
-        raise ActiveRecord::RecordInvalid.new(self), "Cannot move a node under itself or one of its own descendants"
+        new_title = Globalize.with_locale(I18n.default_locale) { self.head.title }
+        NodeAction.record!(:node => self, :page => self.head, :user => current_user,
+                            :action => "publish", :from => previous_title, :to => new_title)
       end
 
-      self.staged_parent_id = nil
-      self.save!
-      self.move_to_child_of(new_parent)
-    else
-      unless self.save
-        raise ActiveRecord::RecordInvalid.new(self)
+      if staged_slug && (staged_slug != slug)
+        self.slug = staged_slug
+        self.staged_slug = nil
       end
-    end
 
-    self.reload
-    self.update_unique_name
-    self.send(:update_unique_names_of_children)
-    self.unlock!
-    self
+      if staged_parent_id && (staged_parent_id != parent_id)
+        new_parent = Node.find(staged_parent_id)
+
+        if new_parent == self || self.descendants.include?(new_parent)
+          raise ActiveRecord::RecordInvalid.new(self), "Cannot move a node under itself or one of its own descendants"
+        end
+
+        self.staged_parent_id = nil
+        self.save!
+        self.move_to_child_of(new_parent)
+      else
+        unless self.save
+          raise ActiveRecord::RecordInvalid.new(self)
+        end
+      end
+
+      self.reload
+      self.update_unique_name
+      self.send(:update_unique_names_of_children)
+      self.unlock!
+      self
+    end
   end
 
   def restore_revision! revision

@@ -621,4 +621,87 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal "Edited directly on autosave", Globalize.with_locale(:en) { autosave.title }
     assert_equal "v2",                          Globalize.with_locale(:de) { autosave.title }
   end
+
+  test "publish_draft! logs a NodeAction crediting the actual publisher" do
+    node = Node.root.children.create!(:slug => "publish_log_test")
+    node.draft.update!(:title => "Version one")
+
+    node.publish_draft!(@user1)
+
+    action = NodeAction.last
+    assert_equal node, action.node
+    assert_equal node.head, action.page
+    assert_equal @user1, action.user
+    assert_equal "publish", action.action
+  end
+
+  test "publish_draft! called with no user logs no actor, not a guessed one" do
+    node = Node.root.children.create!(:slug => "publish_log_no_user_test")
+    node.draft.update!(:title => "Version one")
+
+    node.publish_draft!
+
+    action = NodeAction.last
+    assert_nil action.user
+    assert_nil action.metadata["username"]
+  end
+
+  test "publish_draft! with nothing pending creates no NodeAction" do
+    node = Node.root.children.create!(:slug => "publish_log_noop_test")
+    node.publish_draft!
+    count_before = NodeAction.count
+
+    result = node.publish_draft!
+
+    assert_nil result
+    assert_equal count_before, NodeAction.count
+  end
+
+  test "revert! logs discard_autosave for an in-progress autosave" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({:title => "in progress"}, @user1)
+
+    node.revert!(@user1)
+
+    action = NodeAction.last
+    assert_equal node, action.node
+    assert_equal @user1, action.user
+    assert_equal "discard_autosave", action.action
+  end
+
+  test "revert! logs destroy_draft for a draft with a head behind it" do
+    node = create_node_with_published_page
+    find_or_create_draft(node, @user1)
+
+    node.revert!(@user1)
+
+    action = NodeAction.last
+    assert_equal node, action.node
+    assert_equal @user1, action.user
+    assert_equal "destroy_draft", action.action
+  end
+
+  test "revert! with nothing to revert logs nothing" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    count_before = NodeAction.count
+
+    node.revert!(@user1)
+
+    assert_equal count_before, NodeAction.count
+  end
+
+  test "publish_draft! records the title's from/to in metadata" do
+    node = create_node_with_published_page
+    Globalize.with_locale(:de) { node.head.update!(:title => "Original Title") }
+    find_or_create_draft(node, @user1)
+    Globalize.with_locale(:de) { node.draft.update!(:title => "New Title") }
+
+    node.publish_draft!(@user1)
+
+    action = NodeAction.last
+    assert_equal "Original Title", action.metadata["from"]
+    assert_equal "New Title", action.metadata["to"]
+  end
 end

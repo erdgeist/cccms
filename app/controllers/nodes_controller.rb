@@ -147,7 +147,7 @@ class NodesController < ApplicationController
   end
 
   def publish
-    @node.publish_draft!
+    @node.publish_draft!(current_user)
     flash[:notice] = "Draft has been published"
     redirect_to node_path(@node)
   end

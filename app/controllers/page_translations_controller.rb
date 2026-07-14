@@ -63,6 +63,9 @@ class PageTranslationsController < ApplicationController
     draft.translations.where(:locale => @locale).delete_all
     draft.reload
 
+    NodeAction.record!(:node => @node, :page => draft, :user => current_user,
+                        :action => "translation_destroy", :locale => @locale)
+
     flash[:notice] = "#{@locale.upcase} translation removed from the draft. Publish to make this permanent."
     redirect_to node_path(@node)
   rescue LockedByAnotherUser => e
