@@ -62,8 +62,8 @@ class AssetsControllerTest < ActionController::TestCase
     assert_equal 'image/png',      asset.upload_content_type
     assert asset.upload_file_size > 0
 
-    # original and all three variants should exist on disk
-    %w[original medium thumb headline].each do |style|
+    # original and all four variants should exist on disk
+    %w[original medium thumb headline large].each do |style|
       path = Rails.root.join('public', 'system', 'uploads',
                              asset.id.to_s, style, 'test_image.png')
       assert File.exist?(path), "Expected #{style} variant at #{path}"
@@ -91,7 +91,7 @@ class AssetsControllerTest < ActionController::TestCase
                                     asset.id.to_s, 'original', 'test_document.pdf')
     assert File.exist?(original_path), "Expected original at #{original_path}"
 
-    %w[medium thumb headline].each do |style|
+    %w[medium thumb headline large].each do |style|
       path = Rails.root.join('public', 'system', 'uploads',
                              asset.id.to_s, style, 'test_document.pdf')
       assert !File.exist?(path), "Expected no #{style} variant for PDF"
@@ -161,6 +161,7 @@ class AssetsControllerTest < ActionController::TestCase
     assert_equal "/system/uploads/#{asset.id}/thumb/logo.png",    asset.upload.url(:thumb)
     assert_equal "/system/uploads/#{asset.id}/medium/logo.png",   asset.upload.url(:medium)
     assert_equal "/system/uploads/#{asset.id}/headline/logo.png", asset.upload.url(:headline)
+    assert_equal "/system/uploads/#{asset.id}/large/logo.png",    asset.upload.url(:large)
   end
 
   # --- login required ---

@@ -23,9 +23,10 @@ module FileAttachment
   extend ActiveSupport::Concern
 
   STYLES = {
-    medium:   { geometry: "300x300>",  format: nil },
-    thumb:    { geometry: "100x100>",  format: nil },
-    headline: { geometry: "460x250!",  format: nil }
+    medium:   { geometry: "300x300>",   format: nil },
+    thumb:    { geometry: "100x100>",   format: nil },
+    headline: { geometry: "460x250!",   format: nil },
+    large:    { geometry: "1600x1600>", format: nil }
   }.freeze
 
   IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
