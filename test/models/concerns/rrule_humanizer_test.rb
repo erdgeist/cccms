@@ -48,10 +48,10 @@ class RruleHumanizerTest < ActiveSupport::TestCase
   end
 
   test "monthly selected weeks" do
-    assert_equal "Jeden ersten Dienstag und dritten Dienstag im Monat",
-      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU")
-    assert_equal "Every first Tuesday and third Tuesday of the month",
-      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU", :en)
+    assert_equal "Jeden ersten, zweiten und fünften Dienstag im Monat",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,2TU,5TU")
+    assert_equal "Every first, second and fifth Tuesday of the month",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,2TU,5TU", :en)
   end
 
   test "monthly fifth weekday" do

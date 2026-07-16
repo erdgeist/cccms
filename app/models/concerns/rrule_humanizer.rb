@@ -46,17 +46,28 @@ module RruleHumanizer
 
     excluded_monthly_ordinal = nil
     excluded_monthly_weekday = nil
+    selected_monthly_ordinals = nil
+    selected_monthly_weekday = nil
     if freq == "MONTHLY" && byday_values.present?
       ordinal_days = byday_values.map { |d| d.match(/^([1-5])([A-Z]{2})$/) }
       if ordinal_days.all?
         positions = ordinal_days.map { |match| match[1].to_i }.uniq.sort
         weekdays_in_rule = ordinal_days.map { |match| match[2] }.uniq
-        missing_positions = (1..5).to_a - positions
-        if positions.size == 4 && weekdays_in_rule.size == 1 && missing_positions.size == 1
-          excluded_monthly_ordinal = missing_positions.first
-          excluded_monthly_weekday = weekdays_in_rule.first
+        if weekdays_in_rule.size == 1
+          selected_monthly_ordinals = positions
+          selected_monthly_weekday = weekdays_in_rule.first
+          missing_positions = (1..5).to_a - positions
+          if positions.size == 4 && missing_positions.size == 1
+            excluded_monthly_ordinal = missing_positions.first
+            excluded_monthly_weekday = selected_monthly_weekday
+          end
         end
       end
+    end
+
+    join_ordinals = lambda do |ordinal_values, conjunction|
+      names = ordinal_values.map { |ordinal| ordinals[ordinal] }
+      names.size > 1 ? "#{names[0..-2].join(', ')} #{conjunction} #{names.last}" : names.first
     end
 
     base =
@@ -77,6 +88,8 @@ module RruleHumanizer
         when "MONTHLY"
           if excluded_monthly_ordinal
             "Jeden #{weekdays[excluded_monthly_weekday]} im Monat, außer dem #{ordinals[excluded_monthly_ordinal]} #{weekdays[excluded_monthly_weekday]}"
+          elsif selected_monthly_ordinals
+            "Jeden #{join_ordinals.call(selected_monthly_ordinals, 'und')} #{weekdays[selected_monthly_weekday]} im Monat"
           else
             days ? "Jeden #{days.join(' und ')} im Monat" : "Monatlich"
           end
@@ -88,6 +101,8 @@ module RruleHumanizer
         when "MONTHLY"
           if excluded_monthly_ordinal
             "Every #{weekdays[excluded_monthly_weekday]} of the month, except the #{ordinals[excluded_monthly_ordinal]} #{weekdays[excluded_monthly_weekday]}"
+          elsif selected_monthly_ordinals
+            "Every #{join_ordinals.call(selected_monthly_ordinals, 'and')} #{weekdays[selected_monthly_weekday]} of the month"
           else
             days ? "Every #{days.join(' and ')} of the month" : "Monthly"
           end
