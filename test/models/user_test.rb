@@ -54,6 +54,14 @@ class UserTest < ActiveSupport::TestCase
   def test_should_authenticate_user
     assert_equal users(:quentin), User.authenticate('quentin', 'monkey')
   end
+
+  def test_should_not_authenticate_wrong_password
+    assert_nil User.authenticate("quentin", "wrong password")
+  end
+
+  def test_should_not_authenticate_unknown_user
+    assert_nil User.authenticate("nosuchuser", "monkey")
+  end
   
 protected
   def create_user(options = {})
