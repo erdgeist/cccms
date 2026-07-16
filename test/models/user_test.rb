@@ -62,6 +62,62 @@ class UserTest < ActiveSupport::TestCase
   def test_should_not_authenticate_unknown_user
     assert_nil User.authenticate("nosuchuser", "monkey")
   end
+
+  def test_user_with_crypted_password_is_migrated_on_login
+    user = users(:quentin)
+
+    assert_nil user.password_digest
+
+    assert User.authenticate("quentin", "monkey")
+
+    user.reload
+
+    assert_not_nil user.password_digest
+    assert_nil user.crypted_password
+    assert_nil user.salt
+  end
+
+  def test_new_user_uses_password_digest
+    user = create_user
+
+    assert_not_nil user.password_digest
+    assert_nil user.crypted_password
+    assert_nil user.salt
+
+    assert_equal user, User.authenticate("quire", "quire69")
+  end
+
+  def test_legacy_user_is_migrated_on_login
+    user = users(:quentin)
+
+    assert_nil user.password_digest
+    assert_not_nil user.crypted_password
+    assert_not_nil user.salt
+
+    assert_equal user, User.authenticate("quentin", "monkey")
+
+    user.reload
+
+    assert_not_nil user.password_digest
+    assert_nil user.crypted_password
+    assert_nil user.salt
+  end
+
+  def test_migrated_user_authenticates_using_password_digest
+    user = users(:quentin)
+
+    # Trigger automatic migration.
+    assert_equal user, User.authenticate("quentin", "monkey")
+
+    user.reload
+
+    assert_not_nil user.password_digest
+    assert_nil user.crypted_password
+    assert_nil user.salt
+
+    # Second login should now use password_digest.
+    assert_equal user, User.authenticate("quentin", "monkey")
+  end
   
 protected
   def create_user(options = {})

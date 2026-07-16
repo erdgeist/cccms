@@ -46,7 +46,6 @@ module Authentication
         include ModelInstanceMethods
         
         # Virtual attribute for the unencrypted password
-        attr_accessor :password
         validates_presence_of     :password,                   :if => :password_required?
         validates_presence_of     :password_confirmation,      :if => :password_required?
         validates_confirmation_of :password,                   :if => :password_required?
@@ -85,16 +84,19 @@ module Authentication
         self.class.password_digest(password, salt)
       end
       
-      def authenticated?(password)
+      def authenticate_legacy(password)
         crypted_password == encrypt(password)
       end
-      
+
       # before filter 
       def encrypt_password
         return if password.blank?
-        self.salt = self.class.make_token if new_record?
+        return if password_digest.present?
+
+        self.salt ||= self.class.make_token
         self.crypted_password = encrypt(password)
       end
+
       def password_required?
         crypted_password.blank? || !password.blank?
       end

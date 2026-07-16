@@ -1,6 +1,10 @@
 require 'digest/sha1'
 
 class User < ApplicationRecord
+  has_secure_password(validations: false)
+
+  alias_method :authenticate_bcrypt, :authenticate
+
   # Mixins and Plugins
   include Authentication
   include Authentication::ByPassword
@@ -23,9 +27,30 @@ class User < ApplicationRecord
 
   # Authenticates a user by their login name and unencrypted password. Returns the user or nil.
   def self.authenticate(login, password)
-    return nil if login.blank? || password.blank?
-    u = find_by_login(login) # need to get the salt
-    u && u.authenticated?(password) ? u : nil
+    return if login.blank? || password.blank?
+
+    user = find_by(login: login)
+    return unless user
+
+    user&.authenticate(password)
+  end
+
+  def authenticate(password)
+    if password_digest.present?
+      return self if authenticate_bcrypt(password)
+      return nil
+    end
+
+    return nil unless authenticate_legacy(password)
+
+    transaction do
+      self.password = password
+      self.crypted_password = nil
+      self.salt = nil
+      save!(validate: false)
+    end
+
+    self
   end
 
   # TODO: Do we really want to have downcase logins only?

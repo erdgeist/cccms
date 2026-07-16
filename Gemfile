@@ -38,6 +38,7 @@ gem 'rails_icons'
 gem 'globalize',      '~> 7.0'    # translated model attributes (Page title/abstract/body)
 gem 'acts_as_list'                # page revision ordering
 gem 'will_paginate',  '~> 3.0'
+gem 'bcrypt',         '~> 3.1'
 
 # Pinned to git until a release widens the activerecord < 8.1 ceiling.
 # Both gems work correctly on Rails 8.1; the gemspec constraint is overly conservative.
