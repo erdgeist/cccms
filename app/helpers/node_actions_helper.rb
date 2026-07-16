@@ -16,7 +16,56 @@ module NodeActionsHelper
        :action => h(action.action), :subject => subject_ref(action)).html_safe
   end
 
+
+  def action_details? action
+    m = action.metadata
+    return true if m["translation_diff"].present?
+    return true if m["title"].is_a?(Hash) && m.dig("title", "from") != m.dig("title", "to")
+    %w[author tags template_changed assets_changed
+       abstract_changed body_changed].any? { |key| m[key].present? }
+  end
+
+  # Plain strings by design -- safe_join in the template escapes them.
+  def default_locale_changes action
+    m = action.metadata
+    items = []
+    if m["title"].is_a?(Hash) && m.dig("title", "from") && m.dig("title", "from") != m.dig("title", "to")
+      items << t("node_actions.detail_title",
+                  :from => m.dig("title", "from"), :to => m.dig("title", "to"))
+    end
+    items << t("node_actions.detail_author",
+                :from => m.dig("author", "from"), :to => m.dig("author", "to")) if m["author"]
+    items << t("node_actions.detail_tags",
+                :from => Array(m.dig("tags", "from")).join(", "),
+                :to   => Array(m.dig("tags", "to")).join(", ")) if m["tags"]
+    items << t("node_actions.abstract_changed") if m["abstract_changed"]
+    items << t("node_actions.body_changed")     if m["body_changed"]
+    items << t("node_actions.template_changed") if m["template_changed"]
+    items << t("node_actions.assets_changed")   if m["assets_changed"]
+    items
+  end
+
+  def translation_changes diff
+    case diff["status"]
+    when "added"   then [t("node_actions.locale_added",   :title => diff.dig("title", "to"))]
+    when "removed" then [t("node_actions.locale_removed", :title => diff.dig("title", "from"))]
+    else
+      items = []
+      items << t("node_actions.detail_title",
+                  :from => diff.dig("title", "from"), :to => diff.dig("title", "to")) if diff["title"]
+      items << t("node_actions.abstract_changed") if diff["abstract_changed"]
+      items << t("node_actions.body_changed")     if diff["body_changed"]
+      items
+    end
+  end
+
   private
+
+  def revision_ref action, key
+    label = t(key)
+    return label unless action.node && action.page
+    link_to(label, node_revision_path(action.node, action.page))
+  end
 
   def actor_ref action
     action.user ? link_to(h(action.actor_name), admin_log_path(:user_id => action.user_id))
@@ -29,17 +78,20 @@ module NodeActionsHelper
   end
 
   def summarize_publish action
-    key = if action.metadata["via"] == "revision"
-            "node_actions.publish_rollback"
-          elsif action.metadata.dig("title", "from").nil?
-            "node_actions.publish_first"
-          else
-            "node_actions.publish"
-          end
-
-    t(key, :actor => actor_ref(action), :subject => subject_ref(action),
-            :from => h(action.metadata.dig("title", "from")),
-            :to   => h(action.metadata.dig("title", "to"))).html_safe
+    if action.metadata["via"] == "revision"
+      t("node_actions.publish_rollback",
+         :actor => actor_ref(action), :subject => subject_ref(action),
+         :revision => revision_ref(action, "node_actions.revision_earlier")).html_safe
+    elsif action.metadata.dig("title", "from").nil?
+      author = action.metadata.dig("author", "to")
+      key = author ? "node_actions.publish_first_with_author" : "node_actions.publish_first"
+      t(key, :actor => actor_ref(action), :subject => subject_ref(action),
+              :author => h(author)).html_safe
+    else
+      t("node_actions.publish",
+         :actor => actor_ref(action), :subject => subject_ref(action),
+         :revision => revision_ref(action, "node_actions.revision_new")).html_safe
+    end
   end
 
   def summarize_move action

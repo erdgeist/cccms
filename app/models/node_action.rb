@@ -82,21 +82,23 @@ class NodeAction < ApplicationRecord
   # user agent, ever. Success only -- rejected attempts are not
   # logged.
 
-  def self.record!(node:, action:, user: nil, page: nil, locale: nil, **extra)
+  def self.record!(node:, action:, user: nil, page: nil, locale: nil,
+                    occurred_at: nil, inferred_from: nil, **extra)
     create!(
-      :node        => node,
-      :page        => page,
-      :user        => user,
-      :action      => action,
-      :locale      => locale,
-      :occurred_at => Time.now,
-      :metadata    => {
+      :node          => node,
+      :page          => page,
+      :user          => user,
+      :action        => action,
+      :locale        => locale,
+      :occurred_at   => occurred_at || Time.now,
+      :inferred_from => inferred_from,
+      :metadata      => {
         "username"                 => user&.login,
         "human_readable_node_name" => Globalize.with_locale(I18n.default_locale) {
                                         node&.head&.title || node&.draft&.title
                                       },
       }.merge(extra.stringify_keys)
-   )
+    )
   end
 
   # Computes the publish-entry diff between an outgoing head and the
@@ -113,7 +115,10 @@ class NodeAction < ApplicationRecord
     title_of = ->(page) { page&.translations&.find_by(:locale => default)&.title }
     diff = { :title => { "from" => title_of.call(old_page),
                          "to"   => title_of.call(new_page) } }
-    return diff unless old_page
+    unless old_page
+      diff[:author] = { "from" => nil, "to" => new_page.user&.login } if new_page.user
+      return diff
+    end
 
     old_author, new_author = old_page.user&.login, new_page.user&.login
     diff[:author] = { "from" => old_author, "to" => new_author } if old_author != new_author

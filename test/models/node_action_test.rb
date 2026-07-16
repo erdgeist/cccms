@@ -18,6 +18,12 @@ class NodeActionTest < ActiveSupport::TestCase
     assert_equal({ :title => { "from" => nil, "to" => "Erstausgabe" } }, diff)
   end
 
+  test "first publish carries the byline when the page has one" do
+    diff = NodeAction.head_diff(nil, build_page(:user => users(:quentin)))
+
+    assert_equal({ "from" => nil, "to" => users(:quentin).login }, diff[:author])
+  end
+
   test "title pair is always present, even when unchanged" do
     diff = NodeAction.head_diff(build_page, build_page)
 
@@ -108,5 +114,15 @@ class NodeActionTest < ActiveSupport::TestCase
     new_page = build_page(en: { :title => "Same" })
 
     assert_nil NodeAction.head_diff(old_page, new_page)[:translation_diff]
+  end
+
+  test "record! passes provenance and historical timestamps through" do
+    long_ago = 2.years.ago
+    action = NodeAction.record!(:node => nil, :action => "publish",
+                                 :occurred_at => long_ago,
+                                 :inferred_from => "from_page_revision")
+
+    assert_equal "from_page_revision", action.inferred_from
+    assert_in_delta long_ago.to_f, action.occurred_at.to_f, 1.0
   end
 end

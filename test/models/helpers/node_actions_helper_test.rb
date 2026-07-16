@@ -21,12 +21,13 @@ class NodeActionsHelperTest < ActionView::TestCase
                                        "human_readable_node_name" => "Subject" }.merge(metadata))
   end
 
-  test "publish renders the title pair" do
+  test "publish renders the revision sentence, not the titles" do
     out = action_summary(entry("publish",
       { "via" => "draft", "title" => { "from" => "Old", "to" => "New" } }))
 
     assert_includes out, "quentin"
-    assert_includes out, "Old"
+    assert_includes out, "new revision"
+    assert_not_includes out, "Old"
   end
 
   test "first publish uses its own sentence" do
@@ -68,10 +69,8 @@ class NodeActionsHelperTest < ActionView::TestCase
 
   test "metadata values are escaped" do
     out = action_summary(entry("publish",
-      { "human_readable_node_name" => "<b>bold</b>",
-        "title" => { "from" => "<script>alert(1)</script>", "to" => "x" } }))
+      { "human_readable_node_name" => "<b>bold</b>" }))
 
-    assert_not_includes out, "<script>"
     assert_not_includes out, "<b>"
   end
 
@@ -81,5 +80,28 @@ class NodeActionsHelperTest < ActionView::TestCase
       :user => users(:quentin)))
 
     assert_includes out, "<a "
+  end
+
+  test "details are guarded off when nothing but an unchanged title is present" do
+    unchanged = entry("publish", { "title" => { "from" => "Same", "to" => "Same" } })
+    changed   = entry("publish", { "title" => { "from" => "Old",  "to" => "New" } })
+
+    assert_not action_details?(unchanged)
+    assert action_details?(changed)
+  end
+
+  test "first publish with a byline names the author" do
+    out = action_summary(entry("publish",
+      { "title" => { "from" => nil, "to" => "New" },
+        "author" => { "from" => nil, "to" => "quentin" } }))
+
+    assert_includes out, "author"
+  end
+
+  test "create entries with their flat title render and are guarded off details" do
+    e = entry("create", { "title" => "Initial", "path" => "a/b" })
+
+    assert_includes action_summary(e), "a/b"
+    assert_not action_details?(e)
   end
 end

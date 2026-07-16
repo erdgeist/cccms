@@ -6,17 +6,22 @@
 
 <%= will_paginate @actions %>
 
-<ul id="node_action_list">
+<table id="node_action_list">
   <% @actions.each do |action| %>
-    <li class="node_action node_action--<%= action.action %>">
-      <span class="node_action_time"><%= l(action.occurred_at, :format => :ccc) %></span>
-      <% if action.inferred_from %>
-        <span class="node_action_inferred" title="<%= action.inferred_from %>"><%= t("node_actions.backfilled") %></span>
-      <% end %>
-      <span class="node_action_summary"><%= action_summary(action) %></span>
-      <%= render "change_details", :action_entry => action if action.metadata["translation_diff"].present? %>
-    </li>
+    <tr class="node_action node_action--<%= action.action %>">
+      <td class="node_action_time"><%= action.occurred_at.strftime("%Y-%m-%d %H:%M") %></td>
+      <td class="node_action_body">
+        <%= action_summary(action) %>
+        <% if action.node_id && params[:node_id].blank? %>
+          <%= link_to t("node_actions.node_history"), admin_log_path(:node_id => action.node_id), :class => "node_action_zoom" %>
+        <% end %>
+        <% if action.inferred_from %>
+          <span class="node_action_inferred" title="<%= action.inferred_from %>"><%= t("node_actions.backfilled") %></span>
+        <% end %>
+        <%= render "change_details", :action_entry => action if action_details?(action) %>
+      </td>
+    </tr>
   <% end %>
-</ul>
+</table>
 
 <%= will_paginate @actions %>
