@@ -72,24 +72,20 @@ function initSearchPicker(options) {
           found = false;
           for (var i = 0; i < data.length; i++) {
             (function(node) {
-              var link;
+              var anchor = $("<a>").attr("href", onSelect ? "#" : node.node_path);
+              anchor.append(document.createTextNode(node.title || ""));
+              anchor.append($("<span>", { "class": "result_path" }).text(node.unique_name || ""));
+              var link = $("<p>").append(anchor);
+
               if (onSelect) {
-                link = $(
-                  "<p><a href='#'>" + node.title +
-                    "<span class='result_path'>" + node.unique_name + "</span></a></p>"
-                );
-                link.find("a").bind("click", function() {
+                anchor.bind("click", function() {
                   onSelect(node);
                   results.slideUp();
                   results.empty();
                   return false;
                 });
-              } else {
-                link = $(
-                  "<p><a href='" + node.node_path + "'>" + node.title +
-                    "<span class='result_path'>" + node.unique_name + "</span></a></p>"
-                );
               }
+
               results.append(link);
               found = true;
             })(data[i]);
@@ -150,7 +146,9 @@ dashboard_search = {
           results.append("<p class='search_group_label'>Tags</p>");
           var tag_row = $("<div class='search_tag_row'></div>");
           data.tags.forEach(function(tag) {
-            tag_row.append("<a class='search_tag_pill' href='" + tag.tag_path + "'>" + tag.name + "</a>");
+            tag_row.append(
+              $("<a>", { "class": "search_tag_pill" }).attr("href", tag.tag_path).text(tag.name || "")
+            );
             found = true;
           });
           results.append(tag_row);
@@ -159,10 +157,10 @@ dashboard_search = {
         if (data.nodes.length) {
           results.append("<p class='search_group_label'>Pages</p>");
           data.nodes.forEach(function(node) {
-            results.append(
-              "<p><a href='" + node.node_path + "'>" + node.title +
-                "<span class='result_path'>" + node.unique_name + "</span></a></p>"
-            );
+            var anchor = $("<a>").attr("href", node.node_path);
+            anchor.append(document.createTextNode(node.title || ""));
+            anchor.append($("<span>", { "class": "result_path" }).text(node.unique_name || ""));
+            results.append($("<p>").append(anchor));
             found = true;
           });
         }

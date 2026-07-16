@@ -15,12 +15,9 @@ related_assets = {
       renderResults: function(data, results) {
         var found = false;
         data.forEach(function(asset) {
-          var item = $(
-            "<a href='#' class='related_asset_result'>" +
-              "<img src='" + asset.thumb_url + "' alt=''>" +
-              "<span>" + asset.name + "</span>" +
-            "</a>"
-          );
+          var item = $("<a>", { href: "#", "class": "related_asset_result" });
+          item.append($("<img>", { src: asset.thumb_url, alt: "" }));
+          item.append($("<span>").text(asset.name || ""));
           item.bind("click", function() {
             related_assets.attach(asset.id, createUrl, list);
             return false;
