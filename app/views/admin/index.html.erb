@@ -40,13 +40,36 @@
     <%= link_to "See all drafts →", drafts_nodes_path %>
   </div>
 
-  <div class="dashboard_widget">
+  <!--div class="dashboard_widget">
     <h3>Recent changes</h3>
     <ul>
       <%= render partial: "nodes/recent_change_item", collection: @recent_changes, as: :node %>
     </ul>
     <%= link_to "See all recent changes →", recent_nodes_path %>
+  </div-->
+
+  <div class="dashboard_widget">
+    <h3>Recent changes</h3>
+    <table id="node_action_list">
+      <% @actions.each do |action| %>
+        <tr class="node_action node_action--<%= action.action %>">
+          <td class="node_action_time"><%= raw(action.occurred_at.strftime("%Y-%m-%d %H:%M").gsub(" ", "<br/>")) %></td>
+          <td class="node_action_body">
+            <%= action_summary(action) %>
+            <% if action.node_id && params[:node_id].blank? %>
+              <%= link_to t("node_actions.node_history"), admin_log_path(:node_id => action.node_id), :class => "node_action_zoom" %>
+            <% end %>
+            <% if action.inferred_from %>
+              <span class="node_action_inferred" title="<%= action.inferred_from %>"><%= t("node_actions.backfilled") %></span>
+            <% end %>
+            <%= render "node_actions/change_details", :action_entry => action if action_details?(action) %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+    <%= link_to "See all recent changes →", admin_log_path %>
   </div>
+
 </div>
 
 <div id="dashboard_housekeeping">
