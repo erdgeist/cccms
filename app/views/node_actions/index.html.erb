@@ -1,0 +1,22 @@
+<h1><%= t("node_actions.heading") %></h1>
+
+<% if params[:node_id].present? || params[:user_id].present? %>
+  <p><%= link_to t("node_actions.show_all"), admin_log_path %></p>
+<% end %>
+
+<%= will_paginate @actions %>
+
+<ul id="node_action_list">
+  <% @actions.each do |action| %>
+    <li class="node_action node_action--<%= action.action %>">
+      <span class="node_action_time"><%= l(action.occurred_at, :format => :ccc) %></span>
+      <% if action.inferred_from %>
+        <span class="node_action_inferred" title="<%= action.inferred_from %>"><%= t("node_actions.backfilled") %></span>
+      <% end %>
+      <span class="node_action_summary"><%= action_summary(action) %></span>
+      <%= render "change_details", :action_entry => action if action.metadata["translation_diff"].present? %>
+    </li>
+  <% end %>
+</ul>
+
+<%= will_paginate @actions %>

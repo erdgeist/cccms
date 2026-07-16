@@ -1,0 +1,27 @@
+<details class="node_action_details">
+  <summary><%= t("node_actions.show_changes") %></summary>
+  <table>
+    <% action_entry.metadata["translation_diff"].each do |locale, diff| %>
+      <tr>
+        <th><%= locale.upcase %></th>
+        <td>
+          <% case diff["status"] %>
+          <% when "added" %>
+            <%= t("node_actions.locale_added", :title => diff.dig("title", "to")) %>
+          <% when "removed" %>
+            <%= t("node_actions.locale_removed", :title => diff.dig("title", "from")) %>
+          <% else %>
+            <% if diff["title"] %>
+              <%= diff.dig("title", "from") %> → <%= diff.dig("title", "to") %>
+            <% end %>
+            <%= t("node_actions.abstract_changed") if diff["abstract_changed"] %>
+            <%= t("node_actions.body_changed") if diff["body_changed"] %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <% if action_entry.page && action_entry.node %>
+    <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page) %>
+  <% end %>
+</details>

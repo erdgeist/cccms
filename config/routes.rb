@@ -86,6 +86,7 @@ Cccms::Application.routes.draw do
       match 'menu_search'      => 'admin#menu_search',      :as => :admin_menu_search,      :via => :get
       match 'conventions'      => 'admin#conventions',      :as => :admin_conventions,      :via => :get
       match 'dashboard_search' => 'admin#dashboard_search', :as => :admin_dashboard_search, :via => :get
+      match 'log'              => 'node_actions#index',     :as => :admin_log,              :via => :get
     end
 
     match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete
