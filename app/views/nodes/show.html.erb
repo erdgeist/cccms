@@ -170,11 +170,11 @@
       </div>
     </div>
 
-    <div class="node_description">Revisions</div>
+    <div class="node_description">History</div>
     <div class="node_content node_info_group">
       <details>
         <summary>
-          <%= pluralize(@node.pages.count, 'revision', 'revisions') %>
+          <%= pluralize(@node.pages.count, 'published revision', 'published revisions') %>
         </summary>
         <ul>
           <% @node.pages.order(:revision).each do |page| %>
@@ -182,8 +182,7 @@
           <% end %>
         </ul>
       </details>
-      <p class="revisions_full_history_link"><%= link_to 'Full history (diff / restore)', node_revisions_path(@node) %></p>
-      <p class)"revisions_full_history_link"><%= link_to t("node_actions.heading"), admin_log_path(:node_id => @node.id) %></p>
+      <p class="revisions_full_history_link"><%= link_to 'Revision history (diff / restore)', node_revisions_path(@node) %> | <%= link_to t("node_actions.heading"), admin_log_path(:node_id => @node.id) %></p>
     </div>
 
 
