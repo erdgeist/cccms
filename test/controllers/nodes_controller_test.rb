@@ -647,4 +647,19 @@ class NodesControllerTest < ActionController::TestCase
     assert_select ".sitemap_node_actions", :text => /Create Child/
     assert_select ".sitemap_node_actions", :text => /Revisions/, :count => 0
   end
+
+  test "create logs a create NodeAction with path and title" do
+    login_as :quentin
+
+    assert_difference "NodeAction.count" do
+      post :create, params: { :kind => "generic", :title => "Brand New", :parent_id => Node.root.id }
+    end
+
+    action = NodeAction.last
+    assert_equal "create",               action.action
+    assert_equal users(:quentin),        action.user
+    assert_equal Node.last,              action.node
+    assert_equal "Brand New",            action.metadata["title"]
+    assert_equal Node.last.unique_name,  action.metadata["path"]
+  end
 end

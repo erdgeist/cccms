@@ -50,6 +50,9 @@ class NodesController < ApplicationController
       @node.draft.save!
 
       @node.update!(default_template_name: config[:template]) if config && config[:template]
+      NodeAction.record!(:node => @node, :page => @node.draft, :user => current_user,
+                          :action => "create",
+                          :title => params[:title], :path => @node.unique_name)
 
       redirect_to(edit_node_path(@node))
     else

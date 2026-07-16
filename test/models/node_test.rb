@@ -633,6 +633,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal node.head, action.page
     assert_equal @user1, action.user
     assert_equal "publish", action.action
+    assert_equal "draft", action.metadata["via"]
   end
 
   test "publish_draft! called with no user logs no actor, not a guessed one" do
@@ -692,7 +693,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal count_before, NodeAction.count
   end
 
-  test "publish_draft! records the title's from/to in metadata" do
+  test "publish_draft! records the title diff in metadata" do
     node = create_node_with_published_page
     Globalize.with_locale(:de) { node.head.update!(:title => "Original Title") }
     find_or_create_draft(node, @user1)
@@ -701,7 +702,63 @@ class NodeTest < ActiveSupport::TestCase
     node.publish_draft!(@user1)
 
     action = NodeAction.last
-    assert_equal "Original Title", action.metadata["from"]
-    assert_equal "New Title", action.metadata["to"]
+    assert_equal "draft",          action.metadata["via"]
+    assert_equal "Original Title", action.metadata.dig("title", "from")
+    assert_equal "New Title",      action.metadata.dig("title", "to")
+  end
+
+  test "publishing a staged slug change logs a move with the path pair" do
+    node = create_node_with_published_page
+    path_before = node.unique_name
+    node.staged_slug = "moved-#{node.slug}"
+    node.save!
+    publish_count_before = NodeAction.where(:action => "publish").count
+
+    node.publish_draft!(@user1)
+
+    node.reload
+    assert_not_equal path_before, node.unique_name
+
+    action = NodeAction.where(:action => "move").last
+    assert_equal node,             action.node
+    assert_equal @user1,           action.user
+    assert_equal path_before,      action.metadata.dig("path", "from")
+    assert_equal node.unique_name, action.metadata.dig("path", "to")
+
+    # No draft was pending: path change alone must not fabricate a publish.
+    assert_equal publish_count_before, NodeAction.where(:action => "publish").count
+  end
+
+  test "publishing a draft together with a staged move logs two entries" do
+    node = create_node_with_published_page
+    find_or_create_draft(node, @user1)
+    node.staged_slug = "relocated-#{node.slug}"
+    node.save!
+
+    assert_difference "NodeAction.count", 2 do
+      node.publish_draft!(@user1)
+    end
+
+    assert_equal %w[move publish],
+                 NodeAction.order(:id).last(2).map(&:action).sort
+  end
+
+  test "restore_revision! logs a publish via revision" do
+    node = create_node_with_published_page
+    Globalize.with_locale(:de) { node.head.update!(:title => "First") }
+    first_head = node.head
+    find_or_create_draft(node, @user1)
+    Globalize.with_locale(:de) { node.draft.update!(:title => "Second") }
+    node.publish_draft!(@user1)
+
+    node.restore_revision!(first_head.revision, @user1)
+
+    action = NodeAction.last
+    assert_equal "publish",   action.action
+    assert_equal "revision",  action.metadata["via"]
+    assert_equal first_head,  action.page
+    assert_equal @user1,      action.user
+    assert_equal "Second",    action.metadata.dig("title", "from")
+    assert_equal "First",     action.metadata.dig("title", "to")
   end
 end

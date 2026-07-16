@@ -83,18 +83,15 @@ class PageTranslationsControllerTest < ActionController::TestCase
     assert_equal "in progress", Globalize.with_locale(:en) { node.autosave.title }
   end
 
-  test "destroy logs a translation_destroy NodeAction" do
+  test "destroy removes the translation, logs nothing, and redirects" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "translation_destroy_log_test")
     Globalize.with_locale(:en) { node.draft.update!(:title => "English title") }
 
-    delete :destroy, params: { :node_id => node.id, :translation_locale => "en" }
+    assert_no_difference "NodeAction.count" do
+      delete :destroy, params: { :node_id => node.id, :translation_locale => "en" }
+    end
 
-    action = NodeAction.last
-    assert_equal node, action.node
-    assert_equal "en", action.locale
-    assert_equal "translation_destroy", action.action
-    assert_equal users(:quentin), action.user
     assert_redirected_to node_path(node)
   end
 end

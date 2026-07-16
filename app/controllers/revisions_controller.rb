@@ -49,7 +49,7 @@ class RevisionsController < ApplicationController
 
   def restore
     page = Page.find(params[:id])
-    page.node.restore_revision! page.revision
+    page.node.restore_revision! page.revision, current_user
     flash[:notice] = "Revision #{page.revision} restored"
     redirect_to node_path(page.node)
   end

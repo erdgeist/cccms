@@ -194,17 +194,19 @@ class Node < ApplicationRecord
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
 
+    path_before = self.unique_name
+
     ActiveRecord::Base.transaction do
       if self.draft
-        previous_title = self.head ? Globalize.with_locale(I18n.default_locale) { self.head.title } : nil
+        outgoing_head = self.head
         self.head = self.draft
         self.head.published_at ||= Time.now
         self.head.save!
         self.draft = nil
 
-        new_title = Globalize.with_locale(I18n.default_locale) { self.head.title }
         NodeAction.record!(:node => self, :page => self.head, :user => current_user,
-                            :action => "publish", :from => previous_title, :to => new_title)
+                            :action => "publish", :via => "draft",
+                            **NodeAction.head_diff(outgoing_head, self.head))
       end
 
       if staged_slug && (staged_slug != slug)
@@ -231,17 +233,28 @@ class Node < ApplicationRecord
       self.reload
       self.update_unique_name
       self.send(:update_unique_names_of_children)
+      if self.unique_name != path_before
+        NodeAction.record!(:node => self, :user => current_user, :action => "move",
+                            :path => { "from" => path_before, "to" => self.unique_name })
+      end
       self.unlock!
       self
     end
   end
 
-  def restore_revision! revision
-    if page = self.pages.find_by_revision(revision)
+  def restore_revision! revision, current_user = nil
+    page = self.pages.find_by_revision(revision)
+    return nil unless page
+
+    ActiveRecord::Base.transaction do
+      outgoing_head = self.head
       self.head = page
-      self.save
-    else
-      nil
+      self.save!
+
+      NodeAction.record!(:node => self, :page => page, :user => current_user,
+                          :action => "publish", :via => "revision",
+                          **NodeAction.head_diff(outgoing_head, page))
+      self
     end
   end
 
