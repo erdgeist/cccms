@@ -27,12 +27,7 @@ class NodesController < ApplicationController
   def new
     @node = Node.new node_params
     @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
-    if params.has_key?(:parent_id)
-      @parent_id = params[:parent_id]
-      parent = Node.find(@parent_id)
-      @parent_name = parent.title
-      @parent_unique_name = parent.current_unique_name
-    end
+    @parent = Node.find(params[:parent_id]) if params.has_key?(:parent_id)
   end
 
   def create
@@ -57,10 +52,7 @@ class NodesController < ApplicationController
       redirect_to(edit_node_path(@node))
     else
       @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
-      if params[:parent_id].present?
-        @parent_id = params[:parent_id]
-        @parent_name = Node.find(@parent_id).title
-      end
+      @parent = Node.find(params[:parent_id]) if params.has_key?(:parent_id)
       render :new
     end
   end

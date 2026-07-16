@@ -32,8 +32,8 @@
   <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
     <div class="node_description">Parent</div>
     <div class="node_content">
-      <%= text_field_tag :parent_search_term, @parent_name %>
-      <%= hidden_field_tag :parent_id, @parent_id, data: { unique_name: @parent_unique_name } %>
+      <%= text_field_tag :parent_search_term, @parent&.title %>
+      <%= hidden_field_tag :parent_id, @parent&.id, data: { unique_name: @parent&.current_unique_name } %>
       <div id="parent_search_results" class="search_results"></div>
     </div>
   </div>

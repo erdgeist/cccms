@@ -268,9 +268,12 @@ class Node < ApplicationRecord
     parent.nil? ? [slug] : parent.path_to_root.push(slug)
   end
 
+  def computed_unique_name
+    path = path_to_root[1..-1].join("/") # excluding root
+  end
+
   def current_unique_name
-    path = path_to_root[1..-1] # excluding root
-    self.unique_name = path.join("/")
+    self.unique_name = computed_unique_name
   end
 
   def update_unique_name
