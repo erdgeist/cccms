@@ -21,8 +21,8 @@
       <div class="node_description">End time</div>
       <div class="node_content"><%= f.datetime_select :end_time %></div>
 
-      <div class="node_description">Rrule</div>
-      <div class="node_content"><%= f.text_field :rrule %></div>
+      <div class="node_description">Recurrence</div>
+      <div class="node_content"><%= render "rrule_builder", f: f %></div>
 
       <div class="node_description">Title</div>
       <div class="node_content">
@@ -53,4 +53,3 @@
     </div>
   </div>
 <% end %>
-
