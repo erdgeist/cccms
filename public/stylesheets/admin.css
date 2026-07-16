@@ -37,10 +37,13 @@ td {
    depend on this rule for vertical padding. table.node_table td resets
    padding-top/bottom to 0 explicitly and does not depend on it. */
 
-input[type=text], textarea {
+input[type=text],
+input[type=password],
+textarea {
   font-size: 1rem;
   font-family: Helvetica;
   border: 1px solid #989898;
+  border-radius: 2px;
 }
 
 select {
