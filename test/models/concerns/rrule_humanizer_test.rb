@@ -47,6 +47,24 @@ class RruleHumanizerTest < ActiveSupport::TestCase
     assert_equal "Every second-to-last Thursday of the month", humanize("FREQ=MONTHLY;BYDAY=-2TH", :en)
   end
 
+  test "monthly selected weeks" do
+    assert_equal "Jeden ersten Dienstag und dritten Dienstag im Monat",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU")
+    assert_equal "Every first Tuesday and third Tuesday of the month",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU", :en)
+  end
+
+  test "monthly fifth weekday" do
+    assert_equal "Jeden fünften Dienstag im Monat", humanize("FREQ=MONTHLY;BYDAY=5TU")
+    assert_equal "Every fifth Tuesday of the month", humanize("FREQ=MONTHLY;BYDAY=5TU", :en)
+  end
+
+  test "monthly weekday excluding one ordinal" do
+    rrule = "FREQ=MONTHLY;BYDAY=1TU,3TU,4TU,5TU"
+    assert_equal "Jeden Dienstag im Monat, außer dem zweiten Dienstag", humanize(rrule)
+    assert_equal "Every Tuesday of the month, except the second Tuesday", humanize(rrule, :en)
+  end
+
   test "monthly no byday" do
     assert_equal "Monatlich", humanize("FREQ=MONTHLY")
     assert_equal "Monthly", humanize("FREQ=MONTHLY", :en)

@@ -56,8 +56,14 @@
           <div id="rrule_monthly_options" style="display: none;">
             <p><label><%= check_box_tag "rrule_monthly_ordinal" %> On a specific weekday each month</label></p>
             <p id="rrule_ordinal_fields" style="display: none;">
-              <%= select_tag "rrule_ordinal", options_for_select([["1.", 1], ["2.", 2], ["3.", 3], ["4.", 4], ["letzter", -1], ["vorletzter", -2]]) %>
+              <%= select_tag "rrule_ordinal", options_for_select([["1.", 1], ["2.", 2], ["3.", 3], ["4.", 4], ["letzter", -1], ["vorletzter", -2], ["Selected weeks", "custom"]]) %>
               <%= select_tag "rrule_ordinal_day", options_for_select(%w[MO TU WE TH FR SA SU].map { |c| [RruleHumanizer::WEEKDAY_NAMES[:de][c], c] }) %>
+            </p>
+            <p id="rrule_custom_ordinal_fields" style="display: none;">
+              Weeks of the month:
+              <% (1..5).each do |ordinal| %>
+                <label><%= check_box_tag "rrule_custom_ordinal_#{ordinal}" %> <%= ordinal %>.</label>
+              <% end %>
             </p>
           </div>
           <p>

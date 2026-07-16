@@ -15,8 +15,8 @@ module RruleHumanizer
   }.freeze
 
   ORDINAL_NAMES = {
-    de: { 1=>"ersten", 2=>"zweiten", 3=>"dritten", 4=>"vierten", -1=>"letzten", -2=>"vorletzten" },
-    en: { 1=>"first", 2=>"second", 3=>"third", 4=>"fourth", -1=>"last", -2=>"second-to-last" }
+    de: { 1=>"ersten", 2=>"zweiten", 3=>"dritten", 4=>"vierten", 5=>"fünften", -1=>"letzten", -2=>"vorletzten" },
+    en: { 1=>"first", 2=>"second", 3=>"third", 4=>"fourth", 5=>"fifth", -1=>"last", -2=>"second-to-last" }
   }.freeze
 
   MONTH_NAMES = {
@@ -35,11 +35,27 @@ module RruleHumanizer
     ordinals = ORDINAL_NAMES[loc] || ORDINAL_NAMES[:en]
     months   = MONTH_NAMES[loc]   || MONTH_NAMES[:en]
 
-    days = byday&.split(",")&.map do |d|
+    byday_values = byday&.split(",")
+    days = byday_values&.map do |d|
      if d =~ /^(-?\d+)([A-Z]{2})$/
         "#{ordinals[$1.to_i]} #{weekdays[$2]}"
       else
         weekdays[d]
+      end
+    end
+
+    excluded_monthly_ordinal = nil
+    excluded_monthly_weekday = nil
+    if freq == "MONTHLY" && byday_values.present?
+      ordinal_days = byday_values.map { |d| d.match(/^([1-5])([A-Z]{2})$/) }
+      if ordinal_days.all?
+        positions = ordinal_days.map { |match| match[1].to_i }.uniq.sort
+        weekdays_in_rule = ordinal_days.map { |match| match[2] }.uniq
+        missing_positions = (1..5).to_a - positions
+        if positions.size == 4 && weekdays_in_rule.size == 1 && missing_positions.size == 1
+          excluded_monthly_ordinal = missing_positions.first
+          excluded_monthly_weekday = weekdays_in_rule.first
+        end
       end
     end
 
@@ -59,14 +75,22 @@ module RruleHumanizer
             interval == 2 ? "Alle zwei Wochen" : "Wöchentlich"
           end
         when "MONTHLY"
-          days ? "Jeden #{days.join(' und ')} im Monat" : "Monatlich"
+          if excluded_monthly_ordinal
+            "Jeden #{weekdays[excluded_monthly_weekday]} im Monat, außer dem #{ordinals[excluded_monthly_ordinal]} #{weekdays[excluded_monthly_weekday]}"
+          else
+            days ? "Jeden #{days.join(' und ')} im Monat" : "Monatlich"
+          end
         end
       else
         case freq
         when "WEEKLY"
           days ? "#{interval == 2 ? 'Every other' : 'Every'} #{days.join(' and ')}" : (interval == 2 ? "Every other week" : "Weekly")
         when "MONTHLY"
-          days ? "Every #{days.join(' and ')} of the month" : "Monthly"
+          if excluded_monthly_ordinal
+            "Every #{weekdays[excluded_monthly_weekday]} of the month, except the #{ordinals[excluded_monthly_ordinal]} #{weekdays[excluded_monthly_weekday]}"
+          else
+            days ? "Every #{days.join(' and ')} of the month" : "Monthly"
+          end
         end
       end
     return nil unless base

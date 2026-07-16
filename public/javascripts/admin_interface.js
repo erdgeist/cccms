@@ -415,8 +415,10 @@ rrule_builder = {
     });
     $("#rrule_monthly_ordinal").bind("change", function() {
       $("#rrule_ordinal_fields").toggle($(this).is(":checked"));
+      rrule_builder.toggle_custom_ordinal_fields();
       rrule_builder.sync();
     });
+    $("#rrule_ordinal").bind("change", rrule_builder.toggle_custom_ordinal_fields);
     $("#rrule_exclude_month").bind("change", function() {
       $("#rrule_excluded_month").toggle($(this).is(":checked"));
       rrule_builder.sync();
@@ -431,6 +433,12 @@ rrule_builder = {
   show_monthly_options : function() {
     $("#rrule_weekly_options").hide();
     $("#rrule_monthly_options").show();
+  },
+
+  toggle_custom_ordinal_fields : function() {
+    $("#rrule_custom_ordinal_fields").toggle(
+      $("#rrule_monthly_ordinal").is(":checked") && $("#rrule_ordinal").val() === "custom"
+    );
   },
 
   sync : function() {
@@ -448,7 +456,16 @@ rrule_builder = {
     } else {
       parts.push("FREQ=MONTHLY");
       if ($("#rrule_monthly_ordinal").is(":checked")) {
-        parts.push("BYDAY=" + $("#rrule_ordinal").val() + $("#rrule_ordinal_day").val());
+        var ordinal = $("#rrule_ordinal").val();
+        if (ordinal === "custom") {
+          var customDays = [];
+          $("input[id^='rrule_custom_ordinal_']:checked").each(function() {
+            customDays.push($(this).attr("id").replace("rrule_custom_ordinal_", "") + $("#rrule_ordinal_day").val());
+          });
+          if (customDays.length > 0) parts.push("BYDAY=" + customDays.join(","));
+        } else {
+          parts.push("BYDAY=" + ordinal + $("#rrule_ordinal_day").val());
+        }
       }
     }
 
@@ -483,8 +500,33 @@ rrule_builder = {
     } else if (parts.FREQ === "MONTHLY") {
       $("input[name='rrule_freq'][value='monthly']").prop("checked", true);
       rrule_builder.show_monthly_options();
+      var ordinalDays = parts.BYDAY && parts.BYDAY.split(",");
+      var customOrdinalDay = null;
+      var customOrdinals = [];
+      var customOrdinalsValid = ordinalDays && ordinalDays.length > 0;
+      if (customOrdinalsValid) {
+        ordinalDays.forEach(function(value) {
+          var customMatch = value.match(/^([1-5])([A-Z]{2})$/);
+          if (!customMatch || (customOrdinalDay && customOrdinalDay !== customMatch[2])) {
+            customOrdinalsValid = false;
+            return;
+          }
+          customOrdinalDay = customMatch[2];
+          customOrdinals.push(customMatch[1]);
+        });
+      }
+
       var match = parts.BYDAY && parts.BYDAY.match(/^(-?\d+)([A-Z]{2})$/);
-      if (match) {
+      if (customOrdinalsValid && (customOrdinals.length > 1 || customOrdinals[0] === "5")) {
+        $("#rrule_monthly_ordinal").prop("checked", true);
+        $("#rrule_ordinal_fields").show();
+        $("#rrule_ordinal").val("custom");
+        $("#rrule_ordinal_day").val(customOrdinalDay);
+        customOrdinals.forEach(function(ordinal) {
+          $("#rrule_custom_ordinal_" + ordinal).prop("checked", true);
+        });
+        rrule_builder.toggle_custom_ordinal_fields();
+      } else if (match) {
         $("#rrule_monthly_ordinal").prop("checked", true);
         $("#rrule_ordinal_fields").show();
         $("#rrule_ordinal").val(match[1]);
