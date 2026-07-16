@@ -89,7 +89,6 @@ de:
     backfilled: "rekonstruiert"
     show_changes: "Änderungen an Übersetzungen"
     view_revision: "Diese Revision ansehen"
-    actor_self: "du"
     unknown: "%{actor} hat %{action} auf %{subject} aus"
     publish: "%{actor} hat %{subject} veröffentlicht, (vorher: %{from})"
     publish_first: "%{actor} hat %{subject} zum ersten Mal veröffentlicht"

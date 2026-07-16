@@ -19,9 +19,6 @@ module NodeActionsHelper
   private
 
   def actor_ref action
-    if action.user && respond_to?(:current_user) && action.user == current_user
-      return t("node_actions.actor_self")
-    end
     action.user ? link_to(h(action.actor_name), admin_log_path(:user_id => action.user_id))
                 : h(action.actor_name)
   end
