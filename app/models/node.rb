@@ -269,7 +269,7 @@ class Node < ApplicationRecord
   end
 
   def computed_unique_name
-    path = path_to_root[1..-1].join("/") # excluding root
+    path_to_root[1..-1].join("/") # excluding root
   end
 
   def current_unique_name
