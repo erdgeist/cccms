@@ -98,7 +98,7 @@ module Authentication
       end
 
       def password_required?
-        crypted_password.blank? || !password.blank?
+        (crypted_password.blank? && password_digest.blank?) || !password.blank?
       end
     end # instance methods
   end

@@ -118,6 +118,14 @@ class UserTest < ActiveSupport::TestCase
     # Second login should now use password_digest.
     assert_equal user, User.authenticate("quentin", "monkey")
   end
+
+  def test_migrated_user_can_be_updated_without_password
+    user = users(:quentin)
+    assert_equal user, User.authenticate("quentin", "monkey")
+    user.reload
+
+    assert user.update(:email => "quentin@example.org")
+  end
   
 protected
   def create_user(options = {})
