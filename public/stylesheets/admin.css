@@ -1502,12 +1502,12 @@ div#image_browser ul li {
    Action log
    ============================================================ */
 
-#dashboard_widget td.node_action_time {
-  white-space: wrap;
-}
-
 #node_action_list td.node_action_body {
   border-bottom: 1px solid #f1f1f1;
+}
+
+.dashboard_widget .node_action_time span {
+  display: block;
 }
 
 #node_action_list td.node_action_time {

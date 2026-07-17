@@ -6,7 +6,6 @@ class AdminController < ApplicationController
 
   def index
     @drafts = Node.drafts_and_autosaves(current_user_id: current_user.id).limit(5)
-    @recent_changes = Node.recently_changed.limit(5)
     @actions = NodeAction.order(:occurred_at => :desc, :id => :desc).limit(5)
   end
 

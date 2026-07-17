@@ -7,21 +7,7 @@
 <%= will_paginate @actions %>
 
 <table id="node_action_list">
-  <% @actions.each do |action| %>
-    <tr class="node_action node_action--<%= action.action %>">
-      <td class="node_action_time"><%= action.occurred_at.strftime("%Y-%m-%d %H:%M") %></td>
-      <td class="node_action_body">
-        <%= action_summary(action) %>
-        <% if action.node_id && params[:node_id].blank? %>
-          <%= link_to t("node_actions.node_history"), admin_log_path(:node_id => action.node_id), :class => "node_action_zoom" %>
-        <% end %>
-        <% if action.inferred_from %>
-          <span class="node_action_inferred" title="<%= action.inferred_from %>"><%= t("node_actions.backfilled") %></span>
-        <% end %>
-        <%= render "change_details", :action_entry => action if action_details?(action) %>
-      </td>
-    </tr>
-  <% end %>
+  <%= render partial: "node_actions/action_row", collection: @actions, as: :action %>
 </table>
 
 <%= will_paginate @actions %>
