@@ -283,6 +283,87 @@ class Node < ApplicationRecord
     end
   end
 
+
+  # Moves this node and its subtree into the Trash. Demotes every head
+  # in the subtree first (aggregators and search operate on heads
+  # regardless of tree position); where a node has no draft, the former
+  # head becomes its draft so content stays editable and restorable --
+  # otherwise the former head remains a plain revision. One log entry,
+  # at the root, carrying the leaving-public-view snapshot.
+  def trash! current_user = nil
+    return nil if in_trash?
+    raise ActiveRecord::RecordInvalid.new(self), "The Trash node itself cannot be trashed" if trash_node?
+
+    ActiveRecord::Base.transaction do
+      path_before        = unique_name
+      was_published      = head_id.present?
+      final_published_at = head&.published_at
+
+      demoted = 0
+      ([self] + descendants.to_a).each do |node|
+        next unless node.head_id
+        former        = node.head
+        node.head     = nil
+        node.draft_id = former.id if node.draft_id.nil?
+        node.save!
+        demoted += 1
+      end
+
+      self.reload
+      move_to_child_of(Node.trash)
+      self.reload
+      update_unique_name
+      send(:update_unique_names_of_children)
+      unlock!
+
+      metadata = { :path => { "from" => path_before, "to" => unique_name } }
+      metadata[:was_published]      = true if was_published
+      metadata[:final_published_at] = final_published_at.iso8601 if final_published_at
+      metadata[:demoted_heads]      = demoted if demoted > 0
+
+      NodeAction.record!(:node => self, :user => current_user, :action => "trash", **metadata)
+      self
+    end
+  end
+
+  # Returns the node to the living tree under a chosen parent. The
+  # subtree comes back exactly as it sits in the Trash: all drafts,
+  # nothing published. Republication is a separate, witnessed act
+  # per node.
+  def restore_from_trash! new_parent, current_user = nil
+    return nil unless in_trash?
+
+    if new_parent.nil? || new_parent == self || descendants.include?(new_parent) ||
+       new_parent.trash_node? || new_parent.in_trash?
+      raise ActiveRecord::RecordInvalid.new(self), "Restore target must be a living node"
+    end
+
+    ActiveRecord::Base.transaction do
+      path_before = unique_name
+      move_to_child_of(new_parent)
+      self.reload
+      update_unique_name
+      send(:update_unique_names_of_children)
+
+      NodeAction.record!(:node => self, :user => current_user, :action => "restore_from_trash",
+                          :path => { "from" => path_before, "to" => unique_name })
+      self
+    end
+  end
+
+  # Final deletion. Only from inside the Trash, never with children.
+  # The log entry is written first, in the same transaction; node_id
+  # nullifies when the row dies, and the metadata carries what remains.
+  def destroy_from_trash! current_user = nil
+    raise ActiveRecord::RecordInvalid.new(self), "Nodes are only destroyed from the Trash" unless in_trash?
+
+    ActiveRecord::Base.transaction do
+      NodeAction.record!(:node => self, :user => current_user, :action => "destroy",
+                          :path => unique_name)
+      destroy!
+    end
+  end
+
   # returns an array with all parts of a unique_name rather than a string
   def unique_path
     unique_name.to_s.split("/")

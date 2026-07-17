@@ -8,79 +8,76 @@ class NodeAction < ApplicationRecord
 
   # == Metadata contract ==
   #
-  # metadata is written once at creation and never updated. It is the
+  # metadata is written once at creation, never updated. It is the
   # single place anything that must survive deletion of the referenced
   # rows lives; node_id/page_id/user_id are lookup and ordering only.
-  # All keys are strings. Pairs are always {"from" => x, "to" => y} --
-  # never _old/_new suffixes. Optional pairs are written only when the
-  # two sides differ; required keys are always present. All titles and
-  # names are read pinned to I18n.default_locale unless inside a
-  # locale-keyed block.
+  # All keys are strings. Pairs are always {"from" => x, "to" => y}.
+  # Optional pairs only when the sides differ; booleans only when
+  # true; required keys always present. Titles and names are read
+  # pinned to I18n.default_locale unless inside a locale-keyed block.
   #
   # Baseline, every entry (written here, not by call sites):
   #   "username"                 -- actor's login at write time
   #   "human_readable_node_name" -- node title, default locale
   #
   # "create":
-  #   "title" -- initial title, default locale
-  #   "path"  -- unique path at creation time. Historical value only:
-  #              later renames/moves do NOT update old entries. Never
-  #              use as a join key; node_id is the join key while the
-  #              node lives.
+  #   "title" -- initial title, flat string (NOT a pair)
+  #   "path"  -- unique path at creation, flat string. Historical
+  #              value only; never a join key.
   #
-  # "publish" (any promotion of a page to head; the diff against the
-  # outgoing head is computed BEFORE head is re-pointed, over the
-  # union of both pages' locales, by the shared diff function also
-  # used by the backfill):
-  #   "via"    -- "draft" (ordinary publish) | "revision" (rollback
-  #               via restore_revision!). Always written; absent
-  #               means a pre-contract entry.
-  #   "title"  -- pair, always present. "from" is null on a first
-  #               publish (no outgoing head).
-  #   "author" -- pair, only when the byline (page.user) changed
-  #   "tags"   -- pair of arrays, only when changed
-  #   "assets_changed", "template_changed"
-  #            -- booleans, only when true; page_id links to the
-  #               revision for the real diff (never stored here)
+  # "publish" (any promotion to head; diff computed BEFORE head is
+  # re-pointed, over the union of both pages' locales, by head_diff --
+  # shared with the backfill):
+  #   "via"    -- "draft" | "revision" (rollback). Always written;
+  #               absent means a pre-contract entry.
+  #   "title"  -- pair, always; "from" null on first publish
+  #   "author" -- pair, when the byline changed (incl. first publish)
+  #   "tags"   -- pair of arrays, when changed
+  #   "assets_changed", "template_changed",
   #   "abstract_changed", "body_changed"
-  #            -- booleans for the default locale, only when true
-  #   "translation_diff" -- only when any non-default locale differs:
+  #            -- the last two for the default locale; page_id links
+  #               to the revision for the real diff (never stored)
+  #   "translation_diff" -- only when a non-default locale differs:
   #     { "<locale>" => {
-  #         "status"           -- "added" | "removed" | "changed"
-  #         "title"            -- pair; "from" null when added,
-  #                               "to" null when removed
-  #         "abstract_changed", "body_changed" -- booleans, only when
-  #                               true, only for status "changed"
+  #         "status" -- "added" | "removed" | "changed"
+  #         "title"  -- pair, only when it differs; "from" null when
+  #                     added, "to" null when removed
+  #         "abstract_changed", "body_changed" -- status "changed" only
   #     } }
   #
-  # "move" (reparenting and/or unique-path change; one entry at the
-  # subtree root, descendants get none -- a descendant's own zoomed
-  # view will not show path history):
-  #   "path"  -- pair
+  # "move" (reparent and/or path change; one entry at the subtree
+  # root, descendants get none):
+  #   "path" -- pair
   #
-  # Reserved for the Trash feature, final shape decided there:
-  # "demote" (via "trash" | "depublish"; carries the leaving-public-
-  # view snapshot: head presence, final published_at), "trash",
-  # "restore_from_trash", "destroy" (final path only; publish-state
-  # snapshot lives on the entry that removed it from public view).
-  # Whether trash logs one entry or a trash+demote pair is decided
-  # with that feature.
+  # "trash" (subtree into the Trash; every head in the subtree is
+  # demoted first; one entry at the root; snapshots the
+  # leaving-public-view state, since Trash holds no heads and destroy
+  # can no longer know):
+  #   "path"               -- pair; "from" doubles as the restore hint
+  #   "was_published"      -- boolean
+  #   "demoted_heads"      -- integer count, only when positive
+  #   "final_published_at" -- ISO8601 string, only when present
   #
-  # Backfilled entries mirror this vocabulary exactly. Their diff
-  # content is computed, not guessed (consecutive revisions still
-  # exist); only actor (from page.editor) and occurred_at are
-  # inferred, and inferred_from names the heuristic per entry
-  # ("from_page_revision", "from_published_at_heuristic").
-  # inferred_from null = witnessed live.
+  # "restore_from_trash" (reparent back to a living node; returns as
+  # drafts, republication is a separate witnessed act):
+  #   "path" -- pair
   #
-  # The "locale" column is currently written by no verb (it belonged
-  # to the retired translation_destroy) and is retained for backfill
-  # or future draft-scoped verbs.
+  # "destroy" (only from inside the Trash, never with children; the
+  # entry is written in the same transaction before the row dies):
+  #   "path" -- final path, flat string (create-symmetric)
   #
-  # This log records; it does not undo. Reversibility stays in
-  # restore_revision! and the revisions system. No IP, session, or
-  # user agent, ever. Success only -- rejected attempts are not
-  # logged.
+  # Reserved: "demote" (via "trash" | "depublish") for an explicit
+  # depublish workflow, if ever built.
+  #
+  # Backfilled entries mirror this vocabulary; diff content is
+  # computed, only actor (page.editor) and occurred_at are inferred,
+  # inferred_from names the heuristic ("from_node_created_at",
+  # "from_page_revision"). Null = witnessed live.
+  #
+  # The "locale" column is written by no verb; retained.
+  #
+  # This log records; it does not undo. No IP, session, or user
+  # agent, ever. Success only.
 
   def self.record!(node:, action:, user: nil, page: nil, locale: nil,
                     occurred_at: nil, inferred_from: nil, **extra)
