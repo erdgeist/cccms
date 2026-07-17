@@ -114,4 +114,11 @@ class RruleHumanizerTest < ActiveSupport::TestCase
   test "wday_abbr falls back to :de for an unrecognized locale" do
     assert_equal "Mo", RruleHumanizer.wday_abbr(Time.parse("2026-07-06"), :fr)
   end
+
+  test "monthly two selected weeks" do
+    assert_equal "Jeden ersten und dritten Dienstag im Monat",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU")
+    assert_equal "Every first and third Tuesday of the month",
+      humanize("FREQ=MONTHLY;BYDAY=1TU,3TU", :en)
+  end
 end
