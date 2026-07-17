@@ -25,7 +25,7 @@ class Page < ApplicationRecord
   belongs_to :node, optional: true
   belongs_to :user, optional: true
   belongs_to :editor, :class_name => "User", optional: true
-  has_many   :related_assets
+  has_many   :related_assets, :dependent => :destroy
   has_many   :assets, -> { order("position ASC") }, :through => :related_assets
 
   # Named scopes

@@ -4,9 +4,12 @@ class Node < ApplicationRecord
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
-  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, :dependent => :destroy, optional: true
-  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, :dependent => :destroy, optional: true
+  belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, optional: true
+  belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, optional: true
+  # Autosave pages carry no node_id, so has_many :pages does not cover
+  # them -- this dependent: :destroy is their only cleanup on node destroy.
   belongs_to  :autosave, :class_name => "Page", :foreign_key => :autosave_id, :dependent => :destroy, optional: true
+
   has_many    :permissions, :dependent => :destroy
   has_many    :events, :dependent => :destroy
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
