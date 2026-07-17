@@ -12,9 +12,10 @@ class Node < ApplicationRecord
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
 
   # Callbacks
-  after_create  :initialize_empty_page
-  before_save   :check_for_changed_slug
-  after_save    :update_unique_names_of_children
+  after_create   :initialize_empty_page
+  before_save    :check_for_changed_slug
+  after_save     :update_unique_names_of_children
+  before_destroy :refuse_destroy_with_children
 
   # Validations
   validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? || slug.blank? }
@@ -364,6 +365,15 @@ class Node < ApplicationRecord
     scope.order(
       Arel.sql(sanitize_sql_array(["CASE WHEN locking_user_id = ? THEN 0 ELSE 1 END, updated_at DESC", current_user_id]))
     )
+  end
+
+  # Nodes are never destroyed recursively
+  # Descendants must be removed or reparented individually first.
+  # The Trash feature will be the ordinary path to deletion.
+  def refuse_destroy_with_children
+    return unless children.exists?
+    errors.add(:base, "Cannot destroy a node that still has children")
+    throw :abort
   end
 
   def self.recently_changed

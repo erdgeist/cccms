@@ -9,8 +9,6 @@ module NestedTree
   included do
     belongs_to :parent, class_name: name, foreign_key: :parent_id, optional: true, inverse_of: :children
     has_many :children, -> { order(:id) }, class_name: name, foreign_key: :parent_id, inverse_of: :parent
-
-    before_destroy :delete_descendants
   end
 
   class_methods do
@@ -76,11 +74,5 @@ module NestedTree
 
   def move_to_child_of(new_parent)
     update!(parent_id: new_parent.id)
-  end
-
-  private
-
-  def delete_descendants
-    self.class.where(id: descendants.pluck(:id)).delete_all
   end
 end

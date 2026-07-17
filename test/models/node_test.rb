@@ -770,4 +770,41 @@ class NodeTest < ActiveSupport::TestCase
     node.default_template_name = "standard_template"
     assert node.valid?
   end
+
+  test "destroying a node with children is refused" do
+    parent = Node.root.children.create!(:slug => "destroy_guard_parent")
+    parent.children.create!(:slug => "destroy_guard_child")
+
+    assert_no_difference "Node.count" do
+      assert_not parent.destroy
+    end
+    assert parent.errors[:base].any?
+  end
+
+  test "destroying a childless node leaves no orphaned pages or asset links" do
+    node = create_node_with_published_page
+    page_ids = node.pages.pluck(:id)
+    asset = Asset.create!(:name => "destroy cascade probe",
+                          :upload_file_name    => "test_image.png",
+                          :upload_content_type => "image/png",
+                          :upload_file_size    => 49854,
+                          :upload_updated_at   => Time.current)
+    node.head.related_assets.create!(:asset_id => asset.id, :position => 1)
+
+    node.destroy
+
+    assert_equal 0, Page.where(:id => page_ids).count
+    assert_equal 0, RelatedAsset.where(:page_id => page_ids).count
+  end
+
+  test "destroying a node also removes its autosave page" do
+    node = create_node_with_published_page
+    node.lock_for_editing!(@user1)
+    node.autosave!({:title => "in flight"}, @user1)
+    autosave_id = node.autosave_id
+
+    node.destroy
+
+    assert_equal 0, Page.where(:id => autosave_id).count
+  end
 end
