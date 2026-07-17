@@ -807,4 +807,58 @@ class NodeTest < ActiveSupport::TestCase
 
     assert_equal 0, Page.where(:id => autosave_id).count
   end
+
+  test "Node.trash lazily creates the container exactly once" do
+    assert_difference "Node.count", 1 do
+      Node.trash
+    end
+    assert_no_difference "Node.count" do
+      assert_equal Node.trash, Node.trash
+    end
+    assert Node.trash.trash_node?
+    assert_not Node.trash.in_trash?
+  end
+
+  test "in_trash? walks the whole parent chain" do
+    child = Node.trash.children.create!(:slug => "trashed_thing")
+    grandchild = child.children.create!(:slug => "trashed_deeper")
+
+    assert child.in_trash?
+    assert grandchild.in_trash?
+    assert_not Node.root.children.create!(:slug => "living_thing").in_trash?
+  end
+
+  test "the reserved slug is refused for other root children, live and staged" do
+    Node.trash
+
+    assert_not Node.root.children.build(:slug => CccConventions::TRASH_SLUG).valid?
+    assert_not Node.root.children.build(:slug => "fine", :staged_slug => CccConventions::TRASH_SLUG).valid?
+    assert Node.trash.children.create!(:slug => "sub").children.build(:slug => CccConventions::TRASH_SLUG).valid?
+  end
+
+  test "the Trash node refuses rename, move, and destroy" do
+    trash = Node.trash
+    other = Node.root.children.create!(:slug => "not_the_trash")
+
+    trash.slug = "recycling"
+    assert_not trash.valid?
+
+    trash.reload.parent_id = other.id
+    assert_not trash.valid?
+
+    assert_no_difference "Node.count" do
+      assert_not trash.reload.destroy
+    end
+  end
+
+  test "a head cannot exist inside the Trash, and publishing there is refused" do
+    node = Node.trash.children.create!(:slug => "no_publish_here")
+    page = node.pages.create!
+
+    node.head = page
+    assert_not node.valid?
+
+    node.reload
+    assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft! }
+  end
 end

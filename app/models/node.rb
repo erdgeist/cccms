@@ -19,6 +19,7 @@ class Node < ApplicationRecord
   before_save    :check_for_changed_slug
   after_save     :update_unique_names_of_children
   before_destroy :refuse_destroy_with_children
+  before_destroy :refuse_destroying_trash_node
 
   # Validations
   validates_length_of     :slug, :within => 1..255,    :unless => -> { parent_id.nil? || slug.blank? }
@@ -26,6 +27,8 @@ class Node < ApplicationRecord
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
 
+  validate :reserved_slug_stays_reserved
+  validate :no_head_inside_trash
   validates :default_template_name,
             :inclusion => { :in => ->(_) { Page.custom_templates } },
             :allow_nil => true,
@@ -55,6 +58,15 @@ class Node < ApplicationRecord
     end
 
     nil
+  end
+
+  # The Trash container node. Lazily self-creating and idempotent, so
+  # every environment acquires it on first touch.
+  # Never call from validations. the positional predicates below
+  # exist for that.
+  def self.trash
+    root.children.find_by(:slug => CccConventions::TRASH_SLUG) ||
+      root.children.create!(:slug => CccConventions::TRASH_SLUG)
   end
 
   # Instance Methods
@@ -203,6 +215,10 @@ class Node < ApplicationRecord
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
 
+    if in_trash? || trash_node?
+      raise ActiveRecord::RecordInvalid.new(self), "Cannot publish a node in the Trash"
+    end
+
     path_before = self.unique_name
 
     ActiveRecord::Base.transaction do
@@ -322,6 +338,20 @@ class Node < ApplicationRecord
     autosave || draft || head
   end
 
+  def trash_node?
+    parent&.root? && slug == CccConventions::TRASH_SLUG
+  end
+
+  # Inside the Trash subtree. False for the Trash node itself.
+  def in_trash?
+    current = parent
+    while current
+      return true if current.trash_node?
+      current = current.parent
+    end
+    false
+  end
+
   # Returns immutable node id for all new nodes so that the atom feed entry ids
   # stay the same eventhough the slug or positions changes.
   # Can be removed after a year or so ;)
@@ -434,5 +464,37 @@ class Node < ApplicationRecord
           child.send(:update_unique_names_of_children)
         end
       end
+    end
+
+  private
+
+    def reserved_slug_stays_reserved
+      if parent&.root? && !trash_node_already_me?
+        errors.add(:slug, "is reserved for the Trash") if slug == CccConventions::TRASH_SLUG
+        errors.add(:staged_slug, "is reserved for the Trash") if staged_slug == CccConventions::TRASH_SLUG
+      end
+
+      if persisted? && slug_was == CccConventions::TRASH_SLUG && Node.find(id).trash_node?
+        errors.add(:slug, "of the Trash node cannot change") if slug_changed?
+        errors.add(:parent_id, "of the Trash node cannot change") if parent_id_changed?
+        errors.add(:staged_slug, "must stay empty on the Trash node") if staged_slug.present?
+        errors.add(:staged_parent_id, "must stay empty on the Trash node") if staged_parent_id.present?
+      end
+    end
+
+    def trash_node_already_me?
+      existing = Node.root&.children&.find_by(:slug => CccConventions::TRASH_SLUG)
+      existing.nil? || existing.id == id
+    end
+
+    def no_head_inside_trash
+      return unless head_id.present?
+      errors.add(:head_id, "cannot exist inside the Trash") if in_trash? || trash_node?
+    end
+
+    def refuse_destroying_trash_node
+      return unless trash_node?
+      errors.add(:base, "The Trash node cannot be destroyed")
+      throw :abort
     end
 end
