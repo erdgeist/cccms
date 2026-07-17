@@ -53,6 +53,8 @@ Cccms::Application.routes.draw do
           put :revoke_shared_preview
           put :autosave
           put :revert
+          put :trash
+          put :restore_from_trash
         end
 
         resources :translations, controller: 'page_translations',

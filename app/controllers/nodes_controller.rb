@@ -13,7 +13,9 @@ class NodesController < ApplicationController
                               :publish,
                               :unlock,
                               :autosave,
-                              :revert
+                              :revert,
+                              :trash,
+                              :restore_from_trash
                             ]
 
   around_action :pin_to_default_locale, :only => [:show, :edit, :update, :autosave]
@@ -139,8 +141,39 @@ class NodesController < ApplicationController
     redirect_to node_path(@node)
   end
 
+ def trash
+    if @node.trash!(current_user)
+      flash[:notice] = "Page has been moved to the Trash"
+      redirect_to node_path(Node.trash)
+    else
+      flash[:notice] = "Page is already in the Trash"
+      redirect_to node_path(@node)
+    end
+  rescue ActiveRecord::RecordInvalid, LockedByAnotherUser => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
+  end
+
+  def restore_from_trash
+    parent = Node.find(params[:parent_id])
+    @node.restore_from_trash!(parent, current_user)
+    flash[:notice] = "Page has been restored from the Trash"
+    redirect_to node_path(@node)
+  rescue ActiveRecord::RecordNotFound
+    flash[:error] = "Restore target not found"
+    redirect_to node_path(@node)
+  rescue ActiveRecord::RecordInvalid => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
+  end
+
   def destroy
-    @node.destroy
+    @node.destroy_from_trash!(current_user)
+    flash[:notice] = "Page has been permanently deleted"
+    redirect_to node_path(Node.trash)
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
   end
 
   def publish

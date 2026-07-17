@@ -672,4 +672,56 @@ class NodesControllerTest < ActionController::TestCase
     assert_equal "Brand New",            action.metadata["title"]
     assert_equal Node.last.unique_name,  action.metadata["path"]
   end
+
+  test "trash moves the node and redirects to the Trash" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "trash_me")
+
+    put :trash, params: { :id => node.id }
+
+    assert_redirected_to node_path(Node.trash)
+    assert node.reload.in_trash?
+  end
+
+  test "trashing the Trash node itself is refused" do
+    login_as :quentin
+
+    put :trash, params: { :id => Node.trash.id }
+
+    assert_redirected_to node_path(Node.trash)
+    assert flash[:error].present?
+  end
+
+  test "restore_from_trash reparents to the given parent" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "restore_me")
+    node.trash!(users(:quentin))
+    target = Node.root.children.create!(:slug => "restore_home")
+
+    put :restore_from_trash, params: { :id => node.id, :parent_id => target.id }
+
+    assert_redirected_to node_path(node)
+    assert_equal target, node.reload.parent
+  end
+
+  test "destroy refuses a node outside the Trash" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "not_deletable_here")
+
+    delete :destroy, params: { :id => node.id }
+
+    assert Node.exists?(node.id)
+    assert flash[:error].present?
+  end
+
+  test "destroy deletes a trashed node and redirects to the Trash" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "deletable")
+    node.trash!(users(:quentin))
+
+    delete :destroy, params: { :id => node.id }
+
+    assert_not Node.exists?(node.id)
+    assert_redirected_to node_path(Node.trash)
+  end
 end
