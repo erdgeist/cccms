@@ -73,8 +73,7 @@ class ContentControllerTest < ActionController::TestCase
   def test_nonexistant_custom_template_defaults_to_standard_template
     new_node = create_node_under_root "fnord"
     draft = find_or_create_draft(new_node, @user1)
-    draft.template_name = "huchibu"
-    draft.save
+    draft.update_column(:template_name, "huchibu")
     new_node.publish_draft!
     
     get :render_page, params: { :locale => 'de', :page_path => ["fnord"] }

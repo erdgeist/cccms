@@ -11,6 +11,16 @@ class Page < ApplicationRecord
 
   translates :title, :abstract, :body # Globalize2
 
+  # Template names render as filesystem paths; only names actually
+  # present in the public template directory are acceptable. Validated
+  # only on change so legacy rows whose template file has since
+  # vanished stay saveable -- valid_template already falls back to
+  # standard_template for those at render time.
+  validates :template_name,
+            :inclusion => { :in => ->(_) { Page.custom_templates } },
+            :allow_nil => true,
+            :if        => :template_name_changed?
+
   # Associations
   belongs_to :node, optional: true
   belongs_to :user, optional: true
@@ -77,7 +87,10 @@ class Page < ApplicationRecord
         .paginate(:page => page, :per_page => options[:limit])
     end
 
-    scope.order("#{options[:order_by]} #{direction}")
+    column = options[:order_by].to_s.sub(/\Apages\./, "")
+    column = "id" unless %w[id published_at created_at updated_at].include?(column)
+
+    scope.order("pages.#{column} #{direction}")
       .paginate(:page => page, :per_page => options[:limit])
   end
 

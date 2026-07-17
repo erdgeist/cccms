@@ -22,6 +22,11 @@ class Node < ApplicationRecord
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
 
+  validates :default_template_name,
+            :inclusion => { :in => ->(_) { Page.custom_templates } },
+            :allow_nil => true,
+            :if        => :default_template_name_changed?
+
   # Class methods
 
   # Returns a page for a given node. If no revision is supplied, it returns

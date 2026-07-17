@@ -761,4 +761,13 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal "Second",    action.metadata.dig("title", "from")
     assert_equal "First",     action.metadata.dig("title", "to")
   end
+
+  test "default_template_name rejects values not present in the template directory" do
+    node = Node.root.children.build(:slug => "template_guard_test",
+                                     :default_template_name => "../../layouts/admin")
+    assert_not node.valid?
+
+    node.default_template_name = "standard_template"
+    assert node.valid?
+  end
 end

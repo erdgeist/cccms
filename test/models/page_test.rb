@@ -370,4 +370,36 @@ class PageTest < ActiveSupport::TestCase
     assert en_entry[:changed]
     refute en_entry[:exists_there]
   end
+
+  test "aggregate ignores order_by values outside the allowlist" do
+    sql = Page.aggregate(:order_by => "pages.id; DROP TABLE pages--").to_sql
+
+    assert_not_includes sql, "DROP"
+    assert_includes sql, "pages.id ASC"
+  end
+
+  test "aggregate accepts allowlisted order columns, bare or prefixed" do
+    assert_includes Page.aggregate(:order_by => "published_at").to_sql,
+                    "pages.published_at ASC"
+    assert_includes Page.aggregate(:order_by => "pages.published_at").to_sql,
+                    "pages.published_at ASC"
+  end
+
+  test "template_name rejects values not present in the template directory" do
+    page = Page.create!(:title => "Template guard")
+
+    page.template_name = "../../partials/_article"
+    assert_not page.valid?
+
+    page.template_name = "standard_template"
+    assert page.valid?
+  end
+
+  test "a stale legacy template_name does not block unrelated saves" do
+    page = Page.create!(:title => "Stale template")
+    page.update_column(:template_name, "long_deleted_template")
+
+    page.reload
+    assert page.update(:abstract => "still saveable")
+  end
 end

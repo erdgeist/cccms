@@ -140,7 +140,7 @@ class NodesControllerTest < ActionController::TestCase
       :page => {
         :title => "Hello",
         :body => "There",
-        :template_name => "Foobar"
+        :template_name => "title_only"
       }
     }
 
@@ -148,7 +148,17 @@ class NodesControllerTest < ActionController::TestCase
     test_node.reload
     assert_equal "Hello", test_node.head.title
     assert_equal "There", test_node.head.body
-    assert_equal "Foobar", test_node.head.template_name
+    assert_equal "title_only", test_node.head.template_name
+  end
+
+  def test_update_rejects_a_template_name_not_on_disk
+    test_node = Node.root.children.create! :slug => "test_node"
+    login_as :quentin
+    put :update, params: { :id => test_node.id,
+                           :page => { :title => "Hello", :template_name => "Foobar" } }
+
+    test_node.reload
+    assert_not_equal "Foobar", test_node.draft&.template_name
   end
 
   test "publish draft with staged_slug unqueal slug" do
