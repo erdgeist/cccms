@@ -44,6 +44,7 @@ Cccms::Application.routes.draw do
           get :mine
           get :chapters
           get :sitemap
+          get :trashed
         end
 
         member do

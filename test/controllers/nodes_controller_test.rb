@@ -427,11 +427,11 @@ class NodesControllerTest < ActionController::TestCase
   test "show never renders a destroy link for events" do
     login_as :quentin
     node = create_node_with_published_page
-    Event.create!(node_id: node.id, start_time: Time.now, end_time: Time.now + 1.hour)
+    event = Event.create!(node_id: node.id, start_time: Time.now, end_time: Time.now + 1.hour)
 
     get :show, params: { id: node.id }
     assert_response :success
-    assert_select "form.button_to.destructive", count: 0
+    assert_select "form[action=?]", event_path(event), count: 0
   end
 
   test "reverting from nodes#show returns to the show page, not the editor, even if a draft remains" do
@@ -479,7 +479,8 @@ class NodesControllerTest < ActionController::TestCase
     login_as :quentin
     get :show, params: { :id => node.id }
     assert_response :success
-    assert_select "form.destructive", :count => 0
+    assert_select "form[action=?]", revert_node_path(node), count: 0
+    assert_select "form[action=?]", trash_node_path(node), count: 1
   end
 
   test "drafts includes a never-published node with only a draft" do
@@ -679,7 +680,7 @@ class NodesControllerTest < ActionController::TestCase
 
     put :trash, params: { :id => node.id }
 
-    assert_redirected_to node_path(Node.trash)
+    assert_redirected_to trashed_nodes_path
     assert node.reload.in_trash?
   end
 
@@ -722,6 +723,26 @@ class NodesControllerTest < ActionController::TestCase
     delete :destroy, params: { :id => node.id }
 
     assert_not Node.exists?(node.id)
-    assert_redirected_to node_path(Node.trash)
+    assert_redirected_to trashed_nodes_path
+  end
+
+  test "trash lists trashed subtree roots" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "listed_in_trash")
+    node.trash!(users(:quentin))
+
+    get :trashed
+    assert_response :success
+    assert_select "a[href=?]", node_path(node)
+  end
+
+  test "trashed rows carry provenance and a delete for childless roots" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "provenance_test")
+    node.trash!(users(:quentin))
+
+    get :trashed
+    assert_select "td", /quentin/
+    assert_select "form[action=?]", node_path(node), count: 1
   end
 end

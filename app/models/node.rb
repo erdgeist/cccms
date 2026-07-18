@@ -4,6 +4,7 @@ class Node < ApplicationRecord
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
+  has_many    :node_actions, :dependent => :nullify
   belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, optional: true
   belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, optional: true
   # Autosave pages carry no node_id, so has_many :pages does not cover
@@ -351,17 +352,47 @@ class Node < ApplicationRecord
     end
   end
 
-  # Final deletion. Only from inside the Trash, never with children.
-  # The log entry is written first, in the same transaction; node_id
-  # nullifies when the row dies, and the metadata carries what remains.
+  # Final deletion -- only from inside the Trash. Removes the whole
+  # subtree, deepest first, each node through a real destroy! so every
+  # per-node cascade runs (the categorical difference from the old
+  # delete_all nuke). refuse_destroy_with_children on bare destroy is
+  # untouched
+  # One log entry at the root, per the subtree rule, written before the
+  # rows die.
   def destroy_from_trash! current_user = nil
     raise ActiveRecord::RecordInvalid.new(self), "Nodes are only destroyed from the Trash" unless in_trash?
 
     ActiveRecord::Base.transaction do
-      NodeAction.record!(:node => self, :user => current_user, :action => "destroy",
-                          :path => unique_name)
-      destroy!
+      doomed = self_and_descendants_ordered_with_level
+                 .sort_by { |_, level| -level }
+                 .map(&:first)
+
+      metadata = { :path => unique_name }
+      metadata[:destroyed_descendants] = doomed.size - 1 if doomed.size > 1
+
+      NodeAction.record!(:node => self, :user => current_user, :action => "destroy", **metadata)
+      doomed.each(&:destroy!)
     end
+  end
+
+  # The most recent trash entry. Its path.from is the restore hint.
+  def last_trash_entry
+    node_actions.where(:action => "trash").order(:occurred_at => :desc, :id => :desc).first
+  end
+
+  # The node's pre-trash parent, if a living node still answers to
+  # that path. Nil when the parent was itself trashed (its unique_name
+  # changed) or deleted; a different node that has since taken over
+  # the path is a legitimate suggestion.
+  def suggested_restore_parent
+    from = last_trash_entry&.metadata&.dig("path", "from")
+    return nil unless from
+
+    parent_path = from.rpartition("/").first
+    return Node.root if parent_path.empty?
+
+    candidate = Node.find_by(:unique_name => parent_path)
+    candidate unless candidate.nil? || candidate.in_trash? || candidate.trash_node?
   end
 
   # returns an array with all parts of a unique_name rather than a string

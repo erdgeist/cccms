@@ -144,7 +144,7 @@ class NodesController < ApplicationController
  def trash
     if @node.trash!(current_user)
       flash[:notice] = "Page has been moved to the Trash"
-      redirect_to node_path(Node.trash)
+      redirect_to trashed_nodes_path
     else
       flash[:notice] = "Page is already in the Trash"
       redirect_to node_path(@node)
@@ -170,7 +170,8 @@ class NodesController < ApplicationController
   def destroy
     @node.destroy_from_trash!(current_user)
     flash[:notice] = "Page has been permanently deleted"
-    redirect_to node_path(Node.trash)
+    redirect_to trashed_nodes_path
+
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed => e
     flash[:error] = e.message
     redirect_to node_path(@node)
@@ -245,6 +246,11 @@ class NodesController < ApplicationController
   def sitemap
     @sitemap = Node.root.self_and_descendants_ordered_with_level
     @sitemap_descendant_counts = descendant_counts_for(@sitemap)
+  end
+
+  def trashed
+    @nodes = Node.trash.children.order(:slug)
+                 .paginate(:page => params[:page], :per_page => 50)
   end
 
   private

@@ -102,12 +102,25 @@ class NodeTrashTest < ActiveSupport::TestCase
     assert Node.exists?(node.id)
   end
 
-  test "destroy_from_trash! refuses nodes with children" do
-    node = create_node_with_published_page
-    node.children.create!(:slug => "still_here")
-    node.trash!(@user1)
+  test "destroy_from_trash! removes the whole subtree bottom-up with one entry" do
+    parent = create_node_with_published_page
+    child = parent.children.create!(:slug => "doomed_child")
+    grandchild = child.children.create!(:slug => "doomed_grandchild")
+    page_ids = [parent, child, grandchild].flat_map { |n| n.pages.pluck(:id) }
+    parent.trash!(@user1)
 
-    assert_raises(ActiveRecord::RecordNotDestroyed) { node.reload.destroy_from_trash!(@user1) }
+    assert_difference "NodeAction.count", 1 do
+      parent.reload.destroy_from_trash!(@user1)
+    end
+
+    assert_not Node.exists?(parent.id)
+    assert_not Node.exists?(child.id)
+    assert_not Node.exists?(grandchild.id)
+    assert_equal 0, Page.where(:id => page_ids).count
+
+    action = NodeAction.where(:action => "destroy").last
+    assert_equal 2, action.metadata["destroyed_descendants"]
+    assert_nil action.node_id
   end
 
   test "destroy_from_trash! logs an entry that survives the node" do
@@ -123,5 +136,23 @@ class NodeTrashTest < ActiveSupport::TestCase
     assert_equal final_path, action.metadata["path"]
     assert_equal "Doomed", action.subject_name
     assert_equal @user1, action.user
+  end
+
+  test "suggested_restore_parent finds the old parent while it lives" do
+    parent = Node.root.children.create!(:slug => "old_home")
+    node = parent.children.create!(:slug => "comes_back")
+    node.trash!(@user1)
+
+    assert_equal parent, node.reload.suggested_restore_parent
+
+    parent.trash!(@user1)
+    assert_nil node.reload.suggested_restore_parent
+  end
+
+  test "suggested_restore_parent is root for trashed top-level nodes" do
+    node = Node.root.children.create!(:slug => "was_top_level")
+    node.trash!(@user1)
+
+    assert_equal Node.root, node.reload.suggested_restore_parent
   end
 end

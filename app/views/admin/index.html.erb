@@ -68,5 +68,9 @@
     <%= link_to menu_items_path, class: "action_button" do %>
       <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> Navigation
     <% end %>
+    <% trash_count = Node.trash.children.count %>
+    <%= link_to trashed_nodes_path, class: "action_button" do %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %> Trash<%= " (#{trash_count})" if trash_count > 0 %>
+    <% end %>
   </div>
 </div>

@@ -884,6 +884,10 @@ form.button_to button[type="submit"] {
   margin-top: -5px;
 }
 
+.aligned_action_row .action_button.action_button_no_margin_top {
+  margin-top: 0;
+}
+
 /* ============================================================
    Page editor / metadata forms
    ============================================================ */
@@ -1538,4 +1542,35 @@ div#image_browser ul li {
   cursor: pointer;
   font-size: smaller;
   color: #777;
+}
+
+/* ============================================================
+   Trash section
+   ============================================================ */
+
+.restore_form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.restore_picker {
+  position: relative;
+}
+
+.restore_picker input[type=text] {
+  width: 22em;
+}
+
+.restore_picker .search_results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #989898;
+  border-top: none;
+  max-height: 20em;
+  overflow-y: auto;
 }

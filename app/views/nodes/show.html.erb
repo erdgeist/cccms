@@ -46,7 +46,7 @@
         <% end %>
 
         <% unless locked_by_other %>
-          <% if @node.draft && !@node.autosave %>
+          <% if @node.draft && !@node.autosave && !@node.in_trash? && !@node.trash_node? %>
             <div class="node_info_item">
               <%= button_to 'Publish', publish_node_path(@node), method: :put,
                     form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
@@ -62,6 +62,15 @@
             <% end %>
             </div>
           <% end %>
+          <% unless @node.trash_node? || @node.in_trash? || @node.root? %>
+            <div class="node_info_item">
+              <%= button_to trash_node_path(@node), method: :put,
+                    form: { data: { confirm: "Move this page and everything beneath it to the Trash? All published content in it will go offline." }, class: 'button_to destructive' } do %>
+                <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+                Move to Trash
+              <% end %>
+            </div>
+          <% end %>
         <% end %>
       </div>
 
@@ -69,6 +78,48 @@
         <span class="field_hint">Locked — see People below to unlock before editing, publishing, or discarding.</span>
       <% end %>
     </div>
+
+    <% if @node.in_trash? %>
+      <div class="node_description">Trash</div>
+      <div class="node_content node_info_group">
+        <div class="node_info_group_items">
+          <% if (entry = @node.last_trash_entry) && entry.metadata.dig("path", "from") %>
+            <div class="node_info_item">
+              <span class="node_info_label">Was at</span>
+              <%= entry.metadata.dig("path", "from") %>
+            </div>
+          <% end %>
+          <div class="node_info_item">
+            <span class="node_info_label">Restore to</span>
+            <% suggestion = @node.suggested_restore_parent %>
+            <%= form_tag restore_from_trash_node_path(@node), :method => :put, :class => "aligned_action_row" do %>
+              <div class="restore_picker">
+                <%= text_field_tag :restore_search_term,
+                      suggestion && (suggestion.head&.title || suggestion.draft&.title || suggestion.slug),
+                      :placeholder => "Search for a new parent…" %>
+                <div id="restore_search_results" class="search_results"></div>
+              </div>
+              <%= hidden_field_tag :parent_id, suggestion&.id %>
+              <%= submit_tag "Restore here", :class => "action_button action_button_no_margin_top" %>
+            <% end %>
+            <span class="field_hint">Restored pages come back unpublished. Republish each page deliberately.</span>
+          </div>
+        </div>
+        <div class="node_info_group_items">
+          <div class="node_info_item">
+            <% doomed_below = @node.descendants.count %>
+            <%= button_to node_path(@node), method: :delete,
+                  form: { data: { confirm: doomed_below > 0 ?
+                            "Delete this page and the #{doomed_below} pages beneath it permanently? This cannot be undone." :
+                            "Delete this page permanently? This cannot be undone." },
+                          class: 'button_to destructive' } do %>
+              <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
+              Delete permanently<%= " (including #{doomed_below} beneath)" if doomed_below > 0 %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
 
     <div class="node_description">Translations</div>
     <div class="node_content node_info_group">

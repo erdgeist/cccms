@@ -65,6 +65,8 @@ class NodeAction < ApplicationRecord
   # "destroy" (only from inside the Trash, never with children; the
   # entry is written in the same transaction before the row dies):
   #   "path" -- final path, flat string (create-symmetric)
+  #   "destroyed_descendants" -- integer, only when positive; one entry
+  #                              at the root, per the subtree rule.
   #
   # Reserved: "demote" (via "trash" | "depublish") for an explicit
   # depublish workflow, if ever built.

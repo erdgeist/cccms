@@ -1,0 +1,42 @@
+<h1>Trash</h1>
+
+<% if @nodes.empty? %>
+  <p class="field_hint">The Trash is empty.</p>
+<% else %>
+  <%= will_paginate @nodes %>
+  <table id="trashed_node_list">
+    <tr>
+      <th>Title</th>
+      <th>Was at</th>
+      <th>Trashed</th>
+      <th>Actions</th>
+    </tr>
+    <% @nodes.each do |node| %>
+      <% entry = node.last_trash_entry %>
+      <tr>
+        <% doomed_below = node.descendants.count %>
+        <td>
+          <%= link_to (node.draft&.title || node.slug), node_path(node) %><%= " (+ #{doomed_below} beneath)" if doomed_below > 0 %>
+        </td>
+        <td><%= entry&.metadata&.dig("path", "from") %></td>
+        <td>
+          <% if entry %>
+            <%= entry.occurred_at.strftime("%Y-%m-%d %H:%M") %> by <%= entry.actor_name %>
+          <% end %>
+        </td>
+        <td>
+          <%= button_to node_path(node), method: :delete,
+                        form: { data: { confirm: doomed_below > 0 ?
+                          "Delete \"#{node.draft&.title || node.slug}\" and the #{doomed_below} pages beneath it permanently? This cannot be undone." :
+                          "Delete \"#{node.draft&.title || node.slug}\" permanently? This cannot be undone." },
+                        class: 'button_to destructive' } do %>
+            <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
+            Delete permanently
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <%= will_paginate @nodes %>
+  <p class="field_hint">To restore a page, open it and pick a new parent in its Trash section.</p>
+<% end %>

@@ -262,6 +262,19 @@ move_to_search = {
   }
 };
 
+restore_search = {
+  initialize_search : function() {
+    initSearchPicker({
+      inputSelector: "#restore_search_term",
+      resultsSelector: "#restore_search_results",
+      onSelect: function(node) {
+        $("#restore_search_term").val(node.title);
+        $("#parent_id").val(node.node_id);
+      }
+    });
+  }
+};
+
 event_search = {
   initialize_search : function() {
     initSearchPicker({

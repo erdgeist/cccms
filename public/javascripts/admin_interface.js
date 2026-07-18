@@ -57,6 +57,10 @@ $(document).ready(function () {
     move_to_search.initialize_search();
   }
 
+  if ($("#restore_search_term").length != 0) {
+    restore_search.initialize_search();
+  }
+
   if ($("#event_node_search_term").length != 0) {
     event_search.initialize_search();
   }
