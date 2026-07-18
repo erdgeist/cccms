@@ -1543,6 +1543,7 @@ div#image_browser ul li {
 }
 
 .node_action_details summary {
+  margin-top: 0.2rem;
   cursor: pointer;
   font-size: smaller;
   color: #777;
