@@ -109,11 +109,11 @@ Cccms::Application.routes.draw do
 
     resource :session
 
-    get  'rss/updates',         :to => 'rss#updates', :as => :rss
-    get  'rss/updates.:format', :to => 'rss#updates', :as => :rss_feed,
+    get  'rss/updates',         :to => 'rss#updates', :as => :rss,      :defaults => { :format => :xml }
+    get  'rss/updates.:format', :to => 'rss#updates', :as => :rss_feed, :defaults => { :format => :xml },
            :constraints => { :format => /xml|rdf/ }
-    get  'rss/tags/:tag/updates',         :to => 'rss#tag_updates', :as => :rss_tag
-    get  'rss/tags/:tag/updates.:format', :to => 'rss#tag_updates', :as => :rss_tag_feed,
+    get  'rss/tags/:tag/updates',         :to => 'rss#tag_updates', :as => :rss_tag, :defaults => { :format => :xml }
+    get  'rss/tags/:tag/updates.:format', :to => 'rss#tag_updates', :as => :rss_tag_feed, :defaults => { :format => :xml },
            :constraints => { :format => /xml/ }
 
     match 'galleries/*page_path' => 'content#render_gallery', :via => :get
