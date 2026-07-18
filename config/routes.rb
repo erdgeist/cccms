@@ -92,6 +92,7 @@ Cccms::Application.routes.draw do
       match 'conventions'      => 'admin#conventions',      :as => :admin_conventions,      :via => :get
       match 'dashboard_search' => 'admin#dashboard_search', :as => :admin_dashboard_search, :via => :get
       match 'log'              => 'node_actions#index',     :as => :admin_log,              :via => :get
+      match 'boom'             => 'admin#boom',             :as => :admin_boom,             :via => :get
     end
 
     match '/logout'      => 'sessions#destroy', :as => :logout,       :via => :delete

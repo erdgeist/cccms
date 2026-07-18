@@ -71,4 +71,11 @@ class AdminController < ApplicationController
       end
     end
   end
+
+  # Deliberately raises, to verify the error-log tripwire end to end.
+  # Behind login_required like the rest of the controller; harmless --
+  # the visitor gets the ordinary 500 page.
+  def boom
+    raise "Deliberate test exception via admin/boom"
+  end
 end

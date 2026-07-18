@@ -3,8 +3,20 @@ class CspReportsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create
-    report = request.body.read(8192)
-    Rails.logger.warn("CSP violation: #{report}") if report.present?
+    request.body.rewind if request.body.respond_to?(:rewind)
+    raw = request.body.read(8192)
+    raw = request.raw_post if raw.blank?
+
+    report = (JSON.parse(raw)["csp-report"] rescue nil)
+
+    if report
+      directive = report["effective-directive"] || report["violated-directive"]
+      at = (URI.parse(report["document-uri"]).path rescue "unparsed")
+      Rails.logger.warn("CSP violation: #{directive} blocked=#{report['blocked-uri']} at=#{at}")
+    else
+      Rails.logger.warn("CSP violation: unparseable report (#{raw.to_s.bytesize} bytes)")
+    end
+
     head :no_content
   end
 end
