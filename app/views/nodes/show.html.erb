@@ -229,7 +229,10 @@
         </summary>
         <ul>
           <% @node.pages.order(:revision).each do |page| %>
-            <li><%= link_to "##{page.revision} — #{page.title} (#{page.editor.try(:login)}, #{page.updated_at})", node_revision_path(@node, page) %></li>
+            <li>
+              <%= link_to "##{page.revision} — #{page.title} (#{page.editor.try(:login)}, #{page.updated_at})", node_revision_path(@node, page) %>
+              <span class="revision_lifecycle"><%= revision_lifecycle_badges(@page_actions[page.id]) %></span>
+            </li>
           <% end %>
         </ul>
       </details>

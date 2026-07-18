@@ -114,4 +114,23 @@ class NodeActionsHelperTest < ActionView::TestCase
     assert_includes action_summary(restore), "club/new"
     assert_includes action_summary(doomed),  "trash/old"
   end
+
+  test "revision lifecycle badges cover create, publish, rollback, and inference" do
+    created   = entry("create",  { "title" => "x", "path" => "a/b" })
+    published = entry("publish", { "via" => "draft",    "title" => { "from" => nil, "to" => "x" } })
+    restored  = entry("publish", { "via" => "revision", "title" => { "from" => "y", "to" => "x" } })
+    restored.update!(:inferred_from => "from_page_revision")
+
+    out = revision_lifecycle_badges([created, published, restored])
+
+    assert_includes out, "created"
+    assert_includes out, "published"
+    assert_includes out, "restored"
+    assert_includes out, "quentin"
+    assert_includes out, "node_action_inferred"
+    assert_includes out, "<span"
+    assert_not_includes out, "&lt;span"
+
+    assert_equal "", revision_lifecycle_badges(nil)
+  end
 end

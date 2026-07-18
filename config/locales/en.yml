@@ -65,3 +65,6 @@ en:
     trash: "%{actor} moved %{subject} to the Trash (was at %{from})"
     restore_from_trash: "%{actor} restored %{subject} from the Trash to %{to}"
     destroy: "%{actor} permanently deleted %{subject} (last at %{path})"
+    revision_created: "created %{date} by %{actor}"
+    revision_published: "published %{date} by %{actor}"
+    revision_restored: "restored %{date} by %{actor}"

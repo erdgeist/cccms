@@ -62,6 +62,9 @@ class NodesController < ApplicationController
   def show
     @page = @node.draft || @node.head
     @translations = @page.translation_summary
+    @page_actions = NodeAction.where(:page_id => @node.pages.select(:id))
+                              .order(:occurred_at, :id)
+                              .group_by(&:page_id)
   end
 
   def edit

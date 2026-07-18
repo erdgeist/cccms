@@ -745,4 +745,16 @@ class NodesControllerTest < ActionController::TestCase
     assert_select "td", /quentin/
     assert_select "form[action=?]", node_path(node), count: 1
   end
+
+test "show annotates history rows with their lifecycle" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "history_annotation_test")
+    Globalize.with_locale(I18n.default_locale) { node.draft.update!(:title => "Annotated") }
+    node.publish_draft!(users(:quentin))
+
+    get :show, params: { :id => node.id }
+
+    assert_response :success
+    assert_select "span.revision_lifecycle", /quentin/
+  end
 end

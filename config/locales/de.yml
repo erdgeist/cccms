@@ -113,3 +113,6 @@ de:
     trash: "%{actor} hat %{subject} in den Papierkorb verschoben (vorher unter %{from})"
     restore_from_trash: "%{actor} hat %{subject} aus dem Papierkorb nach %{to} wiederhergestellt"
     destroy: "%{actor} hat %{subject} endgültig gelöscht (zuletzt unter %{path})"
+    revision_created: "angelegt am %{date} von %{actor}"
+    revision_published: "veröffentlicht am %{date} von %{actor}"
+    revision_restored: "wiederhergestellt am %{date} von %{actor}"

@@ -59,6 +59,32 @@ module NodeActionsHelper
     end
   end
 
+  def revision_lifecycle_badges actions
+    return "" if actions.blank?
+
+    badges = actions.map do |action|
+      key = case action.action
+            when "create"  then "node_actions.revision_created"
+            when "publish" then action.metadata["via"] == "revision" ?
+                                  "node_actions.revision_restored" :
+                                  "node_actions.revision_published"
+            end
+      next unless key
+
+      badge = h(t(key, :date => action.occurred_at.strftime("%Y-%m-%d"),
+                       :actor => action.actor_name))
+      if action.inferred_from
+        badge = safe_join([badge, content_tag(:span, t("node_actions.backfilled"),
+                                               :class => "node_action_inferred",
+                                               :title => action.inferred_from)], " ")
+      end
+      badge
+    end.compact
+
+    return "" if badges.empty?
+    safe_join(["— ", safe_join(badges, " · ")])
+  end
+
   private
 
   def revision_ref action, key
