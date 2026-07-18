@@ -31,7 +31,7 @@ class ContentController < ApplicationController
   def render_gallery
     unless @page.nil?
       @images = @page.assets.images
-      render :file => "content/gallery"
+      render :template => 'content/gallery'
     else
       head :not_found
     end

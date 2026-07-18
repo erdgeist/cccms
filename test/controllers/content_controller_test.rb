@@ -104,6 +104,16 @@ class ContentControllerTest < ActionController::TestCase
     assert_response :success
     File.write("/tmp/no_fill_response.html", @response.body)
   end
+
+  test "render_gallery renders for a published page" do
+    node = Node.root.children.create!(:slug => "gallery_render_test")
+    Globalize.with_locale(I18n.default_locale) { node.draft.update!(:title => "Galerie") }
+    node.publish_draft!
+
+    get :render_gallery, params: { :page_path => "gallery_render_test", :locale => "de" }
+
+    assert_response :success
+  end
   
   protected
   
