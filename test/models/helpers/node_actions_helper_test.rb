@@ -10,6 +10,10 @@ class NodeActionsHelperTest < ActionView::TestCase
     { :locale => nil }
   end
 
+  def icon(_name, **)
+    '<svg class="stub-icon"></svg>'.html_safe
+  end
+
   def teardown
     I18n.locale = @original_locale
   end
@@ -132,5 +136,11 @@ class NodeActionsHelperTest < ActionView::TestCase
     assert_not_includes out, "&lt;span"
 
     assert_equal "", revision_lifecycle_badges(nil)
+  end
+
+  test "verb icons map known verbs, distinguish rollbacks, and fall back" do
+    assert_includes verb_icon(entry("trash", { "path" => { "from" => "a", "to" => "t/a" } })), "node_action_icon--trash"
+    assert_includes verb_icon(entry("publish", { "via" => "revision" })), "node_action_icon--history"
+    assert_includes verb_icon(entry("frobnicate")), "node_action_icon--circle-dashed"
   end
 end

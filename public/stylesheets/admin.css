@@ -1544,6 +1544,12 @@ div#image_browser ul li {
   color: #777;
 }
 
+.node_action_icon {
+  color: #777;
+  margin-right: 0.35em;
+  vertical-align: text-bottom;
+}
+
 .revision_lifecycle {
   font-size: 0.85rem;
   color: #777;

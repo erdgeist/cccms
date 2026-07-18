@@ -1,6 +1,31 @@
 module NodeActionsHelper
   include ERB::Util
 
+  # One glyph per verb, rendered before the sentence in _action_row.
+  # Unknown verbs get the dashed circle -- the unknown-verb principle
+  # extended to iconography: the log outlives its vocabulary.
+  VERB_ICONS = {
+    "create"             => "file-plus",
+    "publish"            => "send",
+    "move"               => "arrows-move",
+    "trash"              => "trash",
+    "restore_from_trash" => "arrow-back-up",
+    "destroy"            => "trash-x",
+    "discard_autosave"   => "eraser",
+    "destroy_draft"      => "eraser",
+  }.freeze
+
+  def verb_icon action
+    name = if action.action == "publish" && action.metadata["via"] == "revision"
+      "history"
+    else
+      VERB_ICONS.fetch(action.action, "circle-dashed")
+    end
+    content_tag(:span, icon(name, library: "tabler", "aria-hidden": true),
+                :class => "node_action_icon node_action_icon--#{name}",
+                :title => action.action)
+  end
+
   # One sentence per entry, rendered from metadata alone, so entries
   # stay renderable after the rows they reference are gone. Live
   # associations only upgrade plain names to links. Every metadata
