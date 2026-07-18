@@ -393,6 +393,9 @@ class PageTest < ActiveSupport::TestCase
 
     page.template_name = "standard_template"
     assert page.valid?
+
+    page.template_name = ""
+    assert page.valid?
   end
 
   test "a stale legacy template_name does not block unrelated saves" do

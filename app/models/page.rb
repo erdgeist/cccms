@@ -17,9 +17,9 @@ class Page < ApplicationRecord
   # vanished stay saveable -- valid_template already falls back to
   # standard_template for those at render time.
   validates :template_name,
-            :inclusion => { :in => ->(_) { Page.custom_templates } },
-            :allow_nil => true,
-            :if        => :template_name_changed?
+            :inclusion   => { :in => ->(_) { Page.custom_templates } },
+            :allow_blank => true,
+            :if          => :template_name_changed?
 
   # Associations
   belongs_to :node, optional: true

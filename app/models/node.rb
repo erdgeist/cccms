@@ -31,9 +31,9 @@ class Node < ApplicationRecord
   validate :reserved_slug_stays_reserved
   validate :no_head_inside_trash
   validates :default_template_name,
-            :inclusion => { :in => ->(_) { Page.custom_templates } },
-            :allow_nil => true,
-            :if        => :default_template_name_changed?
+            :inclusion   => { :in => ->(_) { Page.custom_templates } },
+            :allow_blank => true,
+            :if          => :default_template_name_changed?
 
   # Everything outside the Trash subtree, the Trash node included.
   # Relies on unique_name being authoritative for tree position --
