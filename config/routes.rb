@@ -9,6 +9,8 @@ Cccms::Application.routes.draw do
       defaults: { page_path: ['home'] },
       constraints: { locale: /de|en/ }
 
+  post 'csp_reports' => 'csp_reports#create'
+
   # All application routes are scoped under an optional two-letter locale
   # prefix: /de/... and /en/... Both forms are valid; the prefix is omitted
   # for the default locale (:de) in generated URLs via default_url_options

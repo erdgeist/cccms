@@ -18,12 +18,12 @@
     <%= auto_discovery_link_tag(:atom, '/rss/updates.xml', title: "ATOM") %>
     <%= auto_discovery_link_tag(:rss,  '/rss/updates.rdf', title: "RSS") %>
 
-    <script>
-      (function() { document.addEventListener("DOMContentLoaded", function() {
-        if (localStorage.getItem('override-prefers-color-scheme', false))
+    <%= javascript_tag nonce: true do %>
+      document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('override-prefers-color-scheme'))
           document.getElementById("light-mode").checked = true;
-      }); })();
-    </script>
+      });
+    <% end %>
 
   </head>
 

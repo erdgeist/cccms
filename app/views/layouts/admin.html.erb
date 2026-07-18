@@ -7,19 +7,18 @@
     <%= csrf_meta_tags %>
   
     <title><%= "#{params[:controller]} | #{params[:action]}" %></title>
-    <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
     <%= javascript_include_tag 'admin_bundle' %>
     <%= tinymce_assets %>
     <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/admin.css') %>">
     <script src="<%= mtime_busted_path('/javascripts/admin_search.js') %>"></script>
     <script src="<%= mtime_busted_path('/javascripts/admin_interface.js') %>"></script>
     <script src="<%= mtime_busted_path('/javascripts/related_assets.js') %>"></script>
-    <script>
+    <%= javascript_tag nonce: true do %>
       var ADMIN_SEARCH_URL = "<%= admin_search_path %>";
       var ADMIN_MENU_SEARCH_URL = "<%= admin_menu_search_path %>";
       var PARAMETERIZE_PREVIEW_URL = "<%= parameterize_preview_nodes_path %>";
       var DASHBOARD_SEARCH_URL = "<%= admin_dashboard_search_path %>";
-    </script>
+    <% end %>
   </head>
   
   <body>
