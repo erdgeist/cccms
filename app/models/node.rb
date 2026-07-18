@@ -35,6 +35,14 @@ class Node < ApplicationRecord
             :allow_nil => true,
             :if        => :default_template_name_changed?
 
+  # Everything outside the Trash subtree, the Trash node included.
+  # Relies on unique_name being authoritative for tree position --
+  # the same trust public routing places in it.
+  scope :not_in_trash, -> {
+    where.not(:unique_name => CccConventions::TRASH_SLUG)
+      .where("unique_name NOT LIKE ?", "#{CccConventions::TRASH_SLUG}/%")
+  }
+
   # Class methods
 
   # Returns a page for a given node. If no revision is supplied, it returns
@@ -504,7 +512,7 @@ class Node < ApplicationRecord
   end
 
   def self.drafts_and_autosaves(current_user_id: nil)
-    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL")
+    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL").not_in_trash
     return scope.order("updated_at DESC") unless current_user_id
 
     scope.order(

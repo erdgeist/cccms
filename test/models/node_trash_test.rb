@@ -155,4 +155,14 @@ class NodeTrashTest < ActiveSupport::TestCase
 
     assert_equal Node.root, node.reload.suggested_restore_parent
   end
+
+  test "trashed nodes and the Trash itself stay out of the drafts surfaces" do
+    Node.trash
+    node = create_node_with_published_page
+    node.trash!(@user1)
+
+    ids = Node.drafts_and_autosaves.pluck(:id)
+    assert_not_includes ids, Node.trash.id
+    assert_not_includes ids, node.id
+  end
 end
