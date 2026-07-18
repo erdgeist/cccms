@@ -104,4 +104,14 @@ class NodeActionsHelperTest < ActionView::TestCase
     assert_includes action_summary(e), "a/b"
     assert_not action_details?(e)
   end
+
+  test "trash, restore, and destroy render their paths" do
+    trash   = entry("trash",   { "path" => { "from" => "club/old", "to" => "trash/old" } })
+    restore = entry("restore_from_trash", { "path" => { "from" => "trash/old", "to" => "club/new" } })
+    doomed  = entry("destroy", { "path" => "trash/old" })
+
+    assert_includes action_summary(trash),   "club/old"
+    assert_includes action_summary(restore), "club/new"
+    assert_includes action_summary(doomed),  "trash/old"
+  end
 end

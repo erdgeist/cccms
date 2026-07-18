@@ -114,4 +114,19 @@ module NodeActionsHelper
     t("node_actions.destroy_draft",
        :actor => actor_ref(action), :subject => subject_ref(action)).html_safe
   end
+
+  def summarize_trash action
+    t("node_actions.trash", :actor => actor_ref(action), :subject => subject_ref(action),
+       :from => h(action.metadata.dig("path", "from"))).html_safe
+  end
+
+  def summarize_restore_from_trash action
+    t("node_actions.restore_from_trash", :actor => actor_ref(action), :subject => subject_ref(action),
+       :to => h(action.metadata.dig("path", "to"))).html_safe
+  end
+
+  def summarize_destroy action
+    t("node_actions.destroy", :actor => actor_ref(action), :subject => subject_ref(action),
+       :path => h(action.metadata["path"])).html_safe
+  end
 end

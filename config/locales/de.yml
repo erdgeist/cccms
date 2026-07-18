@@ -110,3 +110,6 @@ de:
     detail_tags: "Tags %{from} → %{to}"
     template_changed: "Template geändert"
     assets_changed: "Bildliste geändert"
+    trash: "%{actor} hat %{subject} in den Papierkorb verschoben (vorher unter %{from})"
+    restore_from_trash: "%{actor} hat %{subject} aus dem Papierkorb nach %{to} wiederhergestellt"
+    destroy: "%{actor} hat %{subject} endgültig gelöscht (zuletzt unter %{path})"
