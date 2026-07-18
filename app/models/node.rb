@@ -75,7 +75,11 @@ class Node < ApplicationRecord
   # exist for that.
   def self.trash
     root.children.find_by(:slug => CccConventions::TRASH_SLUG) ||
-      root.children.create!(:slug => CccConventions::TRASH_SLUG)
+      root.children.create!(:slug => CccConventions::TRASH_SLUG).tap do |node|
+        Globalize.with_locale(I18n.default_locale) do
+          node.draft.update!(:title => "Trash")
+        end
+      end
   end
 
   # Instance Methods

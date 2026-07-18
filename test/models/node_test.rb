@@ -817,6 +817,7 @@ class NodeTest < ActiveSupport::TestCase
     end
     assert Node.trash.trash_node?
     assert_not Node.trash.in_trash?
+    assert_equal "Trash", Globalize.with_locale(I18n.default_locale) { Node.trash.draft.title }
   end
 
   test "in_trash? walks the whole parent chain" do
