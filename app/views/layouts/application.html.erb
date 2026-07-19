@@ -10,7 +10,7 @@
     <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
 
     <title><%= page_title %></title>
-    <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/ccc.css') %>">
+    <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/ccc_new.css') %>">
     <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/glightbox.min.css') %>">
     <script src="<%= mtime_busted_path('/javascripts/glightbox.min.js') %>"></script>
     <script src="<%= mtime_busted_path('/javascripts/public.js') %>"></script>
@@ -62,12 +62,10 @@
       <div id="center_column">
         <%= yield :layout %>
         <div id="footer">
-          <br />
           <p style="text-align: center">
             <%= link_to "Impressum", content_path("imprint") %>
             <%= link_to "Datenschutz", content_path("datenschutz") %>
             <%= language_selector %>
-            <!-- %= link_to t(:sponsors), content_path("sponsors") % -->
           </p>
         </div>
       </div>

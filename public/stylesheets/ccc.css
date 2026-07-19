@@ -1,3 +1,55 @@
+/* ==========================================================================
+   ccc.css — annotated demolition survey (behavior-preserving rewrite)
+   ==========================================================================
+   Sorted into nine concerns; each banner carries an ASSUMES: line naming
+   the tokens and images it depends on. Within any equal-specificity
+   collision set, relative source order is preserved verbatim.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ==========================================================================
+   The desktop layout is a fixed lattice drawn around two images:
+   header.png (909px wide, 145px tall) and left_column.png (continues the
+   header artwork down the left menu band via a wrapper-covering ::before).
+   Change these tokens and the two images must be regenerated — that IS
+   the redesign.
+   NOTE: custom properties cannot appear in @media conditions, so the
+   1015/1016 breakpoint below stays a literal pair. Its provenance is
+   unexplained (roughly --page-width plus a margin allowance).
+   ========================================================================== */
+
+:root {
+  --page-width: 909px;      /* header.png's drawn width; the wrapper.
+                               Decomposes: 185 left band (135 col + 50 pad)
+                               + 490 center at left 200 + 210 right band
+                               (155 col + 55 pad) at left 690. 690 + 210
+                               = 900: 9px absorbed silently at the right
+                               edge. */
+  --header-height: 145px;   /* header.png's pixel height; search box and
+                               light-mode toggle hang from its bottom
+                               edge. */
+  --left-col-width: 135px;  /* left band = this + --left-col-pad = 185px */
+  --left-col-pad: 50px;
+  --center-left: 200px;     /* 15px gutter beyond the 185px left band */
+  --center-width: 490px;
+  --right-left: 690px;      /* = --center-left + --center-width */
+  --right-width: 155px;     /* right band = this + --right-pad = 210px */
+  --right-pad: 55px;
+  --search-left: 676px;     /* provenance unknown; sits 14px left of
+                               --right-left */
+  --toggle-left: 816px;     /* provenance unknown; 140px right of
+                               --search-left */
+  --burger-right: 54px;     /* provenance unknown */
+}
+
+/* ==========================================================================
+   2. RESET & DOCUMENT SCAFFOLD
+   ==========================================================================
+   ASSUMES: nothing from the lattice. Element defaults and generic
+   utilities only.
+   ========================================================================== */
+
 html {
   height: 100%;
   line-height: 1.6rem;
@@ -16,6 +68,54 @@ body {
   min-height: 100%;
   height: 100%;
 }
+
+img {
+  max-width: 100%;
+}
+
+pre {
+  overflow: auto;
+}
+
+li {
+    line-height: 1.5rem;
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+}
+
+dt {
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+dd {
+  margin-bottom: 1em;
+}
+
+.pagination {
+  margin-bottom: .5rem;
+}
+
+/* ODDITY, kept: utility class — grep callers before it survives the next
+   demolition round */
+.right {
+  text-align: right;
+}
+
+.hide-me {
+    display: none;
+}
+
+/* ==========================================================================
+   3. COLOR SCHEME & LIGHT/DARK TOGGLE
+   ==========================================================================
+   ASSUMES: --header-height, --toggle-left (desktop toggle position);
+   header.png and left_column.png (the invert(50%) treatment); the nonced
+   inline restore script in the layout that re-checks #light-mode before
+   first paint (the JS contract: checkbox id "light-mode", state persisted
+   by the script). Symmetric blocks: each scheme inverts when the toggle
+   is checked.
+   ========================================================================== */
 
 @media (prefers-color-scheme: light) {
     body:has(#light-mode:checked) {
@@ -49,85 +149,54 @@ body {
     }
 }
 
-img {
-  max-width: 100%;
+input#light-mode[type="checkbox"] {
+    display: none;
 }
 
-div#header img {
-  border: none;
+label[for=light-mode] {
+    font-size: 25px;
+    user-select: none;
+    cursor: pointer;
+    filter: grayscale(1) contrast(10%);
+}
+
+/* Light and dark mode button magic */
+@media(max-width:1015px) {
+  div#light-mode-div {
+    position: absolute;
+    left: 170px;  /* mobile toolbar offset; provenance unknown — anchors to
+                     the viewport, not #toolbox (see section 5) */
+  }
 }
 
 @media(min-width:1016px) {
-  div#wrapper {
-    position: relative;
-    width: 909px;
-    margin: 0 auto 0 auto;
-    text-align: left;
-    min-height: 100%;
-  }
-  .break-mobile {
-      display: block;
+  div#light-mode-div {
+    position: absolute;
+    top: var(--header-height);  /* bottom edge of header.png */
+    left: var(--toggle-left);
   }
 }
 
-pre {
-  overflow: auto;
-}
-
-.right {
-  text-align: right;
-}
-
-/*------------------links-------------------*/
+/* ==========================================================================
+   4. LINKS & HEADINGS
+   ==========================================================================
+   ASSUMES: nothing from the lattice. Site-wide type and link colors;
+   the orange is the one brand color that survives theming.
+   ========================================================================== */
 
 a {
   color: #F8921E;
   text-decoration: none;
 }
 
-a:visited {
-  color: #D1791A;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
 a:hover {
   color: #5b8ca7;
 }
-
-/*------------------headlines-------------------*/
 
 h2 {
   font-size: 1.5rem;
   font-family: Helvetica, Arial, sans-serif;
   line-height: 1.75rem;
-}
-
-div#center_column h2 a {
-  color: CanvasText;
-  text-decoration: none;
-}
-
-div#center_column h2 a:hover {
-  color: color-mix(in srgb, CanvasText, #808080 50%);
-}
-
-div#center_column h2.headline {
-  margin-top: 10px;
-}
-
-div#center_column .article_partial h2.headline {
-  padding-top: 30px;
-  margin-bottom: 0.3rem;
-  border-top: 2px solid #cccccc;
-}
-
-/* except for erfa list */
-div#center_column .chapter_partial h2.headline {
-  border-top: none;
-}
-
-div.article_partial h2 a {
-  text-decoration: none;
 }
 
 h3 {
@@ -141,22 +210,160 @@ h4 {
   text-decoration: none;
 }
 
+h1, h2, h3 {
+  word-wrap: anywhere;
+  hyphens:auto;
+}
+
+/* ==========================================================================
+   5. LAYOUT GRID
+   ==========================================================================
+   ASSUMES: the full token lattice; header.png (drawn width = --page-width,
+   height = --header-height); left_column.png (continues the header art
+   down the left band via the ::before at z-index -10).
+   KNOWN STRUCTURAL DEBT: all three columns are position:absolute on
+   desktop, but #footer lives INSIDE #center_column — a long sidebar can
+   overflow past the footer. The column-height assumption is nowhere
+   enforced.
+   MOBILE ANCHORING: on max-width, #wrapper has no position, so the
+   absolutely positioned toolbox children (#burger-div, #search,
+   #light-mode-div) anchor to the viewport, not to #toolbox.
+   ========================================================================== */
+
+@media(min-width:1016px) {
+  div#wrapper {
+    position: relative;
+    width: var(--page-width);  /* header.png's drawn width */
+    margin: 0 auto 0 auto;
+    text-align: left;
+    min-height: 100%;
+  }
+  .break-mobile {
+      display: block;
+  }
+}
+
+/* Header */
+#header img,
+#header > a {
+  display: block;
+  line-height: 0;
+}
+
+div#header img {
+  border: none;
+}
+
 #left_column {
   line-height: 1.5em;
 }
 
-/*------------------main-navigation-------------------*/
+@media(min-width:1016px) {
+  div#left_column::before {
+	content: " ";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+    background-image: url(/images/left_column.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+	z-index: -10;
+  }
+  div#left_column {
+    position: absolute;
+    left: 0px;
+    width: var(--left-col-width);
+    min-height: 100px;
+    text-align: right;
+    padding-right: var(--left-col-pad);  /* left band total: 185px */
+  }
+
+  div#left_column > a {
+    font-size: 0.8rem;
+  }
+}
+
+div#center_column {
+  padding-bottom: 40px;
+}
+
+@media(max-width: 1015px) {
+div#center_column {
+  padding: 0 15px 40px 15px;
+}
+}
+
+@media(min-width: 1016px) {
+  div#center_column {
+    position: absolute;
+    background-color: Canvas;
+    left: var(--center-left);
+    width: var(--center-width);
+  }
+}
+
+@media(min-width:1016px) {
+  div#right_column {
+    position: absolute;
+    background-color: Canvas;
+    padding-left: var(--right-pad);
+    left: var(--right-left);   /* = center-left + center-width */
+    width: var(--right-width); /* right band total: 210px; 690 + 210 = 900,
+                                  9px short of --page-width, absorbed
+                                  silently */
+    height: 100px;
+  }
+}
+
+/* Mobile toolbar strip. */
+@media(max-width:1015px) {
+#toolbox {
+    height: 30px;
+}
+}
+
+/* Footer */
+#footer {
+  border-bottom: 2px solid #aeadad;
+  border-top: 2px solid #aeadad;
+  bottom: 0;
+  color: CanvasText;
+}
+
+#footer p {
+  margin: .5rem auto;
+}
+
+#footer a {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  color: CanvasText;   
+}
+
+/* ==========================================================================
+   6. MAIN NAVIGATION & BURGER MENU
+   ==========================================================================
+   ASSUMES: --burger-right; the checkbox-hack markup order in the layout
+   (#toolbox precedes #left_column — the `#toolbox ~ #left_column`
+   sibling selectors break if the layout reorders them); left_column.png
+   behind the desktop nav. Mobile menu is pure CSS: .menu-checkbox state
+   drives both the burger-to-X morph and the menu slide.
+   COLLISION SET (order preserved): div.main_navigation ul base rule
+   before its min-width override — the override's `padding: 0` must win.
+   ========================================================================== */
 
 div.main_navigation ul {
   margin-left: 0;
-  padding-left: 0;
-  padding-left: 15px;
+  padding-left: 15px;   /* dead duplicate `padding-left: 0` removed */
   padding-right: 15px;
   text-align: left;
 }
 
 
-@media(max-width:1016px) {
+@media(max-width:1015px) {
   div.main_navigation li:not(:first-child):before {
     content: '•';
     margin-left: .3rem;
@@ -203,162 +410,6 @@ div.main_navigation a.inactive, div.main_navigation span.inactive, div#left_colu
   color: color-mix(in srgb, CanvasText, #808080 25%);
 }
 
-/*------------------calendar-featured-tags-------------------*/
-
-div#frontpage_calendar {
-  display: none;
-  margin-top: 10px;
-}
-
-@media(min-width:1016px) {
-  div#frontpage_calendar {
-    margin-top: 30px;
-  }
-}
-
-div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2, div.main_navigation h2 {
-  border-top: 2px solid;
-  border-bottom: 2px solid;
-  font-size: 1.1em;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-div#frontpage_calendar h2 {
-  display: none;
-  border-top: none;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-  margin-top: 0;
-}
-
-div#open_erfas_today li {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  line-height: 1.25;
-}
-
-div#open_erfas_today .event_time {
-  font-style: italic;
-  font-family: Georgia;
-  color: color-mix(in srgb, CanvasText, #808080);
-}
-
-@media(max-width:1016px) {
-  div#tags li {
-    list-style-type: none;
-    display: inline-block;
-  }
-
-  div#tags li:not(:first-child):before {
-    content: '•';
-    margin-left: .3em;
-    margin-right: .6em;
-  }
-}
-
-@media(min-width:1016px) {
-  div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2 {
-    font-size: 1rem;
-  }
-
-  div#frontpage_calendar h2 {
-    display: block;
-    border-top: 2px solid #aeadad;
-    padding: 2px 0;
-  }
-
-}
-
-div#frontpage_calendar ul, div#tags ul, div#featured_articles ul, div#open_erfas_today ul {
-  padding: 0px;
-  font-size: 0.9rem;
-  line-height: 1.5em;
-}
-
-div#featured_articles #ds_icon img {
-  padding-top: 10px;
-}
-
-div#featured_articles #events_icon img {
-  padding-left: 10px;
-}
-
-div#frontpage_calendar li {
-  margin-bottom: 20px;
-}
-
-div#frontpage_calendar li, div#tags li, div#featured_articles li, div#open_erfas_today li {
-  list-style-type: none;
-}
-
-div#frontpage_calendar li a, div#tags li a, div#featured_articles li a, div#open_erfas_today li a {
-  text-decoration: none;
-  color: color-mix(in srgb, CanvasText, #808080 25%);
-}
-
-div#frontpage_calendar li a:hover,
-div#tags li a:hover,
-div#featured_articles li a:hover {
-  text-decoration: none;
-  color: color-mix(in srgb, CanvasText, #808080 50%);
-}
-
-/* We don't want the only colourful thing on the site to be pointing
- * somewhere else */
-div#featured_articles img {
-  filter: grayscale(1);
-}
-
-dt {
-  font-weight: bold;
-  margin-bottom: 1em;
-}
-
-dd {
-  margin-bottom: 1em;
-}
-
-/*--------------------------------------------------------------*/
-
-div.author_and_date {
-  font-style: italic;
-  font-family: Georgia;
-  color: color-mix(in srgb, CanvasText, #808080);
-  padding-top: .2rem;
-  padding-bottom: .8rem;
-}
-
-@media(min-width:1016px) {
-  div#left_column::before {
-	content: " ";
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
-    background-image: url(/images/left_column.png);
-    background-position: top right;
-    background-repeat: no-repeat;
-	z-index: -10;
-  }
-  div#left_column {
-    position: absolute;
-    left: 0px;
-    width: 135px;
-    min-height: 100px;
-    text-align: right;
-    padding-right: 50px;
-  }
-
-  div#left_column > a {
-    font-size: 0.8rem;
-  }
-}
-
 .menu-checkbox {
     display: none;
 }
@@ -370,11 +421,12 @@ div.author_and_date {
 
 #burger-div {
     position: absolute;
-    right: 54px;
+    right: var(--burger-right);  /* anchors to the viewport on mobile,
+                                    see section 5 */
 }
 
 /* Mobile styles */
-@media (max-width: 1016px) {
+@media (max-width: 1015px) {
     .burger-menu {
 		position: absolute;
 		display: flex;
@@ -422,67 +474,28 @@ div.author_and_date {
     .menu-checkbox:checked + .burger-menu span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
 }
 
-div#center_column {
-  padding-bottom: 40px;
-}
-
-@media(max-width: 1016px) {
-div#center_column {
-  padding: 0 15px 40px 15px;
-}
-}
-
-@media(min-width: 1016px) {
-  div#center_column {
-    position: absolute;
-    background-color: Canvas;
-    left: 200px;
-    width: 490px;
-  }
-}
-
-@media(min-width:1016px) {
-  div#right_column {
-    position: absolute;
-    background-color: Canvas;
-    padding-left: 55px;
-    left: 690px;
-    width: 155px;
-    height: 100px;
-  }
-}
-
-div.teaser_ruler {
-  border-top: 1px solid #CCCCCC;
-  border-bottom: 1px dashed #CCCCCC;
-  height: 3px;
-  margin-top: 30px;
-}
-
-div.article_partial {
-  margin-bottom: 30px;
-}
-
-
-div.article_partial p.excerpt {
-  color: CanvasText;
-}
+/* ==========================================================================
+   7. SEARCH
+   ==========================================================================
+   ASSUMES: --header-height, --search-left (desktop box hangs from
+   header.png's bottom edge); viewport anchoring on mobile (section 5).
+   ========================================================================== */
 
 /* Search bar */
 @media(min-width:1016px) {
   div#search {
     position: absolute;
-    top: 145px;
-    left: 676px;
+    top: var(--header-height);  /* bottom edge of header.png */
+    left: var(--search-left);
     height: 25px;
     vertical-align: top;
   }
 }
 
-@media(max-width:1016px) {
+@media(max-width:1015px) {
   div#search {
     position: absolute;
-    left: 25px;
+    left: 25px;  /* mobile toolbar offset; anchors to the viewport */
     height: 25px;
   }
 }
@@ -505,31 +518,125 @@ div#search input[type=text] {
   text-indent: 0.5rem;
 }
 
-/* Header */
-#header img,
-#header > a {
-  display: block;
-  line-height: 0;
+/* ==========================================================================
+   8. SIDEBAR WIDGETS (calendar, tags, featured, open erfas)
+   ==========================================================================
+   ASSUMES: right-column geometry from section 5; div.main_navigation h2
+   also picks up the grouped border rule below.
+   COLLISION SET (order preserved verbatim): the grouped h2 border rule,
+   then the same-specificity div#frontpage_calendar h2 override
+   (border-top: none), then the min-width block that re-adds a border-top
+   for desktop. Moving the override above the group rule would grow a
+   border on the calendar heading.
+   ========================================================================== */
+
+div#frontpage_calendar {
+  display: none;
+  margin-top: 10px;
 }
 
-/* Main section */
-.article, .article_partial {
-  text-align: left;
+@media(min-width:1016px) {
+  div#frontpage_calendar {
+    margin-top: 30px;
+  }
 }
 
-h1, h2, h3 {
-  word-wrap: anywhere;
-  hyphens:auto;
+div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2, div.main_navigation h2 {
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  font-size: 1.1em;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
-.pagination {
-  margin-bottom: .5rem;
+div#frontpage_calendar h2 {
+  display: none;
+  border-top: none;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  margin-top: 0;
 }
 
-li {
-    line-height: 1.5rem;
-    margin-block-start: 1rem;
-    margin-block-end: 1rem;
+div#open_erfas_today li {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+div#open_erfas_today .event_time {
+  font-style: italic;
+  font-family: Georgia;
+  color: color-mix(in srgb, CanvasText, #808080);
+}
+
+@media(max-width:1015px) {
+  div#tags li {
+    list-style-type: none;
+    display: inline-block;
+  }
+
+  div#tags li:not(:first-child):before {
+    content: '•';
+    margin-left: .3em;
+    margin-right: .6em;
+  }
+}
+
+@media(min-width:1016px) {
+  div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas_today h2 {
+    font-size: 1rem;
+  }
+
+  div#frontpage_calendar h2 {
+    display: block;
+    border-top: 2px solid #aeadad;
+    padding: 2px 0;
+  }
+
+}
+
+div#frontpage_calendar ul, div#tags ul, div#featured_articles ul, div#open_erfas_today ul {
+  padding: 0px;
+  font-size: 0.9rem;
+  line-height: 1.5em;
+}
+
+/* ODDITY, kept: per-widget icon paddings — delete when these icons rotate
+   out of the featured box */
+div#featured_articles #ds_icon img {
+  padding-top: 10px;
+}
+
+div#featured_articles #events_icon img {
+  padding-left: 10px;
+}
+
+div#frontpage_calendar li {
+  margin-bottom: 20px;
+}
+
+div#frontpage_calendar li, div#tags li, div#featured_articles li, div#open_erfas_today li {
+  list-style-type: none;
+}
+
+div#frontpage_calendar li a, div#tags li a, div#featured_articles li a, div#open_erfas_today li a {
+  text-decoration: none;
+  color: color-mix(in srgb, CanvasText, #808080 25%);
+}
+
+div#frontpage_calendar li a:hover,
+div#tags li a:hover,
+div#featured_articles li a:hover {
+  text-decoration: none;
+  color: color-mix(in srgb, CanvasText, #808080 50%);
+}
+
+/* We don't want the only colourful thing on the site to be pointing
+ * somewhere else */
+div#featured_articles img {
+  filter: grayscale(1);
 }
 
 #tags ul li {
@@ -537,77 +644,69 @@ li {
     margin-block-end: 0.5rem;
 }
 
-/* Footer */
-#footer {
-  border-bottom: 2px solid #aeadad;
-  border-top: 2px solid #aeadad;
-  bottom: 0;
+/* ==========================================================================
+   9. ARTICLE CONTENT
+   ==========================================================================
+   ASSUMES: center-column geometry from section 5; TinyMCE emits the
+   inline-image classes (style-src unsafe-inline in the CSP exists partly
+   for its img[style] output).
+   ========================================================================== */
+
+/* Main section */
+.article, .article_partial {
+  text-align: left;
+}
+
+div#center_column h2 a {
+  color: CanvasText;
+  text-decoration: none;
+}
+
+div#center_column h2 a:hover {
+  color: color-mix(in srgb, CanvasText, #808080 50%);
+}
+
+div#center_column h2.headline {
+  margin-top: 10px;
+}
+
+div#center_column .article_partial h2.headline {
+  padding-top: 30px;
+  margin-bottom: 0.3rem;
+  border-top: 2px solid #cccccc;
+}
+
+/* except for erfa list */
+div#center_column .chapter_partial h2.headline {
+  border-top: none;
+}
+
+div.article_partial h2 a {
+  text-decoration: none;
+}
+
+div.article_partial {
+  margin-bottom: 30px;
+}
+
+
+div.article_partial p.excerpt {
   color: CanvasText;
 }
 
-#footer > br {
-  display: none;
+div.author_and_date {
+  font-style: italic;
+  font-family: Georgia;
+  color: color-mix(in srgb, CanvasText, #808080);
+  padding-top: .2rem;
+  padding-bottom: .8rem;
 }
 
-#footer p {
-  margin: .5rem auto;
-}
-
-#footer a {
-  margin-left: 1rem;
-  margin-right: 1rem;
-  color: CanvasText;   
-}
-
-@media(max-width:1016px) {
-#toolbox {
-    display: relative;
-    height: 30px;
-}
-}
-
-/* Light and dark mode button magic */
-@media(max-width:1016px) {
-  div#light-mode-div {
-    position: absolute;
-    left: 170px;
-  }
-}
-
-@media(min-width:1016px) {
-  div#light-mode-div {
-    position: absolute;
-    top: 145px;
-    left: 816px;
-  }
-}
-input#light-mode[type="checkbox"] {
-    display: none;
-}
-
-label[for=light-mode] {
-    font-size: 25px;
-    user-select: none;
-    cursor: pointer;
-    filter: grayscale(1) contrast(10%);
-}
-
-.hide-me {
-    display: none;
-}
-
-/* Temporary glowing style for easterhegg 22 */
-#eh22_icon img {
-  animation: animate 3s linear infinite;
-}
-
-@keyframes animate {
-  from {
-    filter: sepia(100%) hue-rotate(0deg);
-  }
-  to {
-    filter: sepia(100%) hue-rotate(360deg);
-  }
+div.teaser_ruler {
+  border-top: 1px solid #CCCCCC;
+  border-bottom: 1px dashed #CCCCCC;
+  height: 3px;
+  margin-top: 30px;
 }
 
 .chapter_partial_layout {
