@@ -96,8 +96,8 @@ dd {
   margin-bottom: .5rem;
 }
 
-/* ODDITY, kept: utility class — grep callers before it survives the next
-   demolition round */
++ /* Single caller: _headline_image.html.erb's image-count caption
++    ("N Bilder"), shown only when a gallery has more than one image. */
 .right {
   text-align: right;
 }
