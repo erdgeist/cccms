@@ -12,9 +12,9 @@ class CspReportsController < ApplicationController
     if report
       directive = report["effective-directive"] || report["violated-directive"]
       at = (URI.parse(report["document-uri"]).path rescue "unparsed")
-      Rails.logger.warn("CSP violation: #{directive} blocked=#{report['blocked-uri']} at=#{at}")
+      CSP_LOGGER.warn("CSP violation: #{directive} blocked=#{report['blocked-uri']} at=#{at}")
     else
-      Rails.logger.warn("CSP violation: unparseable report (#{raw.to_s.bytesize} bytes)")
+      CSP_LOGGER.warn("CSP violation: unparseable report (#{raw.to_s.bytesize} bytes)")
     end
 
     head :no_content
