@@ -86,6 +86,27 @@ $(document).ready(function () {
     if (meta) request.setRequestHeader("X-CSRF-Token", meta.content);
   });
 
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('.copy_button');
+    if (!button) return;
+
+    var text = button.dataset.copyUrl;
+    if (text === undefined && button.dataset.copyTarget) {
+      var target = document.querySelector(button.dataset.copyTarget);
+      text = target ? target.textContent : undefined;
+    }
+
+    if (!text || text === '—' || !navigator.clipboard) return;
+
+    navigator.clipboard.writeText(text).then(function () {
+      var label = button.querySelector('.copy_button_label');
+      if (!label) return;
+      var original = label.textContent;
+      label.textContent = 'Copied!';
+      setTimeout(function () { label.textContent = original; }, 1500);
+    });
+  });
+
 });
 
 

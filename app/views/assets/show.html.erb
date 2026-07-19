@@ -20,7 +20,15 @@
     <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
 
     <div class="node_description">Public Path</div>
-    <div class="node_content"><%= @asset.upload.url.sub(/\?\d+$/, "") %></div>
+    <div class="node_content">
+      <% public_path = @asset.upload.url.sub(/\?\d+$/, "") %>
+      <%= link_to public_path, public_path, target: "_blank", rel: "noopener" %>
+      <button type="button" class="action_button copy_button"
+              data-copy-url="<%= request.base_url + public_path %>">
+        <%= icon("copy", library: "tabler", "aria-hidden": true) %>
+        <span class="copy_button_label">Copy URL</span>
+      </button>
+    </div>
 
     <div class="node_description">Content Type</div>
     <div class="node_content"><%= @asset.upload.content_type %></div>

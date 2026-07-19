@@ -202,12 +202,6 @@ parent_search = {
     $("#title").bind("input", function() {
       parent_search.update_resulting_path();
     });
-
-    $("#copy_resulting_path").bind("click", function() {
-      var path = $("#resulting_path").text();
-      if (path === "—" || !navigator.clipboard) return;
-      navigator.clipboard.writeText(path);
-    });
   },
 
   update_resulting_path : function() {
