@@ -106,7 +106,8 @@ module FileAttachment
   end
 
   def sanitize_filename(filename)
-    File.basename(filename).gsub(/[^\w\.\-]/, '_')
+    name = File.basename(filename).unicode_normalize(:nfc)
+    name.gsub(/(?u)[^\w\.\-]/, '_')
   end
 
   # Proxy object returned by asset.upload, providing the Paperclip-compatible
