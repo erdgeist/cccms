@@ -7,10 +7,10 @@ Two layers only: `head` (the published, public revision) and `draft`
 editing).
 
 No separate lock concept. The draft's *author* was the lock.
-Pessimistic, one editor at a time, enforced by ownership rather than
-a distinct column. An author could withdraw authorship (the draft
-becomes author-less, open for someone else to pick up) or discard
-the draft entirely, reverting to head.
+Pessimistic, one editor at a time, enforced by ownership rather than a
+distinct column. An author could withdraw authorship (the draft
+becomes author-less, open for someone else to pick up) or discard the
+draft entirely, reverting to head.
 
 Admins could override any lock or remove any stuck draft on another
 editor's behalf. No autosave.
@@ -38,8 +38,8 @@ the autosave's full content, wholesale, into the draft layer via
 `clone_attributes_from`.
 
 A canonical six-state reference table (head / draft / autosave present
-or absent, and what each combination permits) lives alongside the model
-code as the authority for any future work on this lifecycle.
+or absent, and what each combination permits) lives alongside the
+model code as the authority for any future work on this lifecycle.
 
 ### Translations (Globalize), layered on top
 
@@ -51,22 +51,22 @@ writes) are separate concerns that must never share a mechanism.
 
 The route's `:locale` segment governs only the former. A locale is
 either the default one — edited exclusively through the primary node
-editor, pinned via `Globalize.with_locale` regardless of what the route
-happens to say, so a stray `/en/` URL can't silently edit the German
-content (as has been the case before the rewrite in 2026), or one of
-the non-default locales, edited exclusively through a Translations
-sub-resource under a deliberately distinct route parameter
-(`translation_locale`), chosen specifically because it must never leak
-into `default_url_options` the way the chrome locale does. Never both
-paths for the same locale.
+editor, pinned via `Globalize.with_locale` regardless of what the
+route happens to say, so a stray `/en/` URL can't silently edit the
+German content (as has been the case before the rewrite in 2026), or
+one of the non-default locales, edited exclusively through a
+Translations sub-resource under a deliberately distinct route
+parameter (`translation_locale`), chosen specifically because it must
+never leak into `default_url_options` the way the chrome locale does.
+Never both paths for the same locale.
 
 For now, admin chrome language stays tied to the route locale for now.
 A per-editor preference column was considered and set aside as
 revisit-later, not built.
 
 Translations carry no independent publish state: a translation goes
-live exactly when the draft containing it is promoted to head, same
-as everything else in that `Page` row. Both a per-translation
+live exactly when the draft containing it is promoted to head, same as
+everything else in that `Page` row. Both a per-translation
 `published_at` and full per-locale draft/head/autosave parity with
 `Node` were considered and rejected as unneeded machinery absent a
 real editorial need for staggered release timing.
@@ -75,11 +75,11 @@ real editorial need for staggered release timing.
 
 ### Problem
 
-Calendar entries required an internal Node — every event
-needed a page somewhere in the tree. Editors avoided this: either the
-updates stream absorbed non-news content, or a page got created with
-no natural place in the navigation. The calendar widget went dormant
-rather than get used under those terms.
+Calendar entries required an internal Node — every event needed a page
+somewhere in the tree. Editors avoided this: either the updates stream
+absorbed non-news content, or a page got created with no natural place
+in the navigation. The calendar widget went dormant rather than get
+used under those terms.
 
 ### Rebuild.
 
@@ -87,14 +87,14 @@ The Event model was rewritten around the RRULE humanizer
 (`app/models/concerns/rrule_humanizer.rb`) and a picker UI bound to it
 by a deliberate scope rule: the picker only generates or reads back
 RRULE shapes the humanizer can also render as prose. A picker that
-could express more than the humanizer can describe would let an
-editor create a schedule that renders as blank text on the public
-page — worse than a raw string the editor had to type by hand.
+could express more than the humanizer can describe would let an editor
+create a schedule that renders as blank text on the public page —
+worse than a raw string the editor had to type by hand.
 `Event#node_id` became optional, so an event can point outward (an
 external URL) instead of requiring a page. This is what made reviving
 the calendar possible at all.
 
-### The problem that surfaced next
+### The "where to put an event" problem
 
 Once events no longer needed a node, turning the calendar on directly
 would have meant every chapter's regular open evening becoming an
@@ -113,3 +113,88 @@ Two widgets, not one:
   conferences, memorial gatherings. Its CSS carries an unconditional
   `display: none` with no override anywhere in the stylesheet — not a
   bug, a widget staged for a UI that hasn't been built yet.
+
+## The action log (`NodeAction`)
+
+### Origin
+
+The action log grew directly out of an audit of what timestamps
+actually mean: Two things were missing in the old model: no record of
+who actually clicked Publish (`page.editor` reflects the last content
+save, not necessarily that specific act), and the dashboard's
+recent-changes widget was actively wrong, showing an unrelated
+in-progress draft's byline next to a timestamp that didn't correspond
+to why the node appeared on the list at all.
+
+The log was designed to fill the gap and to answer "what did people
+do," a question the existing timestamp fields were never designed to
+answer.
+
+### Governing principle
+
+A derived log is only as reliable as the discipline that maintains it.
+
+Named explicitly before any code was written, not discovered afterward.
+Three ways it can drift:
+
+1. A future code path can simply forget to write to it — this project
+   had already found that exact shape twice (`wipe_draft!`'s ungated
+   branch; `Page.aggregate` silently ignoring a `conditions=` argument).
+2. If the log write and the actual mutation aren't in the same
+   transaction, they can diverge on a crash. Resolved by writing from
+   *inside* the model methods themselves (`autosave!`, `save_draft!`,
+   `publish_draft!`, `trash!`, `destroy!`) rather than from the
+   controllers that call them — every future caller is covered for
+   free, the same reasoning already proven by the JS-autosave work.
+3. It can never retroactively reconstruct anything from before it
+   existed — addressed deliberately by the backfill (below), not
+   ignored.
+
+### Avoiding noise
+
+A draft save or publish that produces no visible difference shouldn't
+create a visible log entry. Solved by reusing
+`Page#diff_against` / `has_changes_to?` — comparisons that already
+existed and were already tested — rather than inventing new diffing
+logic for the log to own.
+
+### The verb vocabulary
+
+Firstly, the log deliberately excludes locks (transient, no history
+value), autosave and draft-saving itself (exactly the noise the log
+exists to filter out), and tag/asset/event edits made *on a draft*
+(those will later surface as changed-flags at publish time, which
+is when they become real).
+
+Deliberately included, on reflection: reverts and discards (arguably
+more worth tracking than promotions:  "who discarded this work, and
+when" is the fact someone would actually go looking for), shared
+preview link generation and revocation (security-relevant, handing
+unpublished content to an outsider), and slug/path changes
+(link-breaking, earns its own record separate from ordinary edits).
+
+### Rollback isn't a separate verb.
+
+`restore_revision!` writes a `publish` entry with a discriminator
+(`via: "revision"` instead of `via: "draft"`) rather than its own
+vocabulary. One verb, one meaning ("a page got promoted to head"),
+distinguished by how it got there.
+
+### Backfill
+
+Historical entries mirror the live vocabulary exactly. Diff content
+(what actually changed) is computed from the real historical revision
+data, since consecutive `Page` rows already existed to compare — only
+the actor and the timestamp are ever inferred, each backfilled entry
+carrying an `inferred_from` field naming the specific heuristic used
+(e.g. "from a page revision," "from `published_at`"). A `null`
+`inferred_from` means the entry was witnessed live, not reconstructed —
+so the log can always answer, for any entry, how much to trust it.
+
+### The full metadata contract per verb
+
+`create`, `publish`, `move`, `trash`, `restore_from_trash`, `destroy`
+— lives as a code comment directly above `record!` in
+`app/models/node.rb`. That's the authoritative, current version; this
+entry explains why it's shaped the way it is, not what it says field
+by field.
