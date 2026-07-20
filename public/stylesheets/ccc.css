@@ -747,3 +747,11 @@ div.teaser_ruler {
   float: right;
   margin-left: 1rem;
 }
+
+#asset_credits .glightbox-desc {
+  display: none;
+}
+
+#asset_credits .headline_credit {
+  display: block;
+}

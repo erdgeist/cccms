@@ -116,3 +116,17 @@ de:
     revision_created: "angelegt am %{date} von %{actor}"
     revision_published: "veröffentlicht am %{date} von %{actor}"
     revision_restored: "wiederhergestellt am %{date} von %{actor}"
+
+  open_gallery: "Gallerie anzeigen"
+  asset_licenses:
+    cc0: "CC0"
+    cc_by_4: "CC BY 4.0"
+    cc_by_sa_4: "CC BY-SA 4.0"
+    public_domain: "Gemeinfrei"
+    used_with_permission: "Mit Genehmigung verwendet"
+    own_work: "Eigenes Werk"
+
+  asset_credits:
+    photo: "Foto %{name}"
+    by: "von %{creator}"
+    licensed_under: "Lizenziert unter %{license}"

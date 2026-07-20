@@ -1327,15 +1327,6 @@ div#image_browser ul li {
   height: 1rem;
 }
 
-.related_asset_headline_badge {
-  background: #fff3cd;
-  color: #6b5900;
-  border-radius: 999px;
-  padding: 0.1rem 0.6rem;
-  font-size: 0.75em;
-  white-space: nowrap;
-}
-
 .related_asset_remove {
   display: flex;
   align-items: center;
@@ -1370,6 +1361,32 @@ div#image_browser ul li {
   height: 40px;
   object-fit: cover;
   border-radius: 4px;
+}
+
+.related_asset_set_headline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #969696;
+} 
+
+.related_asset_set_headline svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.related_asset_set_headline:hover,
+.related_asset_set_headline[aria-pressed="true"] {
+  color: #6b5900;
+}
+
+.thumbnail_list li.is_headline {
+  border-color: #fff3cd;
+  background-color: #fffdf5;
 }
 
 /* ============================================================

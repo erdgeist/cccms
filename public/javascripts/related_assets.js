@@ -5,8 +5,6 @@ related_assets = {
     var createUrl = container.data("create-url");
     var list = $("#related_asset_list");
 
-    related_assets.update_headline_badge(list);
-
     initSearchPicker({
       inputSelector: "#related_asset_search_term",
       resultsSelector: "#related_asset_search_results",
@@ -44,7 +42,6 @@ related_assets = {
           url: ui.item.data("url"),
           data: "position=" + newPosition
         });
-        related_assets.update_headline_badge(list);
       }
     });
 
@@ -55,21 +52,29 @@ related_assets = {
         url: item.data("url"),
         success: function() {
           item.remove();
-          related_assets.update_headline_badge(list);
         }
       });
     });
-  },
 
-  update_headline_badge: function(list) {
-    list.find(".related_asset_headline_badge").remove();
-    var first = list.children("li").first();
-    if (first.length) {
-      $("<span>", {
-        "class": "related_asset_headline_badge",
-        "title": "Shown automatically as this page's headline image"
-      }).text("Headline").insertBefore(first.find(".related_asset_remove"));
-    }
+    list.on("click", ".related_asset_set_headline", function() {
+      var button = $(this);
+      var item = button.closest("li");
+      var makeHeadline = button.attr("aria-pressed") !== "true";
+
+      $.ajax({
+        type: "PATCH",
+        url: item.data("url"),
+        data: "headline=" + makeHeadline,
+        success: function() {
+          list.children("li").removeClass("is_headline")
+              .find(".related_asset_set_headline").attr("aria-pressed", "false");
+          if (makeHeadline) {
+            item.addClass("is_headline");
+            button.attr("aria-pressed", "true");
+          }
+        }
+      });
+    });
   },
 
   attach: function(assetId, createUrl, list) {
@@ -81,13 +86,13 @@ related_assets = {
       success: function(related) {
         var item = $($("#related_asset_template").html().trim());
         item.attr("data-url", related.url);
+        item.attr("data-asset-id", related.asset_id);
         item.attr("data-large-url", related.large_url);
         item.attr("data-original-url", related.original_url);
         item.attr("data-name", related.name);
         item.find("img").attr("src", related.thumb_url);
         list.append(item);
         list.sortable("refresh");
-        related_assets.update_headline_badge(list);
         $("#related_asset_search_term").val("");
         $("#related_asset_search_results").slideUp().empty();
       }

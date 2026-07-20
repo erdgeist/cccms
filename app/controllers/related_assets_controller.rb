@@ -39,7 +39,17 @@ class RelatedAssetsController < ApplicationController
   end
 
   def update
-    @node.editable_page.related_assets.find(params[:id]).insert_at(params[:position].to_i)
+    related = @node.editable_page.related_assets.find(params[:id])
+
+    if params.key?(:headline)
+      RelatedAsset.transaction do
+        @node.editable_page.related_assets.update_all(headline: false)
+        related.update!(headline: true) if params[:headline] == "true"
+      end
+    else
+      related.insert_at(params[:position].to_i)
+    end
+
     head :ok
   end
 

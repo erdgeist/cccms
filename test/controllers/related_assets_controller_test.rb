@@ -88,4 +88,50 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     ordered_asset_ids = node.draft.reload.related_assets.map(&:asset_id)
     assert_equal [second.id, first.id], ordered_asset_ids
   end
+
+  test "update sets the headline flag" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "related_assets_headline_test")
+    asset = Asset.create!(:name => "headline-photo", :upload_content_type => "image/png")
+    node.draft.assets << asset
+    related = node.draft.related_assets.find_by(:asset_id => asset.id)
+
+    patch :update, params: { :node_id => node.id, :id => related.id, :headline => "true" }
+
+    assert_response :success
+    assert related.reload.headline?
+  end
+
+  test "update with headline=true clears any previous headline on the same page" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "related_assets_headline_swap_test")
+    first  = Asset.create!(:name => "first-headline", :upload_content_type => "image/png")
+    second = Asset.create!(:name => "second-headline", :upload_content_type => "image/png")
+    node.draft.assets << first
+    node.draft.assets << second
+
+    first_related  = node.draft.related_assets.find_by(:asset_id => first.id)
+    second_related = node.draft.related_assets.find_by(:asset_id => second.id)
+    first_related.update!(:headline => true)
+
+    patch :update, params: { :node_id => node.id, :id => second_related.id, :headline => "true" }
+
+    assert_response :success
+    assert_not first_related.reload.headline?
+    assert second_related.reload.headline?
+  end
+
+  test "update with headline=false clears the headline" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "related_assets_headline_unset_test")
+    asset = Asset.create!(:name => "unset-headline", :upload_content_type => "image/png")
+    node.draft.assets << asset
+    related = node.draft.related_assets.find_by(:asset_id => asset.id)
+    related.update!(:headline => true)
+
+    patch :update, params: { :node_id => node.id, :id => related.id, :headline => "false" }
+
+    assert_response :success
+    assert_not related.reload.headline?
+  end
 end

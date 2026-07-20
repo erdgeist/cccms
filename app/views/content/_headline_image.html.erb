@@ -1,16 +1,28 @@
-<%= link_to(
-  image_tag(@images[0].upload.url(:headline)),
-  @images[0].upload.url,
-  :class => "glightbox",
-  :data  => { :gallery => "page-#{@page.node.id}" }
-) %>
+<% gallery_images = @page.assets.images %>
 
-<% if 1 < @images.length %>
-  <div class="right">
-    <%= "#{@images.length} #{t(:images)}" %>
-  </div>
+<% if @headline_asset %>
+  <%= link_to(
+    image_tag(@headline_asset.upload.url(:headline)),
+    @headline_asset.upload.url,
+    :class => "glightbox",
+    :data  => { :gallery => "page-#{@page.node.id}", :title => @headline_asset.name,
+                :description => "#credit_for_asset_#{@headline_asset.id}" }
+  ) %>
+  <% if gallery_images.size > 1 %>
+    <div class="right"><%= "#{gallery_images.size} #{t(:images)}" %></div>
+  <% end %>
+<% elsif gallery_images.any? %>
+  <%= link_to "#{gallery_images.size} #{t(:images)}, #{t(:open_gallery)}",
+        gallery_images.first.upload.url,
+        :class => "glightbox right",
+        :data  => { :gallery => "page-#{@page.node.id}", :title => gallery_images.first.name,
+                    :description => "#credit_for_asset_#{gallery_images.first.id}" } %>
 <% end %>
 
-<% @images[1..-1].each do |image| %>
-  <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none", :data => { :gallery => "page-#{@page.node.id}" } %>
+<% gallery_images.each do |image| %>
+  <% next if image == @headline_asset %>
+  <% next if !@headline_asset && image == gallery_images.first %>
+  <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none",
+        :data => { :gallery => "page-#{@page.node.id}", :title => image.name,
+                   :description => "#credit_for_asset_#{image.id}" } %>
 <% end %>

@@ -277,10 +277,12 @@ cccms = {
 
       var items = $('#related_asset_list li').map(function() {
         return {
+          id: $(this).data('asset-id'),
           thumb: $(this).find('img').attr('src'),
           large: $(this).data('large-url'),
           original: $(this).data('original-url'),
-          name: $(this).data('name')
+          name: $(this).data('name'),
+          headline: $(this).data('headline') === true
         };
       }).get();
       cccms.inline_images.items = items;
@@ -293,7 +295,7 @@ cccms = {
         items.forEach(function(item, i) {
           var wrapper = $('<div class="inline_image_picker_item"></div>');
           wrapper.append($('<img>').attr('src', item.thumb).attr('data-index', i));
-          if (i === 0) {
+          if (item.headline) {
             wrapper.append($('<span>', { "class": "inline_image_picker_headline_badge" }).text("Headline"));
           }
           grid.append(wrapper);
@@ -317,8 +319,10 @@ cccms = {
         ? 'inline-image inline-image--full'
         : 'inline-image inline-image--half inline-image--' + placement;
 
-      var html = '<a href="' + item.original + '" class="glightbox" data-gallery="page-' + cccms.inline_images.node_id + '">' +
-                  '<img src="' + item.large + '" class="' + classes + '" alt="' + cccms.inline_images.escape_attr(item.name) + '"></a>';
+      var esc = cccms.inline_images.escape_attr;
+      var html = '<a href="' + esc(item.original) + '" class="glightbox" data-gallery="page-' + esc(cccms.inline_images.node_id) + '"' +
+                 ' data-title="' + esc(item.name) + '" data-description="#credit_for_asset_' + esc(item.id) + '">' +
+                 '<img src="' + esc(item.large) + '" class="' + classes + '" alt="' + esc(item.name) + '"></a>';
 
       cccms.inline_images.editor.insertContent(html);
       $('#inline_image_picker').hide();

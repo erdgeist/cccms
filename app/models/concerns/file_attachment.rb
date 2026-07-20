@@ -52,6 +52,14 @@ module FileAttachment
     build_upload_proxy
   end
 
+  def has_variant?(style)
+    upload_file_name.present? && File.exist?(file_path(style))
+  end
+
+  def previewable?
+    has_variant?(:medium)
+  end
+
   private
 
   def build_upload_proxy

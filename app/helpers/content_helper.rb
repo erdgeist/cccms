@@ -53,11 +53,8 @@ module ContentHelper
   end
 
   def headline_image
-    @images = @page.assets.images
-
-    unless @images.empty?
-      render :partial => 'content/headline_image'
-    end
+    @headline_asset = @page.related_assets.find_by(headline: true)&.asset
+    render :partial => 'content/headline_image' if @headline_asset || @page.assets.images.any?
   end
 
   # Returns the published_at attribute of a page if it is not nil, otherwise
@@ -154,4 +151,26 @@ module ContentHelper
     )
   end
 
+  def asset_credit(asset)
+    return nil unless asset
+    return nil if asset.creator.blank? && asset.source_url.blank? && asset.license_key.blank?
+
+    license = AssetLicense.find(asset.license_key)
+
+    photo_label = t("asset_credits.photo", name: asset.name)
+    photo = asset.source_url.present? ? link_to(photo_label, asset.source_url) : photo_label
+
+    attribution_parts = [photo]
+    attribution_parts << t("asset_credits.by", creator: asset.creator) if asset.creator.present?
+    attribution = safe_join(attribution_parts, " ")
+
+    license_text = if license
+      name = t("asset_licenses.#{license.key}", default: license.key)
+      phrase = license.style == "license" ? t("asset_credits.licensed_under", license: name) : name
+      license.url.present? ? link_to(phrase, license.url) : phrase
+    end
+
+    full = license_text ? safe_join([attribution, license_text], ", ") : attribution
+    safe_join([full, "."])
+  end
 end

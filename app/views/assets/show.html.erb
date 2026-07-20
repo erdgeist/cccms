@@ -17,7 +17,10 @@
     </div>
 
     <div class="node_description">Thumbnail</div>
-    <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
+    <% if @asset.has_variant?(:medium) %>
+      <div class="node_description">Thumbnail</div>
+      <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
+    <% end %>
 
     <div class="node_description">Public Path</div>
     <div class="node_content">
@@ -28,6 +31,27 @@
         <%= icon("copy", library: "tabler", "aria-hidden": true) %>
         <span class="copy_button_label">Copy URL</span>
       </button>
+    </div>
+
+    <div class="node_description">Creator</div>
+    <div class="node_content"><%= @asset.creator.presence || "—" %></div>
+
+    <div class="node_description">Source</div>
+    <div class="node_content">
+      <% if @asset.source_url.present? %>
+        <%= link_to @asset.source_url, @asset.source_url %>
+      <% else %>
+        —
+      <% end %>
+    </div>
+
+    <div class="node_description">License</div>
+    <div class="node_content">
+      <% if (license = AssetLicense.find(@asset.license_key)) %>
+        <%= t("asset_licenses.#{license.key}") %>
+      <% else %>
+        —
+      <% end %>
     </div>
 
     <div class="node_description">Content Type</div>

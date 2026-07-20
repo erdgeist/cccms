@@ -89,6 +89,6 @@ class AssetsController < ApplicationController
   private
 
     def asset_params
-      params.require(:asset).permit(:name, :upload)
+      params.require(:asset).permit(:name, :upload, :creator, :source_url, :license_key)
     end
 end

@@ -1,17 +1,38 @@
-<h1>New asset</h1>
+<div id="page_editor">
+  <h1>New asset</h1>
 
-<%= form_for(@asset, :html => { :multipart => true }) do |f| %>
-  <%= form_error_messages(f) %>
-  
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
+  <%= form_for(@asset, :html => { :multipart => true }) do |f| %>
+    <%= form_error_messages(f) %>
 
-  <p>
-    <%= f.file_field :upload %>
-    <%= f.submit 'Create' %>
-  </p>
-<% end %>
+    <div id="content">
+      <div class="node_description"><%= f.label :name %></div>
+      <div class="node_content"><%= f.text_field :name %></div>
 
-<%= link_to 'Back', assets_path %>
+      <div class="node_description"><%= f.label :upload, "File" %></div>
+      <div class="node_content"><%= f.file_field :upload %></div>
+
+      <div class="node_description"><%= f.label :creator %></div>
+      <div class="node_content"><%= f.text_field :creator %></div>
+
+      <div class="node_description"><%= f.label :source_url, "Source URL" %></div>
+      <div class="node_content"><%= f.text_field :source_url %></div>
+
+      <div class="node_description"><%= f.label :license_key, "License" %></div>
+      <div class="node_content">
+        <%= f.select :license_key,
+              options_for_select(
+                [["— none —", ""]] + AssetLicense.keys.map { |key| [t("asset_licenses.#{key}"), key] },
+                @asset.license_key
+              ) %>
+      </div>
+
+      <div class="node_description">Actions</div>
+      <div class="node_content node_info_group">
+        <div class="node_info_group_items">
+          <div class="node_info_item"><%= f.submit 'Create' %></div>
+          <div class="node_info_item"><%= link_to 'Back', assets_path %></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

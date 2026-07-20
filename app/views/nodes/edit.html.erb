@@ -82,11 +82,18 @@
           <ul id="related_asset_list" class="thumbnail_list">
             <% @page.related_assets.includes(:asset).each do |related| %>
               <li data-url="<%= node_related_asset_path(@node, related) %>"
+                  data-asset-id="<%= related.asset.id %>"
                   data-large-url="<%= related.asset.upload.url(:large) %>"
                   data-original-url="<%= related.asset.upload.url %>"
-                  data-name="<%= related.asset.name %>">
+                  data-name="<%= related.asset.name %>"
+                  data-headline="<%= related.headline? %>"
+                  class="<%= "is_headline" if related.headline? %>">
                 <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
                 <%= image_tag related.asset.upload.url(:thumb) %>
+                <button type="button" class="related_asset_set_headline"
+                        aria-pressed="<%= related.headline? %>" aria-label="Set as headline image">
+                  <%= icon("star", library: "tabler", "aria-hidden": true) %>
+                </button>
                 <button type="button" class="related_asset_remove" aria-label="Remove image">
                   <%= icon("x", library: "tabler", "aria-hidden": true) %>
                 </button>
@@ -102,6 +109,9 @@
         <li>
           <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
           <img src="">
+          <button type="button" class="related_asset_set_headline" aria-pressed="false" aria-label="Set as headline image">
+            <%= icon("star", library: "tabler", "aria-hidden": true) %>
+          </button>
           <button type="button" class="related_asset_remove" aria-label="Remove image">
             <%= icon("x", library: "tabler", "aria-hidden": true) %>
           </button>

@@ -1,0 +1,25 @@
+# config/asset_licenses.yml
+cc0:
+  url: "https://creativecommons.org/publicdomain/zero/1.0/"
+  requires_attribution: false
+  style: license
+cc_by_4:
+  url: "https://creativecommons.org/licenses/by/4.0/"
+  requires_attribution: true
+  style: license
+cc_by_sa_4:
+  url: "https://creativecommons.org/licenses/by-sa/4.0/"
+  requires_attribution: true
+  style: license
+public_domain:
+  url:
+  requires_attribution: false
+  style: note
+used_with_permission:
+  url:
+  requires_attribution: false
+  style: note
+own_work:
+  url:
+  requires_attribution: false
+  style: note

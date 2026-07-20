@@ -3,6 +3,7 @@
   <p><%= sanitize( @page.abstract ) %></p>
   <div id="headline_image"><%= headline_image %></div>
   <%= aggregate?(@page.body) %>
+  <%= render partial: 'content/asset_credits' %>
 </div>
 
 <%= will_paginate(@content_collection) if @content_collection %>
