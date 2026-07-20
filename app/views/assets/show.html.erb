@@ -16,7 +16,6 @@
       </div>
     </div>
 
-    <div class="node_description">Thumbnail</div>
     <% if @asset.has_variant?(:medium) %>
       <div class="node_description">Thumbnail</div>
       <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
