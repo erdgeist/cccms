@@ -91,7 +91,8 @@
                 <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
                 <%= image_tag related.asset.upload.url(:thumb) %>
                 <button type="button" class="related_asset_set_headline"
-                        aria-pressed="<%= related.headline? %>" aria-label="Set as headline image">
+                        aria-pressed="<%= related.headline? %>" aria-label="Set as headline image"
+                        title="Use this photo as the page's headline image">
                   <%= icon("star", library: "tabler", "aria-hidden": true) %>
                 </button>
                 <button type="button" class="related_asset_remove" aria-label="Remove image">
@@ -100,6 +101,7 @@
               </li>
             <% end %>
           </ul>
+          <p class="field_hint">The starred photo becomes this page's headline image on the public site. If none is starred, visitors get a link to browse all attached images instead.</p>
           <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: "Search images to attach…", autocomplete: "off" %>
           <div id="related_asset_search_results" class="search_results"></div>
         </div>
