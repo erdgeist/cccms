@@ -5,9 +5,13 @@
       <tr>
         <th><%= I18n.default_locale.to_s.upcase %></th>
         <td>
-          <%= safe_join(default_items, ", ") %>
+          <%= safe_join(default_items, tag.br) %>
           <% if action_entry.page && action_entry.node %>
-            <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page) %>
+            <% if (diff_params = action_entry.diff_link_params) %>
+              <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params) %>
+            <% else %>
+              <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page) %>
+            <% end %>
           <% end %>
         </td>
       </tr>
@@ -16,9 +20,13 @@
       <tr>
         <th><%= locale.upcase %></th>
         <td>
-          <%= safe_join(translation_changes(diff), ", ") %>
+          <%= safe_join(translation_changes(diff), tag.br) %>
           <% if action_entry.page && action_entry.node %>
-            <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page, :locale => locale) %>
+            <% if (diff_params = action_entry.diff_link_params) %>
+              <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params.merge(:locale => locale)) %>
+            <% else %>
+              <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page, :locale => locale) %>
+            <% end %>
           <% end %>
         </td>
       </tr>

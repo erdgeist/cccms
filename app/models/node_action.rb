@@ -166,4 +166,12 @@ class NodeAction < ApplicationRecord
   def subject_name
     metadata["human_readable_node_name"] || node&.unique_name || "deleted node"
   end
+
+  def diff_link_params
+    prev = NodeAction.where(node_id: node_id, action: "publish")
+                     .where("id < ?", id)
+                     .order(id: :desc).first
+    return nil unless prev&.page && page
+    { start_revision: prev.page.revision, end_revision: page.revision }
+  end
 end
