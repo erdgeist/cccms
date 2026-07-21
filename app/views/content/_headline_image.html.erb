@@ -7,7 +7,7 @@
     :class => "glightbox",
     :data => { :gallery => "page-#{@page.node.id}",
                :glightbox => glightbox_data(@headline_asset, @headline_asset.name),
-               :"credit-selector" => (@headline_asset.has_credit? ? "#credit_for_asset_#{@headline_asset.id}" : nil) }
+               :"credit-selector" => (@headline_asset.show_credit? ? "#credit_for_asset_#{@headline_asset.id}" : nil) }
   ) %>
   <% if gallery_images.size > 1 %>
     <div class="right"><%= "#{gallery_images.size} #{t(:images)}" %></div>
@@ -18,7 +18,7 @@
         :class => "glightbox right",
         :data => { :gallery => "page-#{@page.node.id}",
                    :glightbox => glightbox_data(gallery_images.first, gallery_images.first.name),
-                   :"credit-selector" => (gallery_images.first.has_credit? ? "#credit_for_asset_#{gallery_images.first.id}" : nil) } %>
+                   :"credit-selector" => (gallery_images.first.show_credit? ? "#credit_for_asset_#{gallery_images.first.id}" : nil) } %>
 <% end %>
 
 <% gallery_images.each do |image| %>
@@ -27,5 +27,5 @@
   <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none",
         :data => { :gallery => "page-#{@page.node.id}",
                    :glightbox => glightbox_data(image, image.name),
-                   :"credit-selector" => (image.has_credit? ? "#credit_for_asset_#{image.id}" : nil) } %>
+                   :"credit-selector" => (image.show_credit? ? "#credit_for_asset_#{image.id}" : nil) } %>
 <% end %>

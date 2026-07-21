@@ -253,12 +253,12 @@
       <% end %>
     </div>
 
-    <% if @page.assets.images.any? %>
+    <% if @page.assets.any? %>
       <% headline_asset_id = @page.headline_asset&.id %>
       <div class="node_description">Images</div>
       <div class="node_content node_info_group">
         <ul class="thumbnail_list">
-          <% @page.assets.images.each do |asset| %>
+          <% @page.assets.each do |asset| %>
             <li class="<%= "is_headline" if asset.id == headline_asset_id %>">
               <%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %>
               <% if asset.id == headline_asset_id %>
