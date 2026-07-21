@@ -46,4 +46,11 @@ class AssetTest < ActiveSupport::TestCase
     assert Asset.new(:upload_content_type => "application/pdf").pdf?
     assert_not Asset.new(:upload_content_type => "image/png").pdf?
   end
+
+  test "show_credit? is false for a PDF even with every credit field present" do
+    asset = Asset.new(:name => "demo", :upload_content_type => "application/pdf",
+                       :creator => "Jane Doe", :source_url => "https://example.org", :license_key => "cc_by_4")
+    assert asset.has_credit?
+    assert_not asset.show_credit?
+  end
 end

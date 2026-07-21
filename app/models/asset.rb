@@ -25,4 +25,8 @@ class Asset < ApplicationRecord
   def has_credit?
     creator.present? || source_url.present? || license_key.present?
   end
+
+  def show_credit?
+    image? && has_credit?
+  end
 end

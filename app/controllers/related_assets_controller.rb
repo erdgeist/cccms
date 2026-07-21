@@ -26,7 +26,7 @@ class RelatedAssetsController < ApplicationController
       id: related.id,
       asset_id: asset.id,
       name: asset.name,
-      has_credit: asset.has_credit?,
+      has_credit: asset.show_credit?,
       thumb_url: asset.upload.url(:thumb),
       large_url: asset.upload.url(:large),
       original_url: asset.upload.url,
