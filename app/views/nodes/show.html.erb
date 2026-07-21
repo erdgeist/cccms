@@ -254,11 +254,19 @@
     </div>
 
     <% if @page.assets.images.any? %>
+      <% headline_asset_id = @page.related_assets.find_by(headline: true)&.asset_id %>
       <div class="node_description">Images</div>
       <div class="node_content node_info_group">
         <ul class="thumbnail_list">
           <% @page.assets.images.each do |asset| %>
-            <li><%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %></li>
+            <li class="<%= "is_headline" if asset.id == headline_asset_id %>">
+              <%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %>
+              <% if asset.id == headline_asset_id %>
+                <span class="headline_indicator" title="This page's headline image">
+                  <%= icon("star", library: "tabler", "aria-hidden": true) %>
+                </span>
+              <% end %>
+            </li>
           <% end %>
         </ul>
       </div>

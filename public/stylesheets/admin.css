@@ -1316,6 +1316,30 @@ div#image_browser ul li {
   border-radius: 4px;
 }
 
+.thumbnail_list li {
+  position: relative;
+}
+
+.thumbnail_list li .headline_indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #f5b400;
+}
+
+.thumbnail_list li .headline_indicator svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+}
+
 .related_asset_handle {
   display: flex;
   color: #969696;
