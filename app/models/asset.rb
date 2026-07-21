@@ -1,5 +1,6 @@
 class Asset < ApplicationRecord
   IMAGE_CONTENT_TYPES = ["image/gif", "image/jpeg", "image/png", "image/webp"]
+  PDF_CONTENT_TYPE = "application/pdf"
 
   include FileAttachment
   
@@ -9,11 +10,16 @@ class Asset < ApplicationRecord
   scope :images,    -> { where(:upload_content_type => IMAGE_CONTENT_TYPES) }
   scope :documents, -> { where(:upload_content_type => ["application/pdf", "text/plain", "text/rtf"]) }
   scope :audio,     -> { where(:upload_content_type => ["audio/mpeg", "audio/x-m4a", "audio/wav", "audio/x-wav"]) }
+  scope :headline_eligible, -> { where(:upload_content_type => IMAGE_CONTENT_TYPES + [PDF_CONTENT_TYPE]) }
 
   validates :license_key, inclusion: { in: -> { AssetLicense.keys } }, allow_blank: true
 
   def image?
     IMAGE_CONTENT_TYPES.include?(upload_content_type)
+  end
+
+  def pdf?
+    upload_content_type == PDF_CONTENT_TYPE
   end
 
   def has_credit?

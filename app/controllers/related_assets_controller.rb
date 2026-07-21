@@ -5,10 +5,10 @@ class RelatedAssetsController < ApplicationController
   def search
     term = params[:search_term].to_s.strip
     attached_ids = @node.editable_page.related_assets.pluck(:asset_id)
-    scope = Asset.images.where.not(id: attached_ids)
+    scope = Asset.headline_eligible.where.not(id: attached_ids)
 
     results = if term.present?
-      scope.where("name ILIKE ?", "%#{term}%").limit(10)
+      scope.where("name ILIKE :term OR upload_file_name ILIKE :term", term: "%#{term}%").limit(10)
     else
       scope.order(created_at: :desc).limit(5)
     end

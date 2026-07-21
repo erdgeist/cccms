@@ -41,4 +41,9 @@ class AssetTest < ActiveSupport::TestCase
   test "license_key may be blank" do
     assert Asset.new(:license_key => nil).valid?
   end  
+
+  test "pdf? is true only for application/pdf" do
+    assert Asset.new(:upload_content_type => "application/pdf").pdf?
+    assert_not Asset.new(:upload_content_type => "image/png").pdf?
+  end
 end
