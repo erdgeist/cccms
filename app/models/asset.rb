@@ -10,6 +10,8 @@ class Asset < ApplicationRecord
   scope :images,    -> { where(:upload_content_type => IMAGE_CONTENT_TYPES) }
   scope :documents, -> { where(:upload_content_type => ["application/pdf", "text/plain", "text/rtf"]) }
   scope :audio,     -> { where(:upload_content_type => ["audio/mpeg", "audio/x-m4a", "audio/wav", "audio/x-wav"]) }
+  scope :pdfs,      -> { where(:upload_content_type => PDF_CONTENT_TYPE) }
+
   scope :headline_eligible, -> { where(:upload_content_type => IMAGE_CONTENT_TYPES + [PDF_CONTENT_TYPE]) }
 
   validates :license_key, inclusion: { in: -> { AssetLicense.keys } }, allow_blank: true

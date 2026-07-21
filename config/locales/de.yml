@@ -130,3 +130,5 @@ de:
     photo: "Foto %{name}"
     by: "von %{creator}"
     licensed_under: "Lizenziert unter %{license}"
+
+  related_documents: "Weitere Dokumente"

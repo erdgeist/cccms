@@ -79,4 +79,50 @@ class ContentHelperTest < ActionView::TestCase
 
     I18n.with_locale(:en) { assert_match t(:open_gallery), headline_image }
   end
+
+  test "headline_image renders a document card for a PDF headline, not a lightbox image" do
+    node = Node.root.children.create!(:slug => "headline_image_pdf_test")
+    asset = Asset.create!(:name => "Expert Opinion", :upload_content_type => "application/pdf")
+    node.draft.assets << asset
+    node.draft.related_assets.find_by(:asset_id => asset.id).update!(:headline => true)
+    @page = node.draft
+
+    result = headline_image
+
+    assert_match "headline_document_card", result
+    assert_match "Expert Opinion", result
+    assert_no_match "data-gallery", result
+  end
+
+  test "headline_image lists other attached PDFs below the headline" do
+    node = Node.root.children.create!(:slug => "headline_image_multi_pdf_test")
+    headline_pdf = Asset.create!(:name => "Main Filing", :upload_content_type => "application/pdf")
+    other_pdf = Asset.create!(:name => "Supplementary Exhibit", :upload_content_type => "application/pdf")
+    node.draft.assets << headline_pdf
+    node.draft.assets << other_pdf
+    node.draft.related_assets.find_by(:asset_id => headline_pdf.id).update!(:headline => true)
+    @page = node.draft
+
+    result = headline_image
+
+    assert_match "Main Filing", result
+    assert_match "Supplementary Exhibit", result
+    assert_match "headline_document_card", result
+    assert_match "related_documents_list", result
+  end
+
+  test "headline_image lists attached PDFs even with no headline chosen" do
+    node = Node.root.children.create!(:slug => "headline_image_pdf_no_headline_test")
+    pdf_a = Asset.create!(:name => "Document A", :upload_content_type => "application/pdf")
+    pdf_b = Asset.create!(:name => "Document B", :upload_content_type => "application/pdf")
+    node.draft.assets << pdf_a
+    node.draft.assets << pdf_b
+    @page = node.draft
+
+    result = headline_image
+
+    assert_no_match "headline_document_card", result
+    assert_match "Document A", result
+    assert_match "Document B", result
+  end
 end

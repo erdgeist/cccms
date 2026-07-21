@@ -1,13 +1,25 @@
 <% gallery_images = @page.assets.images %>
+<% image_headline = @headline_asset if @headline_asset&.image? %>
+<% other_pdfs = @page.assets.pdfs.where.not(id: @headline_asset&.id) %>
 
-<% if @headline_asset %>
+<% if @headline_asset&.pdf? %>
+  <%= link_to @headline_asset.upload.url, :class => "headline_document_card", :target => "_blank", :rel => "noopener" do %>
+    <%= image_tag @headline_asset.upload.url(:medium), :alt => "", :class => "headline_document_card_thumb" %>
+    <div class="headline_document_card_info">
+      <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
+      <span class="headline_document_card_title"><%= @headline_asset.name %></span>
+    </div>
+  <% end %>
+<% end %>
+
+<% if image_headline %>
   <%= link_to(
-    image_tag(@headline_asset.upload.url(:headline)),
-    @headline_asset.upload.url,
+    image_tag(image_headline.upload.url(:headline)),
+    image_headline.upload.url,
     :class => "glightbox",
     :data => { :gallery => "page-#{@page.node.id}",
-               :glightbox => glightbox_data(@headline_asset, @headline_asset.name),
-               :"credit-selector" => (@headline_asset.show_credit? ? "#credit_for_asset_#{@headline_asset.id}" : nil) }
+               :glightbox => glightbox_data(image_headline, image_headline.name),
+               :"credit-selector" => (image_headline.show_credit? ? "#credit_for_asset_#{image_headline.id}" : nil) }
   ) %>
   <% if gallery_images.size > 1 %>
     <div class="right"><%= "#{gallery_images.size} #{t(:images)}" %></div>
@@ -22,10 +34,26 @@
 <% end %>
 
 <% gallery_images.each do |image| %>
-  <% next if image == @headline_asset %>
-  <% next if !@headline_asset && image == gallery_images.first %>
+  <% next if image == image_headline %>
+  <% next if !image_headline && image == gallery_images.first %>
   <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none",
         :data => { :gallery => "page-#{@page.node.id}",
                    :glightbox => glightbox_data(image, image.name),
                    :"credit-selector" => (image.show_credit? ? "#credit_for_asset_#{image.id}" : nil) } %>
+<% end %>
+
+<% if other_pdfs.any? %>
+  <div class="related_documents">
+    <div class="related_documents_label"><%= t(:related_documents) %></div>
+    <ul class="related_documents_list">
+      <% other_pdfs.each do |pdf| %>
+        <li>
+          <%= link_to pdf.upload.url, :class => "related_document_link", :target => "_blank", :rel => "noopener" do %>
+            <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
+            <span><%= pdf.name %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>

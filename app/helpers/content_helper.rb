@@ -54,7 +54,7 @@ module ContentHelper
 
   def headline_image
     @headline_asset = @page.headline_asset
-    render :partial => 'content/headline_image' if @headline_asset || @page.assets.images.any?
+    render :partial => 'content/headline_image' if @headline_asset || @page.assets.images.any? || @page.assets.pdfs.any?
   end
 
   # Returns the published_at attribute of a page if it is not nil, otherwise

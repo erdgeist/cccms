@@ -775,3 +775,60 @@ div.teaser_ruler {
 .glightbox-clean .gslide-desc {
   color: CanvasText !important;
 }
+
+.headline_document_card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  border: 1px solid color-mix(in srgb, CanvasText, #808080 25%);
+  border-radius: 6px;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.headline_document_card:hover {
+  border-color: CanvasText;
+}
+
+.headline_document_card_thumb {
+  max-width: 120px;
+  max-height: 160px;
+  border: 1px solid color-mix(in srgb, CanvasText, #808080 25%);
+  flex-shrink: 0;
+}
+
+.headline_document_card_info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headline_document_card_title {
+  font-weight: bold;
+}
+
+.related_documents {
+  margin-top: 1rem;
+}
+
+.related_documents_label {
+  font-style: italic;
+  font-family: Georgia;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, CanvasText, #808080);
+  margin-bottom: 0.3rem;
+}
+
+.related_documents_list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.related_document_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}

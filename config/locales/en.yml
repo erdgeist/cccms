@@ -82,3 +82,5 @@ en:
     photo: "Photo %{name}"
     by: "by %{creator}"
     licensed_under: "Licensed under %{license}"
+
+  related_documents: "Related documents"
