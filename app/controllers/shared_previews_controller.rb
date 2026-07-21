@@ -8,7 +8,7 @@ class SharedPreviewsController < ApplicationController
       is_draft = node.draft_id == @page.id
 
       currently_public = is_head && @page.public?
-      superseded        = !is_head && !is_draft
+      superseded       = !is_head && !is_draft
 
       if superseded || currently_public
         redirect_to @page.public_link
