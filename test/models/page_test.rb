@@ -309,11 +309,15 @@ class PageTest < ActiveSupport::TestCase
 
     kept_asset    = Asset.create!(:upload_file_name => "kept.png", :upload_content_type => "image/png", :upload_file_size => 1)
     removed_asset = Asset.create!(:upload_file_name => "removed.pdf", :upload_content_type => "application/pdf", :upload_file_size => 1)
-    n.head.update_assets([kept_asset.id, removed_asset.id])
+    n.head.related_assets.delete_all
+    n.head.related_assets.create!(:asset_id => kept_asset.id, :position => 1)
+    n.head.related_assets.create!(:asset_id => removed_asset.id, :position => 2)
 
     d2 = find_or_create_draft(n, @user1)
     added_asset = Asset.create!(:upload_file_name => "added.png", :upload_content_type => "image/png", :upload_file_size => 1)
-    d2.update_assets([kept_asset.id, added_asset.id])
+    d2.related_assets.delete_all
+    d2.related_assets.create!(:asset_id => kept_asset.id, :position => 1)
+    d2.related_assets.create!(:asset_id => added_asset.id, :position => 2)
     d2.save!
 
     diff = d2.diff_against(n.head)

@@ -319,22 +319,6 @@ class Page < ApplicationRecord
     end
   end
 
-  def update_assets image_ids
-    transaction do
-      previous_headline_asset_id = self.related_assets.find_by(headline: true)&.asset_id
-
-      self.related_assets.delete_all
-
-      if image_ids
-        image_ids.each_with_index do |id, index|
-          asset = Asset.find(id)
-          self.related_assets.create!(:asset_id => asset.id, :position => index+1,
-                                         :headline => asset.id == previous_headline_asset_id)
-        end
-      end
-    end
-  end
-
   # Installs (or re-installs) the trigger that keeps page_translations'
   # search_vector in sync. Idempotent, safe to call on every boot.
   # search_vector is populated by a raw Postgres trigger, not anything
