@@ -31,6 +31,7 @@ module FileAttachment
 
   IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
   VECTOR_CONTENT_TYPES   = %w[image/svg+xml].freeze
+  RASTERIZED_CONTENT_TYPES = %w[application/pdf].freeze
   DISPLAYABLE_AS_IMAGE   = IMAGE_CONTENT_TYPES + VECTOR_CONTENT_TYPES
 
   included do
@@ -58,6 +59,11 @@ module FileAttachment
 
   def previewable?
     has_variant?(:medium)
+  end
+
+  def variant_filename(style)
+    return upload_file_name if style == :original || !RASTERIZED_CONTENT_TYPES.include?(upload_content_type)
+    File.basename(upload_file_name, ".*") + ".png"
   end
 
   private
@@ -89,11 +95,7 @@ module FileAttachment
     FileUtils.mkdir_p(File.dirname(original_path))
     FileUtils.cp(uploaded_file.tempfile.path, original_path)
 
-    if IMAGE_CONTENT_TYPES.include?(upload_content_type)
-      generate_variants(original_path)
-    elsif VECTOR_CONTENT_TYPES.include?(upload_content_type)
-      generate_svg_variants(original_path)
-    end
+    generate_all_variants(original_path)
   end
 
   def generate_variants(original_path)
@@ -109,6 +111,16 @@ module FileAttachment
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
       FileUtils.cp(original_path, dest_path)
+    end
+  end
+
+  def generate_all_variants(original_path)
+    if IMAGE_CONTENT_TYPES.include?(upload_content_type)
+      generate_variants(original_path)
+    elsif VECTOR_CONTENT_TYPES.include?(upload_content_type)
+      generate_svg_variants(original_path)
+    elsif RASTERIZED_CONTENT_TYPES.include?(upload_content_type)
+      generate_variants("#{original_path}[0]")
     end
   end
 
@@ -135,7 +147,7 @@ module FileAttachment
 
     def url(style = :original)
       return "" if @record.upload_file_name.blank?
-      "/system/uploads/#{@record.id}/#{style}/#{@record.upload_file_name}"
+      "/system/uploads/#{@record.id}/#{style}/#{@record.variant_filename(style)}"
     end
 
     def content_type

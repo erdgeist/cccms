@@ -70,7 +70,7 @@ class AssetsControllerTest < ActionController::TestCase
 
   # --- create with PDF ---
 
-  test "create asset with PDF upload generates only original" do
+  test "create asset with PDF upload generates rasterized variants" do
     uploaded = Rack::Test::UploadedFile.new(
       Rails.root.join('test', 'fixtures', 'files', 'test_document.pdf'),
       'application/pdf'
@@ -81,18 +81,14 @@ class AssetsControllerTest < ActionController::TestCase
     assert_response :redirect
 
     asset = Asset.last
-    assert_equal 'test_document.pdf', asset.upload_file_name
-    assert_equal 'application/pdf',   asset.upload_content_type
-
-    # only original should exist, no image variants
-    original_path = Rails.root.join('public', 'system', 'uploads',
-                                    asset.id.to_s, 'original', 'test_document.pdf')
+    original_path = asset.send(:file_path, :original)
     assert File.exist?(original_path), "Expected original at #{original_path}"
+    assert_equal 'test_document.pdf', File.basename(original_path)
 
     %w[medium thumb headline large].each do |style|
-      path = Rails.root.join('public', 'system', 'uploads',
-                             asset.id.to_s, style, 'test_document.pdf')
-      assert !File.exist?(path), "Expected no #{style} variant for PDF"
+      path = asset.send(:file_path, style)
+      assert File.exist?(path), "Expected a #{style} variant at #{path}"
+      assert_equal '.png', File.extname(path), "Expected #{style} variant to be a PNG, not a PDF"
     end
   end
 
