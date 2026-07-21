@@ -53,7 +53,7 @@ module ContentHelper
   end
 
   def headline_image
-    @headline_asset = @page.related_assets.find_by(headline: true)&.asset
+    @headline_asset = @page.headline_asset
     render :partial => 'content/headline_image' if @headline_asset || @page.assets.images.any?
   end
 

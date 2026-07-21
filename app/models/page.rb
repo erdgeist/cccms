@@ -292,6 +292,10 @@ class Page < ApplicationRecord
     end
   end
 
+  def headline_asset
+    related_assets.find_by(headline: true)&.asset
+  end
+
   # Returns true if a page has translations where one of them is significantly
   # older than the other.
   # Takes the I18n.default locale and a second :locale to test if the

@@ -254,7 +254,7 @@
     </div>
 
     <% if @page.assets.images.any? %>
-      <% headline_asset_id = @page.related_assets.find_by(headline: true)&.asset_id %>
+      <% headline_asset_id = @page.headline_asset&.id %>
       <div class="node_description">Images</div>
       <div class="node_content node_info_group">
         <ul class="thumbnail_list">
