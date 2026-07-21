@@ -4,16 +4,15 @@ class AssetsControllerTest < ActionController::TestCase
 
   def setup
     login_as :quentin
+    @existing_asset_ids = Asset.pluck(:id)
   end
 
   def teardown
-    # Clean up any files written to disk during tests
-    Dir.glob(Rails.root.join('public', 'system', 'uploads', 'test_*')).each do |dir|
+    (Asset.pluck(:id) - @existing_asset_ids).each do |id|
+      dir = Asset.upload_root.join(id.to_s)
+      raise "Refusing to delete #{dir} -- outside tmp/, Rails.env.test? may be false" unless
+        dir.to_s.start_with?(Rails.root.join("tmp").to_s)
       FileUtils.rm_rf(dir)
-    end
-    # Remove uploads created for assets created during tests
-    Asset.where("upload_file_name IS NOT NULL").where("id > 1000000").each do |a|
-      FileUtils.rm_rf(Rails.root.join('public', 'system', 'uploads', a.id.to_s))
     end
   end
 
@@ -64,8 +63,7 @@ class AssetsControllerTest < ActionController::TestCase
 
     # original and all four variants should exist on disk
     %w[original medium thumb headline large].each do |style|
-      path = Rails.root.join('public', 'system', 'uploads',
-                             asset.id.to_s, style, 'test_image.png')
+      path = asset.send(:file_path, style)
       assert File.exist?(path), "Expected #{style} variant at #{path}"
     end
   end
@@ -137,7 +135,7 @@ class AssetsControllerTest < ActionController::TestCase
     )
     post :create, params: { asset: { name: 'To be deleted', upload: uploaded } }
     asset = Asset.last
-    upload_dir = Rails.root.join('public', 'system', 'uploads', asset.id.to_s)
+    upload_dir = asset.send(:upload_root).join(asset.id.to_s)
     assert Dir.exist?(upload_dir), "Upload directory should exist before destroy"
 
     assert_difference 'Asset.count', -1 do

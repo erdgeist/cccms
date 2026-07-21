@@ -66,12 +66,23 @@ module FileAttachment
     @upload = UploadProxy.new(self)
   end
 
+  class_methods do
+    def upload_root
+      Rails.env.test? ? Rails.root.join("tmp", "test_uploads") : Rails.root.join("public", "system", "uploads")
+    end
+  end
+
+  def upload_root
+    self.class.upload_root
+  end
+
   def process_upload
     return unless @pending_upload
     uploaded_file = @pending_upload
     @pending_upload = nil
 
-    old_dir = Rails.root.join("public", "system", "uploads", id.to_s)
+    old_dir = upload_root.join(id.to_s)
+
     FileUtils.rm_rf(old_dir) if Dir.exist?(old_dir)
 
     original_path = file_path(:original)
@@ -102,15 +113,12 @@ module FileAttachment
   end
 
   def delete_upload_files
-    dir = Rails.root.join("public", "system", "uploads", id.to_s)
+    dir = upload_root.join(id.to_s)
     FileUtils.rm_rf(dir) if Dir.exist?(dir)
   end
 
   def file_path(style)
-    Rails.root.join(
-      "public", "system", "uploads",
-      id.to_s, style.to_s, upload_file_name
-    ).to_s
+    upload_root.join(id.to_s, style.to_s, variant_filename(style)).to_s
   end
 
   def sanitize_filename(filename)
