@@ -12,6 +12,6 @@ class RelatedAsset < ApplicationRecord
 
     def headline_only_for_images
       return unless asset
-      errors.add(:headline, "can only be set on image assets") if headline? && !asset.image?
+      errors.add(:headline, "can only be set on image or PDF assets") if headline? && !(asset.image? || asset.pdf?)
     end
 end

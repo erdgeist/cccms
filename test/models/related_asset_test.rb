@@ -11,15 +11,25 @@ class RelatedAssetTest < ActiveSupport::TestCase
     assert related.valid?
   end
 
-  test "headline cannot be set on a non-image asset" do
+  test "headline can be set on a PDF asset" do
     node = Node.root.children.create!(:slug => "related_asset_headline_pdf_test")
-    asset = Asset.create!(:name => "programme", :upload_content_type => "application/pdf")
+    asset = Asset.create!(:name => "expert opinion", :upload_content_type => "application/pdf")
+    node.draft.assets << asset
+    related = node.draft.related_assets.find_by(:asset_id => asset.id)
+
+    related.headline = true
+    assert related.valid?
+  end
+
+  test "headline cannot be set on a non-image, non-PDF asset" do
+    node = Node.root.children.create!(:slug => "related_asset_headline_text_test")
+    asset = Asset.create!(:name => "programme", :upload_content_type => "text/plain")
     node.draft.assets << asset
     related = node.draft.related_assets.find_by(:asset_id => asset.id)
 
     related.headline = true
     assert_not related.valid?
-    assert_includes related.errors[:headline], "can only be set on image assets"
+    assert_includes related.errors[:headline], "can only be set on image or PDF assets"
   end
 
   test "the headline validation does not raise when asset is missing" do

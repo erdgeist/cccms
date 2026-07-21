@@ -134,4 +134,29 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     assert_response :success
     assert_not related.reload.headline?
   end
+
+  test "search includes PDF assets as headline-eligible candidates" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "related_assets_search_pdf_test")
+    asset = Asset.create!(:name => "expert-opinion-searchable", :upload_content_type => "application/pdf")
+
+    get :search, params: { :node_id => node.id, :search_term => "expert-opinion-searchable" }
+
+    assert_response :success
+    ids = JSON.parse(response.body).map { |r| r["id"] }
+    assert_includes ids, asset.id
+  end
+
+  test "search matches by filename as well as name" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "related_assets_search_filename_test")
+    asset = Asset.create!(:name => "Untitled", :upload_content_type => "application/pdf",
+                           :upload_file_name => "Stellungnahme_Patientendaten_Schutz.pdf")
+
+    get :search, params: { :node_id => node.id, :search_term => "Patientendaten" }
+
+    assert_response :success
+    ids = JSON.parse(response.body).map { |r| r["id"] }
+    assert_includes ids, asset.id
+  end
 end
