@@ -727,7 +727,6 @@ div.teaser_ruler {
   min-width: 0;
 }
 
-
 .inline-image--full {
   width: 100%;
   margin: 1rem 0;
@@ -748,10 +747,31 @@ div.teaser_ruler {
   margin-left: 1rem;
 }
 
-#asset_credits .glightbox-desc {
+#asset_credits .asset_credit_block {
   display: none;
 }
 
-#asset_credits .headline_credit {
+#asset_credits .asset_credit_block.headline_credit {
   display: block;
+}
+
+#asset_credits {
+  border-top: dotted 1px silver;
+}
+
+#asset_credits,
+.right {
+  font-style: italic;
+  font-family: Georgia;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, CanvasText, #808080);
+}
+
+.glightbox-clean .gslide-description {
+  background: Canvas !important;
+}
+
+.glightbox-clean .gslide-title,
+.glightbox-clean .gslide-desc {
+  color: CanvasText !important;
 }

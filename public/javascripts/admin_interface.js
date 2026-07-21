@@ -282,6 +282,7 @@ cccms = {
           large: $(this).data('large-url'),
           original: $(this).data('original-url'),
           name: $(this).data('name'),
+          hasCredit: $(this).data('has-credit') === true,
           headline: $(this).data('headline') === true
         };
       }).get();
@@ -320,8 +321,11 @@ cccms = {
         : 'inline-image inline-image--half inline-image--' + placement;
 
       var esc = cccms.inline_images.escape_attr;
+      var titleForGlightbox = (item.name || '').replace(/;/g, ',');
+      var glightboxOpts = 'title: ' + esc(titleForGlightbox) +
+        (item.hasCredit ? '; description: #credit_for_asset_' + esc(item.id) : '') + ';';
       var html = '<a href="' + esc(item.original) + '" class="glightbox" data-gallery="page-' + esc(cccms.inline_images.node_id) + '"' +
-                 ' data-title="' + esc(item.name) + '" data-description="#credit_for_asset_' + esc(item.id) + '">' +
+                 ' data-glightbox="' + glightboxOpts + '">' +
                  '<img src="' + esc(item.large) + '" class="' + classes + '" alt="' + esc(item.name) + '"></a>';
 
       cccms.inline_images.editor.insertContent(html);

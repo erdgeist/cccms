@@ -87,6 +87,7 @@ related_assets = {
         var item = $($("#related_asset_template").html().trim());
         item.attr("data-url", related.url);
         item.attr("data-asset-id", related.asset_id);
+        item.attr("data-has-credit", related.has_credit);
         item.attr("data-large-url", related.large_url);
         item.attr("data-original-url", related.original_url);
         item.attr("data-name", related.name);

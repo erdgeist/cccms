@@ -1,11 +1,9 @@
 <% if @page.assets.images.any? %>
   <div id="asset_credits">
     <% @page.assets.images.each do |image| %>
-      <% credit = asset_credit(image) %>
-      <% next unless credit %>
       <div id="credit_for_asset_<%= image.id %>"
-           class="glightbox-desc<%= " headline_credit" if image == @headline_asset %>">
-        <%= credit %>
+          class="asset_credit_block<%= " headline_credit" if image == @headline_asset %>">
+        <%= asset_credit(image) %>
       </div>
     <% end %>
   </div>

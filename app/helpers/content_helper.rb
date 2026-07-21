@@ -153,7 +153,7 @@ module ContentHelper
 
   def asset_credit(asset)
     return nil unless asset
-    return nil if asset.creator.blank? && asset.source_url.blank? && asset.license_key.blank?
+    return nil unless asset.has_credit?
 
     license = AssetLicense.find(asset.license_key)
 
@@ -172,5 +172,9 @@ module ContentHelper
 
     full = license_text ? safe_join([attribution, license_text], ", ") : attribution
     safe_join([full, "."])
+  end
+
+  def glightbox_data(image, title)
+    "title: #{title.to_s.tr(';', ',')};"
   end
 end

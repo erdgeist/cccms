@@ -5,8 +5,9 @@
     image_tag(@headline_asset.upload.url(:headline)),
     @headline_asset.upload.url,
     :class => "glightbox",
-    :data  => { :gallery => "page-#{@page.node.id}", :title => @headline_asset.name,
-                :description => "#credit_for_asset_#{@headline_asset.id}" }
+    :data => { :gallery => "page-#{@page.node.id}",
+               :glightbox => glightbox_data(@headline_asset, @headline_asset.name),
+               :"credit-selector" => (@headline_asset.has_credit? ? "#credit_for_asset_#{@headline_asset.id}" : nil) }
   ) %>
   <% if gallery_images.size > 1 %>
     <div class="right"><%= "#{gallery_images.size} #{t(:images)}" %></div>
@@ -15,14 +16,16 @@
   <%= link_to "#{gallery_images.size} #{t(:images)}, #{t(:open_gallery)}",
         gallery_images.first.upload.url,
         :class => "glightbox right",
-        :data  => { :gallery => "page-#{@page.node.id}", :title => gallery_images.first.name,
-                    :description => "#credit_for_asset_#{gallery_images.first.id}" } %>
+        :data => { :gallery => "page-#{@page.node.id}",
+                   :glightbox => glightbox_data(gallery_images.first, gallery_images.first.name),
+                   :"credit-selector" => (gallery_images.first.has_credit? ? "#credit_for_asset_#{gallery_images.first.id}" : nil) } %>
 <% end %>
 
 <% gallery_images.each do |image| %>
   <% next if image == @headline_asset %>
   <% next if !@headline_asset && image == gallery_images.first %>
   <%= link_to "", image.upload.url, :class => "glightbox", :style => "display: none",
-        :data => { :gallery => "page-#{@page.node.id}", :title => image.name,
-                   :description => "#credit_for_asset_#{image.id}" } %>
+        :data => { :gallery => "page-#{@page.node.id}",
+                   :glightbox => glightbox_data(image, image.name),
+                   :"credit-selector" => (image.has_credit? ? "#credit_for_asset_#{image.id}" : nil) } %>
 <% end %>

@@ -15,4 +15,8 @@ class Asset < ApplicationRecord
   def image?
     IMAGE_CONTENT_TYPES.include?(upload_content_type)
   end
+
+  def has_credit?
+    creator.present? || source_url.present? || license_key.present?
+  end
 end

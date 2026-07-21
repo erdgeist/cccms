@@ -86,6 +86,7 @@
                   data-large-url="<%= related.asset.upload.url(:large) %>"
                   data-original-url="<%= related.asset.upload.url %>"
                   data-name="<%= related.asset.name %>"
+                  data-has-credit="<%= related.asset.has_credit? %>"
                   data-headline="<%= related.headline? %>"
                   class="<%= "is_headline" if related.headline? %>">
                 <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
