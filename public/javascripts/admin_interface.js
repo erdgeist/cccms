@@ -45,10 +45,6 @@ $(document).ready(function () {
     menu_item_sorter.initialize();
   }
 
-  if ($("#metadata").length != 0) {
-    meta_data.initialize();
-  }
-
   if ($("#parent_search_term").length != 0) {
     parent_search.initialize_search();
   }
@@ -109,14 +105,6 @@ $(document).ready(function () {
 
 });
 
-
-meta_data = {
-  initialize : function() {
-    document.getElementById("metadata_details").addEventListener("toggle", function() {
-      if (this.open) image_interface.initialize();
-    });
-  }
-};
 
 cccms = {
   setup_autosave : function() {
@@ -361,77 +349,6 @@ menu_item_sorter = {
 
   placeholder_helper : function(e,ui) {
     $(".ui-state-highlight").html("<td colspan='100%'></td>");
-  }
-}
-
-image_interface = {
-
-  initialize : function() {
-
-    $("#image_browser").hide();
-    image_interface.initialize_sortable_image_box();
-    image_interface.connect_browser_and_box();
-    image_interface.set_droppable_behavior();
-    image_interface.bind_image_browser_toggle();
-  },
-
-
-  set_droppable_behavior : function() {
-    $("ul#image_box").droppable({
-      out : function(event, ui) {
-        $(ui.draggable).fadeTo("fast", 0.4);
-
-        $(ui.draggable).bind("mouseup", function() {
-          $(this).remove();
-        });
-      },
-      over : function(event, ui) {
-        $(ui.draggable).fadeTo("fast", 1.0);
-        $(ui.draggable).unbind("mouseup");
-      }
-    });
-  },
-
-  connect_browser_and_box : function() {
-    $("#image_browser ul li").draggable({
-      connectToSortable : 'ul#image_box',
-      helper : 'clone',
-      revert : 'invalid'
-    });
-  },
-
-  initialize_sortable_image_box : function() {
-
-    $("ul#image_box").sortable({
-      revert  : true,
-      update    : function(event, ui) {
-        images = $("ul#image_box").sortable("serialize", {attribute : "rel"});
-
-        $.ajax({
-          type : "POST",
-          url  : "/pages/" + $("ul#image_box").attr("rel") + "/sort_images",
-          dataType : "json",
-          data : images + "&_method=put",
-          success : function() {
-          }
-        });
-      }
-    });
-  },
-
-  bind_image_browser_toggle : function() {
-    $("#image_browser_toggle").bind("click", function(){
-      if ($("#image_browser_toggle").attr("class") == "unselected") {
-        $("#image_browser_toggle").attr("class", "selected");
-        $("#image_browser").show();
-      }
-      else {
-        $("#image_browser_toggle").attr("class", "unselected");
-        $("#image_browser").hide();
-      }
-
-      return false;
-    });
   }
 }
 

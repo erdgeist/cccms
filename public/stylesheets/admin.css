@@ -1042,10 +1042,6 @@ div#page_editor {
   select {
     font-size: 1.5rem;
   }
-
-  #metadata ul#image_box {
-    width: 100% !important;
-  }
 }
 
 /* ============================================================
@@ -1263,31 +1259,6 @@ div#draft_list table td.actions a {
 /* ============================================================
    Image box / browser
    ============================================================ */
-
-#metadata ul#image_box {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 10px 5px 10px 5px;
-  height: 100px;
-  width: 702px;
-  border: 1px solid #989898;
-}
-
-#metadata ul#image_box li {
-  float: left;
-  list-style-type: none;
-  margin: 5px;
-}
-
-div#image_browser {
-  position: absolute;
-  top: 40px;
-  left: 800px;
-}
-
-div#image_browser ul li {
-  list-style-type: none;
-}
 
 .thumbnail_list {
   display: flex;

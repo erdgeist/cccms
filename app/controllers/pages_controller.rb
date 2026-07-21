@@ -15,11 +15,4 @@ class PagesController < ApplicationController
       )
     end
   end
-
-  def sort_images
-    page = Page.find(params[:id])
-    page.update_assets(params[:images])
-    
-    head :ok
-  end
 end

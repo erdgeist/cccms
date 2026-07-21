@@ -30,7 +30,6 @@ Cccms::Application.routes.draw do
     end
 
     get  'pages/:id/preview',     to: 'pages#preview',     as: :preview_page
-    put  'pages/:id/sort_images', to: 'pages#sort_images', as: :sort_images_page
 
     get 'preview/:token', to: 'shared_previews#show', as: :shared_preview
 
