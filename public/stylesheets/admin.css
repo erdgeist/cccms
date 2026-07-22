@@ -1002,14 +1002,9 @@ div#page_editor {
     padding-right: 5px;
   }
 
-  /* Fixed 800px width will overflow narrow viewports despite
-     border-box -- every sibling rule in this block uses 100% instead.
-     Worth checking on an actual phone; looks unfinished rather than
-     intentional. Not changed here since it wasn't part of what you
-     asked to fix. */
   #page_editor textarea#page_body {
     box-sizing: border-box;
-    width: 800px;
+    width: 100%;
     height: 50rem;
   }
 
