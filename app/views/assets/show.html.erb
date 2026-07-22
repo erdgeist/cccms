@@ -21,6 +21,31 @@
       <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
     <% end %>
 
+    <div class="node_description">Attached to</div>
+    <div class="node_content">
+      <% nodes = @asset.attached_nodes %>
+      <% if nodes.any? %>
+        <ul class="search_results_list">
+          <% nodes.each do |node| %>
+            <li>
+              <%= link_to node.title, node_path(node) %>
+              <% if node.editable_page&.headline_asset == @asset %>
+                <%= icon("star", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+              <% unless node.head && node.head.related_assets.exists?(:asset_id => @asset.id) %>
+                <span class="field_hint">pending versions only</span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        — not attached to any page —
+      <% end %>
+      <%= link_to new_node_path(:asset_id => @asset.id), :class => "action_button" do %>
+        <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> New page with this attachment
+      <% end %>
+    </div>
+
     <div class="node_description">Public Path</div>
     <div class="node_content">
       <% public_path = @asset.upload.url.sub(/\?\d+$/, "") %>

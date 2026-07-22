@@ -48,6 +48,24 @@
     <span class="field_hint">This preview updates as you type. The final path can still be changed afterward by editing the title (for the last segment) or moving the node to a different parent (for everything before it).</span>
   </div>
 
+  <% if @attach_asset %>
+    <div class="node_description">attachment</div>
+    <div class="node_content">
+      <ul class="thumbnail_list">
+        <li>
+          <% if @attach_asset.has_variant?(:thumb) %>
+            <%= image_tag @attach_asset.upload.url(:thumb) %>
+          <% end %>
+          <%= link_to @attach_asset.name, asset_path(@attach_asset),
+                :target => "_blank", :rel => "noopener" %>
+        </li>
+      </ul>
+      <span class="field_hint">This asset will automatically be attached to the new page.</span>
+      <label><%= check_box_tag :asset_headline, "1" %> as the page's headline</label>
+      <%= hidden_field_tag :asset_id, @attach_asset.id %>
+    </div>
+  <% end %>
+
   <div class="node_description"></div>
   <div class="node_content"><%= submit_tag "Create" %></div>
 

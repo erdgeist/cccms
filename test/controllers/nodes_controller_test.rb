@@ -409,7 +409,7 @@ class NodesControllerTest < ActionController::TestCase
 
     get :show, params: { id: node.id }
     assert_response :success
-    assert_select "a", text: "add event"
+    assert_select "a", text: "Add event"
     assert_select "a[href*='tag_list=open-day']"
     assert_select "a[href*='auto_tag_source=erfa-detail']"
   end
@@ -420,7 +420,7 @@ class NodesControllerTest < ActionController::TestCase
 
     get :show, params: { id: node.id }
     assert_response :success
-    assert_select "a", text: "add event"
+    assert_select "a", text: "Add event"
     assert_select "a[href*='tag_list=']", count: 0
   end
 

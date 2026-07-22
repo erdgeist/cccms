@@ -30,6 +30,7 @@ class NodesController < ApplicationController
     @node = Node.new node_params
     @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
     @parent = Node.find(params[:parent_id]) if params.has_key?(:parent_id)
+    @attach_asset = Asset.find(params[:asset_id]) if params.has_key?(:asset_id)
   end
 
   def create
@@ -51,10 +52,19 @@ class NodesController < ApplicationController
                           :action => "create",
                           :title => params[:title], :path => @node.unique_name)
 
+      if params[:asset_id].present? && (asset = Asset.find(params[:asset_id]))
+        result = @node.attach_asset!(asset, :user => current_user,
+                                      :headline => params[:asset_headline].present?)
+        flash[:notice] = "Page created with “#{asset.name}” attached."
+        flash[:notice] += " It is the page's headline." if result[:headline] == :set
+        flash[:error]   = "This asset type cannot be a headline." if result[:headline] == :not_eligible
+      end
+
       redirect_to(edit_node_path(@node))
     else
       @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
       @parent = Node.find(params[:parent_id]) if params.has_key?(:parent_id)
+      @attach_asset = Asset.find(params[:asset_id]) if params.has_key?(:asset_id)
       render :new
     end
   end

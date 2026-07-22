@@ -31,4 +31,13 @@ class Asset < ApplicationRecord
   def show_credit?
     image? && has_credit?
   end
+
+  # Nodes whose current lifecycle rows (head, draft or autosave) carry
+  # this asset. Historical revisions also hold RelatedAsset rows; they
+  # are excluded by construction here, since nothing points at them.
+  def attached_nodes
+    page_ids = related_assets.select(:page_id)
+    Node.where("head_id IN (:ids) OR draft_id IN (:ids) OR autosave_id IN (:ids)",
+               :ids => page_ids).distinct
+  end
 end
