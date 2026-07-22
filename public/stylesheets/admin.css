@@ -831,12 +831,11 @@ form.button_to button[type="submit"] {
 
 /* Layout only -- the at-rest visibility (wavy underline) for these
    links comes from the scoped rule in Base elements above. */
+.add_events,
+.add_attachments,
 .add_child_links {
   margin-top: 0.5rem;
-}
-
-.add_child_links a {
-  white-space: nowrap;
+  margin-bottom: 0;
 }
 
 .sitemap_node {

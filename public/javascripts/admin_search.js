@@ -286,3 +286,20 @@ event_search = {
     });
   }
 };
+
+asset_node_search = {
+  initialize_search : function() {
+    initSearchPicker({
+      inputSelector: "#asset_node_search_term",
+      resultsSelector: "#asset_node_search_results",
+      onSelect: function(node) {
+        $("#asset_node_search_term").val(node.title);
+        $("#node_id").val(node.node_id);
+      }
+    });
+
+    $("#asset_node_search_term").bind("input", function() {
+      if ($(this).val() === "") { $("#node_id").val(""); }
+    });
+  }
+};

@@ -253,10 +253,10 @@
       <% end %>
     </div>
 
-    <% if @page.assets.any? %>
-      <% headline_asset_id = @page.headline_asset&.id %>
-      <div class="node_description">Images</div>
-      <div class="node_content node_info_group">
+    <div class="node_description">Attachments</div>
+    <div class="node_content node_info_group">
+      <% if @page.assets.any? %>
+        <% headline_asset_id = @page.headline_asset&.id %>
         <ul class="thumbnail_list">
           <% @page.assets.each do |asset| %>
             <li class="<%= "is_headline" if asset.id == headline_asset_id %>">
@@ -269,8 +269,14 @@
             </li>
           <% end %>
         </ul>
-      </div>
-    <% end %>
+      <% end %>
+      <p class="add_attachments">
+        <%= link_to new_asset_path(:node_id => @node.id), class: 'action_button' do %>
+          <%= icon("paperclip", library: "tabler", "aria-hidden": true) %> Upload new attachment
+        <% end %>
+        <span class="field_hint">To add or remove existing attachments, edit this node instead.</span>
+      </p>
+    </div>
 
     <div class="node_description">Events</div>
     <div class="node_content node_info_group">

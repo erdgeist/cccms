@@ -26,6 +26,23 @@
               ) %>
       </div>
 
+      <div class="node_description">attach to page</div>
+      <div class="node_content">
+        <div class="restore_picker">
+          <%= text_field_tag :asset_node_search_term, @attach_node&.title,
+                :placeholder => "Search for a page…", :autocomplete => "off" %>
+          <div id="asset_node_search_results" class="search_results" style="display: none"></div>
+        </div>
+        <%= hidden_field_tag :node_id, @attach_node&.id %>
+        <span class="field_hint">Optional — attaches this asset to that page, all pending versions included.</span>
+      </div>
+
+      <div class="node_description"></div>
+      <div class="node_content">
+        <label><%= check_box_tag :headline, "1" %> attach as the page's headline</label>
+        <span class="field_hint">Applies only if the page has no headline yet.</span>
+      </div>
+
       <div class="node_description">Actions</div>
       <div class="node_content node_info_group">
         <div class="node_info_group_items">

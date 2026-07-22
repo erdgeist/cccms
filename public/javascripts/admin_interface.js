@@ -65,6 +65,10 @@ $(document).ready(function () {
     related_assets.initialize();
   }
 
+  if ($("#asset_node_search_term").length != 0) {
+    asset_node_search.initialize_search();
+  }
+
   if ($("#rrule_builder").length != 0) {
     rrule_builder.initialize();
   }
