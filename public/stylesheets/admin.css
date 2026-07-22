@@ -97,7 +97,8 @@ input[type=radio] {
 }
 
 #metadata,
-#content {
+#content,
+#main_fields {
   margin-left: 5px;
 }
 
@@ -892,6 +893,26 @@ form.button_to button[type="submit"] {
    Page editor / metadata forms
    ============================================================ */
 
+@media(min-width:1016px) {
+  #edit_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "main meta"
+      "body body";
+    column-gap: 2rem;
+    align-items: start;
+    margin-left: -125px;
+  }
+  #main_fields       { grid-area: main; }
+  #metadata_details  { grid-area: meta; }
+  #page_editor #content { grid-area: body; }
+
+  /* Details is force-opened by JS on desktop; hide the summary only
+     once open, so a JS failure still leaves a working toggle. */
+  #metadata_details[open] > summary { display: none; }
+}
+
 #new_node {
   margin-left: -118px;
 }
@@ -947,18 +968,16 @@ div#page_editor {
 }
 
 @media(min-width:1016px) {
-  input#tag_list,
   input#menu_search_term,
   input#menu_item_node_id,
   input#menu_item_path,
-  input#menu_item_title,
-  input#node_staged_slug,
-  input#move_to_search_term {
+  input#menu_item_title {
     width: 690px;
   }
 
   input[type=text]#page_title {
-    width: 690px;
+    width: 100%;
+    box-sizing: border-box;
     font-size: 1rem;
     padding-top: 6px;
     padding-bottom: 4px;
@@ -968,24 +987,27 @@ div#page_editor {
   }
 
   textarea#page_abstract {
-    width: 690px;
-    height: 150px;
+    width: 100%;
+    box-sizing: border-box;
+    height: 250px;
     padding: 5px;
   }
 
   #page_editor textarea#page_body {
-    width: 700px;
+    width: 100%;
+    box-sizing: border-box;
     height: 600px;
   }
 
-  #page_editor #metadata, #page_editor #content, #admin_overview {
+  #admin_overview {
     margin-left: -125px;
   }
 
   #page_editor input[type=text],
   #page_editor input[type=password],
   #page_editor textarea {
-    width: 690px;
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -998,7 +1020,8 @@ div#page_editor {
   }
 
   #page_editor #content,
-  #page_editor #metadata {
+  #page_editor #metadata,
+  #page_editor #main_fields {
     padding-right: 5px;
   }
 

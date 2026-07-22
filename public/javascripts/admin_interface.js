@@ -73,6 +73,14 @@ $(document).ready(function () {
     cccms.preview.initialize();
   }
 
+  var metadata_details = document.getElementById('metadata_details');
+  if (metadata_details) {
+    var desktop_mq = window.matchMedia('(min-width: 1016px)');
+    var sync_metadata = function() { metadata_details.open = desktop_mq.matches; };
+    sync_metadata();
+    desktop_mq.addEventListener('change', sync_metadata);
+  }
+
   jQuery.ajaxSetup({
     'beforeSend': function(xhr) {xhr.setRequestHeader("Accept", "text/javascript");}
   });
