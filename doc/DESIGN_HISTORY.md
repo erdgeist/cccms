@@ -213,10 +213,16 @@ and the subsystems below treat both through one mechanism.
 Every attachment is an Asset joined to pages via RelatedAsset. The
 starred attachment ("headline") becomes the page's face on the
 public site; if none is starred, visitors get a link to browse all
-attached images instead. PDFs are headline-eligible because the
-standard raster variant set is generated for them from the
-document's first page (ImageMagick with Ghostscript), so aggregators
-and teasers need no special case.
+attached images instead.
+
+PDFs are headline-eligible because the standard variant set (thumb,
+medium, large, headline) is generated for them as PNG rasters of the
+document's first page (ImageMagick with Ghostscript); the original
+remains the PDF. Variant directories of older PDF assets may still
+contain a .pdf beside the .png — residue of the Paperclip era, when
+variants kept the original's extension. These files are unreferenced
+and safe to delete; until someone does, the mix is expected, not a
+bug.
 
 Presentation differs by type at the last step only: an image
 headline opens in the lightbox, a PDF headline renders as a document
