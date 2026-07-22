@@ -79,6 +79,35 @@ class NodesControllerTest < ActionController::TestCase
     end
   end
 
+  test "create with asset_id attaches the asset to the new draft, as headline when asked" do
+    login_as :quentin
+    asset = Asset.create!(:name => 'Birth attachment', :upload_content_type => 'image/png')
+
+    post :create, params: { :kind => "generic", :parent_id => Node.root.id,
+                            :title => "Born Attached",
+                            :asset_id => asset.id, :asset_headline => "1" }
+
+    assert_response :redirect
+    node = Node.last
+    assert_includes node.draft.assets, asset
+    assert_equal asset, node.draft.headline_asset
+    assert_match /attached/, flash[:notice]
+  end
+
+  test "the attach notice survives the redirect into the editor" do
+    login_as :quentin
+    asset = Asset.create!(:name => 'Flash survivor', :upload_content_type => 'image/png')
+
+    post :create, params: { :kind => "generic", :parent_id => Node.root.id,
+                            :title => "Notice Carrier", :asset_id => asset.id }
+    assert_redirected_to edit_node_path(Node.last)
+
+    get :edit, params: { :id => Node.last.id }
+    assert_response :success
+    assert_match /attached/, flash[:notice]
+    assert_no_match /ready to edit/, flash[:notice]
+  end
+
   test "editing a node" do
     login_as :quentin
 

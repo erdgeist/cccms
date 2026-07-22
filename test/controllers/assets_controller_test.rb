@@ -92,6 +92,47 @@ class AssetsControllerTest < ActionController::TestCase
     end
   end
 
+  # --- create with attach ---
+
+  test "create with node_id attaches the asset to the node's draft" do
+    node = Node.root.children.create!(:slug => "asset_attach_target")
+
+    post :create, params: { asset: { name: 'Attach me' }, node_id: node.id }
+
+    assert_response :redirect
+    asset = Asset.last
+    assert_includes node.draft.assets.reload, asset
+    assert_match /attached/, flash[:notice]
+  end
+
+  test "create against a foreign-locked node keeps the asset but refuses the attach" do
+    node = Node.root.children.create!(:slug => "asset_attach_locked")
+    node.lock_for_editing!(users(:aaron))
+
+    assert_difference 'Asset.count', 1 do
+      post :create, params: { asset: { name: 'Orphaned for now' }, node_id: node.id }
+    end
+
+    assert_empty node.draft.assets.reload
+    assert_equal node_path(node), flash[:locked_node_path]
+    assert_equal "aaron", flash[:locked_by]
+  end
+
+  test "create with headline against a page that has one keeps the incumbent and warns" do
+    node = Node.root.children.create!(:slug => "asset_attach_headline")
+    incumbent = Asset.create!(:name => 'Incumbent', :upload_content_type => 'image/png')
+    node.draft.related_assets.create!(:asset => incumbent, :headline => true)
+
+    uploaded = Rack::Test::UploadedFile.new(
+      Rails.root.join('test', 'fixtures', 'files', 'test_image.png'), 'image/png')
+    post :create, params: { asset: { name: 'Challenger', upload: uploaded },
+                            node_id: node.id, headline: "1" }
+
+    assert_includes node.draft.assets.reload, Asset.last
+    assert_equal incumbent, node.draft.reload.headline_asset
+    assert_equal node_path(node), flash[:headline_kept_path]
+  end
+
   # --- edit ---
 
   test "get edit" do
