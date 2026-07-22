@@ -77,7 +77,7 @@ class NodesController < ApplicationController
         "This page has unsaved changes from a previous session, shown below. " \
         "Save to keep them, or use \"Discard Autosave\" below to go back to the last saved version."
     elsif freshly_locked
-      flash.now[:notice] = "Node locked and ready to edit"
+      flash.now[:notice] ||= "Node locked and ready to edit"
     end
   rescue LockedByAnotherUser => e
     flash[:error] = e.message
