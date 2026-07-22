@@ -442,6 +442,63 @@ class Node < ApplicationRecord
     end
   end
 
+  # Attaches an asset to every current lifecycle row -- head, draft and
+  # autosave -- that does not already carry it. Attachments are page-
+  # scoped content (RelatedAsset belongs_to :page; drafts and autosaves
+  # are wholesale clones), so attaching to a single layer is how an
+  # attachment gets silently lost when another layer replaces it at
+  # publish or save. This is the out-of-band counterpart to the
+  # in-editor attach UI; it refuses when someone else holds the editing
+  # lock. Attaching to a head row changes the public page immediately,
+  # by design -- same reasoning as formalizing an already-existing
+  # editorial link.
+  #
+  # headline is a node-level decision: the flag is set on the newly
+  # created joins only when no current row has a headline yet and the
+  # asset is eligible; otherwise the asset is attached plain and the
+  # result says why, so the caller can point the editor at the star in
+  # the editor instead.
+  #
+  # Returns { :attached => n, :already => n,
+  #           :headline => nil | :set | :kept_existing | :not_eligible }
+  def attach_asset! asset, user:, headline: false
+    if in_trash? || trash_node?
+      raise ActiveRecord::RecordInvalid.new(self), "Cannot attach assets to a node in the Trash"
+    end
+
+    if lock_owner && lock_owner != user
+      raise(
+        LockedByAnotherUser,
+        "Page is locked by another user who is working on it! " \
+        "Last modification: #{(self.autosave || self.draft || self.head).updated_at.to_fs(:db)}"
+      )
+    end
+
+    rows      = [head, draft, autosave].compact
+    to_attach = rows.reject { |row| row.related_assets.exists?(:asset_id => asset.id) }
+
+    headline_state =
+      if headline && to_attach.any?
+        if !(asset.image? || asset.pdf?)
+          :not_eligible
+        elsif rows.any? { |row| row.headline_asset.present? }
+          :kept_existing
+        else
+          :set
+        end
+      end
+
+    ActiveRecord::Base.transaction do
+      to_attach.each do |row|
+        row.related_assets.create!(:asset => asset, :headline => headline_state == :set)
+      end
+    end
+
+    { :attached => to_attach.size,
+      :already  => rows.size - to_attach.size,
+      :headline => headline_state }
+  end
+
   def title
     editable_page&.title
   end
