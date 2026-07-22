@@ -443,7 +443,7 @@ class Node < ApplicationRecord
   end
 
   def title
-    head ? head.title : draft.title
+    editable_page&.title
   end
 
   def update_unique_names?

@@ -268,7 +268,6 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal "quentin", node.head.user.login
   end
   
-  
   test "update?" do
     Node.root.descendants.delete_all
     updates       = Node.root.children.create!( :slug => "updates" )
@@ -357,6 +356,16 @@ class NodeTest < ActiveSupport::TestCase
     assert_raise(LockedByAnotherUser) { node.lock_for_editing!(@user2) }
 
     assert_equal @user1, node.reload.lock_owner
+  end
+
+  test "title reads from autosave when neither draft nor head exists yet" do
+    node = Node.root.children.create!(:slug => "title_autosave_only_test")
+    node.draft.destroy
+    node.update_column(:draft_id, nil)
+    node.lock_for_editing!(users(:quentin))
+    node.autosave!({ :title => "autosave-only title" }, users(:quentin))
+
+    assert_equal "autosave-only title", node.reload.title
   end
 
   test "revert! is a safe no-op on a fresh node with only a draft" do
