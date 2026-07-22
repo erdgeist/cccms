@@ -218,11 +218,7 @@ attached images instead.
 PDFs are headline-eligible because the standard variant set (thumb,
 medium, large, headline) is generated for them as PNG rasters of the
 document's first page (ImageMagick with Ghostscript); the original
-remains the PDF. Variant directories of older PDF assets may still
-contain a .pdf beside the .png — residue of the Paperclip era, when
-variants kept the original's extension. These files are unreferenced
-and safe to delete; until someone does, the mix is expected, not a
-bug.
+remains the PDF.
 
 Presentation differs by type at the last step only: an image
 headline opens in the lightbox, a PDF headline renders as a document
