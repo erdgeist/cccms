@@ -290,7 +290,11 @@
       <% end %>
       </ul>
       <% mapping = default_event_tag_mapping(@page) %>
-      <%= link_to 'add event', new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path) %>
+      <p class="add_events">
+        <%= link_to new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path), class: 'action_button' do %>
+          <%= icon("calendar-plus", library: "tabler", "aria-hidden": true) %> Add event
+        <% end %>
+      </p>
     </div>
 
     <% matches = matching_node_kinds(@node) %>
@@ -310,10 +314,11 @@
         <% if matches.any? %>
           <p class="add_child_links">
             <% matches.each_with_index do |(kind, config), index| %>
-              <%= " &middot; ".html_safe if index > 0 %>
               <% link_params = { kind: kind } %>
               <% link_params[:parent_id] = @node.id if kind == "generic" %>
-              <%= link_to "add '#{resolve_kind_text(config[:label])}' child", new_node_path(link_params) %>
+              <%= link_to new_node_path(link_params), class: 'action_button' do %>
+                <%= icon("text-plus", library: "tabler", "aria-hidden": true) %> Add child type <%= resolve_kind_text(config[:label]) %>
+              <% end %>
             <% end %>
           </p>
         <% end %>
