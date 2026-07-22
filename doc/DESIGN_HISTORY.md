@@ -198,3 +198,37 @@ so the log can always answer, for any entry, how much to trust it.
 `app/models/node.rb`. That's the authoritative, current version; this
 entry explains why it's shaped the way it is, not what it says field
 by field.
+
+### Retired code
+
+The timestamp-driven surfaces this replaced — the dashboard widget
+and the nodes#recent page — are gone; admin/log is the sole
+recent-activity view.
+
+## Attachments: images and PDFs
+
+Originally attachments were images only; PDFs are now first-class,
+and the subsystems below treat both through one mechanism.
+
+Every attachment is an Asset joined to pages via RelatedAsset. The
+starred attachment ("headline") becomes the page's face on the
+public site; if none is starred, visitors get a link to browse all
+attached images instead. PDFs are headline-eligible because the
+standard raster variant set is generated for them from the
+document's first page (ImageMagick with Ghostscript), so aggregators
+and teasers need no special case.
+
+Presentation differs by type at the last step only: an image
+headline opens in the lightbox, a PDF headline renders as a document
+card whose click delivers the document itself — a lightbox showing a
+raster of page one would misrepresent what the asset is. Pages list
+attached documents separately from the image gallery.
+
+Credit display (photographer, license, attribution) applies to
+images only; the vocabulary describes photographs and is deliberately
+not rendered for PDFs. Admin asset search matches filenames as well
+as names, since document filenames carry meaning in a way image
+filenames rarely do.
+
+The test suite runs against isolated storage and never touches the
+real upload tree; keep it that way when adding asset code.
