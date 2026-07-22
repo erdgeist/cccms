@@ -1142,25 +1142,6 @@ div#draft_list table td.actions a {
   font-size: 0.9em;
 }
 
-#recent_changes_full_list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#recent_changes_full_list li {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #eee;
-}
-
-#recent_changes_full_list li:last-child {
-  border-bottom: none;
-}
-
-#recent_changes_full_list li > div {
-  margin-bottom: 0.25rem;
-}
-
 /* ============================================================
    Search widgets
    ============================================================ */
