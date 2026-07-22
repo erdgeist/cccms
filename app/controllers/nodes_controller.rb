@@ -223,10 +223,6 @@ class NodesController < ApplicationController
     @nodes = index_matching(Node.drafts_and_autosaves)
   end
 
-  def recent
-    @nodes = index_matching(Node.recently_changed)
-  end
-
   def mine
     base = Node.joins(:pages)
       .where("pages.user_id = ? or pages.editor_id = ?", current_user, current_user)

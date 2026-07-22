@@ -546,30 +546,6 @@ class NodeTest < ActiveSupport::TestCase
     assert result.index(mine) < result.index(someone_elses_newer)
   end
 
-  test "recently_changed includes a node whose head was recently published" do
-    node = Node.root.children.create!(:slug => "recent_changed_published")
-    find_or_create_draft(node, @user1)
-    node.autosave!({:title => "v1"}, @user1)
-    node.save_draft!(@user1)
-    node.publish_draft!
-
-    assert_includes Node.recently_changed, node
-  end
-
-  test "recently_changed excludes a node only touched by locking or unlocking after an old publish" do
-    node = Node.root.children.create!(:slug => "recent_changed_lock_only")
-    find_or_create_draft(node, @user1)
-    node.autosave!({:title => "v1"}, @user1)
-    node.save_draft!(@user1)
-    node.publish_draft!
-    node.head.update_column(:updated_at, 20.days.ago)
-
-    node.lock_for_editing!(@user1)
-    node.unlock!
-
-    assert_not_includes Node.recently_changed, node
-  end
-
   test "autosave! carries over the current related assets to the newly created autosave row" do
     node = Node.root.children.create!(:slug => "autosave_asset_carryover_test")
     user = User.find_by_login("quentin")

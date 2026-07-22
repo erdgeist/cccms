@@ -533,13 +533,6 @@ class Node < ApplicationRecord
     throw :abort
   end
 
-  def self.recently_changed
-    includes(:head).where(
-      "pages.updated_at < ? AND pages.updated_at > ? AND nodes.parent_id IS NOT NULL",
-      Time.now, Time.now - 14.days
-    ).order("pages.updated_at desc").references(:head)
-  end
-
   protected
     def lock_for! current_user
       self.lock_owner = current_user

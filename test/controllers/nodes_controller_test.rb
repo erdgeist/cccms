@@ -514,12 +514,6 @@ class NodesControllerTest < ActionController::TestCase
     assert_includes assigns(:nodes), chaostreff_node
   end
 
-  test "recent combined with a search term does not raise an ambiguous column error" do
-    login_as :quentin
-    get :recent, params: { :q => "Zombies" }
-    assert_response :success
-  end
-
   test "drafts combined with a search term does not raise an ambiguous column error" do
     login_as :quentin
     get :drafts, params: { :q => "Zombies" }
