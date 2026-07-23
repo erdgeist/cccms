@@ -44,7 +44,8 @@ module NodeActionsHelper
        :action => h(action.action), :subject => subject_ref(action)).html_safe
   end
 
-
+  # Plain strings by design, safe_join in the template escapes them.
+  # Exception: the asset items carry zoom links and arrive pre-escaped.
   def action_details? action
     m = action.metadata
     return true if m["translation_diff"].present?
@@ -53,7 +54,6 @@ module NodeActionsHelper
        abstract_changed body_changed].any? { |key| m[key].present? }
   end
 
-  # Plain strings by design -- safe_join in the template escapes them.
   def default_locale_changes action
     m = action.metadata
     items = []
@@ -70,10 +70,14 @@ module NodeActionsHelper
     items << t("node_actions.body_changed")     if m["body_changed"]
     items << t("node_actions.template_changed") if m["template_changed"]
     if m["assets"]
-      items << t("node_actions.detail_assets_added",
-                  :names => Array(m.dig("assets", "added")).join(", "))   if m.dig("assets", "added")
-      items << t("node_actions.detail_assets_removed",
-                  :names => Array(m.dig("assets", "removed")).join(", ")) if m.dig("assets", "removed")
+      if (names = m.dig("assets", "added"))
+        items << t("node_actions.detail_assets_added",
+                    :names => linked_asset_names(action, names)).html_safe
+      end
+      if (names = m.dig("assets", "removed"))
+        items << t("node_actions.detail_assets_removed",
+                    :names => linked_asset_names(action, names)).html_safe
+      end
     end
     items << t("node_actions.assets_reordered") if m["assets_reordered"]
     items << t("node_actions.assets_changed")   if m["assets_changed"]
@@ -138,6 +142,38 @@ module NodeActionsHelper
                 : h(action.subject_name)
   end
 
+  def asset_ref action
+    asset = action.action_participants.detect { |p| p.subject_type == "Asset" }&.subject
+    name  = action.metadata["asset_name"].presence || action.metadata["path"]
+    return h(name) unless asset
+
+    parts = [link_to(h(name), asset_path(asset))]
+    unless params[:asset_id].to_s == asset.id.to_s
+      parts << link_to(t("node_actions.asset_history"),
+                        admin_log_path(:asset_id => asset.id),
+                        :class => "node_action_zoom")
+    end
+    safe_join(parts, " ")
+  end
+
+  def linked_asset_names action, names
+    by_name = action.action_participants.includes(:subject)
+                     .select { |p| p.subject_type == "Asset" }
+                     .filter_map(&:subject).index_by(&:name)
+    safe_join(names.map { |n|
+      asset = by_name[n]
+      next h(n) unless asset
+
+      parts = [link_to(h(n), asset_path(asset))]
+      unless params[:asset_id].to_s == asset.id.to_s
+        parts << link_to(t("node_actions.asset_history"),
+                          admin_log_path(:asset_id => asset.id),
+                          :class => "node_action_zoom")
+      end
+      safe_join(parts, " ")
+    }, ", ")
+  end
+
   def summarize_publish action
     if action.metadata["via"] == "revision"
       t("node_actions.publish_rollback",
@@ -193,20 +229,20 @@ module NodeActionsHelper
 
   def summarize_asset_create action
     t("node_actions.asset_create", :actor => actor_ref(action),
-       :asset => h(action.metadata["asset_name"].presence || action.metadata["path"])).html_safe
+       :asset => asset_ref(action)).html_safe
   end
 
   def summarize_asset_attach action
     m = action.metadata
     key = m["headline"] ? "node_actions.asset_attach_headline" : "node_actions.asset_attach"
     t(key, :actor => actor_ref(action), :subject => subject_ref(action),
-       :asset => h(m["asset_name"].presence || m["path"])).html_safe
+       :asset => asset_ref(action)).html_safe
   end
 
   def summarize_asset_destroy action
     m = action.metadata
     parts = [t("node_actions.asset_destroy", :actor => actor_ref(action),
-                :asset => h(m["asset_name"].presence || m["path"]))]
+                :asset => asset_ref(action))]
     parts << t("node_actions.asset_destroy_detached",
                 :paths => h(Array(m["detached_from"]).join(", "))) if m["detached_from"].present?
     parts << t("node_actions.asset_destroy_headlines",

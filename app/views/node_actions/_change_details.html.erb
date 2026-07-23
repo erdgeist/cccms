@@ -6,6 +6,7 @@
         <th><%= I18n.default_locale.to_s.upcase %></th>
         <td>
           <%= safe_join(default_items, tag.br) %>
+          <br/>
           <% if action_entry.page && action_entry.node %>
             <% if (diff_params = action_entry.diff_link_params) %>
               <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params) %>
@@ -21,6 +22,7 @@
         <th><%= locale.upcase %></th>
         <td>
           <%= safe_join(translation_changes(diff), tag.br) %>
+          <br/>
           <% if action_entry.page && action_entry.node %>
             <% if (diff_params = action_entry.diff_link_params) %>
               <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params.merge(:locale => locale)) %>

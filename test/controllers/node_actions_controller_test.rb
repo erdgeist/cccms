@@ -58,4 +58,19 @@ class NodeActionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_includes assigns(:actions).map(&:action), "trash"
   end
+
+  test "zooming on an asset finds the publishes that changed it" do
+    node  = Node.root.children.create!(:slug => "asset_zoom_node")
+    asset = Asset.create!(:name => "Zoomable", :upload_content_type => "image/png")
+    node.publish_draft!(users(:quentin))
+    node.lock_for_editing!(users(:quentin))
+    node.create_new_draft(users(:quentin))
+    node.draft.related_assets.create!(:asset => asset)
+    node.publish_draft!(users(:quentin))
+
+    get :index, params: { :asset_id => asset.id }
+    assert_response :success
+    assert_equal 1, assigns(:actions).count
+    assert_equal "publish", assigns(:actions).first.action
+  end
 end
