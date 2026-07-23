@@ -98,11 +98,11 @@ module FileAttachment
     generate_all_variants(original_path)
   end
 
-  def generate_variants(original_path)
+  def generate_variants(original_path, extra_args = [])
     STYLES.each do |style, options|
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
-      system("magick", original_path, *options[:args], dest_path)
+      system("magick", original_path, *extra_args, *options[:args], dest_path)
     end
   end
 
@@ -120,7 +120,8 @@ module FileAttachment
     elsif VECTOR_CONTENT_TYPES.include?(upload_content_type)
       generate_svg_variants(original_path)
     elsif RASTERIZED_CONTENT_TYPES.include?(upload_content_type)
-      generate_variants("#{original_path}[0]")
+     generate_variants("#{original_path}[0]",
+                        ["-background", "white", "-alpha", "remove", "-alpha", "off"])
     end
   end
 

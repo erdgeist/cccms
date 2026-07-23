@@ -75,6 +75,10 @@ module ContentHelper
     end
   end
 
+  def humanized_asset_name asset
+    asset.name.to_s.tr("_", " ")
+  end
+
   # This method is an output filter for templates. It accepts any kind of text
   # and checks for an [aggregate short code within it. If such a code is found,
   # its # attributes are parsed and converted into parameters for the

@@ -6,8 +6,11 @@
   <%= link_to @headline_asset.upload.url, :class => "headline_document_card", :target => "_blank", :rel => "noopener" do %>
     <%= image_tag @headline_asset.upload.url(:medium), :alt => "", :class => "headline_document_card_thumb" %>
     <div class="headline_document_card_info">
-      <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
-      <span class="headline_document_card_title"><%= @headline_asset.name %></span>
+      <div class="headline_document_card_titlerow">
+        <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
+        <span class="headline_document_card_title"><%= humanized_asset_name(@headline_asset) %></span>
+      </div>
+      <span class="headline_document_card_meta">PDF · <%= number_to_human_size(@headline_asset.upload.size) %></span>
     </div>
   <% end %>
 <% end %>
@@ -50,7 +53,7 @@
         <li>
           <%= link_to pdf.upload.url, :class => "related_document_link", :target => "_blank", :rel => "noopener" do %>
             <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
-            <span><%= pdf.name %></span>
+            <span><%= humanized_asset_name(pdf) %></span>
           <% end %>
         </li>
       <% end %>

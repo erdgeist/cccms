@@ -117,7 +117,7 @@ $(document).ready(function () {
     input.addEventListener('change', function() {
       var name_field = document.getElementById('asset_name');
       if (input.files.length && name_field && name_field.value === '') {
-        name_field.value = input.files[0].name.replace(/\.[^.]+$/, '');
+        name_field.value = input.files[0].name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
       }
     });
   }
