@@ -4,11 +4,11 @@
     <%= date_for_page page %>, <%= author_for_page page %>
   </div>
   <div class="article_partial_layout">
-      <% if (headline = page.headline_asset) && headline.has_variant?(:thumb) %>
-        <div class="article_thumbnail">
-          <%= link_to_path image_tag(headline.upload.url(:thumb), :alt => ""), page.node.unique_name %>
-        </div>
-      <% end %>
-      <p class="excerpt"><%= page.abstract %> <%= link_to_path t(:more), page.node.unique_name %></p>
-    </div>
+    <% if (headline = page.headline_asset) && headline.has_variant?(:medium) %>
+      <div class="article_thumbnail">
+        <%= link_to_path image_tag(headline.upload.url(:medium), :alt => ""), page.node.unique_name %>
+      </div>
+    <% end %>
+    <p class="excerpt"><%= page.abstract %> <%= link_to_path t(:more), page.node.unique_name %></p>
+  </div>
 </div>
