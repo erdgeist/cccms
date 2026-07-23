@@ -85,6 +85,44 @@ $(document).ready(function () {
     desktop_mq.addEventListener('change', sync_metadata);
   }
 
+  var dropzone = document.getElementById('asset_dropzone');
+  if (dropzone) {
+    var input = dropzone.querySelector('input[type=file]');
+
+    // Without these, a drop that misses the zone navigates the browser
+    // to the file, losing the half-filled form.
+    ['dragover', 'drop'].forEach(function(ev) {
+      window.addEventListener(ev, function(e) { e.preventDefault(); });
+    });
+
+    ['dragenter', 'dragover'].forEach(function(ev) {
+      dropzone.addEventListener(ev, function(e) {
+        e.preventDefault(); dropzone.classList.add('dragging');
+      });
+    });
+    ['dragleave', 'drop'].forEach(function(ev) {
+      dropzone.addEventListener(ev, function(e) {
+        e.preventDefault(); dropzone.classList.remove('dragging');
+      });
+    });
+
+    dropzone.addEventListener('drop', function(e) {
+      if (!e.dataTransfer.files.length) return;
+      var dt = new DataTransfer();
+      dt.items.add(e.dataTransfer.files[0]);
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    input.addEventListener('change', function() {
+      var name_field = document.getElementById('asset_name');
+      if (input.files.length && name_field && name_field.value === '') {
+        name_field.value = input.files[0].name.replace(/\.[^.]+$/, '');
+      }
+    });
+  }
+
+
   jQuery.ajaxSetup({
     'beforeSend': function(xhr) {xhr.setRequestHeader("Accept", "text/javascript");}
   });

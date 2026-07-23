@@ -1386,6 +1386,17 @@ div#draft_list table td.actions a {
   background-color: #fffdf5;
 }
 
+#asset_dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+#asset_dropzone.dragging {
+  border-color: #f96;
+  background: #fff8f2;
+}
+
 /* ============================================================
    Live edit preview
    ============================================================ */

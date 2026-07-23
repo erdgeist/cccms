@@ -9,7 +9,12 @@
       <div class="node_content"><%= f.text_field :name %></div>
 
       <div class="node_description"><%= f.label :upload, "File" %></div>
-      <div class="node_content"><%= f.file_field :upload %></div>
+      <div class="node_content">
+        <div id="asset_dropzone">
+          <%= f.file_field :upload %>
+          <p class="field_hint">…or drop a file here.</p>
+        </div>
+      </div>
 
       <div class="node_description"><%= f.label :creator %></div>
       <div class="node_content"><%= f.text_field :creator %></div>
