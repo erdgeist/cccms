@@ -41,6 +41,12 @@
   --toggle-left: 816px;     /* provenance unknown; 140px right of
                                --search-left */
   --burger-right: 54px;     /* provenance unknown */
+
+ /* Paper treatment (document thumbs and cards). Light-mode defaults;
+     the effective-dark overrides live with the scheme logic in
+     section 3 -- the one place toggle-awareness is implemented. */
+  --paper-edge: rgba(128, 128, 128, 0.4);
+  --paper-shadow: 2px 3px 8px rgba(0, 0, 0, 0.25);
 }
 
 /* ==========================================================================
@@ -114,12 +120,16 @@ dd {
    inline restore script in the layout that re-checks #light-mode before
    first paint (the JS contract: checkbox id "light-mode", state persisted
    by the script). Symmetric blocks: each scheme inverts when the toggle
-   is checked.
+   is checked. Also owns the --paper-* effective-dark overrides (defaults
+   in section 1).
    ========================================================================== */
 
 @media (prefers-color-scheme: light) {
     body:has(#light-mode:checked) {
         color-scheme: dark;
+        --paper-edge: rgba(200, 200, 200, 0.35);
+        --paper-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+                        4px 6px 16px rgba(0, 0, 0, 0.8);
     }
     #light-mode + label[for=light-mode]:before { content: '🌙'; }
     #light-mode:checked + label[for=light-mode]:before { content: '☀️'; }
@@ -136,6 +146,11 @@ dd {
 @media (prefers-color-scheme: dark) {
     body:has(#light-mode:checked) {
         color-scheme: light;
+    }
+    body:not(:has(#light-mode:checked)) {
+        --paper-edge: rgba(200, 200, 200, 0.35);
+        --paper-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+                        4px 6px 16px rgba(0, 0, 0, 0.8);
     }
     #light-mode + label[for=light-mode]:before { content: '☀️'; }
     #light-mode:checked + label[for=light-mode]:before { content: '🌙'; }
@@ -579,7 +594,7 @@ div#open_erfas_today .event_time {
 
   div#frontpage_calendar h2 {
     display: block;
-    border-top: 2px solid #aeadad;
+    border-top: 1px solid color-mix(in srgb, CanvasText, Canvas 60%);
     padding: 2px 0;
   }
 
@@ -733,8 +748,6 @@ div.author_and_date {
 
 .article_partial_layout {
   display: flow-root;
-  gap: 12px;
-  align-items: flex-start;
 }
 
 .article_thumbnail {
@@ -751,8 +764,8 @@ div.author_and_date {
   display: block;
 
   border-radius: 4px;
-  border: 1px solid rgba(128, 128, 128, 0.4);
-  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--paper-edge);
+  box-shadow: var(--paper-shadow);
 }
 
 .article_partial_layout .excerpt {
@@ -788,7 +801,7 @@ div.author_and_date {
 }
 
 #asset_credits {
-  border-top: dotted 1px silver;
+  border-top: dotted 1px color-mix(in srgb, CanvasText, Canvas 60%);
 }
 
 #asset_credits,
@@ -817,18 +830,10 @@ div.author_and_date {
 }
 
 .headline_document_card_thumb {
-  border: 1px solid rgba(128, 128, 128, 0.4);
-  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--paper-edge);
+  box-shadow: var(--paper-shadow);
   max-width: 180px;
   height: auto;
-}
-
-@media (prefers-color-scheme: dark) {
-  .headline_document_card_thumb {
-    border-color: rgba(200, 200, 200, 0.35);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
-                4px 6px 16px rgba(0, 0, 0, 0.8);
-  }
 }
 
 .headline_document_card_info {
