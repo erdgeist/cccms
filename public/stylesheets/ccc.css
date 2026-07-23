@@ -666,6 +666,13 @@ div#tags li {
   line-height: 1.4;
 }
 
+@media(max-width:1015px) {
+  div#tags ul,
+  div#featured_articles ul {
+    justify-content: center;
+  }
+}
+
 /* ==========================================================================
    9. ARTICLE CONTENT
    ==========================================================================
