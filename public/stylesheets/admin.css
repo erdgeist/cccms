@@ -966,6 +966,10 @@ div#page_editor {
   padding: 5px;
 }
 
+input#tag_list {
+  text-transform: lowercase;
+}
+
 @media(min-width:1016px) {
   input#menu_search_term,
   input#menu_item_node_id,
