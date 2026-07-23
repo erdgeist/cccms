@@ -95,6 +95,25 @@ class NodeAttachAssetTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) { @node.attach_asset!(@image, :user => @user) }
   end
 
+  test "attaching writes an asset_attach entry with node and asset participants" do
+    result = @node.attach_asset!(@image, :user => @user, :headline => true)
+    assert_equal :set, result[:headline]
+
+    action = NodeAction.where(:action => "asset_attach").last
+    assert_equal @node, action.node
+    subjects = action.action_participants.map { |p| [p.subject_type, p.subject_id] }
+    assert_includes subjects, ["Node", @node.id]
+    assert_includes subjects, ["Asset", @image.id]
+    assert action.metadata["headline"]
+  end
+
+  test "a fully redundant attach writes no entry" do
+    @node.attach_asset!(@image, :user => @user)
+    assert_no_difference 'NodeAction.count' do
+      @node.attach_asset!(@image, :user => @user)
+    end
+  end
+
   private
 
     def create_image_asset

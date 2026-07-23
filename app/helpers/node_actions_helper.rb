@@ -13,6 +13,9 @@ module NodeActionsHelper
     "destroy"            => "trash-x",
     "discard_autosave"   => "eraser",
     "destroy_draft"      => "eraser",
+    "asset_create"       => "upload",
+    "asset_attach"       => "paperclip",
+    "asset_destroy"      => "file-x"
   }.freeze
 
   def verb_icon action
@@ -179,6 +182,18 @@ module NodeActionsHelper
   def summarize_destroy action
     t("node_actions.destroy", :actor => actor_ref(action), :subject => subject_ref(action),
        :path => h(action.metadata["path"])).html_safe
+  end
+
+  def summarize_asset_create action
+    t("node_actions.asset_create", :actor => actor_ref(action),
+       :asset => h(action.metadata["asset_name"].presence || action.metadata["path"])).html_safe
+  end
+
+  def summarize_asset_attach action
+    m = action.metadata
+    key = m["headline"] ? "node_actions.asset_attach_headline" : "node_actions.asset_attach"
+    t(key, :actor => actor_ref(action), :subject => subject_ref(action),
+       :asset => h(m["asset_name"].presence || m["path"])).html_safe
   end
 
   def summarize_asset_destroy action

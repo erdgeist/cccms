@@ -50,6 +50,11 @@ class AssetsController < ApplicationController
     respond_to do |format|
       if @asset.save
         flash[:notice] = 'Asset was successfully created.'
+        NodeAction.record!(:participants => [@asset], :user => current_user,
+                            :action => "asset_create",
+                            :asset_name   => @asset.name,
+                            :content_type => @asset.upload_content_type,
+                            :path         => @asset.upload.url.sub(/\?\d+$/, ""))
         attach_to(attach_node) if attach_node
         format.html { redirect_to(@asset) }
         format.xml  { render :xml => @asset, :status => :created, :location => @asset }

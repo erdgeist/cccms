@@ -71,6 +71,9 @@ en:
     asset_destroy: "%{actor} destroyed asset “%{asset}”"
     asset_destroy_detached: "— detached from %{paths}"
     asset_destroy_headlines: "(was the headline of %{paths})"
+    asset_create: "%{actor} uploaded asset “%{asset}”"
+    asset_attach: "%{actor} attached “%{asset}” to %{subject}"
+    asset_attach_headline: "%{actor} attached “%{asset}” to %{subject} as its headline"
 
   open_gallery: "Open gallery"
   asset_licenses:

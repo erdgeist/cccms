@@ -69,6 +69,17 @@ class NodeAction < ApplicationRecord
   #   "path" -- final path, flat string (create-symmetric)
   #   "destroyed_descendants" -- integer, only when positive; one entry
   #                              at the root, per the subtree rule.
+  #
+  # "asset_create" (witnessed upload; participants: the asset alone):
+  #   "asset_name", "content_type", "path" -- flat strings
+  #
+  # "asset_attach" (out-of-band attach via Node#attach_asset!; written
+  # only when at least one new join was created, per the tandem rule --
+  # in-editor curation stays draft-scoped and surfaces at publish.
+  # participants: the node (primary) and the asset):
+  #   "asset_name", "path" -- flat strings
+  #   "headline"           -- boolean, only when set by this attach
+  #
   # "asset_destroy" (witnessed asset deletion; always written, even for
   # unattached assets -- the files were publicly reachable; node column
   # nil, subjects via participants: the asset plus every then-attached

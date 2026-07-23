@@ -501,6 +501,14 @@ class Node < ApplicationRecord
       to_attach.each do |row|
         row.related_assets.create!(:asset => asset, :headline => headline_state == :set)
       end
+
+      if to_attach.any?
+        metadata = { :asset_name => asset.name,
+                     :path       => asset.upload.url.sub(/\?\d+$/, "") }
+        metadata[:headline] = true if headline_state == :set
+        NodeAction.record!(:node => self, :participants => [self, asset],
+                            :user => user, :action => "asset_attach", **metadata)
+      end
     end
 
     { :attached => to_attach.size,

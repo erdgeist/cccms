@@ -133,6 +133,16 @@ class AssetsControllerTest < ActionController::TestCase
     assert_equal node_path(node), flash[:headline_kept_path]
   end
 
+  test "create with node_id writes an asset_create and an asset_attach entry" do
+    node = Node.root.children.create!(:slug => "asset_log_pair")
+    assert_difference 'NodeAction.where(:action => "asset_create").count' do
+      assert_difference 'NodeAction.where(:action => "asset_attach").count' do
+        post :create, params: { asset: { name: 'Logged twice' }, node_id: node.id }
+      end
+    end
+    assert_equal users(:quentin), NodeAction.last.user
+  end
+
   # --- edit ---
 
   test "get edit" do
