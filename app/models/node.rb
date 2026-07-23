@@ -312,14 +312,14 @@ class Node < ApplicationRecord
       was_published      = head_id.present?
       final_published_at = head&.published_at
 
-      demoted = 0
-      ([self] + descendants.to_a).each do |node|
-        next unless node.head_id
+      subtree = [self] + descendants.to_a
+      demoted_nodes = subtree.select do |node|
+        next false unless node.head_id
         former        = node.head
         node.head     = nil
         node.draft_id = former.id if node.draft_id.nil?
         node.save!
-        demoted += 1
+        true
       end
 
       self.reload
@@ -332,9 +332,10 @@ class Node < ApplicationRecord
       metadata = { :path => { "from" => path_before, "to" => unique_name } }
       metadata[:was_published]      = true if was_published
       metadata[:final_published_at] = final_published_at.iso8601 if final_published_at
-      metadata[:demoted_heads]      = demoted if demoted > 0
+      metadata[:demoted_heads]      = demoted_nodes.size if demoted_nodes.any?
 
-      NodeAction.record!(:node => self, :user => current_user, :action => "trash", **metadata)
+      NodeAction.record!(:participants => subtree, :user => current_user,
+                          :action => "trash", **metadata)
       self
     end
   end
@@ -382,7 +383,8 @@ class Node < ApplicationRecord
       metadata = { :path => unique_name }
       metadata[:destroyed_descendants] = doomed.size - 1 if doomed.size > 1
 
-      NodeAction.record!(:node => self, :user => current_user, :action => "destroy", **metadata)
+      NodeAction.record!(:participants => doomed, :user => current_user,
+                          :action => "destroy", **metadata)
       doomed.each(&:destroy!)
     end
   end

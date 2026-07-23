@@ -3,6 +3,8 @@ class NodeAction < ApplicationRecord
   belongs_to :page, optional: true
   belongs_to :user, optional: true
 
+  has_many :action_participants, :dependent => :destroy
+
   validates :action, presence: true
   validates :occurred_at, presence: true
 
@@ -81,10 +83,15 @@ class NodeAction < ApplicationRecord
   # This log records; it does not undo. No IP, session, or user
   # agent, ever. Success only.
 
-  def self.record!(node:, action:, user: nil, page: nil, locale: nil,
-                    occurred_at: nil, inferred_from: nil, **extra)
+  def self.record!(node: nil, participants: [], action:, user: nil, page: nil,
+                    locale: nil, occurred_at: nil, inferred_from: nil, **extra)
+    participants = participants.presence || [node].compact
+    raise ArgumentError, "NodeAction.record! needs at least one participant" if participants.empty?
+
+    primary_node = node || (participants.first if participants.first.is_a?(Node))
+
     create!(
-      :node          => node,
+      :node          => primary_node,
       :page          => page,
       :user          => user,
       :action        => action,
@@ -94,10 +101,12 @@ class NodeAction < ApplicationRecord
       :metadata      => {
         "username"                 => user&.login,
         "human_readable_node_name" => Globalize.with_locale(I18n.default_locale) {
-                                        node&.head&.title || node&.draft&.title
+                                        primary_node&.head&.title || primary_node&.draft&.title
                                       },
       }.merge(extra.stringify_keys)
-    )
+    ).tap do |na|
+      participants.each { |subject| na.action_participants.create!(:subject => subject) }
+    end
   end
 
   # Computes the publish-entry diff between an outgoing head and the

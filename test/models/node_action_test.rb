@@ -118,11 +118,29 @@ class NodeActionTest < ActiveSupport::TestCase
 
   test "record! passes provenance and historical timestamps through" do
     long_ago = 2.years.ago
-    action = NodeAction.record!(:node => nil, :action => "publish",
+    node = Node.root.children.create!(:slug => "provenance_backfill_test")
+    action = NodeAction.record!(:node => node, :action => "publish",
                                  :occurred_at => long_ago,
                                  :inferred_from => "from_page_revision")
 
     assert_equal "from_page_revision", action.inferred_from
     assert_in_delta long_ago.to_f, action.occurred_at.to_f, 1.0
+  end
+
+
+  test "record! with participants: writes one action_participant per subject" do
+    n1, n2 = Node.root.children.create!(:slug => "participant_a"), Node.root.children.create!(:slug => "participant_b")
+    action = NodeAction.record!(:participants => [n1, n2], :action => "trash", :user => users(:quentin))
+    assert_equal [n1, n2], action.action_participants.map(&:subject)
+  end
+
+  test "record! with node: alone still writes exactly one participant" do
+    node = Node.root.children.create!(:slug => "participant_sugar")
+    action = NodeAction.record!(:node => node, :action => "create", :user => users(:quentin))
+    assert_equal [node], action.action_participants.map(&:subject)
+  end
+
+  test "record! refuses an empty participant set" do
+    assert_raises(ArgumentError) { NodeAction.record!(:action => "create", :user => users(:quentin)) }
   end
 end

@@ -58,4 +58,18 @@ namespace :node_actions do
 
     puts "Created #{created} inferred entries"
   end
+
+  desc "Backfill action_participants for existing single-subject entries. " \
+       "Idempotent: entries that already have a participant row are skipped. " \
+       "Multi-node trash/destroy entries predating this feature are NOT " \
+       "reconstructable (only a count was ever stored) and are left as-is."
+  task :backfill_participants => :environment do
+    scope = NodeAction.where.missing(:action_participants).where.not(:node_id => nil)
+    created = 0
+    scope.find_each do |action|
+      action.action_participants.create!(:subject => action.node)
+      created += 1
+    end
+    puts "Created #{created} participant rows"
+  end
 end

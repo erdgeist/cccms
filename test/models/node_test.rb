@@ -756,6 +756,16 @@ class NodeTest < ActiveSupport::TestCase
     assert node.valid?
   end
 
+  test "trash! records every subtree node as a participant, not just the root" do
+    parent = Node.root.children.create!(:slug => "trash_participants_parent")
+    child  = parent.children.create!(:slug => "trash_participants_child")
+
+    parent.trash!(users(:quentin))
+
+    action = parent.node_actions.where(:action => "trash").last
+    assert_includes action.action_participants.map(&:subject), child
+  end
+
   test "destroying a node with children is refused" do
     parent = Node.root.children.create!(:slug => "destroy_guard_parent")
     parent.children.create!(:slug => "destroy_guard_child")
