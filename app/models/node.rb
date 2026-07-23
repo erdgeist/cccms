@@ -249,7 +249,9 @@ class Node < ApplicationRecord
         self.head.save!
         self.draft = nil
 
-        NodeAction.record!(:node => self, :page => self.head, :user => current_user,
+        NodeAction.record!(:node => self,
+                            :participants => [self] + NodeAction.changed_assets(outgoing_head, self.head),
+                            :page => self.head, :user => current_user,
                             :action => "publish", :via => "draft",
                             **NodeAction.head_diff(outgoing_head, self.head))
       end
@@ -296,7 +298,9 @@ class Node < ApplicationRecord
       self.head = page
       self.save!
 
-      NodeAction.record!(:node => self, :page => page, :user => current_user,
+      NodeAction.record!(:node => self,
+                          :participants => [self] + NodeAction.changed_assets(outgoing_head, page),
+                          :page => page, :user => current_user,
                           :action => "publish", :via => "revision",
                           **NodeAction.head_diff(outgoing_head, page))
       self

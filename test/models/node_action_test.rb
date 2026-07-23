@@ -59,7 +59,7 @@ class NodeActionTest < ActiveSupport::TestCase
     assert_nil NodeAction.head_diff(old_page, build_page(:template_name => "standard_template"))[:template_changed]
   end
 
-  test "assets_changed flag when the attached set differs" do
+  test "asset delta when the attached set differs" do
     asset = Asset.create!(:name => "diff probe",
                           :upload_file_name    => "test_image.png",
                           :upload_content_type => "image/png",
@@ -68,10 +68,9 @@ class NodeActionTest < ActiveSupport::TestCase
     old_page, new_page = build_page, build_page
     new_page.related_assets.create!(:asset_id => asset.id, :position => 1)
 
-
-    diff = NodeAction.head_diff(old_page, new_page.reload)
-    assert diff[:assets_changed]
-    assert_nil NodeAction.head_diff(old_page, old_page)[:assets_changed]
+    diff = NodeAction.head_diff(old_page, new_page)
+    assert diff[:assets].present?
+    assert_nil NodeAction.head_diff(old_page, old_page)[:assets]
   end
 
   test "default-locale abstract and body changes become flags, only when true" do

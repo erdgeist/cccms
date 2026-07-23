@@ -728,6 +728,58 @@ class NodeTest < ActiveSupport::TestCase
                  NodeAction.order(:id).last(2).map(&:action).sort
   end
 
+  test "publish records the asset delta with changed assets as participants" do
+    node = Node.root.children.create!(:slug => "publish_asset_delta")
+    kept  = Asset.create!(:name => "Kept",  :upload_content_type => "image/png")
+    added = Asset.create!(:name => "Added", :upload_content_type => "image/png")
+    node.draft.related_assets.create!(:asset => kept)
+    node.publish_draft!(@user1)
+
+    node.lock_for_editing!(@user1)
+    node.create_new_draft(@user1)
+    node.draft.related_assets.create!(:asset => added)
+    node.publish_draft!(@user1)
+
+    action = node.node_actions.where(:action => "publish").order(:id).last
+    assert_equal ["Added"], action.metadata.dig("assets", "added")
+    assert_nil action.metadata.dig("assets", "removed")
+    subjects = action.action_participants.map { |p| [p.subject_type, p.subject_id] }
+    assert_includes subjects, ["Asset", added.id]
+    assert_not_includes subjects, ["Asset", kept.id]
+  end
+
+  test "publish without an asset change writes no assets key" do
+    node = Node.root.children.create!(:slug => "publish_asset_static")
+    node.draft.related_assets.create!(:asset => Asset.create!(:name => "Steady"))
+    node.publish_draft!(@user1)
+
+    node.lock_for_editing!(@user1)
+    node.create_new_draft(@user1)
+    node.publish_draft!(@user1)
+
+    action = node.node_actions.where(:action => "publish").order(:id).last
+    assert_nil action.metadata["assets"]
+    assert_equal [["Node", node.id]],
+                 action.action_participants.map { |p| [p.subject_type, p.subject_id] }
+  end
+
+  test "pure reordering is recorded as assets_reordered" do
+    node = Node.root.children.create!(:slug => "publish_asset_reorder")
+    a1, a2 = Asset.create!(:name => "First"), Asset.create!(:name => "Second")
+    node.draft.related_assets.create!(:asset => a1)
+    node.draft.related_assets.create!(:asset => a2)
+    node.publish_draft!(@user1)
+
+    node.lock_for_editing!(@user1)
+    node.create_new_draft(@user1)
+    node.draft.related_assets.reload.first.move_to_bottom
+    node.publish_draft!(@user1)
+
+    action = node.node_actions.where(:action => "publish").order(:id).last
+    assert action.metadata["assets_reordered"]
+    assert_nil action.metadata["assets"]
+  end
+
   test "restore_revision! logs a publish via revision" do
     node = create_node_with_published_page
     Globalize.with_locale(:de) { node.head.update!(:title => "First") }

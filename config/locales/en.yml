@@ -74,6 +74,9 @@ en:
     asset_create: "%{actor} uploaded asset “%{asset}”"
     asset_attach: "%{actor} attached “%{asset}” to %{subject}"
     asset_attach_headline: "%{actor} attached “%{asset}” to %{subject} as its headline"
+    detail_assets_added: "Attachments added: %{names}"
+    detail_assets_removed: "Attachments removed: %{names}"
+    assets_reordered: "Attachments reordered"
 
   open_gallery: "Open gallery"
   asset_licenses:

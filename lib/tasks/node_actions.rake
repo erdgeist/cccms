@@ -13,6 +13,7 @@ namespace :node_actions do
       stale = NodeAction.where.not(:inferred_from => nil)
       stale = stale.where(:node_id => ENV["NODE_ID"]) if ENV["NODE_ID"]
       puts "Removing #{stale.count} previously inferred entries"
+      ActionParticipant.where(:node_action => stale).delete_all
       stale.delete_all
 
       witnessed_creates  = NodeAction.where(:action => "create",  :inferred_from => nil).pluck(:node_id).to_set
@@ -43,6 +44,7 @@ namespace :node_actions do
             diff = NodeAction.head_diff(previous, page)
             NodeAction.record!(
               :node => node, :page => page, :user => page.editor,
+              :participants  => [node] + NodeAction.changed_assets(previous, page),
               :action        => "publish",
               :occurred_at   => page.updated_at,
               :inferred_from => "from_page_revision",

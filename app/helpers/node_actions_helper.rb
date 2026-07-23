@@ -49,7 +49,7 @@ module NodeActionsHelper
     m = action.metadata
     return true if m["translation_diff"].present?
     return true if m["title"].is_a?(Hash) && m.dig("title", "from") != m.dig("title", "to")
-    %w[author tags template_changed assets_changed
+    %w[author tags template_changed assets assets_changed assets_reordered
        abstract_changed body_changed].any? { |key| m[key].present? }
   end
 
@@ -69,6 +69,13 @@ module NodeActionsHelper
     items << t("node_actions.abstract_changed") if m["abstract_changed"]
     items << t("node_actions.body_changed")     if m["body_changed"]
     items << t("node_actions.template_changed") if m["template_changed"]
+    if m["assets"]
+      items << t("node_actions.detail_assets_added",
+                  :names => Array(m.dig("assets", "added")).join(", "))   if m.dig("assets", "added")
+      items << t("node_actions.detail_assets_removed",
+                  :names => Array(m.dig("assets", "removed")).join(", ")) if m.dig("assets", "removed")
+    end
+    items << t("node_actions.assets_reordered") if m["assets_reordered"]
     items << t("node_actions.assets_changed")   if m["assets_changed"]
     items
   end

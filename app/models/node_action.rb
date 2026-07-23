@@ -35,8 +35,16 @@ class NodeAction < ApplicationRecord
   #   "title"  -- pair, always; "from" null on first publish
   #   "author" -- pair, when the byline changed (incl. first publish)
   #   "tags"   -- pair of arrays, when changed
-  #   "assets_changed", "template_changed",
-  #   "abstract_changed", "body_changed"
+  #   "assets" -- {"added" => [asset names], "removed" => [asset names]},
+  #               keys only when any; a delta, not a pair. The event IS
+  #               the delta, full sets would bloat every entry. Changed
+  #               assets are participants of the entry. Replaces the
+  #               legacy "assets_changed" boolean, which witnessed
+  #               pre-contract entries still carry and the renderer keeps
+  #               understanding. Assets destroyed since leave no trace in
+  #               regenerated deltas, their joins died with them.
+  #   "assets_reordered" -- boolean, set unchanged but gallery order not
+  #   "template_changed", "abstract_changed", "body_changed"
   #            -- the last two for the default locale; page_id links
   #               to the revision for the real diff (never stored)
   #   "translation_diff" -- only when a non-default locale differs:
@@ -155,7 +163,17 @@ class NodeAction < ApplicationRecord
     diff[:tags] = { "from" => old_tags, "to" => new_tags } if old_tags != new_tags
 
     diff[:template_changed] = true if old_page.template_name != new_page.template_name
-    diff[:assets_changed]   = true if old_page.assets.map(&:id) != new_page.assets.map(&:id)
+
+    old_assets, new_assets = old_page.assets.to_a, new_page.assets.to_a
+    added, removed = new_assets - old_assets, old_assets - new_assets
+    if added.any? || removed.any?
+      assets = {}
+      assets["added"]   = added.map   { |a| a.name.presence || a.upload_file_name } if added.any?
+      assets["removed"] = removed.map { |a| a.name.presence || a.upload_file_name } if removed.any?
+      diff[:assets] = assets
+    elsif old_assets.map(&:id) != new_assets.map(&:id)
+      diff[:assets_reordered] = true
+    end
 
     old_t = old_page.translations.find_by(:locale => default)
     new_t = new_page.translations.find_by(:locale => default)
@@ -186,6 +204,16 @@ class NodeAction < ApplicationRecord
 
     diff[:translation_diff] = translation_diff if translation_diff.any?
     diff
+  end
+
+  # The asset records added or removed between an outgoing head and its
+  # replacement -- the participant complement to head_diff's "assets"
+  # names. Empty on first publish, mirroring head_diff, which records
+  # no asset delta when everything is new.
+  def self.changed_assets old_page, new_page
+    return [] unless old_page
+    old_a, new_a = old_page.assets.to_a, new_page.assets.to_a
+    (new_a - old_a) | (old_a - new_a)
   end
 
   def actor_name
