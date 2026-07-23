@@ -715,6 +715,10 @@ div.teaser_ruler {
   align-items: flex-start;
 }
 
+.chapter_thumbnail {
+  flex-shrink: 0;
+}
+
 .chapter_thumbnail img {
   width: 64px;
   height: 64px;
@@ -725,6 +729,29 @@ div.teaser_ruler {
 
 .chapter_partial_content {
   min-width: 0;
+}
+
+.article_partial_layout {
+  display: flow-root;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.article_thumbnail {
+  float: right;
+  margin: 0.5rem 0 8px 12px;
+}
+
+.article_thumbnail img {
+  width: 116px;
+  height: 116px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.article_partial_layout .excerpt {
+  margin-top: 0;
 }
 
 .inline-image--full {
