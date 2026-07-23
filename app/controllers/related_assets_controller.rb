@@ -2,6 +2,10 @@ class RelatedAssetsController < ApplicationController
   before_action :login_required
   before_action :find_node
 
+  rescue_from LockedByAnotherUser do
+    head :locked
+  end
+
   def search
     term = params[:search_term].to_s.strip
     attached_ids = @node.editable_page.related_assets.pluck(:asset_id)
@@ -19,8 +23,9 @@ class RelatedAssetsController < ApplicationController
   end
 
   def create
+    page  = @node.ensure_autosave!(current_user)
     asset = Asset.find(params[:asset_id])
-    related = @node.editable_page.related_assets.find_or_create_by!(asset: asset)
+    related = page.related_assets.find_or_create_by!(asset: asset)
 
     render json: {
       id: related.id,
@@ -35,22 +40,25 @@ class RelatedAssetsController < ApplicationController
   end
 
   def destroy
-    @node.editable_page.related_assets.find(params[:id]).destroy
+    page   = @node.ensure_autosave!(current_user)
+    source = RelatedAsset.find(params[:id])
+    page.related_assets.find_by!(:asset_id => source.asset_id).destroy
     head :ok
   end
 
   def update
-    related = @node.editable_page.related_assets.find(params[:id])
+    page    = @node.ensure_autosave!(current_user)
+    source  = RelatedAsset.find(params[:id])
+    related = page.related_assets.find_by!(:asset_id => source.asset_id)
 
     if params.key?(:headline)
       RelatedAsset.transaction do
-        @node.editable_page.related_assets.update_all(headline: false)
+        page.related_assets.update_all(headline: false)
         related.update!(headline: true) if params[:headline] == "true"
       end
     else
       related.insert_at(params[:position].to_i)
     end
-
     head :ok
   end
 

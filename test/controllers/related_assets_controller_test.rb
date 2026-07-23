@@ -38,19 +38,24 @@ class RelatedAssetsControllerTest < ActionController::TestCase
   test "create attaches an asset to the node's editable page" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_create_test")
+    node.lock_for_editing!(users(:quentin))
     asset = Asset.create!(:name => "erfa-photo", :upload_content_type => "image/png")
 
     post :create, params: { :node_id => node.id, :asset_id => asset.id }
 
     assert_response :success
-    assert_includes node.draft.reload.related_assets.map(&:asset_id), asset.id
+    current = node.reload.editable_page
+    assert_equal node.autosave, current, "mutation should have created an autosave layer"
+    assert_includes current.related_assets.map(&:asset_id), asset.id
     json = JSON.parse(response.body)
     assert json["url"].present?
+    assert_empty node.draft.reload.related_assets, "the draft must stay untouched"
   end
 
   test "create does not duplicate an already-attached asset" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_dup_test")
+    node.lock_for_editing!(users(:quentin))
     asset = Asset.create!(:name => "erfa-photo-2", :upload_content_type => "image/png")
     node.draft.assets << asset
 
@@ -63,19 +68,22 @@ class RelatedAssetsControllerTest < ActionController::TestCase
   test "destroy removes the attached asset" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_destroy_test")
+    node.lock_for_editing!(users(:quentin))
     asset = Asset.create!(:name => "old-photo", :upload_content_type => "image/png")
     node.draft.assets << asset
-    related = node.draft.related_assets.first
 
+    related = node.draft.related_assets.first
     delete :destroy, params: { :node_id => node.id, :id => related.id }
 
     assert_response :success
-    assert_equal 0, node.draft.reload.related_assets.count
+    assert_equal 0, node.reload.editable_page.related_assets.count
+    assert_equal 1, node.draft.reload.related_assets.count, "the draft must stay untouched"
   end
 
   test "update reorders the attached assets" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_reorder_test")
+    node.lock_for_editing!(users(:quentin))
     first  = Asset.create!(:name => "first-photo", :upload_content_type => "image/png")
     second = Asset.create!(:name => "second-photo", :upload_content_type => "image/png")
     node.draft.assets << first
@@ -85,13 +93,15 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     patch :update, params: { :node_id => node.id, :id => second_related.id, :position => 1 }
 
     assert_response :success
-    ordered_asset_ids = node.draft.reload.related_assets.map(&:asset_id)
+    ordered_asset_ids = node.reload.editable_page.related_assets.order(:position).map(&:asset_id)
+    # XXXX ordered_asset_ids = node.draft.reload.related_assets.map(&:asset_id)
     assert_equal [second.id, first.id], ordered_asset_ids
   end
 
   test "update sets the headline flag" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_headline_test")
+    node.lock_for_editing!(users(:quentin))
     asset = Asset.create!(:name => "headline-photo", :upload_content_type => "image/png")
     node.draft.assets << asset
     related = node.draft.related_assets.find_by(:asset_id => asset.id)
@@ -99,12 +109,14 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     patch :update, params: { :node_id => node.id, :id => related.id, :headline => "true" }
 
     assert_response :success
-    assert related.reload.headline?
+    assert node.reload.editable_page.related_assets.find_by!(:asset_id => asset.id).headline?
+    assert_not related.reload.headline?, "the draft must stay untouched"
   end
 
   test "update with headline=true clears any previous headline on the same page" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_headline_swap_test")
+    node.lock_for_editing!(users(:quentin))
     first  = Asset.create!(:name => "first-headline", :upload_content_type => "image/png")
     second = Asset.create!(:name => "second-headline", :upload_content_type => "image/png")
     node.draft.assets << first
@@ -117,13 +129,16 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     patch :update, params: { :node_id => node.id, :id => second_related.id, :headline => "true" }
 
     assert_response :success
-    assert_not first_related.reload.headline?
-    assert second_related.reload.headline?
+    current = node.reload.editable_page
+    assert_not current.related_assets.find_by!(:asset_id => first.id).headline?
+    assert current.related_assets.find_by!(:asset_id => second.id).headline?
+    assert first_related.reload.headline?, "the draft must stay untouched"
   end
 
   test "update with headline=false clears the headline" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "related_assets_headline_unset_test")
+    node.lock_for_editing!(users(:quentin))
     asset = Asset.create!(:name => "unset-headline", :upload_content_type => "image/png")
     node.draft.assets << asset
     related = node.draft.related_assets.find_by(:asset_id => asset.id)
@@ -132,7 +147,8 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     patch :update, params: { :node_id => node.id, :id => related.id, :headline => "false" }
 
     assert_response :success
-    assert_not related.reload.headline?
+    assert_not node.reload.editable_page.related_assets.find_by!(:asset_id => asset.id).headline?
+    assert related.reload.headline?, "the draft must stay untouched"
   end
 
   test "search includes PDF assets as headline-eligible candidates" do
@@ -158,5 +174,17 @@ class RelatedAssetsControllerTest < ActionController::TestCase
     assert_response :success
     ids = JSON.parse(response.body).map { |r| r["id"] }
     assert_includes ids, asset.id
+  end
+
+  test "curation without holding the lock is refused with 423" do
+    login_as :quentin
+    node  = Node.root.children.create!(:slug => "curation_lock_test")
+    asset = Asset.create!(:name => "Untouchable", :upload_content_type => "image/png")
+    node.lock_for_editing!(users(:aaron))
+
+    post :create, params: { :node_id => node.id, :asset_id => asset.id }
+
+    assert_response :locked
+    assert_empty node.draft.assets.reload
   end
 end

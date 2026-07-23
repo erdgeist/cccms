@@ -112,18 +112,18 @@ class Node < ApplicationRecord
     end
   end
 
-  # Creates or updates the autosave buffer from the given attributes.
-  # Autosave rows are never associated to the node via node_id -- they
-  # must never appear in self.pages / the revisions list, which is the
-  # whole reason autosave exists as a separate, unversioned layer.
-  def autosave! attributes, current_user
+  def ensure_autosave! current_user
     assert_locked_by! current_user
-
     unless self.autosave
       self.autosave = Page.create!(:editor => current_user)
       self.autosave.clone_attributes_from(self.draft || self.head) if self.draft || self.head
       self.save!
     end
+    self.autosave
+  end
+
+  def autosave! attributes, current_user
+    ensure_autosave!(current_user)
     self.autosave.assign_attributes(attributes)
     self.autosave.save!
     self.autosave
