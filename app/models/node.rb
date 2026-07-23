@@ -4,7 +4,14 @@ class Node < ApplicationRecord
 
   # Associations
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
+
+  # Entries where this node is the primary subject (fast-path column).
+  # For a *complete* history -- including subtree trash/destroy entries
+  # recorded at an ancestor -- use participated_actions instead.
   has_many    :node_actions, :dependent => :nullify
+  has_many    :action_participations, :class_name => "ActionParticipant", :as => :subject
+  has_many    :participated_actions, :through => :action_participations, :source => :node_action
+
   belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, optional: true
   belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, optional: true
   # Autosave pages carry no node_id, so has_many :pages does not cover

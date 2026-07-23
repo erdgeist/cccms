@@ -48,4 +48,14 @@ class NodeActionsControllerTest < ActionController::TestCase
     get :index
     assert_response :redirect
   end
+
+  test "zooming on a node finds subtree entries recorded at its ancestor" do
+    parent = Node.root.children.create!(:slug => "zoom_participant_parent")
+    child  = parent.children.create!(:slug => "zoom_participant_child")
+    parent.trash!(users(:quentin))
+
+    get :index, params: { :node_id => child.id }
+    assert_response :success
+    assert_includes assigns(:actions).map(&:action), "trash"
+  end
 end

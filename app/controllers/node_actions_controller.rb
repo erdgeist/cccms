@@ -6,7 +6,11 @@ class NodeActionsController < ApplicationController
 
   def index
     @actions = NodeAction.order(:occurred_at => :desc, :id => :desc)
-    @actions = @actions.where(:node_id => params[:node_id]) if params[:node_id].present?
+    if params[:node_id].present?
+      @actions = @actions.joins(:action_participants)
+                         .where(:action_participants => { :subject_type => "Node",
+                                                          :subject_id   => params[:node_id] })
+    end
     @actions = @actions.where(:user_id => params[:user_id]) if params[:user_id].present?
     @actions = @actions.includes(:node, :user)
                        .paginate(:page => params[:page], :per_page => 50)
