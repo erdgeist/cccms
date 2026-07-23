@@ -182,6 +182,16 @@ class AssetsControllerTest < ActionController::TestCase
     assert !Dir.exist?(upload_dir), "Upload directory should be removed after destroy"
   end
 
+  test "destroy is witnessed in the action log with the current user" do
+    asset = Asset.create!(:name => 'Witness me',
+                           :upload_file_name => 'w.png',
+                           :upload_content_type => 'image/png')
+    assert_difference 'NodeAction.where(:action => "asset_destroy").count' do
+      delete :destroy, params: { id: asset.id }
+    end
+    assert_equal users(:quentin), NodeAction.last.user
+  end
+
   # --- URL helpers ---
 
   test "upload url returns correct path for original" do

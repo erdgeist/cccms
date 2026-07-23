@@ -69,6 +69,15 @@ class NodeAction < ApplicationRecord
   #   "path" -- final path, flat string (create-symmetric)
   #   "destroyed_descendants" -- integer, only when positive; one entry
   #                              at the root, per the subtree rule.
+  # "asset_destroy" (witnessed asset deletion; always written, even for
+  # unattached assets -- the files were publicly reachable; node column
+  # nil, subjects via participants: the asset plus every then-attached
+  # node):
+  #   "asset_name"            -- flat string
+  #   "content_type"          -- flat string
+  #   "path"                  -- public original path, flat string
+  #   "detached_from"         -- array of unique_names, only when any
+  #   "headline_removed_from" -- array of unique_names, only when any
   #
   # Reserved: "demote" (via "trash" | "depublish") for an explicit
   # depublish workflow, if ever built.

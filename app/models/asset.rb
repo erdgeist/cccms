@@ -40,4 +40,34 @@ class Asset < ApplicationRecord
     Node.where("head_id IN (:ids) OR draft_id IN (:ids) OR autosave_id IN (:ids)",
                :ids => page_ids).distinct
   end
+
+  # Witnessed destruction. Destroying an asset is a public-facing act
+  # even when unattached. The original and its variants are publicly
+  # reachable under /system/uploads, so an entry is always written,
+  # before the row and its files die. Every currently-attached node
+  # participates so its zoomed history shows the loss; the asset itself
+  # participates as the first non-Node subject (its participant row
+  # dangles after destroy, by design, the name lives on in metadata).
+  def destroy_witnessed! user:
+    ActiveRecord::Base.transaction do
+      affected = attached_nodes.to_a
+      headline_losses = affected.select do |node|
+        [node.head, node.draft, node.autosave].compact.any? do |row|
+          row.related_assets.exists?(:asset_id => id, :headline => true)
+        end
+      end
+
+      metadata = {
+        :asset_name   => name,
+        :content_type => upload_content_type,
+        :path         => upload.url.sub(/\?\d+$/, ""),
+      }
+      metadata[:detached_from]         = affected.map(&:unique_name)        if affected.any?
+      metadata[:headline_removed_from] = headline_losses.map(&:unique_name) if headline_losses.any?
+
+      NodeAction.record!(:participants => [self] + affected, :user => user,
+                          :action => "asset_destroy", **metadata)
+      destroy!
+    end
+  end
 end

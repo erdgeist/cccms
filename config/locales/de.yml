@@ -116,6 +116,9 @@ de:
     revision_created: "angelegt am %{date} von %{actor}"
     revision_published: "veröffentlicht am %{date} von %{actor}"
     revision_restored: "wiederhergestellt am %{date} von %{actor}"
+    asset_destroy: "%{actor} hat das Asset „%{asset}“ gelöscht"
+    asset_destroy_detached: "— entfernt von %{paths}"
+    asset_destroy_headlines: "(war Aufmacher von %{paths})"
 
   open_gallery: "Gallerie anzeigen"
   asset_licenses:

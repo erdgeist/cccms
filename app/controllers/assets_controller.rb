@@ -81,7 +81,7 @@ class AssetsController < ApplicationController
   # DELETE /assets/1.xml
   def destroy
     @asset = Asset.find(params[:id])
-    @asset.destroy
+    @asset.destroy_witnessed!(:user => current_user)
 
     respond_to do |format|
       format.html { redirect_to(assets_url) }
