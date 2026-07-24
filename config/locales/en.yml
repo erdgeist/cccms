@@ -79,6 +79,9 @@ en:
     detail_assets_added: "Attachments added: %{names}"
     detail_assets_removed: "Attachments removed: %{names}"
     assets_reordered: "Attachments reordered"
+    otp_enroll: "%{actor} set up a second factor"
+    otp_disable: "%{actor} removed their second factor"
+    otp_reset: "%{actor} reset the second factor of %{target}"
 
   open_gallery: "Open gallery"
   asset_licenses:

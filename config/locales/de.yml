@@ -127,6 +127,9 @@ de:
     detail_assets_added: "Anhänge hinzugefügt: %{names}"
     detail_assets_removed: "Anhänge entfernt: %{names}"
     assets_reordered: "Anhänge umsortiert"
+    otp_enroll: "%{actor} hat einen zweiten Faktor eingerichtet"
+    otp_disable: "%{actor} hat den zweiten Faktor entfernt"
+    otp_reset: "%{actor} hat den zweiten Faktor von %{target} zurückgesetzt"
 
   open_gallery: "Gallerie anzeigen"
   asset_licenses:

@@ -15,7 +15,10 @@ module NodeActionsHelper
     "destroy_draft"      => "eraser",
     "asset_create"       => "upload",
     "asset_attach"       => "paperclip",
-    "asset_destroy"      => "file-x"
+    "asset_destroy"      => "file-x",
+    "otp_enroll"         => "shield-lock",
+    "otp_disable"        => "shield-off",
+    "otp_reset"          => "shield-x"
   }.freeze
 
   def verb_icon action
@@ -174,6 +177,12 @@ module NodeActionsHelper
     }, ", ")
   end
 
+  def user_participant_ref action
+    participant = action.action_participants.detect { |p| p.subject_type == "User" }&.subject
+    name = h(action.metadata["target_login"].presence || "unknown")
+    participant ? link_to(name, edit_user_path(participant)) : name
+  end
+
   def summarize_publish action
     if action.metadata["via"] == "revision"
       t("node_actions.publish_rollback",
@@ -248,5 +257,18 @@ module NodeActionsHelper
     parts << t("node_actions.asset_destroy_headlines",
                 :paths => h(Array(m["headline_removed_from"]).join(", "))) if m["headline_removed_from"].present?
     safe_join(parts, " ")
+  end
+
+  def summarize_otp_enroll action
+    t("node_actions.otp_enroll", :actor => actor_ref(action)).html_safe
+  end
+
+  def summarize_otp_disable action
+    t("node_actions.otp_disable", :actor => actor_ref(action)).html_safe
+  end
+
+  def summarize_otp_reset action
+    t("node_actions.otp_reset", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
   end
 end
