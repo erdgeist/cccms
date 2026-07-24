@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   before_action :set_locale
+  before_action :enforce_otp_enrollment
 
   helper_method :safe_return_to
 
@@ -29,5 +30,17 @@ class ApplicationController < ActionController::Base
     url
   rescue URI::InvalidURIError
     default
+  end
+
+  # The hard gate for the slow transition: a user flagged otp_required
+  # who has not enrolled can reach only enrollment, their own user page,
+  # the login machinery, and the challenge -- everything else funnels
+  # into setup. Anonymous visitors are untouched (not logged_in?).
+  def enforce_otp_enrollment
+    return unless logged_in?
+    return unless current_user.otp_required? && !current_user.otp_enrolled?
+    return if %w[otp_enrollments otp_challenges sessions users].include?(controller_name)
+    flash[:error] = "Your account requires a second factor -- set it up to continue."
+    redirect_to edit_user_path(current_user)
   end
 end

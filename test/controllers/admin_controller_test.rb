@@ -38,4 +38,11 @@ class AdminControllerTest < ActionController::TestCase
     assert_equal [], json["tags"]
     assert_equal [], json["nodes"]
   end
+
+  test "otp_required users without enrollment are funneled to setup" do
+    users(:quentin).update!(:otp_required => true)
+    login_as :quentin
+    get :index
+    assert_redirected_to edit_user_path(users(:quentin))
+  end
 end

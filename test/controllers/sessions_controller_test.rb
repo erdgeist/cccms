@@ -23,4 +23,19 @@ class SessionsControllerTest < ActionController::TestCase
     assert_nil session[:user_id]
     assert_response :redirect
   end
+
+  test "login with password only is withheld for enrolled users" do
+    users(:quentin).update!(:otp_secret => ROTP::Base32.random)
+    post :create, params: { login: 'quentin', password: 'monkey' }
+    assert_nil session[:user_id]
+    assert_equal users(:quentin).id, session[:pending_otp_user_id]
+    assert_redirected_to new_otp_challenge_path
+  end
+
+  test "otp_required without enrollment logs in but funnels into setup" do
+    users(:quentin).update!(:otp_required => true)
+    post :create, params: { login: 'quentin', password: 'monkey' }
+    assert session[:user_id]
+    assert_redirected_to edit_user_path(users(:quentin))
+  end
 end
