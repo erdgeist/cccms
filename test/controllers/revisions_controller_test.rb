@@ -33,8 +33,8 @@ class RevisionsControllerTest < ActionController::TestCase
     login_as :quentin
     get :show, params: { :node_id => @node.id, :id => @node.pages.last.id }
     assert_response :success
-    assert_select ".node_description", "Body"
-    assert_select ".node_content", {:count => 1, :text => "second"}
+    assert_select ".layout_row_label", "Body"
+    assert_select ".layout_row_content", {:count => 1, :text => "second"}
   end
 
   test "showing a revision renders real markup in the body, not escaped entities" do
@@ -46,7 +46,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
     get :show, params: { :node_id => node.id, :id => node.head.id }
     assert_response :success
-    assert_select ".node_content h3", "Hello"
+    assert_select ".layout_row_content h3", "Hello"
   end
 
   test "diffing two revisions" do

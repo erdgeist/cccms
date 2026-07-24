@@ -211,7 +211,7 @@ cccms = {
           error: function(xhr) {
             if (xhr.status === 423) {
               clearInterval(cccms.autosave_timer);
-              cccms.report_lock_lost($("#page_editor > form").attr("data-show-url"));
+              cccms.report_lock_lost($("#admin_layout > form").attr("data-show-url"));
             }
             // any other failure: quietly retried on the next tick
           }
@@ -221,7 +221,7 @@ cccms = {
     };
 
     cccms.autosave_timer = setInterval(function() {
-      $("#page_editor > form").submitWithAjax();
+      $("#admin_layout > form").submitWithAjax();
     }, 7000);
   },
 
@@ -257,7 +257,7 @@ cccms = {
       });
 
       $force.on('click', function() {
-        $("#page_editor > form").submitWithAjax({ force: true });
+        $("#admin_layout > form").submitWithAjax({ force: true });
       });
     },
 
@@ -309,7 +309,7 @@ cccms = {
       cccms.inline_images.ensure_overlay();
       cccms.inline_images.editor = editor;
 
-      var showUrl = $("#page_editor > form").attr("data-show-url") || "";
+      var showUrl = $("#admin_layout > form").attr("data-show-url") || "";
       var match = showUrl.match(/(\d+)$/);
       cccms.inline_images.node_id = match ? match[1] : "";
 

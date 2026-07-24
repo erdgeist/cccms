@@ -9,8 +9,8 @@
 <%= form_tag nodes_path do %>
 <div id="new_node">
 
-  <div class="node_description">Type</div>
-  <div class="node_content">
+  <div class="layout_row_label">Type</div>
+  <div class="layout_row_content">
     <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
         <%= radio_button_tag :kind, kind, kind == @selected_kind,
@@ -23,23 +23,23 @@
     <% end %>
   </div>
 
-  <div class="node_description">Title</div>
-  <div class="node_content">
+  <div class="layout_row_label">Title</div>
+  <div class="layout_row_content">
     <%= text_field_tag :title, nil, required: true %>
     <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
   </div>
 
   <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
-    <div class="node_description">Parent</div>
-    <div class="node_content">
+    <div class="layout_row_label">Parent</div>
+    <div class="layout_row_content">
       <%= text_field_tag :parent_search_term, @parent&.title %>
       <%= hidden_field_tag :parent_id, @parent&.id, data: { unique_name: @parent&.computed_unique_name } %>
       <div id="parent_search_results" class="search_results"></div>
     </div>
   </div>
 
-  <div class="node_description">Resulting path</div>
-  <div class="node_content">
+  <div class="layout_row_label">Resulting path</div>
+  <div class="layout_row_content">
     <span id="resulting_path">—</span>
     <button type="button" id="copy_resulting_path" class="unselected copy_button" data-copy-target="#resulting_path">
       <span class="copy_button_label">copy</span>
@@ -49,8 +49,8 @@
   </div>
 
   <% if @attach_asset %>
-    <div class="node_description">attachment</div>
-    <div class="node_content">
+    <div class="layout_row_label">attachment</div>
+    <div class="layout_row_content">
       <ul class="thumbnail_list">
         <li>
           <% if @attach_asset.has_variant?(:thumb) %>
@@ -66,8 +66,8 @@
     </div>
   <% end %>
 
-  <div class="node_description"></div>
-  <div class="node_content"><%= submit_tag "Create" %></div>
+  <div class="layout_row_label"></div>
+  <div class="layout_row_content"><%= submit_tag "Create" %></div>
 
 </div>
 <% end %>

@@ -25,7 +25,7 @@
   <%= link_to "Preview ↗", preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
-<div id="page_editor">
+<div id="admin_layout">
   <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
   <% if @node.errors.any? %>
     <div class="error_messages">
@@ -37,14 +37,14 @@
   <div id="edit_grid">
 
     <div id="main_fields">
-      <div class="node_description">Title</div>
-      <div class="node_content"><%= d.text_field :title %></div>
+      <div class="layout_row_label">Title</div>
+      <div class="layout_row_content"><%= d.text_field :title %></div>
 
-      <div class="node_description">Abstract</div>
-      <div class="node_content"><%= d.text_area :abstract %></div>
+      <div class="layout_row_label">Abstract</div>
+      <div class="layout_row_content"><%= d.text_area :abstract %></div>
 
-      <div class="node_description">Attachments</div>
-      <div class="node_content">
+      <div class="layout_row_label">Attachments</div>
+      <div class="layout_row_content">
         <div id="related_assets"
              data-search-url="<%= search_node_related_assets_path(@node) %>"
              data-create-url="<%= node_related_assets_path(@node) %>">
@@ -94,16 +94,16 @@
     <details id="metadata_details">
       <summary>Metadata (slug, parent, tags, template, author, images)</summary>
       <div id="metadata">
-        <div class="node_description">Slug</div>
-        <div class="node_content">
+        <div class="layout_row_label">Slug</div>
+        <div class="layout_row_content">
           <%= f.text_field(
                 :staged_slug, :value => @node.staged_slug || @node.slug
               )
             %>
         </div>
 
-        <div class="node_description">parent</div>
-        <div class="node_content">
+        <div class="layout_row_label">parent</div>
+        <div class="layout_row_content">
           <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
           <p class="field_hint">Start typing to find a new parent for this node.</p>
           <div id="move_to_search_results" class="search_results"></div>
@@ -114,23 +114,23 @@
            %>
         </div>
 
-        <div class="node_description">Tags</div>
-        <div class="node_content">
+        <div class="layout_row_label">Tags</div>
+        <div class="layout_row_content">
           <%= text_field_tag :tag_list, @page.tag_list.join(', ') %>
           <span class="field_hint">Comma separated, lowercase.</span>
         </div>
 
-        <div class="node_description">Publish at</div>
-        <div class="node_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
+        <div class="layout_row_label">Publish at</div>
+        <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
 
-        <div class="node_description">Template</div>
-        <div class="node_content">
+        <div class="layout_row_label">Template</div>
+        <div class="layout_row_content">
         <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
         <span class="field_hint">Set automatically based on how this node was created - change it if needed.</span>
         </div>
 
-        <div class="node_description">Author</div>
-        <div class="node_content">
+        <div class="layout_row_label">Author</div>
+        <div class="layout_row_content">
           <%= d.select :user_id, user_list,
                 :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
         </div>
@@ -139,7 +139,7 @@
     </details>
 
     <div id="content">
-      <div class="node_description">Body</div>
+      <div class="layout_row_label">Body</div>
       <div class="body_toolbar_row">
         <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
           <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
@@ -151,7 +151,7 @@
 
       <div id="editor_and_preview">
         <div class="preview_content">
-          <div class="node_content"><%= d.text_area :body, :class => 'with_editor' %></div>
+          <div class="layout_row_content"><%= d.text_area :body, :class => 'with_editor' %></div>
         </div>
         <div id="preview_panel" style="display:none">
           <iframe id="live_preview_iframe" title="Live preview" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>

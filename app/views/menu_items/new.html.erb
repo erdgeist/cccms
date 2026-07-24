@@ -1,20 +1,20 @@
 <h1>Add Menu Item</h1>
 
 <%= form_for @menu_item do |f| %>
-  <div class="node_description">Search</div>
-  <div class="node_content">
+  <div class="layout_row_label">Search</div>
+  <div class="layout_row_content">
     <%= text_field_tag :menu_search_term %>
     <div id="menu_item_search_results" class="search_results"></div>
   </div>
 
-  <div class="node_description">Node Id</div>
-  <div class="node_content"><%= f.text_field :node_id %></div>
+  <div class="layout_row_label">Node Id</div>
+  <div class="layout_row_content"><%= f.text_field :node_id %></div>
 
-  <div class="node_description">Path</div>
-  <div class="node_content"><%= f.text_field :path %></div>
+  <div class="layout_row_label">Path</div>
+  <div class="layout_row_content"><%= f.text_field :path %></div>
 
-  <div class="node_description">Title</div>
-  <div class="node_content"><%= f.text_field :title %></div>
+  <div class="layout_row_label">Title</div>
+  <div class="layout_row_content"><%= f.text_field :title %></div>
 
-  <div class="node_content"><%= f.submit 'Create' %></div>
+  <div class="layout_row_content"><%= f.submit 'Create' %></div>
 <% end %>

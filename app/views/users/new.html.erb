@@ -6,26 +6,26 @@
   </div>
 <% end %>
 
-<div id="page_editor">
+<div id="admin_layout">
   <%= form_for @user do |f| %>
   <div id="content">
-    <div class="node_description">Login</div>
-    <div class="node_content"><%= f.text_field :login %></div>
+    <div class="layout_row_label">Login</div>
+    <div class="layout_row_content"><%= f.text_field :login %></div>
 
-    <div class="node_description">E-Mail</div>
-    <div class="node_content"><%= f.text_field :email %></div>
+    <div class="layout_row_label">E-Mail</div>
+    <div class="layout_row_content"><%= f.text_field :email %></div>
 
-    <div class="node_description">Password</div>
-    <div class="node_content"><%= f.password_field :password %></div>
+    <div class="layout_row_label">Password</div>
+    <div class="layout_row_content"><%= f.password_field :password %></div>
 
-    <div class="node_description">Confirm</div>
-    <div class="node_content"><%= f.password_field :password_confirmation %></div>
+    <div class="layout_row_label">Confirm</div>
+    <div class="layout_row_content"><%= f.password_field :password_confirmation %></div>
 
-    <div class="node_description">Admin?</div>
-    <div class="node_content"><%= f.check_box :admin %></div>
+    <div class="layout_row_label">Admin?</div>
+    <div class="layout_row_content"><%= f.check_box :admin %></div>
 
-    <div class="node_description"></div>
-    <div class="node_content"><%= f.submit "Create" %></div>
+    <div class="layout_row_label"></div>
+    <div class="layout_row_content"><%= f.submit "Create" %></div>
   <% end %>
   </div>
 </div>

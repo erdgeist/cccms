@@ -1,8 +1,8 @@
 <h1>Second factor</h1>
 
-<div id="page_editor">
-  <div class="node_description">Code</div>
-  <div class="node_content">
+<div id="admin_layout">
+  <div class="layout_row_label">Code</div>
+  <div class="layout_row_content">
     <%= form_tag otp_challenge_path, :method => :post, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>

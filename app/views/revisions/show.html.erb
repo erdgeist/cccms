@@ -1,39 +1,39 @@
 <% translation = @page.translations.find_by(:locale => @locale) %>
-<div id="page_editor" class="show_node">
+<div id="admin_layout" class="show_node">
   <h1>Revision <%= @page.revision %>: <%= translation&.title %> <small>(<%= @locale.to_s.upcase %>)</small></h1>
 
   <div id="content">
-    <div class="node_description">Actions</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
+    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
           <%= link_to 'Show all revisions', node_revisions_path(@node, :locale => @locale) %>
         </div>
       </div>
     </div>
 
-    <div class="node_description">Path</div>
-    <div class="node_content"><%= @page.public_link %></div>
+    <div class="layout_row_label">Path</div>
+    <div class="layout_row_content"><%= @page.public_link %></div>
 
-    <div class="node_description">Author</div>
-    <div class="node_content"><%= @page.user.try(:login) %></div>
+    <div class="layout_row_label">Author</div>
+    <div class="layout_row_content"><%= @page.user.try(:login) %></div>
 
-    <div class="node_description">Editor</div>
-    <div class="node_content"><%= @page.editor.try(:login) %></div>
+    <div class="layout_row_label">Editor</div>
+    <div class="layout_row_content"><%= @page.editor.try(:login) %></div>
 
-    <div class="node_description">Last updated</div>
-    <div class="node_content"><%= @page.updated_at %></div>
+    <div class="layout_row_label">Last updated</div>
+    <div class="layout_row_content"><%= @page.updated_at %></div>
 
-    <div class="node_description">Published at</div>
-    <div class="node_content"><%= @page.published_at %></div>
+    <div class="layout_row_label">Published at</div>
+    <div class="layout_row_content"><%= @page.published_at %></div>
 
-    <div class="node_description">Title</div>
-    <div class="node_content"><%= translation&.title %></div>
+    <div class="layout_row_label">Title</div>
+    <div class="layout_row_content"><%= translation&.title %></div>
 
-    <div class="node_description">Abstract</div>
-    <div class="node_content"><%= translation&.abstract %></div>
+    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_content"><%= translation&.abstract %></div>
 
-    <div class="node_description">Body</div>
-    <div class="node_content"><%= raw translation&.body %></div>
+    <div class="layout_row_label">Body</div>
+    <div class="layout_row_content"><%= raw translation&.body %></div>
   </div>
 </div>

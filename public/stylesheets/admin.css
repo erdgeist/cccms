@@ -672,7 +672,7 @@ table.user_table td.user_login {
    ============================================================ */
 
 @media(min-width:1016px) {
-  div.node_description {
+  div.layout_row_label {
     float: left;
     width: 110px;
     min-height: 2rem;
@@ -681,7 +681,7 @@ table.user_table td.user_login {
     vertical-align: top;
   }
 
-  div.node_content {
+  div.layout_row_content {
     margin-left: 120px;
     min-height: 2rem;
     display: block;
@@ -693,26 +693,26 @@ table.user_table td.user_login {
   }
 }
 @media(max-width:1015px) {
-  div.node_description {
+  div.layout_row_label {
     min-height: 2rem;
     width: 30em;
     text-transform: lowercase;
     vertical-align: top;
   }
 
-  div.node_content {
+  div.layout_row_content {
     min-height: 2rem;
     margin-bottom: 1rem;
   }
 }
 
-.node_content.node_info_group {
+.layout_row_content.info_group {
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
 }
 
-.node_info_group .disabled_action {
+.info_group .disabled_action {
   display: inline-block;
   border: 1px solid #c0c0c0;
   border-radius: 2px;
@@ -722,17 +722,17 @@ table.user_table td.user_login {
   cursor: not-allowed;
 }
 
-.node_info_group_items {
+.info_group_items {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 2rem;
 }
 
-.node_info_item {
+.info_item {
   min-width: 140px;
 }
 
-.node_info_label {
+.info_label {
   display: block;
   font-weight: normal;
   color: #969696;
@@ -740,25 +740,25 @@ table.user_table td.user_login {
   text-transform: lowercase;
 }
 
-.node_info_group ul {
+.info_group ul {
   margin: 0;
   padding-left: 1.25rem;
 }
 
-.node_info_group li {
+.info_group li {
   margin-bottom: 0.25rem;
 }
 
-.node_content.node_status {
+.layout_row_content.node_status {
   border: 2px solid #000000;
   background-color: #fafafa;
 }
 
-.node_status .node_info_group_items:first-child {
+.node_status .info_group_items:first-child {
   margin-bottom: 0.75rem;
 }
 
-.node_status .node_info_group_items + .node_info_group_items {
+.node_status .info_group_items + .info_group_items {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -768,8 +768,8 @@ table.user_table td.user_login {
   display: block;
 }
 
-.node_content .inline-image--full,
-.node_content .inline-image--half {
+.layout_row_content .inline-image--full,
+.layout_row_content .inline-image--half {
   max-width: 300px;
   width: auto;
   float: none;
@@ -905,7 +905,7 @@ form.button_to button[type="submit"] {
   }
   #main_fields       { grid-area: main; }
   #metadata_details  { grid-area: meta; }
-  #page_editor #content { grid-area: body; }
+  #admin_layout #content { grid-area: body; }
 
   /* Details is force-opened by JS on desktop; hide the summary only
      once open, so a JS failure still leaves a working toggle. */
@@ -930,12 +930,12 @@ input#move_to_search_term {
   padding: 5px;
 }
 
-div#page_editor {
+div#admin_layout {
   margin-top: 0px;
   margin-left: 10px;
 }
 
-#page_editor a.action_button,
+#admin_layout a.action_button,
 .action_button {
   display: inline-flex;
   align-items: center;
@@ -954,15 +954,15 @@ div#page_editor {
   font: inherit;
 }
 
-#page_editor a.action_button:hover,
+#admin_layout a.action_button:hover,
 .action_button:hover {
   color: #ffffff;
   background-color: #000000;
 }
 
-#page_editor input[type=text],
-#page_editor input[type=password],
-#page_editor textarea {
+#admin_layout input[type=text],
+#admin_layout input[type=password],
+#admin_layout textarea {
   padding: 5px;
 }
 
@@ -996,7 +996,7 @@ input#tag_list {
     padding: 5px;
   }
 
-  #page_editor textarea#page_body {
+  #admin_layout textarea#page_body {
     width: 100%;
     box-sizing: border-box;
     height: 600px;
@@ -1006,9 +1006,9 @@ input#tag_list {
     margin-left: -125px;
   }
 
-  #page_editor input[type=text],
-  #page_editor input[type=password],
-  #page_editor textarea {
+  #admin_layout input[type=text],
+  #admin_layout input[type=password],
+  #admin_layout textarea {
     width: 100%;
     box-sizing: border-box;
   }
@@ -1022,19 +1022,19 @@ input#tag_list {
     width: 100%;
   }
 
-  #page_editor #content,
-  #page_editor #metadata,
-  #page_editor #main_fields {
+  #admin_layout #content,
+  #admin_layout #metadata,
+  #admin_layout #main_fields {
     padding-right: 5px;
   }
 
-  #page_editor textarea#page_body {
+  #admin_layout textarea#page_body {
     box-sizing: border-box;
     width: 100%;
     height: 50rem;
   }
 
-  #page_editor textarea#page_abstract {
+  #admin_layout textarea#page_abstract {
     box-sizing: border-box;
     height: 8rem;
     width: 100%;
@@ -1050,9 +1050,9 @@ input#tag_list {
     font-weight: bold;
   }
 
-  #page_editor input[type=text],
-  #page_editor input[type=password],
-  #page_editor textarea {
+  #admin_layout input[type=text],
+  #admin_layout input[type=password],
+  #admin_layout textarea {
     box-sizing: border-box;
     width: 100%;
   }

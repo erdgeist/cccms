@@ -5,25 +5,25 @@
 <div class="translation_compare">
   <div class="translation_compare_column">
     <h2><%= @locale.to_s.upcase %></h2>
-    <div class="node_description">Title</div>
-    <div class="node_content"><%= @translation&.title %></div>
+    <div class="layout_row_label">Title</div>
+    <div class="layout_row_content"><%= @translation&.title %></div>
 
-    <div class="node_description">Abstract</div>
-    <div class="node_content"><%= sanitize(@translation&.abstract.to_s) %></div>
+    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_content"><%= sanitize(@translation&.abstract.to_s) %></div>
 
-    <div class="node_description">Body</div>
-    <div class="node_content"><%= sanitize(@translation&.body.to_s) %></div>
+    <div class="layout_row_label">Body</div>
+    <div class="layout_row_content"><%= sanitize(@translation&.body.to_s) %></div>
   </div>
 
   <div class="translation_compare_column">
     <h2><%= I18n.default_locale.to_s.upcase %> (default)</h2>
-    <div class="node_description">Title</div>
-    <div class="node_content"><%= @default_translation&.title %></div>
+    <div class="layout_row_label">Title</div>
+    <div class="layout_row_content"><%= @default_translation&.title %></div>
 
-    <div class="node_description">Abstract</div>
-    <div class="node_content"><%= sanitize(@default_translation&.abstract.to_s) %></div>
+    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_content"><%= sanitize(@default_translation&.abstract.to_s) %></div>
 
-    <div class="node_description">Body</div>
-    <div class="node_content"><%= sanitize(@default_translation&.body.to_s) %></div>
+    <div class="layout_row_label">Body</div>
+    <div class="layout_row_content"><%= sanitize(@default_translation&.body.to_s) %></div>
   </div>
 </div>

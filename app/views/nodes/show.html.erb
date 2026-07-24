@@ -1,27 +1,27 @@
 <% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
-<div id="page_editor" class="show_node">
+<div id="admin_layout" class="show_node">
   <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
   <div id="content">
-    <div class="node_description">Status</div>
-    <div class="node_content node_info_group node_status">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
-          <span class="node_info_label">Head</span>
+    <div class="layout_row_label">Status</div>
+    <div class="layout_row_content info_group node_status">
+      <div class="info_group_items">
+        <div class="info_item">
+          <span class="info_label">Head</span>
           <%= @node.head ? "#{@node.head.title} (rev #{@node.head.revision}, #{@node.head.updated_at})" : "none — never published" %>
         </div>
-        <div class="node_info_item">
-          <span class="node_info_label">Draft</span>
+        <div class="info_item">
+          <span class="info_label">Draft</span>
           <%= @node.draft ? "#{@node.draft.title} (rev #{@node.draft.revision}, saved #{@node.draft.updated_at})" : "none" %>
         </div>
-        <div class="node_info_item">
-          <span class="node_info_label">Autosave</span>
+        <div class="info_item">
+          <span class="info_label">Autosave</span>
           <%= @node.autosave ? "#{@node.autosave.title} (unsaved, #{@node.autosave.updated_at})" : "none" %>
         </div>
       </div>
 
       <% edit_label = @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Edit") %>
-      <div class="node_info_group_items">
-        <div class="node_info_item">
+      <div class="info_group_items">
+        <div class="info_item">
           <% if locked_by_other %>
             <span class="disabled_action"><%= edit_label %></span>
           <% else %>
@@ -36,7 +36,7 @@
         </div>
 
         <% @node.available_layer_pairs.each do |pair| %>
-          <div class="node_info_item">
+          <div class="info_item">
             <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
                   diff_node_revisions_path(@node),
                   method: :get,
@@ -47,13 +47,13 @@
 
         <% unless locked_by_other %>
           <% if @node.draft && !@node.autosave && !@node.in_trash? && !@node.trash_node? %>
-            <div class="node_info_item">
+            <div class="info_item">
               <%= button_to 'Publish', publish_node_path(@node), method: :put,
                     form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
             </div>
           <% end %>
           <% if @node.autosave || (@node.draft && @node.head) %>
-            <div class="node_info_item">
+            <div class="info_item">
             <%= button_to revert_node_path(@node), method: :put,
                                 params: { return_to: request.path },
                                 form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
@@ -63,7 +63,7 @@
             </div>
           <% end %>
           <% unless @node.trash_node? || @node.in_trash? || @node.root? %>
-            <div class="node_info_item">
+            <div class="info_item">
               <%= button_to trash_node_path(@node), method: :put,
                     form: { data: { confirm: "Move this page and everything beneath it to the Trash? All published content in it will go offline." }, class: 'button_to destructive' } do %>
                 <%= icon("trash", library: "tabler", "aria-hidden": true) %>
@@ -80,17 +80,17 @@
     </div>
 
     <% if @node.in_trash? %>
-      <div class="node_description">Trash</div>
-      <div class="node_content node_info_group">
-        <div class="node_info_group_items">
+      <div class="layout_row_label">Trash</div>
+      <div class="layout_row_content info_group">
+        <div class="info_group_items">
           <% if (entry = @node.last_trash_entry) && entry.metadata.dig("path", "from") %>
-            <div class="node_info_item">
-              <span class="node_info_label">Was at</span>
+            <div class="info_item">
+              <span class="info_label">Was at</span>
               <%= entry.metadata.dig("path", "from") %>
             </div>
           <% end %>
-          <div class="node_info_item">
-            <span class="node_info_label">Restore to</span>
+          <div class="info_item">
+            <span class="info_label">Restore to</span>
             <% suggestion = @node.suggested_restore_parent %>
             <%= form_tag restore_from_trash_node_path(@node), :method => :put, :class => "aligned_action_row" do %>
               <div class="restore_picker">
@@ -105,8 +105,8 @@
             <span class="field_hint">Restored pages come back unpublished. Republish each page deliberately.</span>
           </div>
         </div>
-        <div class="node_info_group_items">
-          <div class="node_info_item">
+        <div class="info_group_items">
+          <div class="info_item">
             <% doomed_below = @node.descendants.count %>
             <%= button_to node_path(@node), method: :delete,
                   form: { data: { confirm: doomed_below > 0 ?
@@ -121,12 +121,12 @@
       </div>
     <% end %>
 
-    <div class="node_description">Translations</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
+    <div class="layout_row_label">Translations</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
         <% @translations.each do |t| %>
-          <div class="node_info_item">
-            <span class="node_info_label"><%= t[:locale].to_s.upcase %></span>
+          <div class="info_item">
+            <span class="info_label"><%= t[:locale].to_s.upcase %></span>
             <div class="aligned_action_row">
               <% if t[:exists] %>
                 <%= link_to t[:title], node_translation_path(@node, t[:locale]) %> — updated <%= t[:updated_at] %>
@@ -157,20 +157,20 @@
       </div>
     </div>
 
-    <div class="node_description">People</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
-          <span class="node_info_label">Author</span>
+    <div class="layout_row_label">People</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
+          <span class="info_label">Author</span>
           <%= @page.user.try(:login) %>
         </div>
-        <div class="node_info_item">
-          <span class="node_info_label">Editor</span>
+        <div class="info_item">
+          <span class="info_label">Editor</span>
           <%= @page.editor.try(:login) %>
         </div>
         <% if @node.locked? %>
-          <div class="node_info_item">
-            <span class="node_info_label">Locked by</span>
+          <div class="info_item">
+            <span class="info_label">Locked by</span>
             <span class="warning"><%= @node.lock_owner.login %></span>
             <%= unlock_link %>
           </div>
@@ -178,36 +178,36 @@
       </div>
     </div>
 
-    <div class="node_description">Dates</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
-          <span class="node_info_label">Last updated</span>
+    <div class="layout_row_label">Dates</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
+          <span class="info_label">Last updated</span>
           <%= @page.updated_at %>
         </div>
         <% if @page.published_at.present? %>
-          <div class="node_info_item">
-            <span class="node_info_label"><%= @page.public? ? 'Published at' : 'Will publish at' %></span>
+          <div class="info_item">
+            <span class="info_label"><%= @page.public? ? 'Published at' : 'Will publish at' %></span>
             <%= @page.published_at %>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="node_description">Links</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
-          <span class="node_info_label">Public</span>
+    <div class="layout_row_label">Links</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
+          <span class="info_label">Public</span>
           <%= link_to @page.public_link, content_url(@node.unique_path) %>
         </div>
         <% if @node.draft %>
-          <div class="node_info_item">
-            <span class="node_info_label">Admin Preview</span>
+          <div class="info_item">
+            <span class="info_label">Admin Preview</span>
             <%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %>
           </div>
-          <div class="node_info_item">
-            <span class="node_info_label">Public Preview</span>
+          <div class="info_item">
+            <span class="info_label">Public Preview</span>
             <% if @node.draft.preview_token.present? %>
               <div class="aligned_action_row">
                 <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
@@ -221,8 +221,8 @@
       </div>
     </div>
 
-    <div class="node_description">History</div>
-    <div class="node_content node_info_group">
+    <div class="layout_row_label">History</div>
+    <div class="layout_row_content info_group">
       <details>
         <summary>
           <%= pluralize(@node.pages.count, 'published revision', 'published revisions') %>
@@ -240,8 +240,8 @@
     </div>
 
 
-    <div class="node_description">Tags</div>
-    <div class="node_content node_info_group">
+    <div class="layout_row_label">Tags</div>
+    <div class="layout_row_content info_group">
       <% if @page.tag_list.any? %>
         <ul class="tag_pill_list">
           <% @page.tag_list.sort.each do |tag| %>
@@ -253,8 +253,8 @@
       <% end %>
     </div>
 
-    <div class="node_description">Attachments</div>
-    <div class="node_content node_info_group">
+    <div class="layout_row_label">Attachments</div>
+    <div class="layout_row_content info_group">
       <% if @page.assets.any? %>
         <% headline_asset_id = @page.headline_asset&.id %>
         <ul class="thumbnail_list">
@@ -278,8 +278,8 @@
       </p>
     </div>
 
-    <div class="node_description">Events</div>
-    <div class="node_content node_info_group">
+    <div class="layout_row_label">Events</div>
+    <div class="layout_row_content info_group">
       <ul>
       <% @node.events.order(:start_time).each do |event| %>
         <li>
@@ -299,8 +299,8 @@
 
     <% matches = matching_node_kinds(@node) %>
     <% if @node.children.any? || matches.any? %>
-      <div class="node_description">Children</div>
-      <div class="node_content node_info_group">
+      <div class="layout_row_label">Children</div>
+      <div class="layout_row_content info_group">
         <% if @node.children.any? %>
           <details>
             <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
@@ -325,11 +325,11 @@
       </div>
     <% end %>
 
-    <div class="node_description">Abstract (<%= I18n.default_locale.to_s.upcase %>)</div>
-    <div class="node_content"><%= sanitize(@page.abstract) %></div>
+    <div class="layout_row_label">Abstract (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="layout_row_content"><%= sanitize(@page.abstract) %></div>
 
-    <div class="node_description">Body (<%= I18n.default_locale.to_s.upcase %>)</div>
-    <div class="node_content"><%= sanitize(@page.body) %></div>
+    <div class="layout_row_label">Body (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="layout_row_content"><%= sanitize(@page.body) %></div>
 
   </div>
 </div>

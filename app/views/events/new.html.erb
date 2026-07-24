@@ -5,51 +5,51 @@
 <%= form_for(@event) do |f| %>
   <%= form_error_messages(f) %>
 
-  <div id="page_editor">
+  <div id="admin_layout">
     <div id="content">
-      <div class="node_description">Node</div>
-      <div class="node_content">
+      <div class="layout_row_label">Node</div>
+      <div class="layout_row_content">
         <%= text_field_tag :event_node_search_term %>
         <div id="event_search_results" class="search_results"></div>
         <%= f.hidden_field :node_id %>
         <span class="field_hint">Optional — search and pick a node to associate this event with a page.</span>
       </div>
 
-      <div class="node_description">Start time</div>
-      <div class="node_content"><%= f.datetime_select :start_time %></div>
+      <div class="layout_row_label">Start time</div>
+      <div class="layout_row_content"><%= f.datetime_select :start_time %></div>
 
-      <div class="node_description">End time</div>
-      <div class="node_content"><%= f.datetime_select :end_time %></div>
+      <div class="layout_row_label">End time</div>
+      <div class="layout_row_content"><%= f.datetime_select :end_time %></div>
 
-      <div class="node_description">Recurrence</div>
-      <div class="node_content"><%= render "rrule_builder", f: f %></div>
+      <div class="layout_row_label">Recurrence</div>
+      <div class="layout_row_content"><%= render "rrule_builder", f: f %></div>
 
-      <div class="node_description">Title</div>
-      <div class="node_content">
+      <div class="layout_row_label">Title</div>
+      <div class="layout_row_content">
         <%= f.text_field :title %>
         <span id="event_title_hint" class="field_hint">Optional — if left blank, the associated node's title is used.</span>
       </div>
 
-      <div class="node_description">Tags</div>
-      <div class="node_content"><%= f.text_field :tag_list %></div>
+      <div class="layout_row_label">Tags</div>
+      <div class="layout_row_content"><%= f.text_field :tag_list %></div>
 
-      <div class="node_description">Allday</div>
-      <div class="node_content"><%= f.check_box :allday %></div>
+      <div class="layout_row_label">Allday</div>
+      <div class="layout_row_content"><%= f.check_box :allday %></div>
 
-      <div class="node_description">Url</div>
-      <div class="node_content"><%= f.text_field :url %></div>
+      <div class="layout_row_label">Url</div>
+      <div class="layout_row_content"><%= f.text_field :url %></div>
 
-      <div class="node_description">Latitude</div>
-      <div class="node_content"><%= f.text_field :latitude %></div>
+      <div class="layout_row_label">Latitude</div>
+      <div class="layout_row_content"><%= f.text_field :latitude %></div>
 
-      <div class="node_description">Longitude</div>
-      <div class="node_content"><%= f.text_field :longitude %></div>
+      <div class="layout_row_label">Longitude</div>
+      <div class="layout_row_content"><%= f.text_field :longitude %></div>
 
-      <div class="node_description"></div>
-      <div class="node_content"><%= hidden_field_tag :return_to, params[:return_to] %></div>
+      <div class="layout_row_label"></div>
+      <div class="layout_row_content"><%= hidden_field_tag :return_to, params[:return_to] %></div>
 
-      <div class="node_description"></div>
-      <div class="node_content"><%= f.submit 'Create' %></div>
+      <div class="layout_row_label"></div>
+      <div class="layout_row_content"><%= f.submit 'Create' %></div>
     </div>
   </div>
 <% end %>

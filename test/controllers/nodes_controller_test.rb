@@ -261,7 +261,7 @@ class NodesControllerTest < ActionController::TestCase
     node = create_node_with_published_page
     get :show, params: { :id => node.id }
     assert_response :success
-    assert_select "div.node_content", :text => "Test", :count => 2
+    assert_select "div.layout_row_content", :text => "Test", :count => 2
   end
 
   test "unlocking a locked node" do

@@ -1,16 +1,16 @@
-<div id="page_editor">
+<div id="admin_layout">
   <h1><%= @asset.name %></h1>
 
   <div id="content">
-    <div class="node_description">Actions</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
+    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
         <%= link_to edit_asset_path(@asset), class: 'action_button' do %>
           <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
         <% end %>
         </div>
-        <div class="node_info_item">
+        <div class="info_item">
           <%= link_to 'Back', assets_path %>
         </div>
         <%= link_to admin_log_path(:asset_id => @asset.id), :class => "action_button" do %>
@@ -20,12 +20,12 @@
     </div>
 
     <% if @asset.has_variant?(:medium) %>
-      <div class="node_description">Thumbnail</div>
-      <div class="node_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
+      <div class="layout_row_label">Thumbnail</div>
+      <div class="layout_row_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
     <% end %>
 
-    <div class="node_description">Attached to</div>
-    <div class="node_content">
+    <div class="layout_row_label">Attached to</div>
+    <div class="layout_row_content">
       <% nodes = @asset.attached_nodes %>
       <% if nodes.any? %>
         <ul class="search_results_list">
@@ -49,8 +49,8 @@
       <% end %>
     </div>
 
-    <div class="node_description">Public Path</div>
-    <div class="node_content">
+    <div class="layout_row_label">Public Path</div>
+    <div class="layout_row_content">
       <% public_path = @asset.upload.url.sub(/\?\d+$/, "") %>
       <%= link_to public_path, public_path, target: "_blank", rel: "noopener" %>
       <button type="button" class="action_button copy_button"
@@ -60,11 +60,11 @@
       </button>
     </div>
 
-    <div class="node_description">Creator</div>
-    <div class="node_content"><%= @asset.creator.presence || "—" %></div>
+    <div class="layout_row_label">Creator</div>
+    <div class="layout_row_content"><%= @asset.creator.presence || "—" %></div>
 
-    <div class="node_description">Source</div>
-    <div class="node_content">
+    <div class="layout_row_label">Source</div>
+    <div class="layout_row_content">
       <% if @asset.source_url.present? %>
         <%= link_to @asset.source_url, @asset.source_url %>
       <% else %>
@@ -72,8 +72,8 @@
       <% end %>
     </div>
 
-    <div class="node_description">License</div>
-    <div class="node_content">
+    <div class="layout_row_label">License</div>
+    <div class="layout_row_content">
       <% if (license = AssetLicense.find(@asset.license_key)) %>
         <%= t("asset_licenses.#{license.key}") %>
       <% else %>
@@ -81,10 +81,10 @@
       <% end %>
     </div>
 
-    <div class="node_description">Content Type</div>
-    <div class="node_content"><%= @asset.upload.content_type %></div>
+    <div class="layout_row_label">Content Type</div>
+    <div class="layout_row_content"><%= @asset.upload.content_type %></div>
 
-    <div class="node_description">Size</div>
-    <div class="node_content"><%= "#{@asset.upload.size/1024} KB" %></div>
+    <div class="layout_row_label">Size</div>
+    <div class="layout_row_content"><%= "#{@asset.upload.size/1024} KB" %></div>
   </div>
 </div>

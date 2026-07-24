@@ -1,11 +1,11 @@
-<div id="page_editor">
+<div id="admin_layout">
   <h1><%= @user.login %></h1>
 
   <div id="content">
-    <div class="node_description">Actions</div>
-    <div class="node_content node_info_group">
-      <div class="node_info_group_items">
-        <div class="node_info_item">
+    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_content info_group">
+      <div class="info_group_items">
+        <div class="info_item">
         <%= link_to edit_user_path(@user), class: 'action_button' do %>
           <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
         <% end %>
@@ -13,13 +13,13 @@
       </div>
     </div>
 
-    <div class="node_description">Login</div>
-    <div class="node_content"><%= @user.login %></div>
+    <div class="layout_row_label">Login</div>
+    <div class="layout_row_content"><%= @user.login %></div>
 
-    <div class="node_description">E-Mail</div>
-    <div class="node_content"><%= @user.email %></div>
+    <div class="layout_row_label">E-Mail</div>
+    <div class="layout_row_content"><%= @user.email %></div>
 
-    <div class="node_description">Admin?</div>
-    <div class="node_content"><%= @user.admin ? "yes" : "no" %></div>
+    <div class="layout_row_label">Admin?</div>
+    <div class="layout_row_content"><%= @user.admin ? "yes" : "no" %></div>
   </div>
 </div>

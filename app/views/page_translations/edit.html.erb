@@ -19,7 +19,7 @@
   <%= link_to "Preview ↗", preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
-<div id="page_editor">
+<div id="admin_layout">
   <ul id="related_asset_list" style="display:none">
     <% @page.related_assets.includes(:asset).each do |related| %>
       <li data-large-url="<%= related.asset.upload.url(:large) %>"
@@ -32,17 +32,17 @@
   <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
         data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
     <div id="content">
-      <div class="node_description">Title</div>
-      <div class="node_content">
+      <div class="layout_row_label">Title</div>
+      <div class="layout_row_content">
         <%= text_field_tag "page[title]", @translation&.title %>
       </div>
 
-      <div class="node_description">Abstract</div>
-      <div class="node_content">
+      <div class="layout_row_label">Abstract</div>
+      <div class="layout_row_content">
         <%= text_area_tag "page[abstract]", @translation&.abstract %>
       </div>
 
-      <div class="node_description">Body</div>
+      <div class="layout_row_label">Body</div>
       <div class="body_toolbar_row">
         <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
           <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
@@ -54,7 +54,7 @@
 
       <div id="editor_and_preview">
         <div class="preview_content">
-          <div class="node_content">
+          <div class="layout_row_content">
             <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
           </div>
         </div>

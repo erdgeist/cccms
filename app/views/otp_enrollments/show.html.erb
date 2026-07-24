@@ -1,8 +1,8 @@
 <h1>Enable second factor</h1>
 
-<div id="page_editor">
-  <div class="node_description">Scan</div>
-  <div class="node_content">
+<div id="admin_layout">
+  <div class="layout_row_label">Scan</div>
+  <div class="layout_row_content">
     <div class="otp_qr">
       <%= raw RQRCode::QRCode.new(current_user.pending_otp_provisioning_uri)
                 .as_svg(:module_size => 4, :viewbox => true,
@@ -11,8 +11,8 @@
     <span class="field_hint">Or enter the secret manually: <code><%= current_user.otp_pending_secret %></code></span>
   </div>
 
-  <div class="node_description">Confirm</div>
-  <div class="node_content">
+  <div class="layout_row_label">Confirm</div>
+  <div class="layout_row_content">
     <%= form_tag otp_enrollment_path, :method => :put, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>
