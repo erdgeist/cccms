@@ -1,4 +1,4 @@
-<h1><%= @user == current_user ? "My account" : "Edit user “#{@user.login}”" %></h1>
+<h1><%= @user == current_user ? t(".my_account") : t(".edit_user", :login => @user.login) %></h1>
 
 <% if @user.errors.any? %>
   <div class="error_messages">
@@ -9,61 +9,60 @@
 <div id="admin_layout">
   <%= form_for @user do |f| %>
   <div id="content">
-    <div class="layout_row_label">Login</div>
+    <div class="layout_row_label"><%= t(".login") %></div>
     <div class="layout_row_content"><%= f.text_field :login, :autocomplete => "username" %></div>
 
-    <div class="layout_row_label">E-Mail</div>
+    <div class="layout_row_label"><%= t(".email") %></div>
     <div class="layout_row_content"><%= f.text_field :email %></div>
 
-    <div class="layout_row_label">Password</div>
+    <div class="layout_row_label"><%= t(".password") %></div>
     <div class="layout_row_content"><%= f.password_field :password, :autocomplete => "new-password" %></div>
 
-    <div class="layout_row_label">Confirm</div>
+    <div class="layout_row_label"><%= t(".confirm") %></div>
     <div class="layout_row_content"><%= f.password_field :password_confirmation, :autocomplete => "new-password" %></div>
 
     <% if current_user.admin? %>
-    <div class="layout_row_label">Admin?</div>
+    <div class="layout_row_label"><%= t(".admin") %></div>
     <div class="layout_row_content"><%= f.check_box :admin %></div>
     <% end %>
 
     <div class="layout_row_label"></div>
-    <div class="layout_row_content"><%= f.submit "Update" %></div>
+    <div class="layout_row_content"><%= submit_tag t(".update") %></div>
   <% end %>
   </div>
 
   <% if @user == current_user %>
-    <div class="layout_row_label">Second factor</div>
+    <div class="layout_row_label"><%= t(".second_factor") %></div>
     <div class="layout_row_content">
       <% if current_user.otp_enrolled? %>
-        <p>Enabled.</p>
+        <p><%= t(".enabled") %></p>
         <%= form_tag otp_enrollment_path, :method => :delete, :class => "otp_form" do %>
           <%= text_field_tag :login, current_user.login, :autocomplete => "username", :readonly => true, :tabindex => -1, :class => "visually_hidden" %>
-          <%= password_field_tag :current_password, nil, :placeholder => "Current password", :autocomplete => "current-password" %>
-          <%= text_field_tag :code, nil, :placeholder => "Current code",
+          <%= password_field_tag :current_password, nil, :placeholder => t(".current_password"), :autocomplete => "current-password" %>
+          <%= text_field_tag :code, nil, :placeholder => t(".current_code"),
                 :autocomplete => "one-time-code", :inputmode => "numeric" %>
           <%= button_tag :type => "submit", :class => "action_button" do %>
-            <%= icon("shield-off", library: "tabler", "aria-hidden": true) %> Disable second factor
+            <%= icon("shield-off", library: "tabler", "aria-hidden": true) %> <%= t(".disable_second_factor") %>
           <% end %>
         <% end %>
       <% else %>
-        <p>Not enrolled.</p>
+        <p><%= t(".not_enrolled") %></p>
         <%= form_tag otp_enrollment_path, :method => :post, :class => "otp_form" do %>
           <%= text_field_tag :login, current_user.login, :autocomplete => "username", :readonly => true, :tabindex => -1, :class => "visually_hidden" %>
-          <%= password_field_tag :current_password, nil, :placeholder => "Current password", :autocomplete => "current-password"%>
+          <%= password_field_tag :current_password, nil, :placeholder => t(".current_password"), :autocomplete => "current-password"%>
           <%= button_tag :type => "submit", :class => "action_button" do %>
-            <%= icon("shield-lock", library: "tabler", "aria-hidden": true) %> Enable second factor
+            <%= icon("shield-lock", library: "tabler", "aria-hidden": true) %> <%= t(".enable_second_factor") %>
           <% end %>
         <% end %>
       <% end %>
     </div>
   <% elsif current_user.admin? && @user.otp_enrolled? %>
-    <div class="layout_row_label">Second factor</div>
+    <div class="layout_row_label"><%= t(".second_factor") %></div>
     <div class="layout_row_content">
-      Enabled.
-      <%= button_to "Reset second factor", reset_otp_user_path(@user), :method => :put,
+      <%= t(".enabled") %>
+      <%= button_to t(".reset_second_factor"), reset_otp_user_path(@user), :method => :put,
             :form_class => "button_to destructive",
-            :form => { :data => { :confirm =>
-              "Reset #{@user.login}'s second factor? They will log in with password only afterwards." } } %>
+            :form => { :data => { :confirm => t(".reset_confirm", :login => @user.login) } } %>
     </div>
   <% end %>
 </div>

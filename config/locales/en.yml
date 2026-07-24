@@ -98,3 +98,44 @@ en:
     licensed_under: "Licensed under %{license}"
 
   related_documents: "Related documents"
+
+  sessions:
+    new:
+      login: "Login"
+      password: "Password"
+      log_in: "log in"
+
+  otp_challenges:
+    new:
+      title: "Second factor"
+      code: "Code"
+      log_in: "Log in"
+      hint: "Enter the six-digit code from your authenticator app."
+
+  otp_enrollments:
+    show:
+      title: "Enable second factor"
+      scan: "Scan"
+      manual_hint: "Or enter the secret manually:"
+      confirm: "Confirm"
+      app_hint: "Enter the six-digit code your app shows for “%{issuer}”."
+
+  users:
+    edit:
+      my_account: "My account"
+      edit_user: "Edit user “%{login}”"
+      login: "login"
+      email: "e-mail"
+      password: "password"
+      confirm: "confirm"
+      admin: "admin?"
+      update: "Update"
+      enabled: "Enabled."
+      not_enrolled: "Not enrolled."
+      current_password: "Current password"
+      current_code: "Current code"
+      second_factor: "Second factor"
+      enable_second_factor: "Enable second factor"
+      disable_second_factor: "Disable second factor"
+      reset_second_factor: "Reset second factor"
+      reset_confirm: "Reset %{login}'s second factor? They will log in with password only afterwards."

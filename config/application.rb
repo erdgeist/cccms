@@ -18,7 +18,7 @@ module Cccms
 
     config.i18n.default_locale = :de
     config.i18n.available_locales = [:de, :en]
-    config.i18n.fallbacks = { en: [:en, :de] }
+    config.i18n.fallbacks = { en: [:en, :de], de: [:de, :en] }
 
     config.filter_parameters += [:password, :password_confirmation]
     config.active_storage.variant_processor = :disabled

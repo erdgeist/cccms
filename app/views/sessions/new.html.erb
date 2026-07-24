@@ -4,12 +4,12 @@
       <div class="error_messages"><%= flash[:error] %></div>
     <% end %>
 
-    <div class="layout_row_label">Login</div>
+    <div class="layout_row_label"> <%= t(".login") %> </div>
     <div class="layout_row_content"><%= text_field_tag 'login', @login, :autocomplete => "username" %></div>
 
-    <div class="layout_row_label">Password</div>
+    <div class="layout_row_label"> <%= t(".password") %> </div>
     <div class="layout_row_content"><%= password_field_tag 'password', nil, :autocomplete => "current-password" %></div>
 
-    <div class="layout_row_content"><%= submit_tag 'log in' %></div>
+    <div class="layout_row_content"><%= submit_tag t(".log_in") %></div>
   <% end -%>
 </div>

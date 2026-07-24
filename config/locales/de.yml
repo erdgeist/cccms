@@ -146,3 +146,44 @@ de:
     licensed_under: "Lizenziert unter %{license}"
 
   related_documents: "Weitere Dokumente"
+
+  sessions:
+    new:
+      login: "Anmeldename"
+      password: "Passwort"
+      log_in: "anmelden"
+
+  otp_challenges:
+    new:
+      title: "Zweiter Faktor"
+      code: "Code"
+      log_in: "Anmelden"
+      hint: "Gib den sechsstelligen Code aus deiner Authenticator-App ein."
+
+  otp_enrollments:
+    show:
+      title: "Zweiten Faktor einrichten"
+      scan: "Scannen"
+      manual_hint: "Oder Secret manuell eingeben:"
+      confirm: "Bestätigen"
+      app_hint: "Gib den sechsstelligen Code ein, den deine App für „%{issuer}“ anzeigt."
+
+  users:
+    edit:
+      my_account: "Mein Konto"
+      edit_user: "Benutzer „%{login}“ bearbeiten"
+      login: "Anmeldename"
+      email: "E-Mail"
+      password: "Passwort"
+      confirm: "bestätigen"
+      admin: "Admin?"
+      update: "Aktualisieren"
+      enabled: "Aktiviert."
+      not_enrolled: "Nicht eingerichtet."
+      current_password: "Aktuelles Passwort"
+      current_code: "Aktueller Code"
+      second_factor: "Zweiter Faktor"
+      enable_second_factor: "Zweiten Faktor aktivieren"
+      disable_second_factor: "Zweiten Faktor entfernen"
+      reset_second_factor: "Zweiten Faktor zurücksetzen"
+      reset_confirm: "Zweiten Faktor von %{login} zurücksetzen? Die Anmeldung ist danach nur mit Passwort möglich."

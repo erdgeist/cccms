@@ -1,14 +1,14 @@
-<h1>Enable second factor</h1>
+<h1><%= t(".title") %></h1>
 
 <div id="admin_layout">
-  <div class="layout_row_label">Scan</div>
+  <div class="layout_row_label"><%= t(".scan") %></div>
   <div class="layout_row_content">
     <div class="otp_qr">
       <%= raw RQRCode::QRCode.new(current_user.pending_otp_provisioning_uri)
                 .as_svg(:module_size => 4, :viewbox => true,
                         :color => "000", :fill => "fff") %>
     </div>
-    <span class="field_hint">Or enter the secret manually: <code><%= current_user.otp_pending_secret %></code></span>
+    <span class="field_hint"><%= t(".manual_hint") %> <code><%= current_user.otp_pending_secret %></code></span>
   </div>
 
   <div class="layout_row_label">Confirm</div>
@@ -17,10 +17,9 @@
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>
       <%= button_tag :type => "submit", :class => "action_button" do %>
-        <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> Confirm
+        <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> <%= t(".confirm") %>
       <% end %>
     <% end %>
-    <span class="field_hint">Enter the six-digit code your app shows
-      for “<%= OTP_ISSUER %>”.</span>
+    <span class="field_hint"> <%= t(".app_hint", :issuer => OTP_ISSUER) %></span>
   </div>
 </div>

@@ -1,13 +1,13 @@
-<h1>Second factor</h1>
+<h1><%= t(".title") %></h1>
 
 <div id="admin_layout">
-  <div class="layout_row_label">Code</div>
+  <div class="layout_row_label"> <%= t(".code") %> </div>
   <div class="layout_row_content">
     <%= form_tag otp_challenge_path, :method => :post, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>
-      <%= submit_tag "Log in" %>
+      <%= submit_tag t(".log_in") %>
     <% end %>
-    <span class="field_hint">Enter the six-digit code from your authenticator app.</span>
+    <span class="field_hint"> <%= t(".hint") %> </span>
   </div>
 </div>

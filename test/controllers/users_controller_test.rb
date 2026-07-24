@@ -163,6 +163,13 @@ class UsersControllerTest < ActionController::TestCase
     end
     assert_redirected_to users_path
   end
+
+  test "enrolled user gets a working my account" do
+    users(:quentin).update!(:otp_secret => ROTP::Base32.random)
+    login_as :quentin
+    get :edit, params: { :id => users(:quentin).id }
+    assert_response :success
+  end
   
   test "admin user can promote regular users to admins" do
     login_as :aaron
