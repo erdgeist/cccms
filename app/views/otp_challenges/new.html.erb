@@ -3,7 +3,7 @@
 <div id="page_editor">
   <div class="node_description">Code</div>
   <div class="node_content">
-    <%= form_tag otp_challenge_path, :method => :post do %>
+    <%= form_tag otp_challenge_path, :method => :post, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>
       <%= submit_tag "Log in" %>

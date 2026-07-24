@@ -53,6 +53,9 @@
 <div id="dashboard_housekeeping">
   <h3>Housekeeping</h3>
   <div class="button_row">
+    <%= link_to edit_user_path(current_user), class: "action_button" do %>
+      <%= icon("user-cog", library: "tabler", "aria-hidden": true) %> My account
+    <% end %>
     <%= link_to nodes_path, class: "action_button" do %>
       <%= icon("list", library: "tabler", "aria-hidden": true) %> Nodes
     <% end %>

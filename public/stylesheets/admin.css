@@ -1619,3 +1619,33 @@ div#draft_list table td.actions a {
   max-height: 20em;
   overflow-y: auto;
 }
+
+/* ============================================================
+   User section
+   ============================================================ */
+
+form.otp_form {
+  margin-top: 0.75rem;
+}
+
+form.otp_form input[type=password],
+form.otp_form input[type=text] {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.visually_hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.otp_qr svg {
+  width: 220px;
+  height: auto;
+  display: block;
+  margin-bottom: 0.5rem;
+}

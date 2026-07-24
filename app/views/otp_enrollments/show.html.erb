@@ -3,19 +3,22 @@
 <div id="page_editor">
   <div class="node_description">Scan</div>
   <div class="node_content">
-    <%= raw RQRCode::QRCode.new(current_user.pending_otp_provisioning_uri)
-              .as_svg(:module_size => 4, :viewbox => true,
-                      :color => "000", :fill => "fff") %>
-    <span class="field_hint">Or enter the secret manually:
-      <code><%= current_user.otp_pending_secret %></code></span>
+    <div class="otp_qr">
+      <%= raw RQRCode::QRCode.new(current_user.pending_otp_provisioning_uri)
+                .as_svg(:module_size => 4, :viewbox => true,
+                        :color => "000", :fill => "fff") %>
+    </div>
+    <span class="field_hint">Or enter the secret manually: <code><%= current_user.otp_pending_secret %></code></span>
   </div>
 
   <div class="node_description">Confirm</div>
   <div class="node_content">
-    <%= form_tag otp_enrollment_path, :method => :put do %>
+    <%= form_tag otp_enrollment_path, :method => :put, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
             :autocomplete => "one-time-code", :inputmode => "numeric" %>
-      <%= submit_tag "Confirm" %>
+      <%= button_tag :type => "submit", :class => "action_button" do %>
+        <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> Confirm
+      <% end %>
     <% end %>
     <span class="field_hint">Enter the six-digit code your app shows
       for “<%= OTP_ISSUER %>”.</span>
