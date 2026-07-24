@@ -59,8 +59,12 @@ module ContentHelper
 
   # Returns the published_at attribute of a page if it is not nil, otherwise
   # it returns the auto-filled value of the created_at attribute
-  def date_for_page page
+  def date_and_time_for_page page
     I18n.l(page.published_at, :format => :ccc) rescue I18n.l(page.created_at, :format => :ccc)
+  end
+
+  def date_for_page page
+    I18n.l(page.published_at, :format => :ccc_date) rescue I18n.l(page.created_at, :format => :ccc_date)
   end
 
   def author_for_page page

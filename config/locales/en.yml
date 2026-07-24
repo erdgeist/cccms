@@ -25,6 +25,7 @@ en:
   time:
     formats:
       ccc: "%d %B, %Y %H:%M"
+      ccc_date: "%d %B, %Y"
 
   will_paginate:
     previous_label: "&#8592; Previous"

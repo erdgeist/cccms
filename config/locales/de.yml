@@ -40,6 +40,7 @@ de:
       default: "%A, %e. %B %Y, %H:%M Uhr"
       short: "%e. %B, %H:%M Uhr"
       ccc: "%e. %B %Y, %H:%M Uhr"
+      ccc_date: "%e. %B %Y"
       long: "%A, %e. %B %Y, %H:%M Uhr"
       time: "%H:%M"
 
