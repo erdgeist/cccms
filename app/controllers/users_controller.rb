@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   # Private
 
   before_action :login_required
-  before_action :find_user,     :only => [:show, :edit, :update, :destroy]
+  before_action :find_user,     :only => [:show, :edit, :update, :destroy, :reset_otp]
   before_action :verify_status, :except => [:index, :show]
 
   layout 'admin'
@@ -50,6 +50,13 @@ class UsersController < ApplicationController
   def destroy
     @user.destroy if @user
     redirect_to users_path
+  end
+
+  def reset_otp
+    return deny_user_access unless current_user.admin?
+    @user.disable_otp!(:actor => current_user)
+    flash[:notice] = "Second factor reset for #{@user.login}"
+    redirect_to edit_user_path(@user)
   end
 
   private

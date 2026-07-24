@@ -30,4 +30,34 @@
     <div class="node_content"><%= f.submit "Update" %></div>
   <% end %>
   </div>
+
+  <% if @user == current_user %>
+    <div class="node_description">Second factor</div>
+    <div class="node_content">
+      <% if current_user.otp_enrolled? %>
+        <p>Enabled.</p>
+        <%= form_tag otp_enrollment_path, :method => :delete do %>
+          <%= password_field_tag :current_password, nil, :placeholder => "Current password" %>
+          <%= text_field_tag :code, nil, :placeholder => "Current code",
+                :autocomplete => "one-time-code", :inputmode => "numeric" %>
+          <%= submit_tag "Disable second factor" %>
+        <% end %>
+      <% else %>
+        <p>Not enrolled.</p>
+        <%= form_tag otp_enrollment_path, :method => :post do %>
+          <%= password_field_tag :current_password, nil, :placeholder => "Current password" %>
+          <%= submit_tag "Enable second factor" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% elsif current_user.admin? && @user.otp_enrolled? %>
+    <div class="node_description">Second factor</div>
+    <div class="node_content">
+      Enabled.
+      <%= button_to "Reset second factor", reset_otp_user_path(@user), :method => :put,
+            :form_class => "button_to destructive",
+            :form => { :data => { :confirm =>
+              "Reset #{@user.login}'s second factor? They will log in with password only afterwards." } } %>
+    </div>
+  <% end %>
 </div>

@@ -97,7 +97,13 @@ Cccms::Application.routes.draw do
     match '/login'       => 'sessions#new',     :as => :login,        :via => :get
     match 'search'       => 'search#index',     :as => :search,       :via => :get
 
-    resources :users
+    resources :users do
+      member do
+        put :reset_otp
+      end
+    end
+    resource :otp_enrollment, :only => [:show, :create, :update, :destroy]
+    resource :otp_challenge, :only => [:new, :create]
 
     resources :menu_items do
       member do

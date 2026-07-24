@@ -182,5 +182,17 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal false, user.is_admin?
   end
   
-  
+  test "reset_otp is admin-only and witnessed" do
+    user = users(:quentin)
+    user.update!(:otp_secret => ROTP::Base32.random)
+
+    login_as :quentin
+    put :reset_otp, params: { :id => user.id }
+    assert user.reload.otp_enrolled?, "non-admin must be refused"
+
+    login_as :aaron
+    put :reset_otp, params: { :id => user.id }
+    assert_not user.reload.otp_enrolled?
+    assert_equal "otp_reset", NodeAction.last.action
+  end
 end
