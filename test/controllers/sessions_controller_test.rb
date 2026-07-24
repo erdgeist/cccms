@@ -9,6 +9,7 @@ class SessionsControllerTest < ActionController::TestCase
     post :create, params: { login: 'quentin', password: 'monkey' }
     assert session[:user_id]
     assert_response :redirect
+    assert session[:logged_in_at].present?
   end
 
   def test_should_fail_login_and_not_redirect

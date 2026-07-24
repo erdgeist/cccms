@@ -27,6 +27,7 @@ class OtpChallengesController < ApplicationController
       return_to = session[:return_to]
       reset_session
       self.current_user = user
+      session[:logged_in_at] = Time.now.to_i
       flash[:notice] = "Logged in successfully"
       redirect_to safe_return_to(return_to, :default => admin_path)
     else

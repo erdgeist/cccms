@@ -29,6 +29,8 @@ class SessionsController < ApplicationController
         redirect_to new_otp_challenge_path
       else
         self.current_user = user
+        session[:logged_in_at] = Time.now.to_i
+
         if user.otp_required?
           flash[:error] = "Your account requires a second factor -- set it up now."
           redirect_to edit_user_path(user)

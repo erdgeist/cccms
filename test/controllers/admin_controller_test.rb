@@ -45,4 +45,17 @@ class AdminControllerTest < ActionController::TestCase
     get :index
     assert_redirected_to edit_user_path(users(:quentin))
   end
+
+  test "a session older than the absolute limit is rejected" do
+    login_as :quentin
+    @request.session[:logged_in_at] = (AuthenticatedSystem::SESSION_MAX_AGE.ago - 1.day).to_i
+    get :index
+    assert_response :redirect
+  end
+
+  test "a fresh session carries the login stamp" do
+    login_as :quentin
+    get :index
+    assert_response :success
+  end
 end

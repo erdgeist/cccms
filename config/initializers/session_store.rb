@@ -1,1 +1,1 @@
-Cccms::Application.config.session_store :cookie_store, :key => '_cccms_session'
+Cccms::Application.config.session_store :cookie_store, :key => '_cccms_session_v2'

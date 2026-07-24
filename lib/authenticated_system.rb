@@ -1,4 +1,6 @@
 module AuthenticatedSystem
+  SESSION_MAX_AGE = 7.days
+
   protected
     # Returns true or false if the user is logged in.
     # Preloads @current_user with the user model if they're logged in.
@@ -98,7 +100,12 @@ module AuthenticatedSystem
 
     # Called from #current_user.  First attempt to login by the user id stored in the session.
     def login_from_session
-      self.current_user = User.find_by_id(session[:user_id]) if session[:user_id]
+      return unless session[:user_id]
+      if session[:logged_in_at].to_i > SESSION_MAX_AGE.ago.to_i
+        self.current_user = User.find_by(:id => session[:user_id])
+      else
+        session[:user_id] = nil
+      end
     end
     
     #
