@@ -73,6 +73,8 @@ gem 'chaos_calendar',
 
 # ── Test ──────────────────────────────────────────────────────────────────────
 
+# gem "erb_lint", "~> 0.5", :require => false
+
 group :test do
   gem 'test-unit',              '~> 3.5'
   gem 'rails-controller-testing'
