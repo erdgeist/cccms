@@ -33,7 +33,7 @@ class RevisionsControllerTest < ActionController::TestCase
     login_as :quentin
     get :show, params: { :node_id => @node.id, :id => @node.pages.last.id }
     assert_response :success
-    assert_select ".layout_row_label", "Body"
+    assert_select ".layout_row_label", Page.human_attribute_name(:body)
     assert_select ".layout_row_content", {:count => 1, :text => "second"}
   end
 
@@ -146,7 +146,7 @@ class RevisionsControllerTest < ActionController::TestCase
 
     post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
     assert_response :success
-    assert_select "a", "Side by side"
+    assert_select "a", I18n.t("revisions.side_by_side")
   end
 
   test "diffing two revisions also shows tag, template, and asset changes" do
@@ -157,9 +157,9 @@ class RevisionsControllerTest < ActionController::TestCase
 
     post(:diff, params: { :node_id => @node.id, :start_revision => @node.pages.first.revision, :end_revision => @node.pages.last.revision })
     assert_response :success
-    assert_select "h3", "Tags"
-    assert_select "h3", "Template"
-    assert_select "h3", "Assets"
+    assert_select "h3", Page.human_attribute_name(:tag_list)
+    assert_select "h3", Page.human_attribute_name(:template_name)
+    assert_select "h3", Page.human_attribute_name(:assets)
   end
 
   test "revisions#index links back to the node" do

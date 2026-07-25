@@ -1,7 +1,7 @@
-<h1>Menu Items</h1>
+<h1><%= t(".title") %></h1>
 
 <%= link_to new_menu_item_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create menu item
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_item") %>
 <% end %>
 
 <table id="menu_item_list">
@@ -11,11 +11,11 @@
       <div></div>
     </td>
     <td class="menu_item_title"><%= menu_item.title %></td>
-    <td><%= link_to "Edit", edit_menu_item_path(menu_item) %></td>
+    <td><%= link_to t("admin.common.edit"), edit_menu_item_path(menu_item) %></td>
     <td>
       <%= button_to menu_item_path(menu_item), method: :delete,
-            form: { data: { confirm: "Do you really want to destroy the menu entry?" }, class: 'button_to destructive' } do %>
-        <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+            form: { data: { confirm: t(".confirm_destroy") }, class: 'button_to destructive' } do %>
+        <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
       <% end %>
     </td>
   </tr>

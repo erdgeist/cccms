@@ -1,12 +1,12 @@
-<h2>Revisions for Node: <%= @node.unique_name %></h2>
+<h2><%= t(".title", :path => @node.unique_name) %></h2>
 
 <p class="node_action_bar standalone_action_bar">
-  <%= link_to 'Back to node', node_path(@node) %>
+  <%= link_to t(".back_to_node"), node_path(@node) %>
 </p>
 
 <% if Page.non_default_locales.any? %>
   <p class="diff_locale_toggle">
-    Locale:
+    <%= t("revisions.locale_label") %>
     <% ([I18n.default_locale] + Page.non_default_locales).each_with_index do |locale, i| %>
       <%= " &middot; ".html_safe if i > 0 %>
       <% if locale == @locale %>
@@ -21,25 +21,25 @@
 <table id="revisions" class="revisions_table">
   <thead>
     <tr class="header">
-      <th>First</th>
-      <th>Last</th>
-      <th>Rev.</th>
-      <th>Title</th>
-      <th>Editor</th>
-      <th>Date</th>
+      <th><%= t(".first") %></th>
+      <th><%= t(".last") %></th>
+      <th><%= t("admin.columns.rev") %></th>
+      <th><%= t("admin.columns.title") %></th>
+      <th><%= t("admin.columns.editor") %></th>
+      <th><%= t("admin.columns.date") %></th>
       <th></th>
       <th></th>
     </tr>
     <tr class="no_hover diff_sticky_bar">
       <td colspan="8">
-        <%= button_to 'Diff revisions', diff_node_revisions_path(@node),
+        <%= button_to t(".diff_revisions"), diff_node_revisions_path(@node),
               method: :post,
               params: { locale: @locale },
               form: { id: 'diff_form', class: 'button_to computation' },
               disabled: true %>
-        <span id="diff_selection_label"></span>
-        <label><%= radio_button_tag :view, 'inline', true %> Inline</label>
-        <label><%= radio_button_tag :view, 'side_by_side', false %> Side by side</label>
+        <span id="diff_selection_label" data-against="<%= t(".against_word") %>" data-selected="<%= t(".selected_word") %>"></span>
+        <label><%= radio_button_tag :view, 'inline', true %> <%= t("revisions.inline") %></label>
+        <label><%= radio_button_tag :view, 'side_by_side', false %> <%= t("revisions.side_by_side") %></label>
       </td>
     </tr>
   </thead>
@@ -53,11 +53,11 @@
       <td class="title"><%= page.translations.find_by(:locale => @locale)&.title || "—" %></td>
       <td class="user"><%= page.editor.try(:login) %></td>
       <td class="date"><%= page.updated_at %></td>
-      <td><%= link_to 'show', node_revision_path(@node, page, :locale => @locale) %></td>
+      <td><%= link_to t(".show_link"), node_revision_path(@node, page, :locale => @locale) %></td>
       <td>
-        <%= button_to 'restore', restore_node_revision_path(@node, page),
+        <%= button_to t(".restore_link"), restore_node_revision_path(@node, page),
               method: :put,
-              form: { data: { confirm: "Restore this revision?" }, class: 'button_to state_changing' } %>
+              form: { data: { confirm: t(".confirm_restore") }, class: 'button_to state_changing' } %>
       </td>
     </tr>
   <% end %>
@@ -73,9 +73,9 @@
 
     var label = document.getElementById('diff_selection_label');
     if (start && end) {
-      label.textContent = start.value + ' against ' + end.value;
+      label.textContent = start.value + ' ' + label.dataset.against + ' ' + end.value;
     } else if (start || end) {
-      label.textContent = (start || end).value + ' selected';
+      label.textContent = (start || end).value + ' ' + label.dataset.selected;
     } else {
       label.textContent = '';
     }

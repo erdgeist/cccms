@@ -1,39 +1,39 @@
 <% translation = @page.translations.find_by(:locale => @locale) %>
 <div id="admin_layout" class="show_node">
-  <h1>Revision <%= @page.revision %>: <%= translation&.title %> <small>(<%= @locale.to_s.upcase %>)</small></h1>
+  <h1><%= t(".title", :rev => @page.revision) %>: <%= translation&.title %> <small>(<%= @locale.to_s.upcase %>)</small></h1>
 
   <div id="content">
-    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
-          <%= link_to 'Show all revisions', node_revisions_path(@node, :locale => @locale) %>
+          <%= link_to t(".show_all"), node_revisions_path(@node, :locale => @locale) %>
         </div>
       </div>
     </div>
 
-    <div class="layout_row_label">Path</div>
+    <div class="layout_row_label"><%= t("admin.columns.path") %></div>
     <div class="layout_row_content"><%= @page.public_link %></div>
 
-    <div class="layout_row_label">Author</div>
+    <div class="layout_row_label"><%= t("admin.columns.author") %></div>
     <div class="layout_row_content"><%= @page.user.try(:login) %></div>
 
-    <div class="layout_row_label">Editor</div>
+    <div class="layout_row_label"><%= t("admin.columns.editor") %></div>
     <div class="layout_row_content"><%= @page.editor.try(:login) %></div>
 
-    <div class="layout_row_label">Last updated</div>
+    <div class="layout_row_label"><%= t("nodes.show.last_updated") %></div>
     <div class="layout_row_content"><%= @page.updated_at %></div>
 
-    <div class="layout_row_label">Published at</div>
+    <div class="layout_row_label"><%= t("nodes.show.published_at") %></div>
     <div class="layout_row_content"><%= @page.published_at %></div>
 
-    <div class="layout_row_label">Title</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
     <div class="layout_row_content"><%= translation&.title %></div>
 
-    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
     <div class="layout_row_content"><%= translation&.abstract %></div>
 
-    <div class="layout_row_label">Body</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
     <div class="layout_row_content"><%= raw translation&.body %></div>
   </div>
 </div>

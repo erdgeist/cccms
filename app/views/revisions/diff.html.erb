@@ -1,18 +1,18 @@
-<h1>Revisions#diff</h1>
+<h1><%= t(".title") %></h1>
 
 <p class="node_action_bar standalone_action_bar">
-  <%= link_to 'Revisions', node_revisions_path(@node) %>
+  <%= link_to t(".revisions_link"), node_revisions_path(@node) %>
 </p>
 
 <p class="diff_comparison_label">
-  Comparing <strong><%= describe_page_reference(params[:start_revision]) %></strong>
-  against <strong><%= describe_page_reference(params[:end_revision]) %></strong>
-  — showing the <strong><%= @locale.to_s.upcase %></strong> translation
+  <%= t(".comparing") %> <strong><%= describe_page_reference(params[:start_revision]) %></strong>
+  <%= t(".against") %> <strong><%= describe_page_reference(params[:end_revision]) %></strong>
+  <%= t(".showing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_suffix") %>
 </p>
 
 <% if @locale_summary.size > 1 %>
   <p class="diff_locale_toggle">
-    Locale:
+    <%= t("revisions.locale_label") %>
     <% @locale_summary.each_with_index do |s, i| %>
       <%= " &middot; ".html_safe if i > 0 %>
       <% label = "#{s[:locale].to_s.upcase}#{' *' if s[:changed]}" %>
@@ -23,21 +23,21 @@
       <% end %>
     <% end %>
   </p>
-  <p class="field_hint">* has a difference between these two versions.</p>
+  <p class="field_hint"><%= t(".changed_hint") %></p>
 <% end %>
 
 <p class="diff_view_toggle">
-  View:
+  <%= t(".view_label") %>
   <% if @diff_view == :inline %>
-    <strong>Inline</strong>
+    <strong><%= t("revisions.inline") %></strong>
   <% else %>
-    <%= link_to 'Inline', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline', locale: @locale) %>
+    <%= link_to t("revisions.inline"), diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline', locale: @locale) %>
   <% end %>
   &middot;
   <% if @diff_view == :side_by_side %>
-    <strong>Side by side</strong>
+    <strong><%= t("revisions.side_by_side") %></strong>
   <% else %>
-    <%= link_to 'Side by side', diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side', locale: @locale) %>
+    <%= link_to t("revisions.side_by_side"), diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side', locale: @locale) %>
   <% end %>
 </p>
 
@@ -49,17 +49,17 @@
     <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
     <%= hidden_field_tag :view, @diff_view %>
     <%= hidden_field_tag :locale, @locale %>
-    <%= submit_tag 'Diff' %>
+    <%= submit_tag t(".diff_button") %>
   <% end %>
 <% else %>
-  <p class="node_action_bar standalone_action_bar"><%= link_to 'Compare two numbered revisions instead', node_revisions_path(@node) %></p>
+  <p class="node_action_bar standalone_action_bar"><%= link_to t(".compare_numbered"), node_revisions_path(@node) %></p>
 <% end %>
 
 <% if @available_layer_pairs.present? %>
   <div class="node_action_bar standalone_action_bar">
     <% @available_layer_pairs.each do |pair| %>
       <% next if [params[:start_revision].to_s, params[:end_revision].to_s].sort == pair.map(&:to_s).sort %>
-      <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
+      <%= button_to t("nodes.show.diff_layers", :from => t("nodes.show.layer_#{pair.first}"), :to => t("nodes.show.layer_#{pair.last}")),
             diff_node_revisions_path(@node),
             method: :get,
             params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view, locale: @locale },
@@ -68,9 +68,9 @@
     <% if !@locked_by_other && (@node.autosave || @node.draft) %>
       <%= button_to revert_node_path(@node), method: :put,
                   params: { return_to: request.fullpath },
-                  form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+                  form: { data: { confirm: t("admin.common.confirm_irreversible") }, class: 'button_to destructive' } do %>
         <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-        <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+        <%= @node.draft && !@node.autosave ? t("nodes.show.destroy_draft") : t("nodes.show.discard_autosave") %>
       <% end %>
     <% end %>
   </div>
@@ -80,34 +80,34 @@
   <% if @diff_view == :side_by_side %>
     <div class="diff_side_by_side">
       <div class="diff_column">
-        <h3>Title</h3>
+        <h3><%= Page.human_attribute_name(:title) %></h3>
         <p><%= raw @diff[:title][0] %></p>
-        <h3>Abstract</h3>
+        <h3><%= Page.human_attribute_name(:abstract) %></h3>
         <p><%= raw @diff[:abstract][0] %></p>
-        <h3>Body</h3>
+        <h3><%= Page.human_attribute_name(:body) %></h3>
         <%= raw @diff[:body][0] %>
       </div>
       <div class="diff_column">
-        <h3>Title</h3>
+        <h3><%= Page.human_attribute_name(:title) %></h3>
         <p><%= raw @diff[:title][1] %></p>
-        <h3>Abstract</h3>
+        <h3><%= Page.human_attribute_name(:abstract) %></h3>
         <p><%= raw @diff[:abstract][1] %></p>
-        <h3>Body</h3>
+        <h3><%= Page.human_attribute_name(:body) %></h3>
         <%= raw @diff[:body][1] %>
       </div>
     </div>
   <% else %>
-    <h3>Title</h3>
+    <h3><%= Page.human_attribute_name(:title) %></h3>
     <p><%= raw @diff[:title] %></p>
-    <h3>Abstract</h3>
+    <h3><%= Page.human_attribute_name(:abstract) %></h3>
     <p><%= raw @diff[:abstract] %></p>
-    <h3>Body</h3>
+    <h3><%= Page.human_attribute_name(:body) %></h3>
     <%= raw @diff[:body] %>
   <% end %>
 
-  <h3>Tags</h3>
+  <h3><%= Page.human_attribute_name(:tag_list) %></h3>
   <% if @diff[:tags][:added].empty? && @diff[:tags][:removed].empty? %>
-    <p class="diff_unchanged">No change.</p>
+    <p class="diff_unchanged"><%= t(".no_change") %></p>
   <% else %>
     <ul class="diff_set_list">
       <% @diff[:tags][:added].each do |tag| %><li><ins><%= tag %></ins></li><% end %>
@@ -115,16 +115,16 @@
     </ul>
   <% end %>
 
-  <h3>Template</h3>
+  <h3><%= Page.human_attribute_name(:template_name) %></h3>
   <% if @diff[:template_name][:changed] %>
-    <p><del><%= @diff[:template_name][:from] || '(none)' %></del> <ins><%= @diff[:template_name][:to] || '(none)' %></ins></p>
+    <p><del><%= @diff[:template_name][:from] || t(".none_marker") %></del> <ins><%= @diff[:template_name][:to] || t(".none_marker") %></ins></p>
   <% else %>
-    <p class="diff_unchanged">No change.</p>
+    <p class="diff_unchanged"><%= t(".no_change") %></p>
   <% end %>
 
-  <h3>Assets</h3>
+  <h3><%= Page.human_attribute_name(:assets) %></h3>
   <% if @diff[:assets][:added].empty? && @diff[:assets][:removed].empty? %>
-    <p class="diff_unchanged">No change.</p>
+    <p class="diff_unchanged"><%= t(".no_change") %></p>
   <% else %>
     <ul class="diff_set_list">
       <% @diff[:assets][:added].each do |asset| %><li><ins><%= asset.upload_file_name %></ins></li><% end %>

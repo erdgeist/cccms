@@ -55,6 +55,17 @@ en:
         tag_list: "Tags"
         latitude: "Latitude"
         longitude: "Longitude"
+      page:
+        title: "Title"
+        abstract: "Abstract"
+        body: "Body"
+        tag_list: "Tags"
+        template_name: "Template"
+        assets: "Assets"
+      menu_item:
+        node_id: "Node Id"
+        path: "Path"
+        title: "Title"
 
   tags:
     index:
@@ -200,6 +211,8 @@ en:
       preview: "Preview"
       name: "Name"
       author: "Author"
+      editor: "Editor"
+      date: "Date"
       type: "Type"
     menu:
       dashboard: "Dashboard"
@@ -422,6 +435,16 @@ en:
     new:
       title: "New event"
 
+  menu_items:
+    index:
+      title: "Menu Items"
+      create_item: "Create menu item"
+      confirm_destroy: "Do you really want to destroy the menu entry?"
+    new:
+      title: "Add Menu Item"
+    edit:
+      title: "Edit Menu Item"
+
   flash:
     common:
       logged_in: "Logged in successfully"
@@ -456,9 +479,6 @@ en:
       created: "Event was successfully created."
       updated: "Event was successfully updated."
       tag_prefilled: "Tag '%{tag}' was pre-filled because this page is tagged '%{source}'. You can remove it below."
-    occurrences:
-      created: "Occurrence was successfully created."
-      updated: "Occurrence was successfully updated."
     revisions:
       unavailable: "That comparison is no longer available."
       restored: "Revision %{rev} restored"
@@ -515,6 +535,50 @@ en:
       attach_hint: "Optional — attaches this asset to that page, all pending versions included."
       as_headline: "attach as the page's headline"
       headline_hint: "Applies only if the page has no headline yet."
+
+  revisions:
+    locale_label: "Locale:"
+    inline: "Inline"
+    side_by_side: "Side by side"
+    diff:
+      title: "Compare revisions"
+      revisions_link: "Revisions"
+      comparing: "Comparing"
+      against: "against"
+      showing_prefix: "— showing the"
+      translation_suffix: "translation"
+      changed_hint: "* has a difference between these two versions."
+      view_label: "View:"
+      diff_button: "Diff"
+      compare_numbered: "Compare two numbered revisions instead"
+      none_marker: "(none)"
+      no_change: "No change."
+    index:
+      title: "Revisions for Node: %{path}"
+      back_to_node: "Back to node"
+      first: "First"
+      last: "Last"
+      diff_revisions: "Diff revisions"
+      against_word: "against"
+      selected_word: "selected"
+      show_link: "show"
+      restore_link: "restore"
+      confirm_restore: "Restore this revision?"
+    show:
+      title: "Revision %{rev}"
+      show_all: "Show all revisions"
+
+  page_translations:
+    revision_history_link: "View revision history"
+    edit:
+      editing_prefix: "Editing the"
+      translation_of: "translation of"
+      metadata_hint_prefix: "Metadata such as images, tags, template, and author belong to the page as a whole, not to a single translation — change those from the"
+      metadata_hint_link: "default-locale editor"
+      save_translation: "Save %{lang} translation"
+    show:
+      title: "Compare"
+      default_marker: "default"
 
   layouts:
     flash:

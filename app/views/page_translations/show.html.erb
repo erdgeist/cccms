@@ -1,29 +1,29 @@
-<h1>Compare — <%= title_for_node(@node) %></h1>
+<h1><%= t(".title") %> — <%= title_for_node(@node) %></h1>
 
-<p class="node_action_bar standalone_action_bar"><%= link_to 'View revision history', node_revisions_path(@node, :locale => @locale) %></p>
+<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :locale => @locale) %></p>
 
 <div class="translation_compare">
   <div class="translation_compare_column">
     <h2><%= @locale.to_s.upcase %></h2>
-    <div class="layout_row_label">Title</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
     <div class="layout_row_content"><%= @translation&.title %></div>
 
-    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
     <div class="layout_row_content"><%= sanitize(@translation&.abstract.to_s) %></div>
 
-    <div class="layout_row_label">Body</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
     <div class="layout_row_content"><%= sanitize(@translation&.body.to_s) %></div>
   </div>
 
   <div class="translation_compare_column">
-    <h2><%= I18n.default_locale.to_s.upcase %> (default)</h2>
-    <div class="layout_row_label">Title</div>
+    <h2><%= I18n.default_locale.to_s.upcase %> (<%= t(".default_marker") %>)</h2>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
     <div class="layout_row_content"><%= @default_translation&.title %></div>
 
-    <div class="layout_row_label">Abstract</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
     <div class="layout_row_content"><%= sanitize(@default_translation&.abstract.to_s) %></div>
 
-    <div class="layout_row_label">Body</div>
+    <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
     <div class="layout_row_content"><%= sanitize(@default_translation&.body.to_s) %></div>
   </div>
 </div>

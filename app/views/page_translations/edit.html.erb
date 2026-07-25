@@ -1,22 +1,20 @@
 <div class="translation_banner">
-  Editing the <strong><%= @locale.to_s.upcase %></strong> translation of <strong><%= title_for_node(@node) %></strong>.
+  <%= t(".editing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_of") %> <strong><%= title_for_node(@node) %></strong>.
 </div>
 
-<p class="node_action_bar standalone_action_bar"><%= link_to 'View revision history', node_revisions_path(@node, :locale => @locale) %></p>
+<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :locale => @locale) %></p>
 
 <p class="field_hint">
-  Metadata such as images, tags, template, and author belong to the page
-  as a whole, not to a single translation — change those from the
-  <%= link_to 'default-locale editor', edit_node_path(@node) %>.
+  <%= t(".metadata_hint_prefix") %> <%= link_to t(".metadata_hint_link"), edit_node_path(@node) %>.
 </p>
 
 <div class="node_action_bar">
-  <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
+  <%= button_to t("nodes.edit.unlock_back"), unlock_node_path(@node), method: :put,
         form: { class: 'button_to state_changing' },
         disabled: @node.autosave.present? %>
-  <%= submit_tag "Save #{@locale.to_s.upcase} translation", form: "translation_edit_form" %>
-  <%= submit_tag "Save + Unlock + Exit", name: "unlock_exit", form: "translation_edit_form" %>
-  <%= link_to "Preview ↗", preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
+  <%= submit_tag t(".save_translation", :lang => @locale.to_s.upcase), form: "translation_edit_form" %>
+  <%= submit_tag t("nodes.edit.save_unlock_exit"), name: "unlock_exit", form: "translation_edit_form" %>
+  <%= link_to t("nodes.edit.preview"), preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
 <div id="admin_layout">
@@ -32,23 +30,23 @@
   <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
         data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
     <div id="content">
-      <div class="layout_row_label">Title</div>
+      <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
       <div class="layout_row_content">
         <%= text_field_tag "page[title]", @translation&.title %>
       </div>
 
-      <div class="layout_row_label">Abstract</div>
+      <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
       <div class="layout_row_content">
         <%= text_area_tag "page[abstract]", @translation&.abstract %>
       </div>
 
-      <div class="layout_row_label">Body</div>
+      <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
       <div class="body_toolbar_row">
-        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
-          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
+        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t("admin.common.toggle_preview") %>" title="<%= t("admin.common.toggle_preview") %>">
+          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.live_preview") %></span>
         </button>
-        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="Force preview render" title="Force preview render">
-          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span>Force refresh</span>
+        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t("admin.common.force_render") %>" title="<%= t("admin.common.force_render") %>">
+          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.force_refresh") %></span>
         </button>
       </div>
 
@@ -59,7 +57,7 @@
           </div>
         </div>
         <div id="preview_panel" style="display:none">
-          <iframe id="live_preview_iframe" title="Live preview" data-src="<%= preview_page_path(@page, :locale => @locale) %>"></iframe>
+          <iframe id="live_preview_iframe" title="<%= t("nodes.edit.live_preview") %>" data-src="<%= preview_page_path(@page, :locale => @locale) %>"></iframe>
         </div>
       </div>
     </div>

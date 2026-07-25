@@ -103,6 +103,17 @@ de:
         tag_list: "Tags"
         latitude: "Breitengrad"
         longitude: "Längengrad"
+      page:
+        title: "Titel"
+        abstract: "Abstract"
+        body: "Text"
+        tag_list: "Tags"
+        template_name: "Template"
+        assets: "Anhänge"
+      menu_item:
+        node_id: "Node-ID"
+        path: "Pfad"
+        title: "Titel"
 
   tags:
     index:
@@ -247,6 +258,8 @@ de:
       path: "Pfad"
       preview: "Vorschau"
       name: "Name"
+      editor: "Editor"
+      date: "Datum"
       author: "Autor"
       type: "Typ"
     menu:
@@ -505,9 +518,6 @@ de:
       created: "Termin wurde angelegt."
       updated: "Termin wurde aktualisiert."
       tag_prefilled: "Tag '%{tag}' wurde vorausgefüllt, weil diese Seite mit '%{source}' getaggt ist. Er lässt sich unten entfernen."
-    occurrences:
-      created: "Termin-Instanz wurde angelegt."
-      updated: "Termin-Instanz wurde aktualisiert."
     revisions:
       unavailable: "Dieser Vergleich ist nicht mehr verfügbar."
       restored: "Revision %{rev} wiederhergestellt"
@@ -564,6 +574,60 @@ de:
       attach_hint: "Optional — hängt dieses Asset an die Seite an, alle ausstehenden Versionen eingeschlossen."
       as_headline: "als Aufmacher der Seite anhängen"
       headline_hint: "Gilt nur, wenn die Seite noch keinen Aufmacher hat."
+
+  revisions:
+    locale_label: "Sprache:"
+    inline: "Inline"
+    side_by_side: "Nebeneinander"
+    diff:
+      title: "Revisionen vergleichen"
+      revisions_link: "Revisionen"
+      comparing: "Vergleiche"
+      against: "mit"
+      showing_prefix: "— gezeigt wird die"
+      translation_suffix: "Übersetzung"
+      changed_hint: "* unterscheidet sich zwischen diesen beiden Versionen."
+      view_label: "Ansicht:"
+      diff_button: "Diff"
+      compare_numbered: "Stattdessen zwei nummerierte Revisionen vergleichen"
+      none_marker: "(keins)"
+      no_change: "Keine Änderung."
+    index:
+      title: "Revisionen für Node: %{path}"
+      back_to_node: "Zurück zum Node"
+      first: "Von"
+      last: "Bis"
+      diff_revisions: "Revisionen vergleichen"
+      against_word: "mit"
+      selected_word: "ausgewählt"
+      show_link: "anzeigen"
+      restore_link: "wiederherstellen"
+      confirm_restore: "Diese Revision wiederherstellen?"
+    show:
+      title: "Revision %{rev}"
+      show_all: "Alle Revisionen anzeigen"
+
+  page_translations:
+    revision_history_link: "Revisionsübersicht anzeigen"
+    edit:
+      editing_prefix: "Bearbeite die"
+      translation_of: "Übersetzung von"
+      metadata_hint_prefix: "Metadaten wie Bilder, Tags, Template und Autor gehören zur Seite als Ganzes, nicht zu einer einzelnen Übersetzung — ändere sie im"
+      metadata_hint_link: "Editor der Standardsprache"
+      save_translation: "%{lang}-Übersetzung speichern"
+    show:
+      title: "Vergleich"
+      default_marker: "Standard"
+
+  menu_items:
+    index:
+      title: "Menüeinträge"
+      create_item: "Menüeintrag anlegen"
+      confirm_destroy: "Diesen Menüeintrag wirklich löschen?"
+    new:
+      title: "Menüeintrag hinzufügen"
+    edit:
+      title: "Menüeintrag bearbeiten"
 
   layouts:
     flash:
