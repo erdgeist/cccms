@@ -1,4 +1,4 @@
-<h1>Create new node</h1>
+<h1><%= t(".title") %></h1>
 
 <% if @node.errors.any? %>
   <div class="error_messages">
@@ -9,7 +9,7 @@
 <%= form_tag nodes_path do %>
 <div id="new_node">
 
-  <div class="layout_row_label">Type</div>
+  <div class="layout_row_label"><%= t(".type") %></div>
   <div class="layout_row_content">
     <% CccConventions::NODE_KINDS.each do |kind, config| %>
       <p>
@@ -23,14 +23,14 @@
     <% end %>
   </div>
 
-  <div class="layout_row_label">Title</div>
+  <div class="layout_row_label"><%= t("admin.columns.title") %></div>
   <div class="layout_row_content">
     <%= text_field_tag :title, nil, required: true %>
-    <span class="field_hint">A URL slug will be generated from this automatically. You can review or adjust it afterward under the "metadata" section's Slug field.</span>
+    <span class="field_hint"><%= t(".slug_hint") %></span>
   </div>
 
   <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
-    <div class="layout_row_label">Parent</div>
+    <div class="layout_row_label"><%= t(".parent") %></div>
     <div class="layout_row_content">
       <%= text_field_tag :parent_search_term, @parent&.title %>
       <%= hidden_field_tag :parent_id, @parent&.id, data: { unique_name: @parent&.computed_unique_name } %>
@@ -38,18 +38,18 @@
     </div>
   </div>
 
-  <div class="layout_row_label">Resulting path</div>
+  <div class="layout_row_label"><%= t(".resulting_path") %></div>
   <div class="layout_row_content">
     <span id="resulting_path">—</span>
     <button type="button" id="copy_resulting_path" class="unselected copy_button" data-copy-target="#resulting_path">
-      <span class="copy_button_label">copy</span>
+      <span class="copy_button_label"><%= t(".copy") %></span>
     </button>
 
-    <span class="field_hint">This preview updates as you type. The final path can still be changed afterward by editing the title (for the last segment) or moving the node to a different parent (for everything before it).</span>
+    <span class="field_hint"><%= t(".path_hint") %></span>
   </div>
 
   <% if @attach_asset %>
-    <div class="layout_row_label">attachment</div>
+    <div class="layout_row_label"><%= t(".attachment") %></div>
     <div class="layout_row_content">
       <ul class="thumbnail_list">
         <li>
@@ -60,14 +60,14 @@
                 :target => "_blank", :rel => "noopener" %>
         </li>
       </ul>
-      <span class="field_hint">This asset will automatically be attached to the new page.</span>
-      <label><%= check_box_tag :asset_headline, "1" %> as the page's headline</label>
+      <span class="field_hint"><%= t(".attach_hint") %></span>
+      <label><%= check_box_tag :asset_headline, "1" %> <%= t(".as_headline") %></label>
       <%= hidden_field_tag :asset_id, @attach_asset.id %>
     </div>
   <% end %>
 
   <div class="layout_row_label"></div>
-  <div class="layout_row_content"><%= submit_tag "Create" %></div>
+  <div class="layout_row_content"><%= submit_tag t("admin.common.create") %></div>
 
 </div>
 <% end %>

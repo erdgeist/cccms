@@ -1,18 +1,18 @@
 <h1><%= title_for_node(@node) %></h1>
 
 <div class="node_action_bar">
-  <%= button_to 'Unlock + Back', unlock_node_path(@node), method: :put,
+  <%= button_to t(".unlock_back"), unlock_node_path(@node), method: :put,
         form: { class: 'button_to state_changing' },
         disabled: @node.autosave.present? %>
 
   <% if @node.autosave || (@node.draft && @node.head) %>
     <%= button_to revert_node_path(@node), method: :put,
-              form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+              form: { data: { confirm: t(".confirm_discard") }, class: 'button_to destructive' } do %>
       <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-      <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+      <%= @node.draft && !@node.autosave ? t(".destroy_draft") : t(".discard_autosave") %>
     <% end %>
     <% if pair = @node.available_layer_pairs.find { |p| p.include?(:autosave) } %>
-      <%= button_to 'What changed?',
+      <%= button_to t(".what_changed"),
             diff_node_revisions_path(@node),
             method: :get,
             params: { start_revision: pair.first, end_revision: pair.last },
@@ -20,9 +20,9 @@
     <% end %>
   <% end %>
 
-  <%= submit_tag "Save Draft", form: dom_id(@node, :edit) %>
-  <%= submit_tag "Save + Unlock + Exit", form: dom_id(@node, :edit) %>
-  <%= link_to "Preview ↗", preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
+  <%= submit_tag t(".save_draft"), form: dom_id(@node, :edit) %>
+  <%= submit_tag t(".save_unlock_exit"), form: dom_id(@node, :edit) %>
+  <%= link_to t(".preview"), preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
 <div id="admin_layout">
@@ -37,13 +37,13 @@
   <div id="edit_grid">
 
     <div id="main_fields">
-      <div class="layout_row_label">Title</div>
+      <div class="layout_row_label"><%= t("admin.columns.title") %></div>
       <div class="layout_row_content"><%= d.text_field :title %></div>
 
-      <div class="layout_row_label">Abstract</div>
+      <div class="layout_row_label"><%= t(".abstract") %></div>
       <div class="layout_row_content"><%= d.text_area :abstract %></div>
 
-      <div class="layout_row_label">Attachments</div>
+      <div class="layout_row_label"><%= t(".attachments") %></div>
       <div class="layout_row_content">
         <div id="related_assets"
              data-search-url="<%= search_node_related_assets_path(@node) %>"
@@ -61,18 +61,18 @@
                 <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
                 <%= image_tag related.asset.upload.url(:thumb) %>
                 <button type="button" class="related_asset_set_headline"
-                        aria-pressed="<%= related.headline? %>" aria-label="Set as headline image"
-                        title="Use this photo as the page's headline image">
+                        aria-pressed="<%= related.headline? %>" aria-label="<%= t('.set_headline_label') %>"
+                        title="<%= t(".set_headline_title") %>">
                   <%= icon("star", library: "tabler", "aria-hidden": true) %>
                 </button>
-                <button type="button" class="related_asset_remove" aria-label="Remove image">
+                <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
                   <%= icon("x", library: "tabler", "aria-hidden": true) %>
                 </button>
               </li>
             <% end %>
           </ul>
-          <p class="field_hint">The starred image or PDF becomes this page's headline on the public site. If none is starred, visitors get a link to browse all attached images instead.</p>
-          <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: "Search images to attach…", autocomplete: "off" %>
+          <p class="field_hint"><%= t(".headline_hint") %></p>
+          <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: t(".attach_search_placeholder"), autocomplete: "off" %>
           <div id="related_asset_search_results" class="search_results"></div>
         </div>
       </div>
@@ -81,10 +81,10 @@
         <li>
           <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
           <img src="">
-          <button type="button" class="related_asset_set_headline" aria-pressed="false" aria-label="Set as headline image">
+          <button type="button" class="related_asset_set_headline" aria-pressed="false" aria-label="<%= t('.set_headline_label') %>">
             <%= icon("star", library: "tabler", "aria-hidden": true) %>
           </button>
-          <button type="button" class="related_asset_remove" aria-label="Remove image">
+          <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
             <%= icon("x", library: "tabler", "aria-hidden": true) %>
           </button>
         </li>
@@ -92,9 +92,9 @@
     </div>
 
     <details id="metadata_details">
-      <summary>Metadata (slug, parent, tags, template, author, images)</summary>
+      <summary><%= t(".metadata_summary") %></summary>
       <div id="metadata">
-        <div class="layout_row_label">Slug</div>
+        <div class="layout_row_label"><%= t(".slug") %></div>
         <div class="layout_row_content">
           <%= f.text_field(
                 :staged_slug, :value => @node.staged_slug || @node.slug
@@ -102,10 +102,10 @@
             %>
         </div>
 
-        <div class="layout_row_label">parent</div>
+        <div class="layout_row_label"><%= t(".parent") %></div>
         <div class="layout_row_content">
           <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
-          <p class="field_hint">Start typing to find a new parent for this node.</p>
+          <p class="field_hint"><%= t(".parent_hint") %></p>
           <div id="move_to_search_results" class="search_results"></div>
           <%= f.hidden_field(
                 :staged_parent_id,
@@ -114,22 +114,22 @@
            %>
         </div>
 
-        <div class="layout_row_label">Tags</div>
+        <div class="layout_row_label"><%= t(".tags") %></div>
         <div class="layout_row_content">
           <%= text_field_tag :tag_list, @page.tag_list.join(', ') %>
-          <span class="field_hint">Comma separated, lowercase.</span>
+          <span class="field_hint"><%= t(".tags_hint") %></span>
         </div>
 
-        <div class="layout_row_label">Publish at</div>
+        <div class="layout_row_label"><%= t(".publish_at") %></div>
         <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
 
-        <div class="layout_row_label">Template</div>
+        <div class="layout_row_label"><%= t(".template") %></div>
         <div class="layout_row_content">
         <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
-        <span class="field_hint">Set automatically based on how this node was created - change it if needed.</span>
+        <span class="field_hint"><%= t(".template_hint") %></span>
         </div>
 
-        <div class="layout_row_label">Author</div>
+        <div class="layout_row_label"><%= t(".author") %></div>
         <div class="layout_row_content">
           <%= d.select :user_id, user_list,
                 :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
@@ -139,13 +139,13 @@
     </details>
 
     <div id="content">
-      <div class="layout_row_label">Body</div>
+      <div class="layout_row_label"><%= t(".body") %></div>
       <div class="body_toolbar_row">
-        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="Toggle live preview" title="Toggle live preview">
-          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span>Live preview</span>
+        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t('admin.common.toggle_preview') %>" title="<%= t('admin.common.toggle_preview') %>">
+          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t(".live_preview") %></span>
         </button>
-        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="Force preview render" title="Force preview render">
-          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span>Force refresh</span>
+        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t('admin.common.force_render') %>" title="<%= t('admin.common.force_render') %>">
+          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t(".force_refresh") %></span>
         </button>
       </div>
 
@@ -154,7 +154,7 @@
           <div class="layout_row_content"><%= d.text_area :body, :class => 'with_editor' %></div>
         </div>
         <div id="preview_panel" style="display:none">
-          <iframe id="live_preview_iframe" title="Live preview" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>
+          <iframe id="live_preview_iframe" title="<%= t('.live_preview') %>" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>
         </div>
       </div>
     </div>
@@ -162,8 +162,8 @@
   <% end %>
 
   <div class="node_action_bar">
-    <%= f.submit 'Save Draft' %>
-    <%= f.submit 'Save + Unlock + Exit' %>
+    <%= f.submit t(".save_draft") %>
+    <%= f.submit t(".save_unlock_exit") %>
   </div>
   <% end %>
 </div>

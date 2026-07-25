@@ -2,24 +2,24 @@
 <div id="admin_layout" class="show_node">
   <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
   <div id="content">
-    <div class="layout_row_label">Status</div>
+    <div class="layout_row_label"><%= t(".status") %></div>
     <div class="layout_row_content info_group node_status">
       <div class="info_group_items">
         <div class="info_item">
-          <span class="info_label">Head</span>
-          <%= @node.head ? "#{@node.head.title} (rev #{@node.head.revision}, #{@node.head.updated_at})" : "none — never published" %>
+          <span class="info_label"><%= t(".head") %></span>
+          <%= @node.head ? t(".head_line", :title => @node.head.title, :rev => @node.head.revision, :time => @node.head.updated_at) : t(".never_published") %>
         </div>
         <div class="info_item">
-          <span class="info_label">Draft</span>
-          <%= @node.draft ? "#{@node.draft.title} (rev #{@node.draft.revision}, saved #{@node.draft.updated_at})" : "none" %>
+          <span class="info_label"><%= t(".draft") %></span>
+          <%= @node.draft ? t(".draft_line", :title => @node.draft.title, :rev => @node.draft.revision, :time => @node.draft.updated_at) : t(".none") %>
         </div>
         <div class="info_item">
-          <span class="info_label">Autosave</span>
-          <%= @node.autosave ? "#{@node.autosave.title} (unsaved, #{@node.autosave.updated_at})" : "none" %>
+          <span class="info_label"><%= t(".autosave") %></span>
+          <%= @node.autosave ? t(".autosave_line", :title => @node.autosave.title, :time => @node.autosave.updated_at) : t(".none") %>
         </div>
       </div>
 
-      <% edit_label = @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Edit") %>
+      <% edit_label = @node.autosave ? t(".continue_editing") : (@node.draft ? t(".edit_draft") : t(".lock_edit")) %>
       <div class="info_group_items">
         <div class="info_item">
           <% if locked_by_other %>
@@ -27,17 +27,17 @@
           <% else %>
             <%= link_to edit_node_path(@node), class: "action_button" do %>
               <%= icon("edit", library: "tabler", "aria-hidden": true) %>
-              <%= @node.autosave ? "Continue Editing" : (@node.draft ? "Edit Draft" : "Lock + Edit") %>
+              <%= edit_label %>
             <% end %>
             <% if !@node.draft && !@node.autosave %>
-              <span class="field_hint">Nothing pending — this will start a fresh draft.</span>
+              <span class="field_hint"><%= t(".fresh_draft_hint") %></span>
             <% end %>
           <% end %>
         </div>
 
         <% @node.available_layer_pairs.each do |pair| %>
           <div class="info_item">
-            <%= button_to "Diff #{pair.first.to_s.capitalize} vs. #{pair.last.to_s.capitalize}",
+            <%= button_to t(".diff_layers", :from => t(".layer_#{pair.first}"), :to => t(".layer_#{pair.last}")),
                   diff_node_revisions_path(@node),
                   method: :get,
                   params: { start_revision: pair.first, end_revision: pair.last },
@@ -48,26 +48,26 @@
         <% unless locked_by_other %>
           <% if @node.draft && !@node.autosave && !@node.in_trash? && !@node.trash_node? %>
             <div class="info_item">
-              <%= button_to 'Publish', publish_node_path(@node), method: :put,
-                    form: { data: { confirm: "Publish this draft?" }, class: 'button_to state_changing' } %>
+              <%= button_to t(".publish"), publish_node_path(@node), method: :put,
+                    form: { data: { confirm: t(".confirm_publish") }, class: 'button_to state_changing' } %>
             </div>
           <% end %>
           <% if @node.autosave || (@node.draft && @node.head) %>
             <div class="info_item">
             <%= button_to revert_node_path(@node), method: :put,
                                 params: { return_to: request.path },
-                                form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+                                form: { data: { confirm: t("admin.common.confirm_irreversible") }, class: 'button_to destructive' } do %>
               <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-              <%= @node.draft && !@node.autosave ? "Destroy Draft" : "Discard Autosave" %>
+              <%= @node.draft && !@node.autosave ? t(".destroy_draft") : t(".discard_autosave") %>
             <% end %>
             </div>
           <% end %>
           <% unless @node.trash_node? || @node.in_trash? || @node.root? %>
             <div class="info_item">
               <%= button_to trash_node_path(@node), method: :put,
-                    form: { data: { confirm: "Move this page and everything beneath it to the Trash? All published content in it will go offline." }, class: 'button_to destructive' } do %>
+                    form: { data: { confirm: t(".confirm_trash") }, class: 'button_to destructive' } do %>
                 <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-                Move to Trash
+                <%= t(".move_to_trash") %>
               <% end %>
             </div>
           <% end %>
@@ -75,79 +75,77 @@
       </div>
 
       <% if locked_by_other %>
-        <span class="field_hint">Locked — see People below to unlock before editing, publishing, or discarding.</span>
+        <span class="field_hint"><%= t(".locked_hint") %></span>
       <% end %>
     </div>
 
     <% if @node.in_trash? %>
-      <div class="layout_row_label">Trash</div>
+      <div class="layout_row_label"><%= t(".trash") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">
           <% if (entry = @node.last_trash_entry) && entry.metadata.dig("path", "from") %>
             <div class="info_item">
-              <span class="info_label">Was at</span>
+              <span class="info_label"><%= t(".was_at") %></span>
               <%= entry.metadata.dig("path", "from") %>
             </div>
           <% end %>
           <div class="info_item">
-            <span class="info_label">Restore to</span>
+            <span class="info_label"><%= t(".restore_to") %></span>
             <% suggestion = @node.suggested_restore_parent %>
             <%= form_tag restore_from_trash_node_path(@node), :method => :put, :class => "aligned_action_row" do %>
               <div class="restore_picker">
                 <%= text_field_tag :restore_search_term,
                       suggestion && (suggestion.head&.title || suggestion.draft&.title || suggestion.slug),
-                      :placeholder => "Search for a new parent…" %>
+                      :placeholder => t(".restore_placeholder") %>
                 <div id="restore_search_results" class="search_results"></div>
               </div>
               <%= hidden_field_tag :parent_id, suggestion&.id %>
-              <%= submit_tag "Restore here", :class => "action_button action_button_no_margin_top" %>
+              <%= submit_tag t(".restore_here"), :class => "action_button action_button_no_margin_top" %>
             <% end %>
-            <span class="field_hint">Restored pages come back unpublished. Republish each page deliberately.</span>
+            <span class="field_hint"><%= t(".restore_hint") %></span>
           </div>
         </div>
         <div class="info_group_items">
           <div class="info_item">
             <% doomed_below = @node.descendants.count %>
             <%= button_to node_path(@node), method: :delete,
-                  form: { data: { confirm: doomed_below > 0 ?
-                            "Delete this page and the #{doomed_below} pages beneath it permanently? This cannot be undone." :
-                            "Delete this page permanently? This cannot be undone." },
+                  form: { data: { confirm: t(".confirm_delete", :count => doomed_below) },
                           class: 'button_to destructive' } do %>
               <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
-              Delete permanently<%= " (including #{doomed_below} beneath)" if doomed_below > 0 %>
+              <%= t(".delete_permanently") %><%= " " + t(".including_beneath", :count => doomed_below) if doomed_below > 0 %>
             <% end %>
           </div>
         </div>
       </div>
     <% end %>
 
-    <div class="layout_row_label">Translations</div>
+    <div class="layout_row_label"><%= t(".translations") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
-        <% @translations.each do |t| %>
+        <% @translations.each do |translation| %>
           <div class="info_item">
-            <span class="info_label"><%= t[:locale].to_s.upcase %></span>
+            <span class="info_label"><%= translation[:locale].to_s.upcase %></span>
             <div class="aligned_action_row">
-              <% if t[:exists] %>
-                <%= link_to t[:title], node_translation_path(@node, t[:locale]) %> — updated <%= t[:updated_at] %>
-                <% if t[:outdated] %>
-                  <span class="warning">may be outdated</span>
+              <% if translation[:exists] %>
+                <%= link_to translation[:title], node_translation_path(@node, translation[:locale]) %> <%= t(".updated", :time => translation[:updated_at]) %>
+                <% if translation[:outdated] %>
+                  <span class="warning"><%= t(".may_be_outdated") %></span>
                 <% end %>
               <% else %>
-                <span class="field_hint">Not yet translated.</span>
+                <span class="field_hint"><%= t(".not_yet_translated") %></span>
               <% end %>
               <% if locked_by_other %>
-                <span class="disabled_action"><%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %></span>
+                <span class="disabled_action"><%= translation[:exists] ? t(".lock_edit") : t(".create_translation") %></span>
               <% else %>
-                <%= link_to edit_node_translation_path(@node, t[:locale]), class: "action_button" do %>
-                  <%= icon(t[:exists] ? "edit" : "language", library: "tabler", "aria-hidden": true) %>
-                  <%= t[:exists] ? "Lock + Edit" : "Create translation + Lock" %>
+                <%= link_to edit_node_translation_path(@node, translation[:locale]), class: "action_button" do %>
+                  <%= icon(translation[:exists] ? "edit" : "language", library: "tabler", "aria-hidden": true) %>
+                  <%= translation[:exists] ? t(".lock_edit") : t(".create_translation") %>
                 <% end %>
-                <% if t[:exists] %>
-                  <%= button_to node_translation_path(@node, t[:locale]), method: :delete,
-                        form: { data: { confirm: "This cannot be undone. Continue?" }, class: 'button_to destructive' } do %>
+                <% if translation[:exists] %>
+                  <%= button_to node_translation_path(@node, translation[:locale]), method: :delete,
+                        form: { data: { confirm: t("admin.common.confirm_irreversible") }, class: 'button_to destructive' } do %>
                     <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-                    Destroy Translation
+                    <%= t(".destroy_translation") %>
                   <% end %>
                 <% end %>
               <% end %>
@@ -157,20 +155,20 @@
       </div>
     </div>
 
-    <div class="layout_row_label">People</div>
+    <div class="layout_row_label"><%= t(".people") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
-          <span class="info_label">Author</span>
+          <span class="info_label"><%= t(".author") %></span>
           <%= @page.user.try(:login) %>
         </div>
         <div class="info_item">
-          <span class="info_label">Editor</span>
+          <span class="info_label"><%= t(".editor") %></span>
           <%= @page.editor.try(:login) %>
         </div>
         <% if @node.locked? %>
           <div class="info_item">
-            <span class="info_label">Locked by</span>
+            <span class="info_label"><%= t("admin.columns.locked_by") %></span>
             <span class="warning"><%= @node.lock_owner.login %></span>
             <%= unlock_link %>
           </div>
@@ -178,54 +176,54 @@
       </div>
     </div>
 
-    <div class="layout_row_label">Dates</div>
+    <div class="layout_row_label"><%= t(".dates") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
-          <span class="info_label">Last updated</span>
+          <span class="info_label"><%= t(".last_updated") %></span>
           <%= @page.updated_at %>
         </div>
         <% if @page.published_at.present? %>
           <div class="info_item">
-            <span class="info_label"><%= @page.public? ? 'Published at' : 'Will publish at' %></span>
+            <span class="info_label"><%= @page.public? ? t(".published_at") : t(".will_publish_at") %></span>
             <%= @page.published_at %>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="layout_row_label">Links</div>
+    <div class="layout_row_label"><%= t(".links") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
-          <span class="info_label">Public</span>
+          <span class="info_label"><%= t(".public") %></span>
           <%= link_to @page.public_link, content_url(@node.unique_path) %>
         </div>
         <% if @node.draft %>
           <div class="info_item">
-            <span class="info_label">Admin Preview</span>
+            <span class="info_label"><%= t(".admin_preview") %></span>
             <%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %>
           </div>
           <div class="info_item">
-            <span class="info_label">Public Preview</span>
+            <span class="info_label"><%= t(".public_preview") %></span>
             <% if @node.draft.preview_token.present? %>
               <div class="aligned_action_row">
                 <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
-                <%= button_to 'Revoke', revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: "Revoke this preview link? Anyone currently using it will immediately lose access." }, class: 'button_to state_changing' } %>
+                <%= button_to t(".revoke"), revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: t(".confirm_revoke") }, class: 'button_to state_changing' } %>
               </div>
             <% else %>
-              <%= button_to 'Create public preview link', generate_shared_preview_node_path(@node), method: :put, form: { class: 'button_to state_changing' } %>
+              <%= button_to t(".create_preview_link"), generate_shared_preview_node_path(@node), method: :put, form: { class: 'button_to state_changing' } %>
             <% end %>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="layout_row_label">History</div>
+    <div class="layout_row_label"><%= t(".history") %></div>
     <div class="layout_row_content info_group">
       <details>
         <summary>
-          <%= pluralize(@node.pages.count, 'published revision', 'published revisions') %>
+          <%= t(".published_revisions", :count => @node.pages.count) %>
         </summary>
         <ul>
           <% @node.pages.order(:revision).each do |page| %>
@@ -236,11 +234,11 @@
           <% end %>
         </ul>
       </details>
-      <p class="revisions_full_history_link"><%= link_to 'Revision history (diff / restore)', node_revisions_path(@node) %> | <%= link_to t("node_actions.heading"), admin_log_path(:node_id => @node.id) %></p>
+      <p class="revisions_full_history_link"><%= link_to t(".revision_history"), node_revisions_path(@node) %> | <%= link_to t("node_actions.heading"), admin_log_path(:node_id => @node.id) %></p>
     </div>
 
 
-    <div class="layout_row_label">Tags</div>
+    <div class="layout_row_label"><%= t(".tags") %></div>
     <div class="layout_row_content info_group">
       <% if @page.tag_list.any? %>
         <ul class="tag_pill_list">
@@ -249,11 +247,11 @@
           <% end %>
         </ul>
       <% else %>
-        <span class="field_hint">No tags.</span>
+        <span class="field_hint"><%= t(".no_tags") %></span>
       <% end %>
     </div>
 
-    <div class="layout_row_label">Attachments</div>
+    <div class="layout_row_label"><%= t(".attachments") %></div>
     <div class="layout_row_content info_group">
       <% if @page.assets.any? %>
         <% headline_asset_id = @page.headline_asset&.id %>
@@ -262,7 +260,7 @@
             <li class="<%= "is_headline" if asset.id == headline_asset_id %>">
               <%= link_to image_tag(asset.upload.url(:thumb)), asset_path(asset) %>
               <% if asset.id == headline_asset_id %>
-                <span class="headline_indicator" title="This page's headline image">
+                <span class="headline_indicator" title="<%= t('.headline_title')%>">
                   <%= icon("star", library: "tabler", "aria-hidden": true) %>
                 </span>
               <% end %>
@@ -272,38 +270,38 @@
       <% end %>
       <p class="add_attachments">
         <%= link_to new_asset_path(:node_id => @node.id), class: 'action_button' do %>
-          <%= icon("paperclip", library: "tabler", "aria-hidden": true) %> Upload new attachment
+          <%= icon("paperclip", library: "tabler", "aria-hidden": true) %> <%= t(".upload_attachment") %>
         <% end %>
-        <span class="field_hint">To add or remove existing attachments, edit this node instead.</span>
+        <span class="field_hint"><%= t(".attachments_hint") %></span>
       </p>
     </div>
 
-    <div class="layout_row_label">Events</div>
+    <div class="layout_row_label"><%= t(".events") %></div>
     <div class="layout_row_content info_group">
       <ul>
       <% @node.events.order(:start_time).each do |event| %>
         <li>
           <%= event_schedule_text(event) %>
-          [<%= link_to 'show', event_path(event, return_to: request.path) %>
-          | <%= link_to 'edit', edit_event_path(event, return_to: request.path) %>]
+          [<%= link_to t(".show_link"), event_path(event, return_to: request.path) %>
+          | <%= link_to t(".edit_link"), edit_event_path(event, return_to: request.path) %>]
         </li>
       <% end %>
       </ul>
       <% mapping = default_event_tag_mapping(@page) %>
       <p class="add_events">
         <%= link_to new_event_path(node_id: @node.id, tag_list: mapping&.last, auto_tag_source: mapping&.first, return_to: request.path), class: 'action_button' do %>
-          <%= icon("calendar-plus", library: "tabler", "aria-hidden": true) %> Add event
+          <%= icon("calendar-plus", library: "tabler", "aria-hidden": true) %> <%= t(".add_event") %>
         <% end %>
       </p>
     </div>
 
     <% matches = matching_node_kinds(@node) %>
     <% if @node.children.any? || matches.any? %>
-      <div class="layout_row_label">Children</div>
+      <div class="layout_row_label"><%= t(".children") %></div>
       <div class="layout_row_content info_group">
         <% if @node.children.any? %>
           <details>
-            <summary><%= pluralize(@node.children.count, 'child', 'children') %></summary>
+            <summary><%= t(".children_count", :count => @node.children.count) %></summary>
             <ul>
               <% @node.children.order(:slug).each do |child| %>
                 <li><%= link_to (child.head&.title || child.draft&.title || child.slug), node_path(child) %></li>
@@ -317,7 +315,7 @@
               <% link_params = { kind: kind } %>
               <% link_params[:parent_id] = @node.id if kind == "generic" %>
               <%= link_to new_node_path(link_params), class: 'action_button' do %>
-                <%= icon("text-plus", library: "tabler", "aria-hidden": true) %> Add child type <%= resolve_kind_text(config[:label]) %>
+                <%= icon("text-plus", library: "tabler", "aria-hidden": true) %> <%= t(".add_child", :kind => resolve_kind_text(config[:label])) %>
               <% end %>
             <% end %>
           </p>
@@ -325,10 +323,10 @@
       </div>
     <% end %>
 
-    <div class="layout_row_label">Abstract (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="layout_row_label"><%= t(".abstract_locale", :lang => I18n.default_locale.to_s.upcase) %></div>
     <div class="layout_row_content"><%= sanitize(@page.abstract) %></div>
 
-    <div class="layout_row_label">Body (<%= I18n.default_locale.to_s.upcase %>)</div>
+    <div class="layout_row_label"><%= t(".body_locale", :lang => I18n.default_locale.to_s.upcase) %></div>
     <div class="layout_row_content"><%= sanitize(@page.body) %></div>
 
   </div>

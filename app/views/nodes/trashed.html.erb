@@ -1,42 +1,40 @@
-<h1>Trash</h1>
+<h1><%= t(".title") %></h1>
 
 <% if @nodes.empty? %>
-  <p class="field_hint">The Trash is empty.</p>
+  <p class="field_hint"><%= t(".empty") %></p>
 <% else %>
   <%= will_paginate @nodes %>
   <table id="trashed_node_list">
     <tr>
-      <th>Title</th>
-      <th>Was at</th>
-      <th>Trashed</th>
-      <th>Actions</th>
+      <th><%= t("admin.columns.title") %></th>
+      <th><%= t(".was_at") %></th>
+      <th><%= t(".trashed") %></th>
+      <th><%= t("admin.columns.actions") %></th>
     </tr>
     <% @nodes.each do |node| %>
       <% entry = node.last_trash_entry %>
       <tr>
         <% doomed_below = node.descendants.count %>
         <td>
-          <%= link_to (node.draft&.title || node.slug), node_path(node) %><%= " (+ #{doomed_below} beneath)" if doomed_below > 0 %>
+          <%= link_to (node.draft&.title || node.slug), node_path(node) %><%= " " + t(".beneath", :count => doomed_below) if doomed_below > 0 %>
         </td>
         <td><%= entry&.metadata&.dig("path", "from") %></td>
         <td>
           <% if entry %>
-            <%= entry.occurred_at.strftime("%Y-%m-%d %H:%M") %> by <%= entry.actor_name %>
+            <%= t(".trashed_by", :time => entry.occurred_at.strftime("%Y-%m-%d %H:%M"), :actor => entry.actor_name) %> 
           <% end %>
         </td>
         <td>
           <%= button_to node_path(node), method: :delete,
-                        form: { data: { confirm: doomed_below > 0 ?
-                          "Delete \"#{node.draft&.title || node.slug}\" and the #{doomed_below} pages beneath it permanently? This cannot be undone." :
-                          "Delete \"#{node.draft&.title || node.slug}\" permanently? This cannot be undone." },
+                        form: { data: { confirm: t(".confirm_delete", :title => (node.draft&.title || node.slug), :count => doomed_below) },
                         class: 'button_to destructive' } do %>
             <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
-            Delete permanently
+            <%= t(".delete_permanently") %>
           <% end %>
         </td>
       </tr>
     <% end %>
   </table>
   <%= will_paginate @nodes %>
-  <p class="field_hint">To restore a page, open it and pick a new parent in its Trash section.</p>
+  <p class="field_hint"><%= t(".restore_hint") %></p>
 <% end %>

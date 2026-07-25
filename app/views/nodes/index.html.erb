@@ -1,20 +1,20 @@
-<h1>Nodes</h1>
+<h1><%= t(".title") %></h1>
 
 <div>
   <%= link_to new_node_path, class: 'action_button' do %>
-    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create node
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_node") %>
   <% end %>
-  <span class="field_hint">Creates a node with no parent or kind set — for a specific page, use the wizard's create flow or "add child" from an existing node instead.</span>
+  <span class="field_hint"><%= t(".create_hint") %></span>
 </div>
 
 <%= will_paginate @nodes %>
   <table class="node_table">
     <tr class="header">
-      <th class="node_id">ID</th>
-      <th class="title">Title</th>
-      <th class="actions">Actions</th>
-      <th class="editor">Locked by</th>
-      <th class="revision">Rev.</th>
+      <th class="node_id"><%= t("admin.columns.id") %></th>
+      <th class="title"><%= t("admin.columns.title") %></th>
+      <th class="actions"><%= t("admin.columns.actions") %></th>
+      <th class="editor"><%= t("admin.columns.locked_by") %></th>
+      <th class="revision"><%= t("admin.columns.rev") %></th>
     </tr>
     <% @nodes.each do |node| %>
     <tr class="<%= cycle("even", "odd") %>">

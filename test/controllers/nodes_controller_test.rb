@@ -438,7 +438,8 @@ class NodesControllerTest < ActionController::TestCase
 
     get :show, params: { id: node.id }
     assert_response :success
-    assert_select "a", text: "Add event"
+    assert_select "a", text: I18n.t("nodes.show.add_event")
+
     assert_select "a[href*='tag_list=open-day']"
     assert_select "a[href*='auto_tag_source=erfa-detail']"
   end
@@ -449,7 +450,7 @@ class NodesControllerTest < ActionController::TestCase
 
     get :show, params: { id: node.id }
     assert_response :success
-    assert_select "a", text: "Add event"
+    assert_select "a", text: I18n.t("nodes.show.add_event")
     assert_select "a[href*='tag_list=']", count: 0
   end
 
@@ -600,7 +601,7 @@ class NodesControllerTest < ActionController::TestCase
     assert_includes assigns(:nodes), presse_node
     assert_not_includes assigns(:nodes), erfa_node
 
-    assert_select "h1", "Nodes tagged: pressemitteilung"
+    assert_select "h1", :text => I18n.t("nodes.tags.title", :tag => "pressemitteilung"), :count => 1
     assert_select "h1", :text => "Chapters", :count => 0
   end
 
