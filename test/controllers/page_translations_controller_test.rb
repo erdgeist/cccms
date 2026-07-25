@@ -55,7 +55,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
 
     delete :destroy, params: { :node_id => node.id, :translation_locale => "en" }
 
-    assert_equal "Can't remove the only remaining translation.", flash[:error]
+    assert_equal I18n.t("flash.page_translations.last_translation"), flash[:error]
   end
 
   test "destroy is a safe no-op, not a false success, when the translation doesn't exist" do
@@ -64,7 +64,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
 
     delete :destroy, params: { :node_id => node.id, :translation_locale => "en" }
 
-    assert_match(/No EN translation exists/, flash[:error])
+    assert_equal I18n.t("flash.page_translations.none_to_remove", :lang => "EN"), flash[:error]
   end
 
   test "autosave writes the translation without creating a new revision or touching the draft" do

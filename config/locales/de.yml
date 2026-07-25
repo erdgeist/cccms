@@ -374,3 +374,65 @@ de:
         other: "\"%{title}\" und die %{count} Seiten darunter endgültig löschen? Das kann nicht rückgängig gemacht werden."
       delete_permanently: "Endgültig löschen"
       restore_hint: "Zum Wiederherstellen eine Seite öffnen und in ihrem Papierkorb-Abschnitt einen neuen Eltern-Node wählen."
+
+  flash:
+    common:
+      logged_in: "Erfolgreich angemeldet"
+      otp_required: "Dein Konto erfordert einen zweiten Faktor — richte ihn ein, um fortzufahren."
+      admin_required: "Dafür sind Admin-Rechte erforderlich"
+      now_headline: "Es ist jetzt der Aufmacher der Seite."
+      headline_ineligible: "Dieser Asset-Typ kann kein Aufmacher sein."
+      locked_by_other: "Die Seite ist gerade von jemand anderem gesperrt."
+      autosave_failed: "Autosave fehlgeschlagen"
+    sessions:
+      otp_setup_now: "Dein Konto erfordert einen zweiten Faktor — richte ihn jetzt ein."
+      logged_out: "Du wurdest abgemeldet."
+      failed: "Anmeldung fehlgeschlagen"
+    otp:
+      too_many_attempts: "Zu viele Versuche — bitte neu anmelden."
+      code_mismatch: "Der Code hat nicht gepasst."
+      code_mismatch_rescan: "Der Code hat nicht gepasst. Neu scannen oder auf den nächsten Code warten."
+      wrong_password: "Falsches Passwort."
+      wrong_credentials: "Passwort oder Code falsch — zweiter Faktor unverändert."
+      enabled: "Zweiter Faktor aktiviert. Der eben eingegebene Code ist verbraucht — für die Anmeldung auf den nächsten warten."
+      disabled: "Zweiter Faktor entfernt."
+    users:
+      created: "Benutzer %{login} angelegt"
+      updated: "Benutzer %{login} aktualisiert"
+      otp_reset: "Zweiter Faktor von %{login} zurückgesetzt"
+    assets:
+      created: "Asset wurde angelegt."
+      updated: "Asset wurde aktualisiert."
+      attached: "Asset wurde angelegt und an „%{title}“ angehängt."
+      already_attached: "Asset gespeichert — es war bereits an „%{title}“ angehängt."
+    events:
+      created: "Termin wurde angelegt."
+      updated: "Termin wurde aktualisiert."
+      tag_prefilled: "Tag '%{tag}' wurde vorausgefüllt, weil diese Seite mit '%{source}' getaggt ist. Er lässt sich unten entfernen."
+    occurrences:
+      created: "Termin-Instanz wurde angelegt."
+      updated: "Termin-Instanz wurde aktualisiert."
+    revisions:
+      unavailable: "Dieser Vergleich ist nicht mehr verfügbar."
+      restored: "Revision %{rev} wiederhergestellt"
+    nodes:
+      created_with_attachment: "Seite mit angehängtem „%{name}“ angelegt."
+      autosave_banner: "Diese Seite hat ungespeicherte Änderungen aus einer früheren Sitzung, unten angezeigt. Speichern, um sie zu behalten — oder unten \"Autosave verwerfen\" nutzen, um zum letzten gespeicherten Stand zurückzukehren."
+      locked_ready: "Node gesperrt und bereit zum Bearbeiten"
+      draft_saved: "Entwurf gespeichert. Veröffentliche deine Änderungen im Status-Abschnitt, sobald du fertig bist."
+      trashed: "Seite wurde in den Papierkorb verschoben"
+      already_trashed: "Seite ist bereits im Papierkorb"
+      restored: "Seite wurde aus dem Papierkorb wiederhergestellt"
+      restore_target_missing: "Wiederherstellungsziel nicht gefunden"
+      deleted: "Seite wurde endgültig gelöscht"
+      published: "Entwurf wurde veröffentlicht"
+      unlocked: "Node entsperrt"
+      already_unlocked: "Bereits entsperrt"
+      preview_created: "Teilbarer Vorschau-Link erzeugt — siehe unten."
+      preview_needs_draft: "Erst einen Entwurf anlegen oder bearbeiten — teilbare Vorschau-Links gibt es nur für Seiten mit aktivem Entwurf."
+      preview_revoked: "Teilbarer Vorschau-Link zurückgezogen."
+    page_translations:
+      saved: "%{lang}-Übersetzung gespeichert. Den Entwurf veröffentlichen, um sie live zu schalten."
+      none_to_remove: "Es existiert keine %{lang}-Übersetzung zum Entfernen."
+      last_translation: "Die einzige verbliebene Übersetzung kann nicht entfernt werden."
+      removed: "%{lang}-Übersetzung aus dem Entwurf entfernt. Veröffentlichen, um das dauerhaft zu machen."

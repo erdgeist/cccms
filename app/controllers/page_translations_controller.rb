@@ -16,14 +16,14 @@ class PageTranslationsController < ApplicationController
     @page = @node.draft || @node.head
     @translation = @page.translations.find_by(:locale => @locale)
   rescue LockedByAnotherUser => e
-    flash[:error] = e.message
+    flash[:error] = t("flash.common.locked_by_other")
     redirect_to node_path(@node)
   end
 
   def update
     Globalize.with_locale(@locale) { @node.autosave!(translation_params, current_user) }
     @node.save_draft!(current_user)
-    flash[:notice] = "#{@locale.upcase} translation saved. Publish the draft to make it live."
+    flash[:notice] = t("flash.page_translations.saved", :lang => @locale.upcase)
 
     if params[:commit] == "Save + Unlock + Exit"
       @node.unlock!
@@ -32,7 +32,7 @@ class PageTranslationsController < ApplicationController
       redirect_to edit_node_translation_path(@node, @locale)
     end
   rescue LockedByAnotherUser => e
-    flash[:error] = e.message
+    flash[:error] = t("flash.common.locked_by_other")
     redirect_to node_path(@node)
   end
 
@@ -40,7 +40,7 @@ class PageTranslationsController < ApplicationController
     Globalize.with_locale(@locale) { @node.autosave!(translation_params, current_user) }
     head :ok
   rescue LockedByAnotherUser => e
-    render plain: e.message, status: :locked
+    render plain: t("flash.common.locked_by_other"), status: :locked
   rescue ActiveRecord::RecordInvalid => e
     render plain: e.message, status: :unprocessable_entity
   rescue StandardError => e
@@ -50,12 +50,12 @@ class PageTranslationsController < ApplicationController
   def destroy
     base = @node.draft || @node.head
     unless base && base.translated_locales.include?(@locale)
-      flash[:error] = "No #{@locale.to_s.upcase} translation exists to remove."
+      flash[:error] = t("flash.page_translations.none_to_remove", :lang => @locale.to_s.upcase)
       return redirect_to node_path(@node)
     end
 
     if (base.translated_locales - [@locale]).empty?
-      flash[:error] = "Can't remove the only remaining translation."
+      flash[:error] = t("flash.page_translations.last_translation")
       return redirect_to node_path(@node)
     end
 
@@ -63,7 +63,7 @@ class PageTranslationsController < ApplicationController
     draft.translations.where(:locale => @locale).delete_all
     draft.reload
 
-    flash[:notice] = "#{@locale.upcase} translation removed from the draft. Publish to make this permanent."
+    flash[:notice] = t("flash.page_translations.removed", :lang => @locale.upcase)
     redirect_to node_path(@node)
   rescue LockedByAnotherUser => e
     flash[:error] = e.message

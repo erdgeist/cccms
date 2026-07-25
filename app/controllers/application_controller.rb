@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
     return unless logged_in?
     return unless current_user.otp_required? && !current_user.otp_enrolled?
     return if %w[otp_enrollments otp_challenges sessions users].include?(controller_name)
-    flash[:error] = "Your account requires a second factor -- set it up to continue."
+    flash[:error] = t("flash.common.otp_required")
     redirect_to edit_user_path(current_user)
   end
 end

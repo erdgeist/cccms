@@ -22,7 +22,7 @@ class UsersController < ApplicationController
     @user = User.new user_params
 
     if @user.save
-      flash[:notice] = "User created #{@user.login}"
+      flash[:notice] = t("flash.users.created", :login => @user.login)
       redirect_to user_path(@user)
     else
       render :new
@@ -37,7 +37,7 @@ class UsersController < ApplicationController
     permitted.delete(:admin) unless current_user.is_admin?
             
     if @user.update(permitted)
-      flash[:notice] = "Updated user #{@user.login}"
+      flash[:notice] = t("flash.users.updated", :login => @user.login)
       redirect_to user_path(@user)
     else
       render :edit
@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   def reset_otp
     return deny_user_access unless current_user.admin?
     @user.disable_otp!(:actor => current_user)
-    flash[:notice] = "Second factor reset for #{@user.login}"
+    flash[:notice] = t("flash.users.otp_reset", :login => @user.login)
     redirect_to edit_user_path(@user)
   end
 
@@ -79,7 +79,7 @@ class UsersController < ApplicationController
     end
 
     def deny_user_access
-      flash[:notice] = "Sorry, you need to be an admin for this action"
+      flash[:notice] = t("flash.common.admin_required")
       redirect_to users_path
     end
 end

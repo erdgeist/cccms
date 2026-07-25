@@ -19,7 +19,7 @@ class OtpChallengesController < ApplicationController
     session[:otp_attempts] = session[:otp_attempts].to_i + 1
     if session[:otp_attempts] > MAX_ATTEMPTS
       clear_pending
-      flash[:error] = "Too many attempts -- log in again."
+      flash[:error] = t("flash.otp.too_many_attempts")
       return redirect_to login_path
     end
 
@@ -28,10 +28,10 @@ class OtpChallengesController < ApplicationController
       reset_session
       self.current_user = user
       session[:logged_in_at] = Time.now.to_i
-      flash[:notice] = "Logged in successfully"
+      flash[:notice] = t("flash.common.logged_in")
       redirect_to safe_return_to(return_to, :default => admin_path)
     else
-      flash.now[:error] = "That code did not match."
+      flash.now[:error] = t("flash.otp.code_mismatch")
       render :new
     end
   end

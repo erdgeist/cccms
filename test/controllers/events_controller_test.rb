@@ -83,7 +83,7 @@ class EventsControllerTest < ActionController::TestCase
     end
 
     assert_redirected_to edit_node_path(node)
-    assert_equal 'Event was successfully created.', flash[:notice]
+    assert_equal I18n.t("flash.events.created"), flash[:notice]
   end
 
   test "should not create an event without a title or a node_id" do

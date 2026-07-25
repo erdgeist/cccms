@@ -49,7 +49,7 @@ class AssetsController < ApplicationController
 
     respond_to do |format|
       if @asset.save
-        flash[:notice] = 'Asset was successfully created.'
+        flash[:notice] = t("flash.assets.created")
         NodeAction.record!(:participants => [@asset], :user => current_user,
                             :action => "asset_create",
                             :asset_name   => @asset.name,
@@ -72,7 +72,7 @@ class AssetsController < ApplicationController
 
     respond_to do |format|
       if @asset.update(asset_params)
-        flash[:notice] = 'Asset was successfully updated.'
+        flash[:notice] = t("flash.assets.updated")
         format.html { redirect_to(@asset) }
         format.xml  { head :ok }
       else
@@ -105,14 +105,14 @@ class AssetsController < ApplicationController
                                    :headline => params[:headline].present?)
       flash[:notice] =
         if result[:attached].zero?
-          "Asset saved — it was already attached to “#{node.title}”."
+          t("flash.assets.already_attached", :title => node.title)
         else
-          "Asset was successfully created and attached to “#{node.title}”."
+          t("flash.assets.attached", :title => node.title)
         end
       case result[:headline]
-      when :set           then flash[:notice] += " It is now the page's headline."
+      when :set           then flash[:notice] += " " + t("flash.common.now_headline")
       when :kept_existing then flash[:headline_kept_path] = node_path(node)
-      when :not_eligible  then flash[:error] = "This asset type cannot be a headline."
+      when :not_eligible  then flash[:error] = t("flash.common.headline_ineligible")
       end
     rescue LockedByAnotherUser
       flash[:locked_by]        = node.lock_owner&.login

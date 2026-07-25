@@ -15,7 +15,7 @@ class OtpEnrollmentsController < ApplicationController
   # unattended logged-in session cannot be enrolled onto a stranger's phone.
   def create
     unless User.authenticate(current_user.login, params[:current_password].to_s)
-      flash[:error] = "Wrong password."
+      flash[:error] = t("flash.otp.wrong_password")
       return redirect_to edit_user_path(current_user)
     end
     current_user.begin_otp_enrollment!
@@ -25,11 +25,10 @@ class OtpEnrollmentsController < ApplicationController
   # Confirms with the first generated code.
   def update
     if current_user.confirm_otp_enrollment!(params[:code])
-      flash[:notice] = "Second factor enabled. The code you just entered is " \
-                        "spent -- wait for the next one before logging in with it."
+      flash[:notice] = t("flash.otp.enabled")
       redirect_to edit_user_path(current_user)
     else
-      flash.now[:error] = "That code did not match. Rescan or wait for the next code."
+      flash.now[:error] = t("flash.otp.code_mismatch_rescan")
       render :show
     end
   end
@@ -38,11 +37,11 @@ class OtpEnrollmentsController < ApplicationController
   def destroy
     unless User.authenticate(current_user.login, params[:current_password].to_s) &&
            current_user.verify_otp!(params[:code])
-      flash[:error] = "Password or code wrong -- second factor unchanged."
+      flash[:error] = t("flash.otp.wrong_credentials")
       return redirect_to edit_user_path(current_user)
     end
     current_user.disable_otp!(:actor => current_user)
-    flash[:notice] = "Second factor disabled."
+    flash[:notice] = t("flash.otp.disabled")
     redirect_to edit_user_path(current_user)
   end
 end

@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class UsersControllerTest < ActionController::TestCase
-  
+
   test "get index as regular user renders stripped partial" do
     login_as :quentin
     get :index
@@ -16,20 +16,20 @@ class UsersControllerTest < ActionController::TestCase
     assert_select "button[type=submit]", I18n.t("admin.common.destroy")
     assert_select "a", "show"
   end
-  
+ 
   test "get new when logged in as admin" do
     login_as :aaron
     get :new
     assert_response :success
   end
-  
+ 
   test "get new without being logged in as admin redirects back to index" do
     login_as :quentin
     get :new
     assert_response :redirect
     assert_redirected_to users_path
     assert_equal(
-      "Sorry, you need to be an admin for this action", 
+      I18n.t("flash.common.admin_required"),
       flash[:notice]
     )
   end
@@ -84,7 +84,7 @@ class UsersControllerTest < ActionController::TestCase
     
     assert_redirected_to users_path
     assert_equal(
-      "Sorry, you need to be an admin for this action", 
+      I18n.t("flash.common.admin_required"),
       flash[:notice]
     )
   end
@@ -94,7 +94,7 @@ class UsersControllerTest < ActionController::TestCase
     get :edit, params: { :id => User.find_by_login("aaron").id }
     assert_redirected_to users_path
     assert_equal(
-      "Sorry, you need to be an admin for this action", 
+      I18n.t("flash.common.admin_required"),
       flash[:notice]
     )
   end
@@ -117,7 +117,7 @@ class UsersControllerTest < ActionController::TestCase
     put :update, params: { :id => user.id, :user => {:login => "random"} }
     assert_redirected_to users_path
     assert_equal(
-      "Sorry, you need to be an admin for this action", 
+      I18n.t("flash.common.admin_required"),
       flash[:notice]
     )
   end
@@ -137,7 +137,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to user_path(user)
     assert_equal "random", user.reload.login
   end
-  
+
   test "showing a user" do
     login_as :quentin
     get :show, params: { :id => User.find_by_login("aaron").id }
@@ -151,7 +151,7 @@ class UsersControllerTest < ActionController::TestCase
     end
     assert_redirected_to users_path
     assert_equal(
-      "Sorry, you need to be an admin for this action", 
+      I18n.t("flash.common.admin_required"),
       flash[:notice]
     )
   end

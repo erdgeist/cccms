@@ -55,9 +55,9 @@ class NodesController < ApplicationController
       if params[:asset_id].present? && (asset = Asset.find(params[:asset_id]))
         result = @node.attach_asset!(asset, :user => current_user,
                                       :headline => params[:asset_headline].present?)
-        flash[:notice] = "Page created with “#{asset.name}” attached."
-        flash[:notice] += " It is the page's headline." if result[:headline] == :set
-        flash[:error]   = "This asset type cannot be a headline." if result[:headline] == :not_eligible
+        flash[:notice] = t("flash.nodes.created_with_attachment", :name => asset.name)
+        flash[:notice] += " " + t("flash.common.now_headline") if result[:headline] == :set
+        flash[:error]   = t("flash.common.headline_ineligible") if result[:headline] == :not_eligible
       end
 
       redirect_to(edit_node_path(@node))
@@ -83,14 +83,12 @@ class NodesController < ApplicationController
     @page = @node.autosave || @node.draft || @node.head
 
     if @node.autosave
-      flash.now[:notice] =
-        "This page has unsaved changes from a previous session, shown below. " \
-        "Save to keep them, or use \"Discard Autosave\" below to go back to the last saved version."
+      flash.now[:notice] = t("flash.nodes.autosave_banner")
     elsif freshly_locked
-      flash.now[:notice] ||= "Node locked and ready to edit"
+      flash.now[:notice] ||= t("flash.nodes.locked_ready")
     end
   rescue LockedByAnotherUser => e
-    flash[:error] = e.message
+    flash[:error] = t("flash.common.locked_by_other")
     redirect_to(request.referer || node_path(@node))
   end
 
@@ -99,7 +97,7 @@ class NodesController < ApplicationController
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     @node.save_draft!(current_user)
 
-    flash[:notice] = "Draft saved. Publish your changes in the Status section once you're done."
+    flash[:notice] = t("flash.nodes.draft_saved")
     flash[:status_path] = node_path(@node)
 
     if @node.draft.translated_locales.size > 1
@@ -112,7 +110,7 @@ class NodesController < ApplicationController
       end
     end
 
-    if params[:commit] == "Save + Unlock + Exit"
+    if params[:unlock_exit].present?
       @node.unlock!
       redirect_to node_path(@node)
     else
@@ -156,13 +154,16 @@ class NodesController < ApplicationController
 
  def trash
     if @node.trash!(current_user)
-      flash[:notice] = "Page has been moved to the Trash"
+      flash[:notice] = t("flash.nodes.trashed")
       redirect_to trashed_nodes_path
     else
-      flash[:notice] = "Page is already in the Trash"
+      flash[:notice] = t("flash.nodes.already_trashed")
       redirect_to node_path(@node)
     end
-  rescue ActiveRecord::RecordInvalid, LockedByAnotherUser => e
+  rescue LockedByAnotherUser
+    flash[:error] = t("flash.common.locked_by_other")
+    redirect_to node_path(@node)
+  rescue ActiveRecord::RecordInvalid => e
     flash[:error] = e.message
     redirect_to node_path(@node)
   end
@@ -170,10 +171,10 @@ class NodesController < ApplicationController
   def restore_from_trash
     parent = Node.find(params[:parent_id])
     @node.restore_from_trash!(parent, current_user)
-    flash[:notice] = "Page has been restored from the Trash"
+    flash[:notice] = t("flash.nodes.restored")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordNotFound
-    flash[:error] = "Restore target not found"
+    flash[:error] = t("flash.nodes.restore_target_missing")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordInvalid => e
     flash[:error] = e.message
@@ -182,7 +183,7 @@ class NodesController < ApplicationController
 
   def destroy
     @node.destroy_from_trash!(current_user)
-    flash[:notice] = "Page has been permanently deleted"
+    flash[:notice] = t("flash.nodes.deleted")
     redirect_to trashed_nodes_path
 
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed => e
@@ -192,15 +193,15 @@ class NodesController < ApplicationController
 
   def publish
     @node.publish_draft!(current_user)
-    flash[:notice] = "Draft has been published"
+    flash[:notice] = t("flash.nodes.published")
     redirect_to node_path(@node)
   end
 
   def unlock
     if @node.unlock!
-      flash[:notice] = "Node unlocked"
+      flash[:notice] = t("flash.nodes.unlocked")
     else
-      flash[:notice] = "Already unlocked"
+      flash[:notice] = t("flash.nodes.already_unlocked")
     end
 
     redirect_to node_path(@node)
@@ -210,9 +211,9 @@ class NodesController < ApplicationController
     @node = Node.find(params[:id])
     if @node.draft
       @node.draft.ensure_preview_token!
-      flash[:notice] = "Shareable preview link created - see below."
+      flash[:notice] = t("flash.nodes.preview_created")
     else
-      flash[:notice] = "Create or edit a draft first - shared preview links are only available for pages with an active draft."
+      flash[:notice] = t("flash.nodes.preview_needs_draft")
     end
     redirect_to node_path(@node)
   end
@@ -220,7 +221,7 @@ class NodesController < ApplicationController
   def revoke_shared_preview
     @node = Node.find(params[:id])
     @node.draft.revoke_preview_token! if @node.draft
-    flash[:notice] = "Shareable preview link revoked."
+    flash[:notice] = t("flash.nodes.preview_revoked")
     redirect_to node_path(@node)
   end
 

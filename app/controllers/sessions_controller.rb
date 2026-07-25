@@ -32,10 +32,10 @@ class SessionsController < ApplicationController
         session[:logged_in_at] = Time.now.to_i
 
         if user.otp_required?
-          flash[:error] = "Your account requires a second factor -- set it up now."
+          flash[:error] = t("flash.sessions.otp_setup_now")
           redirect_to edit_user_path(user)
         else
-          flash[:notice] = "Logged in successfully"
+          flash[:notice] = t("flash.common.logged_in")
           redirect_to safe_return_to(return_to, :default => admin_path)
         end
       end
@@ -48,14 +48,14 @@ class SessionsController < ApplicationController
 
   def destroy
     logout_killing_session!
-    flash[:notice] = "You have been logged out."
+    flash[:notice] = t("flash.sessions.logged_out")
     redirect_back_or_default('/login')
   end
 
 protected
   # Track failed login attempts
   def note_failed_signin
-    flash[:error] = "login not successful"
+    flash[:error] = t("flash.sessions.failed")
     logger.warn "Failed login for '#{params[:login]}'" \
                 "from #{request.remote_ip} at #{Time.now.utc}"
   end

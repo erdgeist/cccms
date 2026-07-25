@@ -49,7 +49,7 @@ class OccurrencesController < ApplicationController
 
     respond_to do |format|
       if @occurrence.save
-        flash[:notice] = 'Occurrence was successfully created.'
+        flash[:notice] = t("flash.occurrences.created")
         format.html { redirect_to(@occurrence) }
         format.xml  { render :xml => @occurrence, :status => :created, :location => @occurrence }
       else
@@ -66,7 +66,7 @@ class OccurrencesController < ApplicationController
 
     respond_to do |format|
       if @occurrence.update(occurrence_params)
-        flash[:notice] = 'Occurrence was successfully updated.'
+        flash[:notice] = t("flash.occurrences.updated")
         format.html { redirect_to(@occurrence) }
         format.xml  { head :ok }
       else

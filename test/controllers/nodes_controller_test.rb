@@ -91,7 +91,7 @@ class NodesControllerTest < ActionController::TestCase
     node = Node.last
     assert_includes node.draft.assets, asset
     assert_equal asset, node.draft.headline_asset
-    assert_match /attached/, flash[:notice]
+    assert_equal I18n.t("flash.nodes.created_with_attachment", :name => "Birth attachment") + " " + I18n.t("flash.common.now_headline"), flash[:notice]
   end
 
   test "the attach notice survives the redirect into the editor" do
@@ -104,8 +104,8 @@ class NodesControllerTest < ActionController::TestCase
 
     get :edit, params: { :id => Node.last.id }
     assert_response :success
-    assert_match /attached/, flash[:notice]
-    assert_no_match /ready to edit/, flash[:notice]
+    assert_equal I18n.t("flash.nodes.created_with_attachment", :name => "Flash survivor"), flash[:notice]
+    assert_not_equal I18n.t("flash.nodes.locked_ready"), flash[:notice]
   end
 
   test "editing a node" do
@@ -146,7 +146,7 @@ class NodesControllerTest < ActionController::TestCase
 
     get :edit, params: { :id => node.id }
     assert_response :redirect
-    assert flash[:error] =~ /Page is locked by another user/
+    assert_equal I18n.t("flash.common.locked_by_other"), flash[:error]
   end
 
   def test_update_a_draft
@@ -282,7 +282,7 @@ class NodesControllerTest < ActionController::TestCase
 
     put :unlock, params: { :id => node.id }
     assert_response :redirect
-    assert_equal "Already unlocked", flash[:notice]
+    assert_equal I18n.t("flash.nodes.already_unlocked"), flash[:notice]
   end
 
   test "updating a node by changing its parent" do

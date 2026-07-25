@@ -43,7 +43,7 @@ class EventsController < ApplicationController
     )
 
     if params[:tag_list].present? && params[:auto_tag_source].present?
-      flash.now[:notice] = "Tag '#{params[:tag_list]}' was pre-filled because this page is tagged '#{params[:auto_tag_source]}'. You can remove it below."
+      flash.now[:notice] = t("flash.events.tag_prefilled", :tag => params[:tag_list], :source => params[:auto_tag_source])
     end
 
     respond_to do |format|
@@ -65,7 +65,7 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.save
-        flash[:notice] = 'Event was successfully created.'
+        flash[:notice] = t("flash.events.created")
         format.html { redirect_to(safe_return_to(params[:return_to] || (@event.node ? edit_node_path(@event.node) : edit_event_path(@event)))) }
         format.xml  { render :xml => @event, :status => :created, :location => @event }
       else
@@ -82,7 +82,7 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.update(event_params)
-        flash[:notice] = 'Event was successfully updated.'
+        flash[:notice] = t("flash.events.updated")
         format.html { redirect_to(safe_return_to(params[:return_to] || events_path)) }
         format.xml  { head :ok }
       else

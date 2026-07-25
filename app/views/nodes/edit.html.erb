@@ -21,7 +21,7 @@
   <% end %>
 
   <%= submit_tag t(".save_draft"), form: dom_id(@node, :edit) %>
-  <%= submit_tag t(".save_unlock_exit"), form: dom_id(@node, :edit) %>
+  <%= submit_tag t(".save_unlock_exit"), name: "unlock_exit", form: dom_id(@node, :edit) %>
   <%= link_to t(".preview"), preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
@@ -163,7 +163,7 @@
 
   <div class="node_action_bar">
     <%= f.submit t(".save_draft") %>
-    <%= f.submit t(".save_unlock_exit") %>
+    <%= f.submit t(".save_unlock_exit"), name: "unlock_exit"%>
   </div>
   <% end %>
 </div>

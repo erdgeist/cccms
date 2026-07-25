@@ -26,7 +26,7 @@ class RevisionsController < ApplicationController
     @end   = @node.resolve_page_reference(params[:end_revision])
 
     if @start.nil? || @end.nil?
-      flash[:error] = "That comparison is no longer available."
+      flash[:error] = t("flash.revisions.unavailable")
       redirect_to(node_path(@node)) and return
     end
 
@@ -50,7 +50,7 @@ class RevisionsController < ApplicationController
   def restore
     page = Page.find(params[:id])
     page.node.restore_revision! page.revision, current_user
-    flash[:notice] = "Revision #{page.revision} restored"
+    flash[:notice] = t("flash.revisions.restored", :rev => page.revision)
     redirect_to node_path(page.node)
   end
 

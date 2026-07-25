@@ -15,7 +15,7 @@
         form: { class: 'button_to state_changing' },
         disabled: @node.autosave.present? %>
   <%= submit_tag "Save #{@locale.to_s.upcase} translation", form: "translation_edit_form" %>
-  <%= submit_tag "Save + Unlock + Exit", form: "translation_edit_form" %>
+  <%= submit_tag "Save + Unlock + Exit", name: "unlock_exit", form: "translation_edit_form" %>
   <%= link_to "Preview ↗", preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 

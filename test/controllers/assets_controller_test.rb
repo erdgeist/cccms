@@ -102,7 +102,7 @@ class AssetsControllerTest < ActionController::TestCase
     assert_response :redirect
     asset = Asset.last
     assert_includes node.draft.assets.reload, asset
-    assert_match /attached/, flash[:notice]
+    assert_equal I18n.t("flash.assets.attached", :title => node.title), flash[:notice]
   end
 
   test "create against a foreign-locked node keeps the asset but refuses the attach" do

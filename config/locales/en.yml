@@ -326,3 +326,65 @@ en:
         other: "Delete \"%{title}\" and the %{count} pages beneath it permanently? This cannot be undone."
       delete_permanently: "Delete permanently"
       restore_hint: "To restore a page, open it and pick a new parent in its Trash section."
+
+  flash:
+    common:
+      logged_in: "Logged in successfully"
+      otp_required: "Your account requires a second factor -- set it up to continue."
+      admin_required: "Sorry, you need to be an admin for this action"
+      now_headline: "It is now the page's headline."
+      headline_ineligible: "This asset type cannot be a headline."
+      locked_by_other: "The page is locked by another editor."
+      autosave_failed: "Autosave failed"
+    sessions:
+      otp_setup_now: "Your account requires a second factor -- set it up now."
+      logged_out: "You have been logged out."
+      failed: "login not successful"
+    otp:
+      too_many_attempts: "Too many attempts -- log in again."
+      code_mismatch: "That code did not match."
+      code_mismatch_rescan: "That code did not match. Rescan or wait for the next code."
+      wrong_password: "Wrong password."
+      wrong_credentials: "Password or code wrong -- second factor unchanged."
+      enabled: "Second factor enabled. The code you just entered is spent -- wait for the next one before logging in with it."
+      disabled: "Second factor disabled."
+    users:
+      created: "User created %{login}"
+      updated: "Updated user %{login}"
+      otp_reset: "Second factor reset for %{login}"
+    assets:
+      created: "Asset was successfully created."
+      updated: "Asset was successfully updated."
+      attached: "Asset was successfully created and attached to “%{title}”."
+      already_attached: "Asset saved — it was already attached to “%{title}”."
+    events:
+      created: "Event was successfully created."
+      updated: "Event was successfully updated."
+      tag_prefilled: "Tag '%{tag}' was pre-filled because this page is tagged '%{source}'. You can remove it below."
+    occurrences:
+      created: "Occurrence was successfully created."
+      updated: "Occurrence was successfully updated."
+    revisions:
+      unavailable: "That comparison is no longer available."
+      restored: "Revision %{rev} restored"
+    nodes:
+      created_with_attachment: "Page created with “%{name}” attached."
+      autosave_banner: "This page has unsaved changes from a previous session, shown below. Save to keep them, or use \"Discard Autosave\" below to go back to the last saved version."
+      locked_ready: "Node locked and ready to edit"
+      draft_saved: "Draft saved. Publish your changes in the Status section once you're done."
+      trashed: "Page has been moved to the Trash"
+      already_trashed: "Page is already in the Trash"
+      restored: "Page has been restored from the Trash"
+      restore_target_missing: "Restore target not found"
+      deleted: "Page has been permanently deleted"
+      published: "Draft has been published"
+      unlocked: "Node unlocked"
+      already_unlocked: "Already unlocked"
+      preview_created: "Shareable preview link created - see below."
+      preview_needs_draft: "Create or edit a draft first - shared preview links are only available for pages with an active draft."
+      preview_revoked: "Shareable preview link revoked."
+    page_translations:
+      saved: "%{lang} translation saved. Publish the draft to make it live."
+      none_to_remove: "No %{lang} translation exists to remove."
+      last_translation: "Can't remove the only remaining translation."
+      removed: "%{lang} translation removed from the draft. Publish to make this permanent."
