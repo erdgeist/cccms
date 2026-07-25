@@ -1,11 +1,11 @@
-<h2>Drafts (<%= @drafts.size %>)</h2>
+<h2><%= t(".title", :size => @drafts.size) %></h2>
 <div id="draft_list">
   <table>
     <tr class="header">
-      <th>ID</th>
-      <th>Title</th>
-      <th>Path</th>
-      <th>author</th>
+      <th><%= t("admin.columns.id") %></th>
+      <th><%= t("admin.columns.title") %></th>
+      <th><%= t("admin.columns.path") %></th>
+      <th><%= t("admin.columns.author") %></th>
       <th></th>
     </tr>
     <% @drafts.each do |draft| %>
@@ -15,9 +15,9 @@
       <td><%= draft.node.unique_name %></td>
       <td><%= draft.user.login rescue "" %></td>
       <td class="actions">
-        <%= link_to 'Show', node_path(draft.node) %>
-        <%= link_to "Revisions", revision_path(draft.node.id) %>
-        <%= button_to "Publish", publish_node_path(draft.node), method: :put, form: { data: { confirm: "Do you really want to publish?" }, class: 'button_to state_changing' } %>
+        <%= link_to t("admin.common.show"), node_path(draft.node) %>
+        <%= link_to t(".revisions"), revision_path(draft.node.id) %>
+        <%= button_to t("nodes.show.publish"), publish_node_path(draft.node), method: :put, form: { data: { confirm: t("nodes.show.confirm_publish") }, class: 'button_to state_changing' } %>
       </td>
     </tr>
     <% end %>

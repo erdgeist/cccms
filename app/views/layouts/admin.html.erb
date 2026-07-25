@@ -10,15 +10,16 @@
     <%= javascript_include_tag 'admin_bundle' %>
     <%= tinymce_assets %>
     <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/admin.css') %>">
-    <script src="<%= mtime_busted_path('/javascripts/admin_search.js') %>"></script>
-    <script src="<%= mtime_busted_path('/javascripts/admin_interface.js') %>"></script>
-    <script src="<%= mtime_busted_path('/javascripts/related_assets.js') %>"></script>
     <%= javascript_tag nonce: true do %>
       var ADMIN_SEARCH_URL = "<%= admin_search_path %>";
       var ADMIN_MENU_SEARCH_URL = "<%= admin_menu_search_path %>";
+      var ADMIN_STRINGS = <%= raw({ :lock_lost_prefix => t(".lock_lost_prefix"), :lock_lost_link => t(".lock_lost_link"), :insert_image => t(".insert_image"), :insert_image_tooltip => t(".insert_image_tooltip") }.to_json) %>;
       var PARAMETERIZE_PREVIEW_URL = "<%= parameterize_preview_nodes_path %>";
       var DASHBOARD_SEARCH_URL = "<%= admin_dashboard_search_path %>";
     <% end %>
+    <script src="<%= mtime_busted_path('/javascripts/admin_search.js') %>"></script>
+    <script src="<%= mtime_busted_path('/javascripts/admin_interface.js') %>"></script>
+    <script src="<%= mtime_busted_path('/javascripts/related_assets.js') %>"></script>
   </head>
   
   <body>
@@ -30,7 +31,7 @@
         <div id="search_widget" style="display: none;">
           <div>
             <%= form_tag admin_search_path, method: :get do %>
-              <%= text_field_tag :search_term, nil, placeholder: "Search nodes…", autocomplete: "off" %>
+              <%= text_field_tag :search_term, nil, placeholder: t(".search_placeholder"), autocomplete: "off" %>
             <% end %>
           </div>
           <div id="menu_search_results" class="search_results" style="display: none"></div>

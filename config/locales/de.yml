@@ -247,7 +247,35 @@ de:
       path: "Pfad"
       preview: "Vorschau"
       name: "Name"
+      author: "Autor"
       type: "Typ"
+    menu:
+      dashboard: "Dashboard"
+      search: "Suche"
+      log_out: "Abmelden"
+    index:
+      title: "cccms Dashboard"
+      search_placeholder: "Nodes und Tags durchsuchen…"
+      create_post: "Beitrag anlegen"
+      find_chapter: "Chapter finden"
+      upload_asset: "Asset hochladen"
+      add_in_tree: "Seite im Seitenbaum anlegen"
+      drafts_widget: "Entwürfe und Autosaves"
+      see_all_drafts: "Alle Entwürfe →"
+      see_all_changes: "Alle Änderungen →"
+      housekeeping: "Verwaltung"
+      my_account: "Mein Konto"
+      navigation: "Navigation"
+    drafts:
+      title: "Entwürfe (%{size})"
+      revisions: "Revisionen"
+    conventions:
+      title: "Konventionen beim Anlegen von Nodes"
+      kind: "Art"
+      what_happens: "Was passiert"
+    search_results:
+      title: "Suchergebnisse"
+
   nodes:
     index:
       title: "Nodes"
@@ -504,34 +532,55 @@ de:
       none_to_remove: "Es existiert keine %{lang}-Übersetzung zum Entfernen."
       last_translation: "Die einzige verbliebene Übersetzung kann nicht entfernt werden."
       removed: "%{lang}-Übersetzung aus dem Entwurf entfernt. Veröffentlichen, um das dauerhaft zu machen."
-    assets:
-      index:
-        title: "Assets"
-        create_asset: "Asset anlegen"
-      show:
-        thumbnail: "Vorschaubild"
-        attached_to: "Angehängt an"
-        pending_only: "nur in ausstehenden Versionen"
-        not_attached: "— an keine Seite angehängt —"
-        new_page_with_attachment: "Neue Seite mit diesem Anhang"
-        public_path: "Öffentlicher Pfad"
-        copy_url: "URL kopieren"
-        creator: "Urheber"
-        source: "Quelle"
-        license: "Lizenz"
-        content_type: "Content-Type"
-        size: "Größe"
-      new:
-        title: "Neues Asset"
-      edit:
-        title: "Asset bearbeiten"
-        current_file: "Aktuelle Datei"
-        replace_file: "Datei ersetzen"
-      form:
-        drop_hint: "…oder Datei hier ablegen."
-        none_option: "— keine —"
-        attach_to_page: "an Seite anhängen"
-        attach_search_placeholder: "Seite suchen…"
-        attach_hint: "Optional — hängt dieses Asset an die Seite an, alle ausstehenden Versionen eingeschlossen."
-        as_headline: "als Aufmacher der Seite anhängen"
-        headline_hint: "Gilt nur, wenn die Seite noch keinen Aufmacher hat."
+
+  assets:
+    index:
+      title: "Assets"
+      create_asset: "Asset anlegen"
+    show:
+      thumbnail: "Vorschaubild"
+      attached_to: "Angehängt an"
+      pending_only: "nur in ausstehenden Versionen"
+      not_attached: "— an keine Seite angehängt —"
+      new_page_with_attachment: "Neue Seite mit diesem Anhang"
+      public_path: "Öffentlicher Pfad"
+      copy_url: "URL kopieren"
+      creator: "Urheber"
+      source: "Quelle"
+      license: "Lizenz"
+      content_type: "Content-Type"
+      size: "Größe"
+    new:
+      title: "Neues Asset"
+    edit:
+      title: "Asset bearbeiten"
+      current_file: "Aktuelle Datei"
+      replace_file: "Datei ersetzen"
+    form:
+      drop_hint: "…oder Datei hier ablegen."
+      none_option: "— keine —"
+      attach_to_page: "an Seite anhängen"
+      attach_search_placeholder: "Seite suchen…"
+      attach_hint: "Optional — hängt dieses Asset an die Seite an, alle ausstehenden Versionen eingeschlossen."
+      as_headline: "als Aufmacher der Seite anhängen"
+      headline_hint: "Gilt nur, wenn die Seite noch keinen Aufmacher hat."
+
+  layouts:
+    flash:
+      go_to_status: "Zum Status"
+      stale_prefix: "Die %{lang}-Übersetzung ist womöglich veraltet —"
+      stale_link: "auch prüfen"
+      stale_suffix: "."
+      locked_prefix: "Die Seite ist von %{login} gesperrt —"
+      locked_link: "dort entsperren"
+      locked_suffix: ", dann von der Asset-Seite aus erneut anhängen."
+      headline_prefix: "Der bestehende Aufmacher der Seite wurde behalten —"
+      headline_link: "dort ändern"
+      headline_suffix: ", falls gewünscht."
+    admin:
+      search_placeholder: "Nodes durchsuchen…"
+      lock_lost_prefix: "Diese Seite ist jetzt von jemand anderem gesperrt — deine Änderungen hier können nicht mehr gespeichert werden. Kopiere, was du brauchst, dann "
+      lock_lost_link: "zurück zur veröffentlichten Seite"
+      insert_image: "Bild einfügen"
+      insert_image_tooltip: "Eines der angehängten Bilder dieser Seite einfügen"
+

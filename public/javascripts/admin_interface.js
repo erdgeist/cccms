@@ -24,8 +24,8 @@ $(document).ready(function () {
 
       editor.ui.registry.addButton('insertpageimage', {
         icon: 'image',
-        text: 'Insert image',
-        tooltip: "Insert one of this page's attached images",
+        text: ADMIN_STRINGS.insert_image,
+        tooltip: ADMIN_STRINGS.insert_image_tooltip,
         onAction: function() {
           cccms.inline_images.open(editor);
         }
@@ -231,10 +231,8 @@ cccms = {
       $flash = $("<div>", { id: "flash" }).insertAfter(".admin_content_spacer");
     }
 
-    var $banner = $("<span>", { "class": "warning" }).text(
-      "This page is now locked by someone else — your changes here can no longer be saved. Copy anything you need, then "
-    );
-    $banner.append($("<a>", { href: show_url }).text("return to the published page"));
+    var $banner = $("<span>", { "class": "warning" }).text(ADMIN_STRINGS.lock_lost_prefix);
+    $banner.append($("<a>", { href: show_url }).text(ADMIN_STRINGS.lock_lost_link));
     $banner.append(".");
 
     $flash.html($banner);

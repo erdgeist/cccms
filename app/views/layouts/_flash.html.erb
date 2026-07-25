@@ -2,20 +2,21 @@
 <div id="flash">
   <%= flash[:notice] %>
   <% if flash[:status_path] %>
-    <%= link_to 'Go to Status', flash[:status_path] %>
+    <%= link_to t(".go_to_status"), flash[:status_path] %>
   <% end %>
   <% if flash[:stale_locale_path] %>
-    The <%= flash[:stale_locale] %> translation may be out of date —
-    <%= link_to 'review it', flash[:stale_locale_path] %> too.
+    <%= t(".stale_prefix", :lang => flash[:stale_locale]) %>
+    <%= link_to t(".stale_link"), flash[:stale_locale_path] %><%= t(".stale_suffix") %>
   <% end %>
   <% if flash[:locked_node_path] %>
-    <span class="warning">The page is locked by <%= flash[:locked_by] %> —
-      <%= link_to 'unlock it there', flash[:locked_node_path] %> first,
-      then attach from this asset's page.</span>
+    <span class="warning"><%= t(".locked_prefix", :login => flash[:locked_by]) %>
+      <%= link_to t(".locked_link"), flash[:locked_node_path] %><%= t(".locked_suffix") %>
+    </span>
   <% end %>
   <% if flash[:headline_kept_path] %>
-    <span class="warning">The page's existing headline was kept —
-      <%= link_to 'change it there', flash[:headline_kept_path] %> if needed.</span>
+    <span class="warning"><%= t(".headline_prefix") %>
+      <%= link_to t(".headline_link"), flash[:headline_kept_path] %><%= t(".headline_suffix") %>
+    </span>
   <% end %>
   <% if flash[:error] %>
     <span id="flash_error"><%= flash[:error] %></span>

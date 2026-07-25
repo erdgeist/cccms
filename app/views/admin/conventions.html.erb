@@ -1,7 +1,7 @@
-<h1>Node creation conventions</h1>
+<h1><%= t(".title") %></h1>
 
 <table id="conventions">
-  <tr><th>Kind</th><th>What happens</th></tr>
+  <tr><th><%= t(".kind") %></th><th><%= t(".what_happens") %></th></tr>
   <% @node_kinds.each do |kind, config| %>
     <tr>
       <td><%= kind %></td>

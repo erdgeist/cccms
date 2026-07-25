@@ -1,29 +1,29 @@
-<h1>cccms dashboard</h1>
+<h1><%= t(".title") %></h1>
 <div id="dashboard_search">
   <%= form_tag admin_search_path, method: :get do %>
-    <%= text_field_tag :search_term, nil, id: "dashboard_search_term", placeholder: "Search nodes and tags…", autocomplete: "off" %>
+    <%= text_field_tag :search_term, nil, id: "dashboard_search_term", placeholder: t(".search_placeholder"), autocomplete: "off" %>
   <% end %>
   <div id="dashboard_search_results" class="search_results"></div>
 </div>
 
 <div id="dashboard_signposts" class="button_row">
   <%= link_to new_node_path, class: "action_button" do %>
-    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create post
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_post") %>
   <% end %>
   <%= link_to chapters_nodes_path, class: "action_button" do %>
-    <%= icon("map-pin", library: "tabler", "aria-hidden": true) %> Find a chapter
+    <%= icon("map-pin", library: "tabler", "aria-hidden": true) %> <%= t(".find_chapter") %>
   <% end %>
   <%= link_to new_asset_path, class: "action_button" do %>
-    <%= icon("upload", library: "tabler", "aria-hidden": true) %> Upload asset
+    <%= icon("upload", library: "tabler", "aria-hidden": true) %> <%= t(".upload_asset") %>
   <% end %>
   <%= link_to sitemap_nodes_path, class: "action_button" do %>
-    <%= icon("list-tree", library: "tabler", "aria-hidden": true) %> Add a page in the page tree
+    <%= icon("list-tree", library: "tabler", "aria-hidden": true) %> <%= t(".add_in_tree") %>
   <% end %>
 </div>
 
 <div id="dashboard_widgets">
   <div class="dashboard_widget">
-    <h3>Drafts and autosaves</h3>
+    <h3><%= t(".drafts_widget") %></h3>
     <ul>
       <% @drafts.each do |node| %>
         <li>
@@ -37,43 +37,43 @@
         </li>
       <% end %>
     </ul>
-    <%= link_to "See all drafts →", drafts_nodes_path %>
+    <%= link_to t(".see_all_drafts"), drafts_nodes_path %>
   </div>
 
   <div class="dashboard_widget">
-    <h3>Recent changes</h3>
+    <h3><%= t("node_actions.heading") %></h3>
     <table id="node_action_list">
       <%= render partial: "node_actions/action_row", collection: @actions, as: :action %>
     </table>
-    <%= link_to "See all recent changes →", admin_log_path %>
+    <%= link_to t(".see_all_changes"), admin_log_path %>
   </div>
 
 </div>
 
 <div id="dashboard_housekeeping">
-  <h3>Housekeeping</h3>
+  <h3><%= t(".housekeeping") %></h3>
   <div class="button_row">
     <%= link_to edit_user_path(current_user), class: "action_button" do %>
-      <%= icon("user-cog", library: "tabler", "aria-hidden": true) %> My account
+      <%= icon("user-cog", library: "tabler", "aria-hidden": true) %> <%= t(".my_account") %>
     <% end %>
     <%= link_to nodes_path, class: "action_button" do %>
-      <%= icon("list", library: "tabler", "aria-hidden": true) %> Nodes
+      <%= icon("list", library: "tabler", "aria-hidden": true) %> <%= t("nodes.index.title") %>
     <% end %>
     <%= link_to events_path, class: "action_button" do %>
-      <%= icon("calendar", library: "tabler", "aria-hidden": true) %> Events
+      <%= icon("calendar", library: "tabler", "aria-hidden": true) %> <%= t("events.index.title") %>
     <% end %>
     <%= link_to assets_path, class: "action_button" do %>
-      <%= icon("folder", library: "tabler", "aria-hidden": true) %> Assets
+      <%= icon("folder", library: "tabler", "aria-hidden": true) %> <%= t("assets.index.title") %>
     <% end %>
     <%= link_to users_path, class: "action_button" do %>
-      <%= icon("users", library: "tabler", "aria-hidden": true) %> Users
+      <%= icon("users", library: "tabler", "aria-hidden": true) %> <%= t("users.index.users") %>
     <% end %>
     <%= link_to menu_items_path, class: "action_button" do %>
-      <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> Navigation
+      <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> <%= t(".navigation") %>
     <% end %>
     <% trash_count = Node.trash.children.count %>
     <%= link_to trashed_nodes_path, class: "action_button" do %>
-      <%= icon("trash", library: "tabler", "aria-hidden": true) %> Trash<%= " (#{trash_count})" if trash_count > 0 %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("nodes.trashed.title") %><%= " (#{trash_count})" if trash_count > 0 %>
     <% end %>
   </div>
 </div>

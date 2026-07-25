@@ -199,7 +199,34 @@ en:
       path: "Path"
       preview: "Preview"
       name: "Name"
+      author: "Author"
       type: "Type"
+    menu:
+      dashboard: "Dashboard"
+      search: "Search"
+      log_out: "Log out"
+    index:
+      title: "cccms dashboard"
+      search_placeholder: "Search nodes and tags…"
+      create_post: "Create post"
+      find_chapter: "Find a chapter"
+      upload_asset: "Upload asset"
+      add_in_tree: "Add a page in the page tree"
+      drafts_widget: "Drafts and autosaves"
+      see_all_drafts: "See all drafts →"
+      see_all_changes: "See all recent changes →"
+      housekeeping: "Housekeeping"
+      my_account: "My account"
+      navigation: "Navigation"
+    drafts:
+      title: "Drafts (%{size})"
+      revisions: "Revisions"
+    conventions:
+      title: "Node creation conventions"
+      kind: "Kind"
+      what_happens: "What happens"
+    search_results:
+      title: "Search Results"
   nodes:
     index:
       title: "Nodes"
@@ -456,34 +483,54 @@ en:
       none_to_remove: "No %{lang} translation exists to remove."
       last_translation: "Can't remove the only remaining translation."
       removed: "%{lang} translation removed from the draft. Publish to make this permanent."
-    assets:
-      index:
-        title: "Assets"
-        create_asset: "Create asset"
-      show:
-        thumbnail: "Thumbnail"
-        attached_to: "Attached to"
-        pending_only: "pending versions only"
-        not_attached: "— not attached to any page —"
-        new_page_with_attachment: "New page with this attachment"
-        public_path: "Public Path"
-        copy_url: "Copy URL"
-        creator: "Creator"
-        source: "Source"
-        license: "License"
-        content_type: "Content Type"
-        size: "Size"
-      new:
-        title: "New asset"
-      edit:
-        title: "Editing asset"
-        current_file: "Current File"
-        replace_file: "Replace file"
-      form:
-        drop_hint: "…or drop a file here."
-        none_option: "— none —"
-        attach_to_page: "attach to page"
-        attach_search_placeholder: "Search for a page…"
-        attach_hint: "Optional — attaches this asset to that page, all pending versions included."
-        as_headline: "attach as the page's headline"
-        headline_hint: "Applies only if the page has no headline yet."
+
+  assets:
+    index:
+      title: "Assets"
+      create_asset: "Create asset"
+    show:
+      thumbnail: "Thumbnail"
+      attached_to: "Attached to"
+      pending_only: "pending versions only"
+      not_attached: "— not attached to any page —"
+      new_page_with_attachment: "New page with this attachment"
+      public_path: "Public Path"
+      copy_url: "Copy URL"
+      creator: "Creator"
+      source: "Source"
+      license: "License"
+      content_type: "Content Type"
+      size: "Size"
+    new:
+      title: "New asset"
+    edit:
+      title: "Editing asset"
+      current_file: "Current File"
+      replace_file: "Replace file"
+    form:
+      drop_hint: "…or drop a file here."
+      none_option: "— none —"
+      attach_to_page: "attach to page"
+      attach_search_placeholder: "Search for a page…"
+      attach_hint: "Optional — attaches this asset to that page, all pending versions included."
+      as_headline: "attach as the page's headline"
+      headline_hint: "Applies only if the page has no headline yet."
+
+  layouts:
+    flash:
+      go_to_status: "Go to Status"
+      stale_prefix: "The %{lang} translation may be out of date —"
+      stale_link: "review it"
+      stale_suffix: " too."
+      locked_prefix: "The page is locked by %{login} —"
+      locked_link: "unlock it there"
+      locked_suffix: " first, then attach from this asset's page."
+      headline_prefix: "The page's existing headline was kept —"
+      headline_link: "change it there"
+      headline_suffix: " if needed."
+    admin:
+      search_placeholder: "Search nodes…"
+      lock_lost_prefix: "This page is now locked by someone else — your changes here can no longer be saved. Copy anything you need, then "
+      lock_lost_link: "return to the published page"
+      insert_image: "Insert image"
+      insert_image_tooltip: "Insert one of this page's attached images"
