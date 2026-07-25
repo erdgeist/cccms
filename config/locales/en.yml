@@ -36,6 +36,26 @@ en:
     container_aria_label: "Pagination"
     page_aria_label: "Page %{page}"
 
+  activerecord:
+    attributes:
+      asset:
+        name: "Name"
+        upload: "File"
+        creator: "Creator"
+        source_url: "Source URL"
+        license_key: "License"
+      event:
+        title: "Title"
+        start_time: "Start time"
+        end_time: "End time"
+        rrule: "Rrule"
+        allday: "Allday"
+        url: "Url"
+        node: "Node"
+        tag_list: "Tags"
+        latitude: "Latitude"
+        longitude: "Longitude"
+
   tags:
     index:
       title: "Tags"
@@ -161,6 +181,10 @@ en:
       destroy: "Destroy"
       search: "Search"
       reset: "Reset"
+      show: "Show"
+      back: "Back"
+      update: "Update"
+      confirm_sure: "Are you sure?"
       confirm_irreversible: "This cannot be undone. Continue?"
       toggle_preview: "Toggle live preview"
       force_render: "Force preview render"
@@ -173,6 +197,9 @@ en:
       locked_by: "Locked by"
       rev: "Rev."
       path: "Path"
+      preview: "Preview"
+      name: "Name"
+      type: "Type"
   nodes:
     index:
       title: "Nodes"
@@ -327,6 +354,47 @@ en:
       delete_permanently: "Delete permanently"
       restore_hint: "To restore a page, open it and pick a new parent in its Trash section."
 
+  events:
+    confirm_delete: "Delete this event?"
+    index:
+      title: "Events"
+      create_event: "Create event"
+      without_page_link: "View events without a page →"
+      edit_link: "edit"
+    edit:
+      title: "Editing event"
+      change_node: "Change node"
+      change_node_hint: "This will re-link the event to a different node — rarely needed."
+    without_node:
+      title: "Events without a node"
+      all_events_link: "← All events"
+    show:
+      title: "Event"
+      title_for_node: "Event for node %{path}"
+      node_link: "Node"
+      recurrence: "Recurrence"
+    form:
+      node_hint: "Optional — search and pick a node to associate this event with a page."
+      recurrence: "Recurrence"
+      title_hint: "Optional — if left blank, the associated node's title is used."
+    rrule_builder:
+      weekly: "Weekly"
+      monthly: "Monthly"
+      biweekly: "Every 2 weeks"
+      monthly_ordinal: "On a specific weekday each month"
+      ordinal_1: "1st"
+      ordinal_2: "2nd"
+      ordinal_3: "3rd"
+      ordinal_4: "4th"
+      ordinal_last: "last"
+      ordinal_second_last: "second to last"
+      ordinal_custom: "Selected weeks"
+      weeks_of_month: "Weeks of the month:"
+      exclude_month: "Except in one month"
+      hint: "Builds the field below automatically. If your pattern is more complex than this covers, just edit it directly below - these controls won't touch it unless you use them."
+    new:
+      title: "New event"
+
   flash:
     common:
       logged_in: "Logged in successfully"
@@ -388,3 +456,34 @@ en:
       none_to_remove: "No %{lang} translation exists to remove."
       last_translation: "Can't remove the only remaining translation."
       removed: "%{lang} translation removed from the draft. Publish to make this permanent."
+    assets:
+      index:
+        title: "Assets"
+        create_asset: "Create asset"
+      show:
+        thumbnail: "Thumbnail"
+        attached_to: "Attached to"
+        pending_only: "pending versions only"
+        not_attached: "— not attached to any page —"
+        new_page_with_attachment: "New page with this attachment"
+        public_path: "Public Path"
+        copy_url: "Copy URL"
+        creator: "Creator"
+        source: "Source"
+        license: "License"
+        content_type: "Content Type"
+        size: "Size"
+      new:
+        title: "New asset"
+      edit:
+        title: "Editing asset"
+        current_file: "Current File"
+        replace_file: "Replace file"
+      form:
+        drop_hint: "…or drop a file here."
+        none_option: "— none —"
+        attach_to_page: "attach to page"
+        attach_search_placeholder: "Search for a page…"
+        attach_hint: "Optional — attaches this asset to that page, all pending versions included."
+        as_headline: "attach as the page's headline"
+        headline_hint: "Applies only if the page has no headline yet."

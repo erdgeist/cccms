@@ -2,16 +2,16 @@
   <h1><%= @asset.name %></h1>
 
   <div id="content">
-    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
         <%= link_to edit_asset_path(@asset), class: 'action_button' do %>
-          <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+          <%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.edit") %>
         <% end %>
         </div>
         <div class="info_item">
-          <%= link_to 'Back', assets_path %>
+          <%= link_to link_to t("admin.common.back"), assets_path %>
         </div>
         <%= link_to admin_log_path(:asset_id => @asset.id), :class => "action_button" do %>
           <%= icon("history", library: "tabler", "aria-hidden": true) %> <%= t("node_actions.asset_history") %>
@@ -20,11 +20,11 @@
     </div>
 
     <% if @asset.has_variant?(:medium) %>
-      <div class="layout_row_label">Thumbnail</div>
+      <div class="layout_row_label"><%= t(".thumbnail") %></div>
       <div class="layout_row_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
     <% end %>
 
-    <div class="layout_row_label">Attached to</div>
+    <div class="layout_row_label"><%= t(".attached_to") %></div>
     <div class="layout_row_content">
       <% nodes = @asset.attached_nodes %>
       <% if nodes.any? %>
@@ -36,34 +36,34 @@
                 <%= icon("star", library: "tabler", "aria-hidden": true) %>
               <% end %>
               <% unless node.head && node.head.related_assets.exists?(:asset_id => @asset.id) %>
-                <span class="field_hint">pending versions only</span>
+                <span class="field_hint"><%= t(".pending_only") %></span>
               <% end %>
             </li>
           <% end %>
         </ul>
       <% else %>
-        — not attached to any page —
+        <%= t(".not_attached") %>
       <% end %>
       <%= link_to new_node_path(:asset_id => @asset.id), :class => "action_button" do %>
-        <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> New page with this attachment
+        <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> <%= t(".new_page_with_attachment") %>
       <% end %>
     </div>
 
-    <div class="layout_row_label">Public Path</div>
+    <div class="layout_row_label"><%= t(".public_path") %></div>
     <div class="layout_row_content">
       <% public_path = @asset.upload.url.sub(/\?\d+$/, "") %>
       <%= link_to public_path, public_path, target: "_blank", rel: "noopener" %>
       <button type="button" class="action_button copy_button"
               data-copy-url="<%= request.base_url + public_path %>">
         <%= icon("copy", library: "tabler", "aria-hidden": true) %>
-        <span class="copy_button_label">Copy URL</span>
+        <span class="copy_button_label"><%= t(".copy_url") %></span>
       </button>
     </div>
 
-    <div class="layout_row_label">Creator</div>
+    <div class="layout_row_label"><%= t(".creator") %></div>
     <div class="layout_row_content"><%= @asset.creator.presence || "—" %></div>
 
-    <div class="layout_row_label">Source</div>
+    <div class="layout_row_label"><%= t(".source") %></div>
     <div class="layout_row_content">
       <% if @asset.source_url.present? %>
         <%= link_to @asset.source_url, @asset.source_url %>
@@ -72,7 +72,7 @@
       <% end %>
     </div>
 
-    <div class="layout_row_label">License</div>
+    <div class="layout_row_label"><%= t(".license") %></div>
     <div class="layout_row_content">
       <% if (license = AssetLicense.find(@asset.license_key)) %>
         <%= t("asset_licenses.#{license.key}") %>
@@ -81,10 +81,10 @@
       <% end %>
     </div>
 
-    <div class="layout_row_label">Content Type</div>
+    <div class="layout_row_label"><%= t(".content_type") %></div>
     <div class="layout_row_content"><%= @asset.upload.content_type %></div>
 
-    <div class="layout_row_label">Size</div>
+    <div class="layout_row_label"><%= t(".size") %></div>
     <div class="layout_row_content"><%= "#{@asset.upload.size/1024} KB" %></div>
   </div>
 </div>

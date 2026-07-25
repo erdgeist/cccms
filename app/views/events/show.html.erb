@@ -1,55 +1,55 @@
 <div id="admin_layout" class="show_node">
-  <h1><%= @event.node ? "Event for node #{@event.node.unique_name}" : "Event" %></h1>
+  <h1><%= @event.node ? t(".title_for_node", :path => @event.node.unique_name) : t(".title") %></h1>
 
   <div id="content">
-    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <% if @event.node %>
           <div class="info_item">
-            <%= link_to 'Node', node_path(@event.node) %>
+            <%= link_to t(".node_link"), node_path(@event.node) %>
           </div>
         <% end %>
         <div class="info_item">
           <%= link_to edit_event_path(@event, return_to: request.path), class: 'action_button' do %>
-            <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.edit") %>
           <% end %>
         </div>
         <div class="info_item">
-          <%= button_to event_path(@event), method: :delete, form: { data: { confirm: 'Delete this event?' }, class: 'button_to destructive' } do %>
-            <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+          <%= button_to event_path(@event), method: :delete, form: { data: { confirm: t("events.confirm_delete") }, class: 'button_to destructive' } do %>
+            <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
           <% end %>
         </div>
       </div>
     </div>
 
-    <div class="layout_row_label">Start time</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:start_time) %></div>
     <div class="layout_row_content"><%=h @event.start_time %></div>
 
-    <div class="layout_row_label">End time</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:end_time) %></div>
     <div class="layout_row_content"><%=h @event.end_time %></div>
 
-    <div class="layout_row_label">Rrule</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:rrule) %></div>
     <div class="layout_row_content"><%=h @event.rrule %></div>
 
     <% if (human = @event.humanize_rrule(I18n.locale)) %>
-      <div class="layout_row_label">Recurrence</div>
+      <div class="layout_row_label"><%= t(".recurrence") %></div>
       <div class="layout_row_content"><em><%= human %></em></div>
     <% end %>
 
-    <div class="layout_row_label">Tags</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:tag_list) %></div>
     <div class="layout_row_content"><%=h @event.tag_list %></div>
 
-    <div class="layout_row_label">Allday</div>
-    <div class="layout_row_content"><%=h @event.allday %></div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:allday) %></div>
+    <div class="layout_row_content"><%= @event.allday ? t("admin.common.yes") : t("admin.common.no") %></div>
 
-    <div class="layout_row_label">Url</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:url) %></div>
     <div class="layout_row_content"><%=h @event.url %></div>
 
-    <div class="layout_row_label">Latitude</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:latitude) %></div>
     <div class="layout_row_content"><%=h @event.latitude %></div>
 
-    <div class="layout_row_label">Longitude</div>
+    <div class="layout_row_label"><%= Event.human_attribute_name(:longitude) %></div>
     <div class="layout_row_content"><%=h @event.longitude %></div>
   </div>
 </div>

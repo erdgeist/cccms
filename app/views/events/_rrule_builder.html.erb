@@ -1,33 +1,33 @@
 <div id="rrule_builder">
   <p>
-    <label><%= radio_button_tag "rrule_freq", "weekly", true %> Weekly</label>
-    <label><%= radio_button_tag "rrule_freq", "monthly" %> Monthly</label>
+    <label><%= radio_button_tag "rrule_freq", "weekly", true %> <%= t(".weekly") %></label>
+    <label><%= radio_button_tag "rrule_freq", "monthly" %> <%= t(".monthly") %></label>
   </p>
   <div id="rrule_weekly_options">
-    <p><label><%= check_box_tag "rrule_biweekly" %> Every 2 weeks</label></p>
+    <p><label><%= check_box_tag "rrule_biweekly" %> <%= t(".biweekly") %></label></p>
     <p>
       <% %w[MO TU WE TH FR SA SU].each do |code| %>
-        <label><%= check_box_tag "rrule_byday_#{code}" %> <%= RruleHumanizer::WEEKDAY_NAMES_ABBR[:de][code] %></label>
+        <label><%= check_box_tag "rrule_byday_#{code}" %> <%= RruleHumanizer::WEEKDAY_NAMES_ABBR[I18n.locale][code] %></label>
       <% end %>
     </p>
   </div>
   <div id="rrule_monthly_options" style="display: none;">
-    <p><label><%= check_box_tag "rrule_monthly_ordinal" %> On a specific weekday each month</label></p>
+    <p><label><%= check_box_tag "rrule_monthly_ordinal" %> <%= t(".monthly_ordinal") %></label></p>
     <p id="rrule_ordinal_fields" style="display: none;">
-      <%= select_tag "rrule_ordinal", options_for_select([["1.", 1], ["2.", 2], ["3.", 3], ["4.", 4], ["letzter", -1], ["vorletzter", -2], ["Selected weeks", "custom"]]) %>
-      <%= select_tag "rrule_ordinal_day", options_for_select(%w[MO TU WE TH FR SA SU].map { |c| [RruleHumanizer::WEEKDAY_NAMES[:de][c], c] }) %>
+      <%= select_tag "rrule_ordinal", options_for_select([[t(".ordinal_1"), 1], [t(".ordinal_2"), 2], [t(".ordinal_3"), 3], [t(".ordinal_4"), 4], [t(".ordinal_last"), -1], [t(".ordinal_second_last"), -2], [t(".ordinal_custom"), "custom"]]) %>
+      <%= select_tag "rrule_ordinal_day", options_for_select(%w[MO TU WE TH FR SA SU].map { |c| [RruleHumanizer::WEEKDAY_NAMES[I18n.locale][c], c] }) %>
     </p>
     <p id="rrule_custom_ordinal_fields" style="display: none;">
-      Weeks of the month:
+      <%= t(".weeks_of_month") %>
       <% (1..5).each do |ordinal| %>
         <label><%= check_box_tag "rrule_custom_ordinal_#{ordinal}" %> <%= ordinal %>.</label>
       <% end %>
     </p>
   </div>
   <p>
-    <label><%= check_box_tag "rrule_exclude_month" %> Except in one month</label>
-    <%= select_tag "rrule_excluded_month", options_for_select((1..12).map { |m| [RruleHumanizer::MONTH_NAMES[:de][m-1], m] }), style: "display: none;" %>
+    <label><%= check_box_tag "rrule_exclude_month" %> <%= t(".exclude_month") %></label>
+    <%= select_tag "rrule_excluded_month", options_for_select((1..12).map { |m| [RruleHumanizer::MONTH_NAMES[I18n.locale][m-1], m] }), style: "display: none;" %>
   </p>
-  <span class="field_hint">Builds the field below automatically. If your pattern is more complex than this covers, just edit it directly below - these controls won't touch it unless you use them.</span>
+  <span class="field_hint"><%= t(".hint") %></span>
 </div>
 <%= f.text_field :rrule, id: "event_rrule" %>

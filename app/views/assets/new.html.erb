@@ -1,5 +1,5 @@
 <div id="admin_layout">
-  <h1>New asset</h1>
+  <h1><%= t(".title") %></h1>
 
   <%= form_for(@asset, :html => { :multipart => true }) do |f| %>
     <%= form_error_messages(f) %>
@@ -8,51 +8,51 @@
       <div class="layout_row_label"><%= f.label :name %></div>
       <div class="layout_row_content"><%= f.text_field :name %></div>
 
-      <div class="layout_row_label"><%= f.label :upload, "File" %></div>
+      <div class="layout_row_label"><%= f.label :upload %></div>
       <div class="layout_row_content">
         <div id="asset_dropzone">
           <%= f.file_field :upload %>
-          <p class="field_hint">…or drop a file here.</p>
+          <p class="field_hint"><%= t("assets.form.drop_hint") %></p>
         </div>
       </div>
 
       <div class="layout_row_label"><%= f.label :creator %></div>
       <div class="layout_row_content"><%= f.text_field :creator %></div>
 
-      <div class="layout_row_label"><%= f.label :source_url, "Source URL" %></div>
+      <div class="layout_row_label"><%= f.label :source_url %></div>
       <div class="layout_row_content"><%= f.text_field :source_url %></div>
 
-      <div class="layout_row_label"><%= f.label :license_key, "License" %></div>
+      <div class="layout_row_label"><%= f.label :license_key %></div>
       <div class="layout_row_content">
         <%= f.select :license_key,
               options_for_select(
-                [["— none —", ""]] + AssetLicense.keys.map { |key| [t("asset_licenses.#{key}"), key] },
+                [[t("assets.form.none_option"), ""]] + AssetLicense.keys.map { |key| [t("asset_licenses.#{key}"), key] },
                 @asset.license_key
               ) %>
       </div>
 
-      <div class="layout_row_label">attach to page</div>
+      <div class="layout_row_label"><%= t("assets.form.attach_to_page") %></div>
       <div class="layout_row_content">
         <div class="restore_picker">
           <%= text_field_tag :asset_node_search_term, @attach_node&.title,
-                :placeholder => "Search for a page…", :autocomplete => "off" %>
+                :placeholder => t("assets.form.attach_search_placeholder"), :autocomplete => "off" %>
           <div id="asset_node_search_results" class="search_results" style="display: none"></div>
         </div>
         <%= hidden_field_tag :node_id, @attach_node&.id %>
-        <span class="field_hint">Optional — attaches this asset to that page, all pending versions included.</span>
+        <span class="field_hint"><%= t("assets.form.attach_hint") %></span>
       </div>
 
       <div class="layout_row_label"></div>
       <div class="layout_row_content">
-        <label><%= check_box_tag :headline, "1" %> attach as the page's headline</label>
-        <span class="field_hint">Applies only if the page has no headline yet.</span>
+        <label><%= check_box_tag :headline, "1" %> <%= t("assets.form.as_headline") %></label>
+        <span class="field_hint"><%= t("assets.form.headline_hint") %></span>
       </div>
 
-      <div class="layout_row_label">Actions</div>
+      <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">
-          <div class="info_item"><%= f.submit 'Create' %></div>
-          <div class="info_item"><%= link_to 'Back', assets_path %></div>
+          <div class="info_item"><%= f.submit f.submit t("admin.common.create") %></div>
+          <div class="info_item"><%= link_to link_to t("admin.common.back"), assets_path %></div>
         </div>
       </div>
     </div>

@@ -11,7 +11,8 @@ module RruleHumanizer
   }.freeze
 
   WEEKDAY_NAMES_ABBR = {
-    de: { "MO"=>"Mo","TU"=>"Di","WE"=>"Mi","TH"=>"Do","FR"=>"Fr","SA"=>"Sa","SU"=>"So" }
+    de: { "MO"=>"Mo","TU"=>"Di","WE"=>"Mi","TH"=>"Do","FR"=>"Fr","SA"=>"Sa","SU"=>"So" },
+    :en => { "MO" => "Mon", "TU" => "Tue", "WE" => "Wed", "TH" => "Thu", "FR" => "Fri", "SA" => "Sat", "SU" => "Sun" },
   }.freeze
 
   ORDINAL_NAMES = {

@@ -1,16 +1,16 @@
-<h1>Assets</h1>
+<h1><%= t(".title") %></h1>
 
 <%= link_to new_asset_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create asset
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_asset") %>
 <% end %>
 
 <%= will_paginate @assets %>
 
 <table class="assets_table">
   <tr class="header">
-    <th>Preview</th>
-    <th>Name</th>
-    <th>Type</th>
+    <th><%= t("admin.columns.preview") %></th>
+    <th><%= t("admin.columns.name") %></th>
+    <th><%= t("admin.columns.type") %></th>
     <th></th>
     <th></th>
     <th></th>
@@ -20,10 +20,10 @@
     <td><% if asset.has_variant?(:thumb) %><%= image_tag asset.upload.url(:thumb), style: "max-width: 100px; max-height: 100px;" %><% end %></td>
     <td><%= link_to asset.name, asset.upload.url %></td>
     <td><%= asset.upload.content_type %></td>
-    <td><%= link_to 'Show', asset %></td>
-    <td><%= link_to 'Edit', edit_asset_path(asset) %></td>
-    <td><%= button_to asset, method: :delete, form: { data: { confirm: 'Are you sure?' }, class: 'button_to destructive' } do %>
-      <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+    <td><%= link_to t("admin.common.show"), asset %></td>
+    <td><%= link_to t("admin.common.edit"), edit_asset_path(asset) %></td>
+    <td><%= button_to asset, method: :delete, form: { data: { confirm: t("admin.common.confirm_sure") }, class: 'button_to destructive' } do %>
+      <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
     <% end %></td>
   </tr>
 <% end %>

@@ -1,19 +1,19 @@
-<h1>Events without a node</h1>
+<h1><%= t(".title") %></h1>
 
-<%= link_to '← All events', events_path %>
+<%= link_to t(".all_events_link"), events_path %>
 <%= link_to new_event_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create event
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t("events.index.create_event") %>
 <% end %>
 
 <%= will_paginate @events %>
 
 <table class="events_table">
   <tr class="header">
-    <th>Title</th>
-    <th>Start time</th>
-    <th>End time</th>
-    <th>Allday</th>
-    <th>Url</th>
+    <th><%= t("admin.columns.title") %></th>
+    <th><%= Event.human_attribute_name(:start_time) %></th>
+    <th><%= Event.human_attribute_name(:end_time) %></th>
+    <th><%= Event.human_attribute_name(:allday) %></th>
+    <th><%= Event.human_attribute_name(:url) %></th>
     <th></th>
   </tr>
 
@@ -22,9 +22,9 @@
     <td><%= link_to event.display_title, event %></td>
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
-    <td><%=h event.allday %></td>
+    <td><%=h event.allday %> → <%= event.allday ? t("admin.common.yes") : t("admin.common.no") %></td>
     <td><%=h event.url %></td>
-    <td><%= link_to 'edit', edit_event_path(event) %></td>
+    <td><%= link_to t("events.index.edit_link"), edit_event_path(event) %></td>
   </tr>
 <% end %>
 </table>

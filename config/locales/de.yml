@@ -84,6 +84,26 @@ de:
     container_aria_label: "Seitennavigation"
     page_aria_label: "Seite %{page}"
 
+  activerecord:
+    attributes:
+      asset:
+        name: "Name"
+        upload: "Datei"
+        creator: "Urheber"
+        source_url: "Quell-URL"
+        license_key: "Lizenz"
+      event:
+        title: "Titel"
+        start_time: "Beginn"
+        end_time: "Ende"
+        rrule: "RRULE"
+        allday: "Ganztägig"
+        url: "URL"
+        node: "Node"
+        tag_list: "Tags"
+        latitude: "Breitengrad"
+        longitude: "Längengrad"
+
   tags:
     index:
       title: "Tags"
@@ -209,6 +229,10 @@ de:
       destroy: "Löschen"
       search: "Suchen"
       reset: "Zurücksetzen"
+      show: "Anzeigen"
+      back: "Zurück"
+      update: "Aktualisieren"
+      confirm_sure: "Wirklich?"
       confirm_irreversible: "Das kann nicht rückgängig gemacht werden. Fortfahren?"
       toggle_preview: "Live-Vorschau umschalten"
       force_render: "Vorschau neu rendern"
@@ -221,6 +245,9 @@ de:
       locked_by: "Gesperrt von"
       rev: "Rev."
       path: "Pfad"
+      preview: "Vorschau"
+      name: "Name"
+      type: "Typ"
   nodes:
     index:
       title: "Nodes"
@@ -375,6 +402,47 @@ de:
       delete_permanently: "Endgültig löschen"
       restore_hint: "Zum Wiederherstellen eine Seite öffnen und in ihrem Papierkorb-Abschnitt einen neuen Eltern-Node wählen."
 
+  events:
+    confirm_delete: "Diesen Termin löschen?"
+    index:
+      title: "Termine"
+      create_event: "Termin anlegen"
+      without_page_link: "Termine ohne Seite anzeigen →"
+      edit_link: "bearbeiten"
+    show:
+      title: "Termin"
+      title_for_node: "Termin für Node %{path}"
+      node_link: "Node"
+      recurrence: "Wiederholung"
+    edit:
+      title: "Termin bearbeiten"
+      change_node: "Node ändern"
+      change_node_hint: "Verknüpft den Termin mit einem anderen Node — selten nötig."
+    without_node:
+      title: "Termine ohne Node"
+      all_events_link: "← Alle Termine"
+    form:
+      node_hint: "Optional — Node suchen und auswählen, um diesen Termin mit einer Seite zu verknüpfen."
+      recurrence: "Wiederholung"
+      title_hint: "Optional — bleibt das Feld leer, wird der Titel des verknüpften Nodes verwendet."
+    rrule_builder:
+      weekly: "Wöchentlich"
+      monthly: "Monatlich"
+      biweekly: "Alle 2 Wochen"
+      monthly_ordinal: "An einem bestimmten Wochentag im Monat"
+      ordinal_1: "1."
+      ordinal_2: "2."
+      ordinal_3: "3."
+      ordinal_4: "4."
+      ordinal_last: "letzter"
+      ordinal_second_last: "vorletzter"
+      ordinal_custom: "Ausgewählte Wochen"
+      weeks_of_month: "Wochen im Monat:"
+      exclude_month: "Außer in einem Monat"
+      hint: "Füllt das Feld darunter automatisch. Für kompliziertere Muster das Feld einfach direkt bearbeiten — diese Bedienelemente ändern es nur, wenn sie benutzt werden."
+    new:
+      title: "Neuer Termin"
+
   flash:
     common:
       logged_in: "Erfolgreich angemeldet"
@@ -436,3 +504,34 @@ de:
       none_to_remove: "Es existiert keine %{lang}-Übersetzung zum Entfernen."
       last_translation: "Die einzige verbliebene Übersetzung kann nicht entfernt werden."
       removed: "%{lang}-Übersetzung aus dem Entwurf entfernt. Veröffentlichen, um das dauerhaft zu machen."
+    assets:
+      index:
+        title: "Assets"
+        create_asset: "Asset anlegen"
+      show:
+        thumbnail: "Vorschaubild"
+        attached_to: "Angehängt an"
+        pending_only: "nur in ausstehenden Versionen"
+        not_attached: "— an keine Seite angehängt —"
+        new_page_with_attachment: "Neue Seite mit diesem Anhang"
+        public_path: "Öffentlicher Pfad"
+        copy_url: "URL kopieren"
+        creator: "Urheber"
+        source: "Quelle"
+        license: "Lizenz"
+        content_type: "Content-Type"
+        size: "Größe"
+      new:
+        title: "Neues Asset"
+      edit:
+        title: "Asset bearbeiten"
+        current_file: "Aktuelle Datei"
+        replace_file: "Datei ersetzen"
+      form:
+        drop_hint: "…oder Datei hier ablegen."
+        none_option: "— keine —"
+        attach_to_page: "an Seite anhängen"
+        attach_search_placeholder: "Seite suchen…"
+        attach_hint: "Optional — hängt dieses Asset an die Seite an, alle ausstehenden Versionen eingeschlossen."
+        as_headline: "als Aufmacher der Seite anhängen"
+        headline_hint: "Gilt nur, wenn die Seite noch keinen Aufmacher hat."

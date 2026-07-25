@@ -1,23 +1,23 @@
-<h1>Events</h1>
+<h1><%= t(".title") %></h1>
 
 <div class="button_row">
   <%= link_to new_event_path, class: 'action_button' do %>
-    <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create event
+    <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_event") %>
   <% end %>
-  <%= link_to 'View events without a page →', without_node_events_path %>
+  <%= link_to t(".without_page_link"), without_node_events_path %>
 </div>
 
 <%= will_paginate @events %>
 
 <table class="events_table">
   <tr class="header">
-    <th>Title</th>
-    <th>Start time</th>
-    <th>End time</th>
-    <th>Rrule</th>
-    <th>Allday</th>
-    <th>Url</th>
-    <th>Node</th>
+    <th><%= t("admin.columns.title") %></th>
+    <th><%= Event.human_attribute_name(:start_time) %></th>
+    <th><%= Event.human_attribute_name(:end_time) %></th>
+    <th><%= Event.human_attribute_name(:rrule) %></th>
+    <th><%= Event.human_attribute_name(:allday) %></th>
+    <th><%= Event.human_attribute_name(:url) %></th>
+    <th><%= Event.human_attribute_name(:start_node) %></th>
     <th></th>
   </tr>
 
@@ -27,14 +27,14 @@
     <td><%=h event.start_time %></td>
     <td><%=h event.end_time %></td>
     <td class="rrule_cell"><span class="rrule_text"><%= rrule_with_break_opportunities(event.rrule) %></span></td>
-    <td><%=h event.allday %></td>
+    <td><%=h event.allday %> → <%= event.allday ? t("admin.common.yes") : t("admin.common.no") %></td>
     <td class="url_cell">
     <% if event.url.present? %>
     <span class="truncate"><%= link_to event.url, event.url %></span>
     <% end %>
     </td>
     <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>
-    <td><%= link_to 'edit', edit_event_path(event) %></td>
+    <td><%= link_to t(".edit_link"), edit_event_path(event) %></td>
   </tr>
 <% end %>
 </table>
