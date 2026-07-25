@@ -37,7 +37,7 @@
           <%= render :partial => "content/search" %>
         </div>
         <div id="light-mode-div">
-          <input id="light-mode" type="checkbox" aria-label="Switch between dark and light mode" /><label for="light-mode"><span class="hide-me">lights</span></label>
+          <input id="light-mode" type="checkbox" aria-label="<%= t(".light_mode_aria") %>" /><label for="light-mode"><span class="hide-me"><%= t(".light_mode_label") %></span></label>
         </div>
         <div id="burger-div">
           <input type="checkbox" id="menu-toggle" class="menu-checkbox">
@@ -49,10 +49,10 @@
 
         <% if current_user && @page.node %>
           <div class="main_navigation">
-            <h2>Admin</h2>
+            <h2><%= t(".admin") %></h2>
             <ul>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">⚙️ Overview</span>'), admin_path %></li>
-              <li><%= link_to raw('<span class="inactive admin_edit_link">✎ Edit</span>'), node_path(@page.node) %></li>
+              <li><%= link_to admin_path do %><span class="inactive admin_edit_link">⚙️ <%= t(".overview") %></span><% end %></li>
+              <li><%= link_to node_path(@page.node) do %><span class="inactive admin_edit_link">✎ <%= t(".edit") %></span><% end %></li>
             </ul>
           </div>
         <% end %>

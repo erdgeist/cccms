@@ -118,6 +118,20 @@ de:
   tags:
     index:
       title: "Tags"
+    show:
+      subscribe: "Änderungen mit dem Tag »%{tag}« abonnieren"
+
+  content:
+    featured_articles:
+      title: "Ausgewählt"
+    front_page_calendar:
+      title: "Termine"
+    tags:
+      title: "Tags"
+
+  search:
+    index:
+      results_for: "Suchergebnisse für: %{query}"
 
   node_actions:
     heading: "Letzte Änderungen"
@@ -245,6 +259,7 @@ de:
       update: "Aktualisieren"
       confirm_sure: "Wirklich?"
       confirm_irreversible: "Das kann nicht rückgängig gemacht werden. Fortfahren?"
+      unlock_confirm: "Wirklich entsperren?\nGesperrt von %{login}\nZuletzt geändert %{time}"
       toggle_preview: "Live-Vorschau umschalten"
       force_render: "Vorschau neu rendern"
       "yes": "ja"
@@ -630,6 +645,12 @@ de:
       title: "Menüeintrag bearbeiten"
 
   layouts:
+    application:
+      light_mode_aria: "Zwischen dunklem und hellem Modus wechseln"
+      light_mode_label: "Licht"
+      admin: "Verwaltung"
+      overview: "Übersicht"
+      edit: "Bearbeiten"
     flash:
       go_to_status: "Zum Status"
       stale_prefix: "Die %{lang}-Übersetzung ist womöglich veraltet —"

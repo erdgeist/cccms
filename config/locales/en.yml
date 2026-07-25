@@ -70,6 +70,21 @@ en:
   tags:
     index:
       title: "Tags"
+    show:
+      subscribe: "Subscribe to updates tagged »%{tag}«"
+
+  content:
+    featured_articles:
+      title: "Featured"
+    front_page_calendar:
+      title: "Calendar"
+    tags:
+      title: "Tags"
+
+  search:
+    index:
+      results_for: "Search results for: %{query}"
+
 
   node_actions:
     heading: "Action log"
@@ -197,6 +212,7 @@ en:
       update: "Update"
       confirm_sure: "Are you sure?"
       confirm_irreversible: "This cannot be undone. Continue?"
+      unlock_confirm: "Are you sure you want to unlock?\nLocked by %{login}\nLast modified %{time}"
       toggle_preview: "Toggle live preview"
       force_render: "Force preview render"
       "yes": "yes"
@@ -581,6 +597,12 @@ en:
       default_marker: "default"
 
   layouts:
+    application:
+      light_mode_aria: "Switch between dark and light mode"
+      light_mode_label: "lights"
+      admin: "Admin"
+      overview: "Overview"
+      edit: "Edit"
     flash:
       go_to_status: "Go to Status"
       stale_prefix: "The %{lang} translation may be out of date —"
