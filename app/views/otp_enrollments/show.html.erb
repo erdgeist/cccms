@@ -11,7 +11,7 @@
     <span class="field_hint"><%= t(".manual_hint") %> <code><%= current_user.otp_pending_secret %></code></span>
   </div>
 
-  <div class="layout_row_label">Confirm</div>
+  <div class="layout_row_label"><%= t(".confirm") %></div>
   <div class="layout_row_content">
     <%= form_tag otp_enrollment_path, :method => :put, :class => "otp_form" do %>
       <%= text_field_tag :code, nil, :autofocus => true,
