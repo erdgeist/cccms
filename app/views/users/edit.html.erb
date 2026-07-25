@@ -9,20 +9,20 @@
 <div id="admin_layout">
   <%= form_for @user do |f| %>
   <div id="content">
-    <div class="layout_row_label"><%= t(".login") %></div>
+    <div class="layout_row_label"><%= t("users.labels.login") %></div>
     <div class="layout_row_content"><%= f.text_field :login, :autocomplete => "username" %></div>
 
-    <div class="layout_row_label"><%= t(".email") %></div>
+    <div class="layout_row_label"><%= t("users.labels.email") %></div>
     <div class="layout_row_content"><%= f.text_field :email %></div>
 
-    <div class="layout_row_label"><%= t(".password") %></div>
+    <div class="layout_row_label"><%= t("users.labels.password") %></div>
     <div class="layout_row_content"><%= f.password_field :password, :autocomplete => "new-password" %></div>
 
-    <div class="layout_row_label"><%= t(".confirm") %></div>
+    <div class="layout_row_label"><%= t("users.labels.confirm") %></div>
     <div class="layout_row_content"><%= f.password_field :password_confirmation, :autocomplete => "new-password" %></div>
 
     <% if current_user.admin? %>
-    <div class="layout_row_label"><%= t(".admin") %></div>
+    <div class="layout_row_label"><%= t("users.labels.admin") %></div>
     <div class="layout_row_content"><%= f.check_box :admin %></div>
     <% end %>
 

@@ -2,24 +2,24 @@
   <h1><%= @user.login %></h1>
 
   <div id="content">
-    <div class="layout_row_label">Actions</div>
+    <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
         <%= link_to edit_user_path(@user), class: 'action_button' do %>
-          <%= icon("edit", library: "tabler", "aria-hidden": true) %> Edit
+          <%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.edit") %>
         <% end %>
         </div>
       </div>
     </div>
 
-    <div class="layout_row_label">Login</div>
+    <div class="layout_row_label"><%= t("users.labels.login") %></div>
     <div class="layout_row_content"><%= @user.login %></div>
 
-    <div class="layout_row_label">E-Mail</div>
+    <div class="layout_row_label"><%= t("users.labels.email") %></div>
     <div class="layout_row_content"><%= @user.email %></div>
 
-    <div class="layout_row_label">Admin?</div>
-    <div class="layout_row_content"><%= @user.admin ? "yes" : "no" %></div>
+    <div class="layout_row_label"><%= t("users.labels.admin") %></div>
+    <div class="layout_row_content"><%= @user.admin ? t("admin.common.yes") : t("admin.common.no") %></div>
   </div>
 </div>

@@ -8,8 +8,8 @@
   </td>
   <td>
   <%= button_to user_path(user), method: :delete,
-        form: { data: { confirm: "Do you really want to destroy user #{user.login}?" }, class: 'button_to destructive' } do %>
-    <%= icon("trash", library: "tabler", "aria-hidden": true) %> Destroy
+        form: { data: { confirm: t(".confirm_destroy", :login => user.login) }, class: 'button_to destructive' } do %>
+    <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
   <% end %>
   </td>
   <% end %>

@@ -36,6 +36,10 @@ en:
     container_aria_label: "Pagination"
     page_aria_label: "Page %{page}"
 
+  tags:
+    index:
+      title: "Tags"
+
   node_actions:
     heading: "Action log"
     show_all: "Show all entries"
@@ -124,11 +128,6 @@ en:
     edit:
       my_account: "My account"
       edit_user: "Edit user “%{login}”"
-      login: "login"
-      email: "e-mail"
-      password: "password"
-      confirm: "confirm"
-      admin: "admin?"
       update: "Update"
       enabled: "Enabled."
       not_enrolled: "Not enrolled."
@@ -139,6 +138,21 @@ en:
       disable_second_factor: "Disable second factor"
       reset_second_factor: "Reset second factor"
       reset_confirm: "Reset %{login}'s second factor? They will log in with password only afterwards."
+    labels:
+      login: "login"
+      email: "e-mail"
+      password: "password"
+      confirm: "confirm"
+      admin: "admin?"
+    user:
+      confirm_destroy: "Do you really want to destroy user %{login}?"
+    index:
+      admins: "Admins"
+      create_admin: "Create admin user"
+      users: "Users"
+      create_user: "Create user"
+    new:
+      title: "Create new user"
 
   admin:
     common:
@@ -150,6 +164,8 @@ en:
       confirm_irreversible: "This cannot be undone. Continue?"
       toggle_preview: "Toggle live preview"
       force_render: "Force preview render"
+      "yes": "yes"
+      "no": "no"
     columns:
       id: "ID"
       title: "Title"

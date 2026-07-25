@@ -84,6 +84,10 @@ de:
     container_aria_label: "Seitennavigation"
     page_aria_label: "Seite %{page}"
 
+  tags:
+    index:
+      title: "Tags"
+
   node_actions:
     heading: "Letzte Änderungen"
     show_all: "Alle Einträge zeigen"
@@ -172,11 +176,6 @@ de:
     edit:
       my_account: "Mein Konto"
       edit_user: "Benutzer „%{login}“ bearbeiten"
-      login: "Anmeldename"
-      email: "E-Mail"
-      password: "Passwort"
-      confirm: "bestätigen"
-      admin: "Admin?"
       update: "Aktualisieren"
       enabled: "Aktiviert."
       not_enrolled: "Nicht eingerichtet."
@@ -187,6 +186,21 @@ de:
       disable_second_factor: "Zweiten Faktor entfernen"
       reset_second_factor: "Zweiten Faktor zurücksetzen"
       reset_confirm: "Zweiten Faktor von %{login} zurücksetzen? Die Anmeldung ist danach nur mit Passwort möglich."
+    labels:
+      login: "Anmeldename"
+      email: "E-Mail"
+      password: "Passwort"
+      confirm: "bestätigen"
+      admin: "Admin?"
+    user:
+      confirm_destroy: "Benutzer %{login} wirklich löschen?"
+    index:
+      admins: "Admins"
+      create_admin: "Admin-Benutzer anlegen"
+      users: "Benutzer"
+      create_user: "Benutzer anlegen"
+    new:
+      title: "Neuen Benutzer anlegen"
 
   admin:
     common:
@@ -198,6 +212,8 @@ de:
       confirm_irreversible: "Das kann nicht rückgängig gemacht werden. Fortfahren?"
       toggle_preview: "Live-Vorschau umschalten"
       force_render: "Vorschau neu rendern"
+      "yes": "ja"
+      "no": "nein"
     columns:
       id: "ID"
       title: "Titel"

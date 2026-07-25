@@ -1,10 +1,10 @@
-<h1>Admins</h1>
+<h1><%= t(".admins") %></h1>
 <%= link_to new_user_path(admin: true), class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create admin user
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_admin") %>
 <% end %>
 <table class="user_table">
   <tr class="header">
-    <th>Login</th>
+    <th><%= t("users.labels.login") %></th>
     <th></th>
     <th></th>
     <th></th>
@@ -12,13 +12,13 @@
   <%= render :partial => "user", :locals => {:users => @users[:admin] ||= []} %>
 </table>
 
-<h1>Users</h1>
+<h1><%= t(".users") %></h1>
 <%= link_to new_user_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> Create user
+  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_user") %>
 <% end %>
 <table class="user_table">
   <tr class="header">
-    <th>Login</th>
+    <th><%= t("users.labels.login") %></th>
     <th></th>
     <th></th>
     <th></th>

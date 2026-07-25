@@ -1,4 +1,4 @@
-<h1>Tags</h1>
+<h1><%= t(".title") %></h1>
 
 <% @tags.each do |tag| %>
   <span><%= link_to tag, tag_path(tag.name.parameterize) %></span>

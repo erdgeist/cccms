@@ -1,4 +1,4 @@
-<h1>Create new user</h1>
+<h1><%= t(".title") %></h1>
 
 <% if @user.errors.any? %>
   <div class="error_messages">
@@ -9,23 +9,23 @@
 <div id="admin_layout">
   <%= form_for @user do |f| %>
   <div id="content">
-    <div class="layout_row_label">Login</div>
+    <div class="layout_row_label"><%= t("users.labels.login") %></div>
     <div class="layout_row_content"><%= f.text_field :login %></div>
 
-    <div class="layout_row_label">E-Mail</div>
+    <div class="layout_row_label"><%= t("users.labels.email") %></div>
     <div class="layout_row_content"><%= f.text_field :email %></div>
 
-    <div class="layout_row_label">Password</div>
+    <div class="layout_row_label"><%= t("users.labels.password") %></div>
     <div class="layout_row_content"><%= f.password_field :password %></div>
 
-    <div class="layout_row_label">Confirm</div>
+    <div class="layout_row_label"><%= t("users.labels.confirm") %></div>
     <div class="layout_row_content"><%= f.password_field :password_confirmation %></div>
 
-    <div class="layout_row_label">Admin?</div>
+    <div class="layout_row_label"><%= t("users.labels.admin") %></div>
     <div class="layout_row_content"><%= f.check_box :admin %></div>
 
     <div class="layout_row_label"></div>
-    <div class="layout_row_content"><%= f.submit "Create" %></div>
+    <div class="layout_row_content"><%= f.submit t("admin.common.create") %></div>
   <% end %>
   </div>
 </div>
