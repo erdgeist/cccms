@@ -1043,7 +1043,6 @@ input#tag_list {
   input[type=text]#page_title {
     box-sizing: border-box;
     width: 100%;
-    font-size: 2rem;
     padding-top: 6px;
     padding-bottom: 4px;
     padding-left: 5px;
@@ -1055,13 +1054,6 @@ input#tag_list {
   #admin_layout textarea {
     box-sizing: border-box;
     width: 100%;
-  }
-
-  input[type=text], textarea {
-    font-size: 1.5rem;
-  }
-  select {
-    font-size: 1.5rem;
   }
 }
 
