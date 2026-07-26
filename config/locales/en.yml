@@ -234,7 +234,6 @@ en:
     menu:
       dashboard: "Dashboard"
       search: "Search"
-      scheme_override: "Toggle light/dark"
       log_out: "Log out"
     index:
       title: "cccms dashboard"
@@ -622,3 +621,6 @@ en:
       lock_lost_link: "return to the published page"
       insert_image: "Insert image"
       insert_image_tooltip: "Insert one of this page's attached images"
+    nav_switchers:
+      scheme_override: "Toggle light/dark"
+      switch_locale: "Toggle language"

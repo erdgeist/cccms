@@ -281,7 +281,6 @@ de:
     menu:
       dashboard: "Dashboard"
       search: "Suche"
-      scheme_override: "Hell/Dunkel umschalten"
       log_out: "Abmelden"
     index:
       title: "cccms Dashboard"
@@ -670,4 +669,6 @@ de:
       lock_lost_link: "zurück zur veröffentlichten Seite"
       insert_image: "Bild einfügen"
       insert_image_tooltip: "Eines der angehängten Bilder dieser Seite einfügen"
-
+    nav_switchers:
+      scheme_override: "Hell/Dunkel umschalten"
+      switch_locale: "Sprache umschalten"
