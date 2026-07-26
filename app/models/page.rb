@@ -83,7 +83,7 @@ class Page < ApplicationRecord
 
     if options[:order_by] == "title"
       return scope
-        .order(Arel.sql("(SELECT pt.title FROM page_translations pt WHERE pt.page_id = pages.id AND pt.locale = #{ActiveRecord::Base.connection.quote(I18n.locale.to_s)}) #{direction}"))
+        .order(Arel.sql("(SELECT pt.title FROM page_translations pt WHERE pt.page_id = pages.id AND pt.locale = #{ActiveRecord::Base.connection.quote(Globalize.locale.to_s)}) #{direction}"))
         .paginate(:page => page, :per_page => options[:limit])
     end
 
@@ -145,7 +145,7 @@ class Page < ApplicationRecord
     return true unless template_name == draft.template_name
     return true unless translated_locales.sort_by(&:to_s) == draft.translated_locales.sort_by(&:to_s)
     changed = false
-    translated_locales.each { |locale| I18n.with_locale(locale) { changed = true unless title == draft.title && abstract == draft.abstract && body == draft.body } }
+    translated_locales.each { |locale| Globalize.with_locale(locale) { changed = true unless title == draft.title && abstract == draft.abstract && body == draft.body } }
     return changed
   end
 
