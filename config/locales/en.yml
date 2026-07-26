@@ -154,6 +154,7 @@ en:
       login: "Login"
       password: "Password"
       log_in: "log in"
+      heading: "cccms"
 
   otp_challenges:
     new:

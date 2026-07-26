@@ -201,6 +201,7 @@ de:
       login: "Anmeldename"
       password: "Passwort"
       log_in: "anmelden"
+      heading: "cccms"
 
   otp_challenges:
     new:

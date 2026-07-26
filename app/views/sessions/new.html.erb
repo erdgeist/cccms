@@ -1,15 +1,17 @@
 <div id="login_form">
+  <h1><%= t(".heading") %></h1>
+
   <%= form_tag session_path do -%>
-    <% if flash[:error] %>
-      <div class="error_messages"><%= flash[:error] %></div>
-    <% end %>
+    <div class="login_field">
+      <%= label_tag :login, t(".login") %>
+      <%= text_field_tag 'login', @login, :autocomplete => "username" %>
+    </div>
 
-    <div class="layout_row_label"> <%= t(".login") %> </div>
-    <div class="layout_row_content"><%= text_field_tag 'login', @login, :autocomplete => "username" %></div>
+    <div class="login_field">
+      <%= label_tag :password, t(".password") %>
+      <%= password_field_tag 'password', nil, :autocomplete => "current-password" %>
+    </div>
 
-    <div class="layout_row_label"> <%= t(".password") %> </div>
-    <div class="layout_row_content"><%= password_field_tag 'password', nil, :autocomplete => "current-password" %></div>
-
-    <div class="layout_row_content"><%= submit_tag t(".log_in") %></div>
+    <%= submit_tag t(".log_in") %>
   <% end -%>
 </div>

@@ -101,12 +101,36 @@ input[type=radio] {
 
 #login_form {
   max-width: 22rem;
+  margin: 2rem auto;
+  padding: 1.25rem;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+}
+
+#login_form h1 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+#login_form label {
+  display: block;
+  margin-bottom: 0.25rem;
+  text-transform: lowercase;
+}
+
+#login_form .login_field {
+  margin-bottom: 1rem;
 }
 
 #login_form input[type=text],
 #login_form input[type=password] {
   width: 100%;
   box-sizing: border-box;
+}
+
+#login_form input[type=submit] {
+  width: 100%;
+  padding: 0.6rem 1rem;
 }
 
 /* ============================================================
