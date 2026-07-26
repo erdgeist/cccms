@@ -459,6 +459,21 @@ form.button_to svg  {
   height: 1.25rem;
 }
 
+#main_navigation .nav_group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1.25rem;
+}
+
+#main_navigation .nav_group:first-child {
+  margin-left: 0;
+}
+
+#main_navigation form.button_to {
+  margin-left: auto;
+}
+
 #main_navigation input.nav_toggle_input {
   position: absolute;
   width: 1px;
@@ -475,6 +490,18 @@ form.button_to svg  {
 #main_navigation input.nav_toggle_input:checked + label.nav_toggle {
   color: var(--accent);
   background-color: var(--accent-surface);
+}
+
+#main_navigation form.button_to button:hover {
+  color: var(--on-solid);
+  background-color: var(--danger-solid);
+}
+
+#main_navigation a.nav_locale {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 #dashboard_search {

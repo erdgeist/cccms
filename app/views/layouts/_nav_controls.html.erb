@@ -1,0 +1,36 @@
+<% if current_user %>
+  <%= link_to icon("home", library: "tabler", "aria-hidden": true), admin_path, "aria-label": t(".dashboard"), title: t(".dashboard") %>
+  <a href="#" onclick="admin_search.display_toggle(); return false;" aria-label="<%= t(".search") %>" title="<%= t(".search") %>"><%= icon("search", library: "tabler", "aria-hidden": true) %></a>
+<% end %>
+
+<span class="nav_group">
+  <%= link_to url_for(locale: (:en unless I18n.locale == :en)),
+        class: "nav_toggle nav_locale",
+        "aria-label" => t(".switch_locale"), title: t(".switch_locale") do %>
+    <%= I18n.locale == :en ? "DE" : "EN" %>
+  <% end %>
+  <%= check_box_tag "scheme_override", 1, false, class: "nav_toggle_input" %>
+  <%= label_tag "scheme_override", class: "nav_toggle",
+        "aria-label" => t(".scheme_override"), title: t(".scheme_override") do %>
+    <%= icon("contrast", library: "tabler", "aria-hidden": true) %>
+  <% end %>
+</span>
+
+<%= javascript_tag nonce: true do %>
+  (function () {
+    var box = document.getElementById("scheme_override");
+    try {
+      if (localStorage.getItem("override-prefers-color-scheme")) box.checked = true;
+      box.addEventListener("change", function () {
+        if (box.checked) localStorage.setItem("override-prefers-color-scheme", 1);
+        else localStorage.removeItem("override-prefers-color-scheme");
+      });
+    } catch (e) { /* storage unavailable: the toggle still works per page */ }
+  })();
+<% end %>
+
+<% if current_user %>
+  <%= button_to logout_path, method: :delete, aria: { label: t(".log_out") }, title: t(".log_out") do %>
+    <%= icon("logout", library: "tabler", "aria-hidden": true) %>
+  <% end %>
+<% end %>

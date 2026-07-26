@@ -231,10 +231,6 @@ en:
       editor: "Editor"
       date: "Date"
       type: "Type"
-    menu:
-      dashboard: "Dashboard"
-      search: "Search"
-      log_out: "Log out"
     index:
       title: "cccms dashboard"
       search_placeholder: "Search nodes and tags…"
@@ -621,6 +617,9 @@ en:
       lock_lost_link: "return to the published page"
       insert_image: "Insert image"
       insert_image_tooltip: "Insert one of this page's attached images"
-    nav_switchers:
-      scheme_override: "Toggle light/dark"
+    nav_controls:
+      dashboard: "Dashboard"
+      search: "Search"
       switch_locale: "Toggle language"
+      scheme_override: "Toggle light/dark"
+      log_out: "Log out"

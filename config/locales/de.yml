@@ -278,10 +278,6 @@ de:
       date: "Datum"
       author: "Autor"
       type: "Typ"
-    menu:
-      dashboard: "Dashboard"
-      search: "Suche"
-      log_out: "Abmelden"
     index:
       title: "cccms Dashboard"
       search_placeholder: "Nodes und Tags durchsuchen…"
@@ -669,6 +665,9 @@ de:
       lock_lost_link: "zurück zur veröffentlichten Seite"
       insert_image: "Bild einfügen"
       insert_image_tooltip: "Eines der angehängten Bilder dieser Seite einfügen"
-    nav_switchers:
-      scheme_override: "Hell/Dunkel umschalten"
+    nav_controls:
+      dashboard: "Dashboard"
+      search: "Suche"
       switch_locale: "Sprache umschalten"
+      scheme_override: "Hell/Dunkel umschalten"
+      log_out: "Abmelden"
