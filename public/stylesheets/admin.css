@@ -1,5 +1,7 @@
 /* "how much Canvas": 100% = pure Canvas. System colours are UA-defined. */
 :root {
+  color-scheme: light dark;
+
   --text:                  CanvasText;
   --surface:               Canvas;
   --surface-raised:        color-mix(in srgb, CanvasText, Canvas 97%);  /* #f7f7f7 */
@@ -11,41 +13,46 @@
   --field-border:          color-mix(in srgb, CanvasText, Canvas 60%);  /* #989898 */
   --handle-fill:           color-mix(in srgb, CanvasText, Canvas 60%);  /* #989898 as fill */
   --link-underline:        color-mix(in srgb, CanvasText, Canvas 69%);  /* #b0b0b0 */
-  --text-muted:            color-mix(in srgb, CanvasText, Canvas 59%);  /* #969696 */
-  --text-dim:              color-mix(in srgb, CanvasText, Canvas 47%);  /* #777 */
+  --text-muted:            color-mix(in srgb, CanvasText, Canvas 47%);
 
-  /* ---- Neutrals that do NOT derive ---- */
-  --on-solid:              #ffffff;   /* text on accent/danger/action/compute fills */
-  --shadow-widget:         3px 3px 5px #b1b1b1;
-  --shadow-modal:          0 4px 16px rgba(0, 0, 0, 0.2);
   --badge-scrim:           rgba(255, 255, 255, 0.85);
 
-  /* ---- Semantic: literals for now, light-dark() pairs in stage 2 ---- */
-  --accent:                #ff9600;
-  --accent-surface:        #fff8f2;
+  /* ---- Semantic. light-dark() resolves against the used color-scheme,
+          so these follow the override in stage 3 without duplication.
+          Dark halves checked against a Canvas of roughly #1e1e1e;
+          the exact value is UA-defined. ---- */
+  --accent:                #ff9600;                        /* holds 7.6:1 on dark, unchanged */
+  --accent-surface:        light-dark(#fff8f2, #2b1f14);
 
-  --danger:                #cc0000;
-  --danger-surface:        #fdecea;
+  --danger:                light-dark(#cc0000, #ff8a80);   /* text, icons, the 3px rule */
+  --danger-solid:          light-dark(#cc0000, #b3231c);   /* fill behind --on-solid */
+  --danger-surface:        light-dark(#fdecea, #3b1a17);
 
-  --action:                #0d47a1;   /* state_changing buttons at rest */
-  --action-solid:          #1565c0;   /* ...and on hover */
-  --action-surface:        #e3f2fd;
+  --action:                light-dark(#0d47a1, #90caf9);
+  --action-solid:          #1565c0;                        /* holds white at 5.7:1 in both */
+  --action-surface:        light-dark(#e3f2fd, #12304f);
 
-  --selected:              #1a4d8f;   /* selected thumbnail */
+  --selected:              light-dark(#1a4d8f, #90caf9);   /* selected thumbnail border */
 
-  --compute:               #00838f;
-  --compute-surface:       #e0f2f1;
+  --compute:               light-dark(#00838f, #4dd0e1);
+  --compute-solid:         light-dark(#00838f, #00697a);
+  --compute-surface:       light-dark(#e0f2f1, #10312f);
 
-  --headline-mark:         #f5b400;   /* the star on a headline asset */
-  --headline-border:       #fff3cd;
-  --headline-surface:      #fffdf5;
-  --headline-badge-bg:     rgba(255, 243, 205, 0.95);
+  --headline-mark:         #f5b400;                        /* 9.1:1 on dark, unchanged */
+  --headline-border:       light-dark(#fff3cd, #5c4a12);
+  --headline-surface:      light-dark(#fffdf5, #2a2313);
+  --headline-badge-bg:     rgba(255, 243, 205, 0.95);      /* sits over a photo in both schemes */
   --headline-badge-fg:     #6b5900;
 
-  --diff-ins-bg:           #ccffd8;
-  --diff-ins-fg:           #055d20;
-  --diff-del-bg:           #ffd7d5;
-  --diff-del-fg:           #82071e;
+  --diff-ins-bg:           light-dark(#ccffd8, #12261a);
+  --diff-ins-fg:           light-dark(#055d20, #7ee2a8);
+  --diff-del-bg:           light-dark(#ffd7d5, #2d1416);
+  --diff-del-fg:           light-dark(#82071e, #ffa198);
+
+  --on-solid:              #ffffff;
+
+  --shadow-widget:         3px 3px 5px light-dark(#b1b1b1, rgba(0, 0, 0, 0.7));
+  --shadow-modal:          0 4px 16px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7));
 
   --radius:                6px;
 }
@@ -356,13 +363,13 @@ form.button_to.destructive button[type="submit"] {
 form.button_to.destructive input[type="submit"]:hover,
 form.button_to.destructive button[type="submit"]:hover {
   color: var(--on-solid);
-  background-color: var(--danger);
+  background-color: var(--danger-solid);
 }
 
 form.button_to.computation input[type="submit"],
 form.button_to.computation button[type="submit"] {
   color: var(--compute);
-  background-color: var(--compute-surface);
+  background-color: var(--compute-solid);
 }
 
 form.button_to.computation input[type="submit"]:hover,
@@ -1550,7 +1557,7 @@ div#draft_list table td.actions a {
   white-space: nowrap;
   vertical-align: top;
   font-size: 0.8em;
-  color: var(--text-dim);
+  color: var(--text-muted);
   padding-right: 1em;
 }
 
@@ -1582,18 +1589,18 @@ div#draft_list table td.actions a {
   margin-top: 0.2rem;
   cursor: pointer;
   font-size: smaller;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .node_action_icon {
-  color: var(--text-dim);
+  color: var(--text-muted);
   margin-right: 0.35em;
   vertical-align: text-top;
 }
 
 .revision_lifecycle {
   font-size: 0.85rem;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 /* ============================================================
