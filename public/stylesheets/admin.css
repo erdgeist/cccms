@@ -435,8 +435,8 @@ input[type="submit"]:hover {
   align-items: center;
   background-color: var(--surface-raised);
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border-radius: 2px;
 }
@@ -452,8 +452,12 @@ input[type="submit"]:hover {
   cursor: pointer;
 }
 
-#main_navigation svg,
-.action_button svg,
+#main_navigation svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.action_button svg
 form.button_to svg  {
   width: 1.25rem;
   height: 1.25rem;
@@ -498,7 +502,7 @@ form.button_to svg  {
 }
 
 #main_navigation a.nav_locale {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -1249,7 +1253,7 @@ div#draft_list table td.actions a {
 
 #search_widget {
   position: absolute;
-  top: 2.75rem;
+  top: 3.5rem;
   left: 0;
   width: min(520px, 90vw);
   border-radius: 2px;
