@@ -1,14 +1,13 @@
-<h1><%= @user == current_user ? t(".my_account") : t(".edit_user", :login => @user.login) %></h1>
-
-<% if @user.errors.any? %>
-  <div class="error_messages">
-    <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
-  </div>
-<% end %>
-
 <div id="admin_layout">
+  <h1><%= @user == current_user ? t(".my_account") : t(".edit_user", :login => @user.login) %></h1>
+
+  <% if @user.errors.any? %>
+    <div class="error_messages">
+      <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
   <%= form_for @user do |f| %>
-  <div id="content">
     <div class="layout_row_label"><%= t("users.labels.login") %></div>
     <div class="layout_row_content"><%= f.text_field :login, :autocomplete => "username" %></div>
 
@@ -29,7 +28,6 @@
     <div class="layout_row_label"></div>
     <div class="layout_row_content"><%= submit_tag t(".update") %></div>
   <% end %>
-  </div>
 
   <% if @user == current_user %>
     <div class="layout_row_label"><%= t(".second_factor") %></div>
@@ -37,7 +35,6 @@
       <% if current_user.otp_enrolled? %>
         <p><%= t(".enabled") %></p>
         <%= form_tag otp_enrollment_path, :method => :delete, :class => "otp_form" do %>
-          <%= text_field_tag :login, current_user.login, :autocomplete => "username", :readonly => true, :tabindex => -1, :class => "visually_hidden" %>
           <%= password_field_tag :current_password, nil, :placeholder => t(".current_password"), :autocomplete => "current-password" %>
           <%= text_field_tag :code, nil, :placeholder => t(".current_code"),
                 :autocomplete => "one-time-code", :inputmode => "numeric" %>
@@ -48,7 +45,6 @@
       <% else %>
         <p><%= t(".not_enrolled") %></p>
         <%= form_tag otp_enrollment_path, :method => :post, :class => "otp_form" do %>
-          <%= text_field_tag :login, current_user.login, :autocomplete => "username", :readonly => true, :tabindex => -1, :class => "visually_hidden" %>
           <%= password_field_tag :current_password, nil, :placeholder => t(".current_password"), :autocomplete => "current-password"%>
           <%= button_tag :type => "submit", :class => "action_button" do %>
             <%= icon("shield-lock", library: "tabler", "aria-hidden": true) %> <%= t(".enable_second_factor") %>
