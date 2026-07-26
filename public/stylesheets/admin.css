@@ -1,10 +1,11 @@
+/* "how much Canvas": 100% = pure Canvas. System colours are UA-defined. */
 :root {
   --text:                  CanvasText;
   --surface:               Canvas;
-  --surface-raised:        color-mix(in srgb, CanvasText, Canvas 97%);  /* #f7f7f7; #fafafa merges here, 3 units darker */
-  --surface-tint:          color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1; #eee merges here, 3 units lighter */
-  --hairline:              color-mix(in srgb, CanvasText, Canvas 91%);  /* #e8e8e8; #ececec-as-border merges here */
-  --hairline-faint:        color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1 as border */
+  --surface-raised:        color-mix(in srgb, CanvasText, Canvas 97%);  /* #f7f7f7 */
+  --surface-tint:          color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1 */
+  --hairline:              color-mix(in srgb, CanvasText, Canvas 91%);  /* #e8e8e8 */
+  --hairline-faint:        color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1 */
   --border:                color-mix(in srgb, CanvasText, Canvas 87%);  /* #ddd */
   --frame-fill:            color-mix(in srgb, CanvasText, Canvas 83%);  /* lightgrey */
   --field-border:          color-mix(in srgb, CanvasText, Canvas 60%);  /* #989898 */
@@ -30,7 +31,7 @@
   --action-solid:          #1565c0;   /* ...and on hover */
   --action-surface:        #e3f2fd;
 
-  --selected:              #1a4d8f;   /* pressed toggle, selected thumbnail */
+  --selected:              #1a4d8f;   /* selected thumbnail */
 
   --compute:               #00838f;
   --compute-surface:       #e0f2f1;
@@ -155,7 +156,7 @@ input[type=radio] {
   margin: 2rem auto;
   padding: 1.25rem;
   border: 1px solid var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius);
 }
 
 #login_form h1 {
@@ -397,7 +398,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-  color: var(--on-solid);
+  color: var(--surface);
   background-color: var(--text);
 }
 
@@ -426,7 +427,7 @@ input[type="submit"]:hover {
 
 #main_navigation a:hover,
 #main_navigation form.button_to button:hover {
-  color: var(--on-solid);
+  color: var(--surface);
   background-color: var(--text);
 }
 
@@ -479,7 +480,7 @@ form.button_to svg  {
 .dashboard_widget {
   flex: 1 1 300px;
   border: 1px solid var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 0.5rem 0.75rem;
 }
 
@@ -776,7 +777,7 @@ div.layout_row_content {
 
 .layout_row_content.info_group {
   border: 1px solid var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 0.5rem 0.75rem;
 }
 
@@ -1024,7 +1025,7 @@ div#admin_layout {
 
 #admin_layout a.action_button:hover,
 .action_button:hover {
-  color: var(--on-solid);;
+  color: var(--surface);
   background-color: var(--text);
 }
 
