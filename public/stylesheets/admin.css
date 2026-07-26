@@ -71,28 +71,26 @@ input[type=radio] {
    Layout
    ============================================================ */
 
+#wrapper {
+  padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 @media(min-width:1016px) {
   #wrapper {
     margin: 0 125px;
+    padding: 0;
+    width: inherit;
+    box-sizing: inherit;
   }
+
   .node_action_bar.node_action_bar_save {
     margin-left: 120px;
   }
 
   .standalone_action_bar {
     margin-left: -125px;
-  }
-}
-@media(max-width:1015px) {
-  #wrapper {
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  #sitemap details details {
-    margin-left: 0.75rem;
-    padding-left: 0.5rem;
   }
 }
 
@@ -671,38 +669,31 @@ table.user_table td.user_login {
    Node display (nodes#show / nodes#new)
    ============================================================ */
 
+div.layout_row_label {
+  min-height: 2rem;
+  text-transform: lowercase;
+  vertical-align: top;
+}
+
+div.layout_row_content {
+  min-height: 2rem;
+  margin-bottom: 1rem;
+}
+
 @media(min-width:1016px) {
   div.layout_row_label {
     float: left;
     width: 110px;
-    min-height: 2rem;
     text-align: right;
-    text-transform: lowercase;
-    vertical-align: top;
   }
 
   div.layout_row_content {
     margin-left: 120px;
-    min-height: 2rem;
     display: block;
-    margin-bottom: 1rem;
   }
 
   .body_toolbar_row {
     margin-left: 120px;
-  }
-}
-@media(max-width:1015px) {
-  div.layout_row_label {
-    min-height: 2rem;
-    width: 30em;
-    text-transform: lowercase;
-    vertical-align: top;
-  }
-
-  div.layout_row_content {
-    min-height: 2rem;
-    margin-bottom: 1rem;
   }
 }
 
@@ -858,9 +849,16 @@ form.button_to button[type="submit"] {
 }
 
 #sitemap details details {
-  margin-left: 1.5rem;
-  border-left: 1px solid #e8e8e8;
-  padding-left: 0.75rem;
+  margin-left: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+@media(min-width:1016px) {
+  #sitemap details details {
+    margin-left: 1.5rem;
+    border-left: 1px solid #e8e8e8;
+    padding-left: 0.75rem;
+  }
 }
 
 #sitemap summary {
@@ -910,18 +908,14 @@ form.button_to button[type="submit"] {
   /* Details is force-opened by JS on desktop; hide the summary only
      once open, so a JS failure still leaves a working toggle. */
   #metadata_details[open] > summary { display: none; }
-}
 
-#new_node {
-  margin-left: -118px;
+  #new_node {
+    margin-left: -118px;
+  }
 }
 
 #new_node input[type=text], #new_node input[type=password] {
   width: 350px;
-}
-
-div#login_form input[type=text], div#login_form input[type=password] {
-  width: 150px;
 }
 
 input[type=text]#tag_list,
@@ -970,6 +964,46 @@ input#tag_list {
   text-transform: lowercase;
 }
 
+#admin_layout input[type=text],
+#admin_layout input[type=password],
+#admin_layout textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input[type=text]#page_title {
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 6px 5px 4px;
+  font-weight: bold;
+}
+
+#admin_layout textarea#page_body {
+  box-sizing: border-box;
+  width: 100%;
+  height: 60vh;
+}
+
+#admin_layout textarea#page_abstract {
+  width: 100%;
+  box-sizing: border-box;
+  height: 8rem;
+  width: 100%;
+}
+
+#admin_layout #content,
+#admin_layout #metadata,
+#admin_layout #main_fields {
+  padding-right: 5px;
+}
+
+input#tag_list,
+input#node_staged_slug,
+input#move_to_search_term {
+  box-sizing: border-box;
+  width: 100%;
+}
+
 @media(min-width:1016px) {
   input#menu_search_term,
   input#menu_item_node_id,
@@ -978,82 +1012,12 @@ input#tag_list {
     width: 690px;
   }
 
-  input[type=text]#page_title {
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 1rem;
-    padding-top: 6px;
-    padding-bottom: 4px;
-    padding-left: 5px;
-    padding-right: 5px;
-    font-weight: bold;
-  }
-
   textarea#page_abstract {
-    width: 100%;
-    box-sizing: border-box;
-    height: 250px;
     padding: 5px;
-  }
-
-  #admin_layout textarea#page_body {
-    width: 100%;
-    box-sizing: border-box;
-    height: 600px;
   }
 
   #admin_overview {
     margin-left: -125px;
-  }
-
-  #admin_layout input[type=text],
-  #admin_layout input[type=password],
-  #admin_layout textarea {
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-@media(max-width:1015px) {
-  input#tag_list,
-  input#node_staged_slug,
-  input#move_to_search_term {
-    box-sizing: border-box;
-    width: 100%;
-  }
-
-  #admin_layout #content,
-  #admin_layout #metadata,
-  #admin_layout #main_fields {
-    padding-right: 5px;
-  }
-
-  #admin_layout textarea#page_body {
-    box-sizing: border-box;
-    width: 100%;
-    height: 50rem;
-  }
-
-  #admin_layout textarea#page_abstract {
-    box-sizing: border-box;
-    height: 8rem;
-    width: 100%;
-  }
-
-  input[type=text]#page_title {
-    box-sizing: border-box;
-    width: 100%;
-    padding-top: 6px;
-    padding-bottom: 4px;
-    padding-left: 5px;
-    font-weight: bold;
-  }
-
-  #admin_layout input[type=text],
-  #admin_layout input[type=password],
-  #admin_layout textarea {
-    box-sizing: border-box;
-    width: 100%;
   }
 }
 
