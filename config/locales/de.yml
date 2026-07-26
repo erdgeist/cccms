@@ -281,6 +281,7 @@ de:
     menu:
       dashboard: "Dashboard"
       search: "Suche"
+      scheme_override: "Hell/Dunkel umschalten"
       log_out: "Abmelden"
     index:
       title: "cccms Dashboard"

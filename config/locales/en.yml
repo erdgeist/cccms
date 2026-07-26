@@ -234,6 +234,7 @@ en:
     menu:
       dashboard: "Dashboard"
       search: "Search"
+      scheme_override: "Toggle light/dark"
       log_out: "Log out"
     index:
       title: "cccms dashboard"
