@@ -1,4 +1,5 @@
 class NodesController < ApplicationController
+  include PinnedToDefaultLocale
 
   # Private
 
@@ -17,8 +18,6 @@ class NodesController < ApplicationController
                               :trash,
                               :restore_from_trash
                             ]
-
-  around_action :pin_to_default_locale, :only => [:show, :edit, :update, :autosave]
 
   def index
     @nodes = Node.root.descendants.includes(:head, :draft)
@@ -293,10 +292,6 @@ class NodesController < ApplicationController
         config = CccConventions::NODE_KINDS[params[:kind]]
         config && config[:parent] ? config[:parent].call.id : nil
       end
-    end
-
-    def pin_to_default_locale
-      Globalize.with_locale(I18n.default_locale) { yield }
     end
 
     def descendant_counts_for(ordered_with_level)

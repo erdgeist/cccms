@@ -1,5 +1,6 @@
 class EventsController < ApplicationController
-  
+  include PinnedToDefaultLocale
+
   # Private
   
   before_action :login_required

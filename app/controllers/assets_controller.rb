@@ -1,4 +1,5 @@
 class AssetsController < ApplicationController
+  include PinnedToDefaultLocale
   
   # Private
   

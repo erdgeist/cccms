@@ -1,4 +1,6 @@
 class RelatedAssetsController < ApplicationController
+  include PinnedToDefaultLocale
+
   before_action :login_required
   before_action :find_node
 

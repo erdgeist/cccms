@@ -1,4 +1,5 @@
 class NodeActionsController < ApplicationController
+  include PinnedToDefaultLocale
 
   before_action :login_required
 

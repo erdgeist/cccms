@@ -1,4 +1,5 @@
 class AdminController < ApplicationController
+  include PinnedToDefaultLocale
 
   # Private
 

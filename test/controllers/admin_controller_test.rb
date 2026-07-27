@@ -58,4 +58,18 @@ class AdminControllerTest < ActionController::TestCase
     get :index
     assert_response :success
   end
+
+
+  test "the dashboard reads default-locale titles under the English chrome locale" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "pin_locale_check")
+    Globalize.with_locale(:de) { node.draft.update!(:title => "Deutscher Titel") }
+    Globalize.with_locale(:en) { node.draft.update!(:title => "English title") }
+
+    get :index, params: { locale: "en" }
+
+    assert_response :success
+    assert_match     "Deutscher Titel", response.body
+    assert_no_match  /English title/,   response.body
+  end
 end

@@ -2,6 +2,8 @@
 # an administrator must never hold another account's secret -- admins get
 # the witnessed reset on the user page instead.
 class OtpEnrollmentsController < ApplicationController
+  include PinnedToDefaultLocale
+
   before_action :login_required
 
   layout 'admin'
