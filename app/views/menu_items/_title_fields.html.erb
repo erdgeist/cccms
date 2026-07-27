@@ -1,0 +1,10 @@
+<% (I18n.available_locales - [:root]).each do |locale| %>
+  <div class="layout_row_label">
+    <%= MenuItem.human_attribute_name(:title) %> <%= locale.to_s.upcase %>
+  </div>
+  <div class="layout_row_content">
+    <%= text_field_tag "menu_item[titles][#{locale}]",
+          menu_item.translations.find_by(:locale => locale)&.title,
+          :placeholder => (locale == I18n.default_locale ? nil : t(".falls_back")) %>
+  </div>
+<% end %>
