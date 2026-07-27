@@ -1,4 +1,6 @@
 class PageTranslationsController < ApplicationController
+  include PinnedToDefaultLocale
+
   layout 'admin'
 
   before_action :login_required

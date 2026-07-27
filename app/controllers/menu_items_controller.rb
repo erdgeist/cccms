@@ -1,4 +1,5 @@
 class MenuItemsController < ApplicationController
+  include PinnedToDefaultLocale
 
   # Private
 
