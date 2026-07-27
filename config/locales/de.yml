@@ -291,9 +291,6 @@ de:
       housekeeping: "Verwaltung"
       my_account: "Mein Konto"
       navigation: "Navigation"
-    drafts:
-      title: "Entwürfe (%{size})"
-      revisions: "Revisionen"
     conventions:
       title: "Konventionen beim Anlegen von Nodes"
       kind: "Art"

@@ -585,9 +585,8 @@ form.button_to svg  {
 
 /* Generic fallback header row. Shadowed by table.node_table's own
    tr.header (2rem) and duplicated (same values) by table#revisions's
-   own tr.header below. Applies as-is to #menu_item_list,
-   div#draft_list table, and table.user_table, none of which define
-   their own tr.header. */
+   own tr.header below. Applies as-is to #menu_item_list, and
+   table.user_table, none of which define their own tr.header. */
 table tr.header {
   height: 20px;
   text-align: left;
@@ -1170,38 +1169,6 @@ input#menu_item_title {
 /* ============================================================
    Draft list (dashboard widget)
    ============================================================ */
-
-div#draft_list {
-  border: 1px solid var(--text);
-  padding: 5px;
-  overflow: auto;
-  height: 300px;
-}
-
-div#draft_list table {
-  border-collapse: collapse;
-}
-
-div#draft_list table tr.header:hover {
-  background-color: var(--surface);
-}
-
-div#draft_list table tr:hover {
-  background-color: var(--surface-tint);
-}
-
-div#draft_list table td.actions {
-  text-transform: lowercase;
-  white-space: nowrap;
-}
-
-/* Layout only -- the at-rest visibility (wavy underline) for these
-   links comes from the scoped rule in Base elements above. */
-div#draft_list table td.actions a {
-  letter-spacing: 1px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
 
 .search_results_list {
   list-style: none;
