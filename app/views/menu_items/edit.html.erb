@@ -15,8 +15,7 @@
     <div class="layout_row_label"><%= MenuItem.human_attribute_name(:path) %></div>
     <div class="layout_row_content"><%= f.text_field :path %></div>
 
-    <div class="layout_row_label"><%= MenuItem.human_attribute_name(:title) %></div>
-    <div class="layout_row_content"><%= f.text_field :title %></div>
+    <%= render "title_fields", :menu_item => @menu_item %>
 
     <div class="layout_row_label"></div>
     <div class="layout_row_content"><%= f.submit t("admin.common.update") %></div>

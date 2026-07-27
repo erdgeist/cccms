@@ -455,6 +455,8 @@ en:
       title: "Add Menu Item"
     edit:
       title: "Edit Menu Item"
+    title_fields:
+      falls_back: "Menu item title falls back to German if empty"
 
   flash:
     common:

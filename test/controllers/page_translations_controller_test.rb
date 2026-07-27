@@ -30,7 +30,7 @@ class PageTranslationsControllerTest < ActionController::TestCase
     node = Node.root.children.create!(:slug => "translations_exit_test")
     node.lock_for_editing!(users(:quentin))
 
-    patch :update, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "x" }, :commit => "Save + Unlock + Exit" }
+    patch :update, params: { :node_id => node.id, :translation_locale => "en", :page => { :title => "x" }, :unlock_exit => "1" }
 
     assert_nil node.reload.lock_owner
     assert_redirected_to node_path(node)

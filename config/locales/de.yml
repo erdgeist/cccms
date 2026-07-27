@@ -638,6 +638,8 @@ de:
       title: "Menüeintrag hinzufügen"
     edit:
       title: "Menüeintrag bearbeiten"
+    title_fields:
+      falls_back: "Menu-Title leer lassen, fall-back nach deutsch"
 
   layouts:
     application:

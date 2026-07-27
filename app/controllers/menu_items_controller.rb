@@ -19,7 +19,9 @@ class MenuItemsController < ApplicationController
   end
 
   def create
-    if MenuItem.create( menu_item_params )
+    @menu_item = MenuItem.new( menu_item_params )
+
+    if @menu_item.save
       redirect_to menu_items_path
     else
       render :new
@@ -58,6 +60,6 @@ class MenuItemsController < ApplicationController
   private
 
     def menu_item_params
-      params.require(:menu_item).permit(:node_id, :path, :position, :type, :title, :type_id)
+      params.require(:menu_item).permit(:node_id, :path, :position, :titles => {})
     end
 end

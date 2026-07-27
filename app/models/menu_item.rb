@@ -3,11 +3,17 @@ class MenuItem < ApplicationRecord
   default_scope -> { where(:type => "MenuItem") }
   
   translates    :title
+  validates     :title, presence: true
   
   acts_as_list  :scope => :type
   
   before_save   :determine_type_id
   
+  def titles=(values)
+    values.each do |locale, value|
+      Globalize.with_locale(locale) { self.title = value.to_s.strip.presence }
+    end
+  end
   
   private
   
