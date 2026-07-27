@@ -58,6 +58,6 @@ class MenuItemsController < ApplicationController
   private
 
     def menu_item_params
-      params.require(:menu_item).permit(:node_id, :path, :position, :type, :type_id)
+      params.require(:menu_item).permit(:node_id, :path, :position, :type, :title, :type_id)
     end
 end
