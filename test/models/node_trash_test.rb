@@ -161,7 +161,7 @@ class NodeTrashTest < ActiveSupport::TestCase
     node = create_node_with_published_page
     node.trash!(@user1)
 
-    ids = Node.drafts_and_autosaves.pluck(:id)
+    ids = Node.work_in_progress.pluck(:id)
     assert_not_includes ids, Node.trash.id
     assert_not_includes ids, node.id
   end

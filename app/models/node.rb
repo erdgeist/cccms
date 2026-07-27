@@ -593,12 +593,15 @@ class Node < ApplicationRecord
       .distinct
   end
 
-  def self.drafts_and_autosaves(current_user_id: nil)
-    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL").not_in_trash
-    return scope.order("updated_at DESC") unless current_user_id
+  # Nodes carrying unfinished work: a draft, an autosave, or a lock with
+  # neither behind it
+  def self.work_in_progress(current_user_id: nil)
+    scope = where("draft_id IS NOT NULL OR autosave_id IS NOT NULL OR locking_user_id IS NOT NULL")
+              .not_in_trash
+    return scope.order("nodes.updated_at ASC") unless current_user_id
 
     scope.order(
-      Arel.sql(sanitize_sql_array(["CASE WHEN locking_user_id = ? THEN 0 ELSE 1 END, updated_at DESC", current_user_id]))
+      Arel.sql(sanitize_sql_array(["CASE WHEN locking_user_id = ? THEN 0 ELSE 1 END, nodes.updated_at ASC", current_user_id]))
     )
   end
 

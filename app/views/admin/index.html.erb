@@ -23,7 +23,7 @@
 
 <div id="dashboard_widgets">
   <div class="dashboard_widget">
-    <h3><%= t(".drafts_widget") %></h3>
+    <h3><%= t(".drafts_widget", :total => @drafts_total) %></h3>
     <ul>
       <% @drafts.each do |node| %>
         <li>
@@ -32,7 +32,13 @@
             <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
           </div>
           <span class="dashboard_widget_meta">
-            <% if (editor = node_last_editor(node)) %><%= editor %>, <% end %><%= relative_time_phrase(node.updated_at) %>
+            <% if node.locked? %>
+              <%= icon("lock", library: "tabler", "aria-label": t(".held_by")) %>
+              <%= node.lock_owner.login %>,
+            <% elsif (editor = node_last_editor(node)) %>
+              <%= editor %>,
+            <% end %>
+            <%= relative_time_phrase(node.updated_at) %>
           </span>
         </li>
       <% end %>

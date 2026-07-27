@@ -5,7 +5,9 @@ class AdminController < ApplicationController
   before_action :login_required
 
   def index
-    @drafts = Node.drafts_and_autosaves(current_user_id: current_user.id).limit(5)
+    scope         = Node.work_in_progress(current_user_id: current_user.id)
+    @drafts_total = scope.reorder(nil).count
+    @drafts       = scope.includes(:head, :draft, :lock_owner).limit(5)
     @actions = NodeAction.order(:occurred_at => :desc, :id => :desc).limit(5)
   end
 

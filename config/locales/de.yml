@@ -285,8 +285,9 @@ de:
       find_chapter: "Chapter finden"
       upload_asset: "Asset hochladen"
       add_in_tree: "Seite im Seitenbaum anlegen"
-      drafts_widget: "Entwürfe und Autosaves"
-      see_all_drafts: "Alle Entwürfe →"
+      drafts_widget: "In Arbeit (%{total})"
+      held_by: "Gesperrt von"
+      see_all_drafts: "Alle Nodes in Arbeit →"
       see_all_changes: "Alle Änderungen →"
       housekeeping: "Verwaltung"
       my_account: "Mein Konto"
@@ -424,7 +425,7 @@ de:
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Text (%{lang})"
     drafts:
-      title: "Nodes mit Entwürfen oder Autosaves"
+      title: "Nodes mit Entwürfen, Autosaves oder Sperren"
     mine:
       title: "Meine Arbeit"
     tags:

@@ -238,8 +238,9 @@ en:
       find_chapter: "Find a chapter"
       upload_asset: "Upload asset"
       add_in_tree: "Add a page in the page tree"
-      drafts_widget: "Drafts and autosaves"
-      see_all_drafts: "See all drafts →"
+      drafts_widget: "In progress (%{total})"
+      held_by: "Locked by"
+      see_all_drafts: "See all WIP nodes →"
       see_all_changes: "See all recent changes →"
       housekeeping: "Housekeeping"
       my_account: "My account"
@@ -376,7 +377,7 @@ en:
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Body (%{lang})"
     drafts:
-      title: "Nodes with drafts or autosaves"
+      title: "Nodes with drafts, autosaves or locks"
     mine:
       title: "My work"
     tags:

@@ -231,7 +231,7 @@ class NodesController < ApplicationController
 
   # Filter functions for admin views
   def drafts
-    @nodes = index_matching(Node.drafts_and_autosaves)
+    @nodes = index_matching(Node.work_in_progress)
   end
 
   def mine

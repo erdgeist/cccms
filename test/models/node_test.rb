@@ -522,17 +522,17 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal 0, Node.editor_search("Backspace Nonexistentstreet").count
   end
 
-  test "drafts_and_autosaves without a user sorts by recency only" do
+  test "work_in_progress without a user sorts by oldest-first" do
     older = Node.root.children.create!(:slug => "drafts_order_older")
     find_or_create_draft(older, @user1)
     newer = Node.root.children.create!(:slug => "drafts_order_newer")
     find_or_create_draft(newer, @user1)
 
-    result = Node.drafts_and_autosaves.to_a
-    assert result.index(newer) < result.index(older)
+    result = Node.work_in_progress.to_a
+    assert result.index(older) < result.index(newer)
   end
 
-  test "drafts_and_autosaves with a user puts their own locked nodes first, regardless of recency" do
+  test "work_in_progress with a user puts their own locked nodes first, regardless of recency" do
     mine = Node.root.children.create!(:slug => "drafts_order_mine")
     mine.lock_for_editing!(@user1)
     mine.autosave!({:title => "mine"}, @user1)
@@ -542,8 +542,18 @@ class NodeTest < ActiveSupport::TestCase
     someone_elses_newer.lock_for_editing!(other_user)
     someone_elses_newer.autosave!({:title => "theirs"}, other_user)
 
-    result = Node.drafts_and_autosaves(current_user_id: @user1.id).to_a
+    result = Node.work_in_progress(current_user_id: @user1.id).to_a
     assert result.index(mine) < result.index(someone_elses_newer)
+  end
+
+  test "work_in_progress includes a node that is only locked" do
+    locked = create_node_with_published_page
+    locked.lock_for_editing!(@user1)
+    locked.reload
+
+    assert_nil locked.draft
+    assert_nil locked.autosave
+    assert_includes Node.work_in_progress.to_a, locked
   end
 
   test "autosave! carries over the current related assets to the newly created autosave row" do
