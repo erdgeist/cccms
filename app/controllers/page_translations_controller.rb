@@ -27,7 +27,7 @@ class PageTranslationsController < ApplicationController
     @node.save_draft!(current_user)
     flash[:notice] = t("flash.page_translations.saved", :lang => @locale.upcase)
 
-    if params[:commit] == "Save + Unlock + Exit"
+    if params[:unlock_exit].present?
       @node.unlock!
       redirect_to node_path(@node)
     else
