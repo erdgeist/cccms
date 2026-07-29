@@ -7,7 +7,6 @@
     <%= image_tag @headline_asset.upload.url(:medium), :alt => "", :class => "headline_document_card_thumb" %>
     <div class="headline_document_card_info">
       <div class="headline_document_card_titlerow">
-        <%= icon("file-text", library: "tabler", "aria-hidden": true) %>
         <span class="headline_document_card_title"><%= humanized_asset_name(@headline_asset) %></span>
       </div>
       <span class="headline_document_card_meta">PDF · <%= number_to_human_size(@headline_asset.upload.size) %></span>
