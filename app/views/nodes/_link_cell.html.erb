@@ -1,0 +1,12 @@
+<%= link_to url, target: "_blank", rel: "noopener",
+      class: "link_icon_button",
+      "aria-label" => t("nodes.show.visit"), title: t("nodes.show.visit") do %>
+  <%= icon("external-link", library: "tabler", "aria-hidden": true) %>
+<% end %>
+<button type="button" class="link_icon_button copy_button"
+        data-copy-url="<%= url %>"
+        aria-label="<%= t("nodes.show.copy_url") %>"
+        title="<%= t("nodes.show.copy_url") %>">
+  <%= icon("copy", library: "tabler", "aria-hidden": true) %>
+  <span class="copy_button_label"></span>
+</button>
