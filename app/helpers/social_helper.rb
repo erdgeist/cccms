@@ -92,16 +92,61 @@ module SocialHelper
     @page&.published_at&.iso8601
   end
 
-  # request.path rather than a routing helper: it is already the locale's
-  # own canonical form -- unprefixed for German, /en/ for English -- and
-  # dropping the query string is what makes it canonical.
+  # The address of the version actually being served, not of the URL that
+  # was requested. So /de/updates/foo points at /updates/foo, and a page
+  # with no English translation requested under /en/ points at the German
+  # URL rather than claiming to be an English page. The query string is
+  # dropped, which is what makes it canonical.
   def og_canonical_url
-    og_absolute_url(request.path)
+    locale = @page&.persisted? ? og_locale_key : I18n.locale
+    og_locale_url(locale)
   end
 
   def og_locale
     OG_LOCALES.fetch((@page&.effective_lang || I18n.locale).to_sym,
                      OG_LOCALES[I18n.default_locale.to_sym])
+  end
+
+  # Locales that can appear in a URL. Cccms::LOCALES will replace this when
+  # the set_locale allowlist lands; :root is in available_locales but is not
+  # a language.
+  def og_url_locales
+    I18n.available_locales - [:root]
+  end
+
+  # The request path with any locale prefix stripped, so a locale-specific
+  # URL can be rebuilt from it. /en/updates/foo, /de/updates/foo and
+  # /updates/foo all reduce to /updates/foo.
+  def og_bare_path
+    pattern = og_url_locales.join("|")
+    request.path.sub(%r{\A/(?:#{pattern})(?=/|\z)}, "").presence || "/"
+  end
+
+  # Absolute URL for this page in one locale. The default locale is
+  # unprefixed, matching default_url_options, so /updates/foo is the
+  # canonical German address and /de/updates/foo is a duplicate of it.
+  def og_locale_url(locale)
+    locale = locale.to_sym
+    locale = I18n.default_locale unless og_url_locales.include?(locale)
+
+    path = og_bare_path
+    return og_absolute_url(path) if locale == I18n.default_locale
+
+    og_absolute_url(path == "/" ? "/#{locale}" : "/#{locale}#{path}")
+  end
+
+  # One entry per locale in which the page genuinely has a translation,
+  # including a self-reference, which Google requires. A locale with no
+  # translation is omitted: /en/ would render German content through the
+  # fallback chain, which is not an English version of the page. With only
+  # one translation there is nothing to declare.
+  def og_hreflang_alternates
+    return [] unless @page&.persisted?
+
+    locales = @page.translated_locales.map(&:to_sym) & og_url_locales
+    return [] if locales.size < 2
+
+    locales.sort.map { |locale| [locale.to_s, og_locale_url(locale)] }
   end
 
   # Only locales in which this page genuinely has a translation, so a

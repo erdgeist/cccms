@@ -190,6 +190,46 @@ class ContentControllerTest < ActionController::TestCase
       FileUtils.rm_rf(Rails.root.join("tmp", "test_uploads", asset.id.to_s))
     end
   end
+
+  test "a translated page declares hreflang alternates and canonicalises per locale" do
+    node  = create_node_under_root "og_hreflang_test"
+    draft = find_or_create_draft(node, @user1)
+    draft.title = "Zweisprachig"
+    draft.save
+    node.publish_draft!
+    node.reload
+    Globalize.with_locale(:en) { node.head.update!(:title => "Bilingual") }
+
+    get :render_page, params: { :locale => "de", :page_path => ["og_hreflang_test"] }
+
+    assert_response :success
+    assert_select "link[rel=alternate][hreflang=de][href=?]",
+                  "http://test.host/og_hreflang_test"
+    assert_select "link[rel=alternate][hreflang=en][href=?]",
+                  "http://test.host/en/og_hreflang_test"
+    assert_select "link[rel=alternate][hreflang='x-default'][href=?]",
+                  "http://test.host/og_hreflang_test"
+    assert_select "link[rel=canonical][href=?]",
+                  "http://test.host/og_hreflang_test"
+  end
+
+  test "an untranslated page declares no alternates and canonicalises to the default locale" do
+    node  = create_node_under_root "og_single_locale_test"
+    draft = find_or_create_draft(node, @user1)
+    draft.title = "Nur Deutsch"
+    draft.save
+    node.publish_draft!
+
+    get :render_page, params: { :locale => "en", :page_path => ["og_single_locale_test"] }
+
+    assert_response :success
+    assert_select "link[rel=alternate][hreflang]", false,
+                  "one translation is nothing to declare"
+    # Served German through the fallback chain, so the German URL is
+    # canonical rather than the /en/ address that was requested.
+    assert_select "link[rel=canonical][href=?]",
+                  "http://test.host/og_single_locale_test"
+  end
   
   protected
   
