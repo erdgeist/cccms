@@ -481,6 +481,10 @@ en:
       title: "Menu Items"
       create_item: "Create menu item"
       confirm_destroy: "Do you really want to destroy the menu entry?"
+      reorder_hint: "Drag the handles to change the order"
+      falls_back: "… falls back to German"
+      move_up: "Move up"
+      move_down: "Move down"
     new:
       title: "Add Menu Item"
     edit:

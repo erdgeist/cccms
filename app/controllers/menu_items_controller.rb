@@ -54,6 +54,16 @@ class MenuItemsController < ApplicationController
     head :ok
   end
 
+  def move_up
+    MenuItem.find(params[:id]).move_higher
+    redirect_to menu_items_path
+  end
+
+  def move_down
+    MenuItem.find(params[:id]).move_lower
+    redirect_to menu_items_path
+  end
+
   private
 
     def menu_item_params

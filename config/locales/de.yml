@@ -669,6 +669,10 @@ de:
       title: "Menüeinträge"
       create_item: "Menüeintrag anlegen"
       confirm_destroy: "Diesen Menüeintrag wirklich löschen?"
+      reorder_hint: "Die Einträge im Navi-Menü kann man draggen"
+      falls_back: "… Fallback auf deutsch"
+      move_up: "Nach oben"
+      move_down: "Nach unten"
     new:
       title: "Menüeintrag hinzufügen"
     edit:

@@ -386,9 +386,16 @@ menu_item_sorter = {
           type: "POST",
           url: "/menu_items/0/sort",
           data: $(this).sortable("serialize"),
-          dataType: "json",
-          success : function(results) {
-            alert(results);
+          success : function() {
+            // The controller answers head :ok, so there is nothing to parse
+            // and dataType: "json" would send every success down the error
+            // path. Reload rather than patch the DOM: first?/last? decide the
+            // disabled chevrons server-side, and after a drag they describe
+            // the old order.
+            window.location.reload();
+          },
+          error : function() {
+            alert("Reihenfolge konnte nicht gespeichert werden.");
           }
         });
       }

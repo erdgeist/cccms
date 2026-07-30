@@ -108,6 +108,8 @@ Cccms::Application.routes.draw do
     resources :menu_items, :except => :show do
       member do
         post :sort
+        post :move_up
+        post :move_down
       end
     end
 

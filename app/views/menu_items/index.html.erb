@@ -4,18 +4,55 @@
   <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_item") %>
 <% end %>
 
+<p class="field_hint"><%= t(".reorder_hint") %></p>
+
 <table id="menu_item_list">
   <% @menu_items.each do |menu_item| %>
   <tr id="menu_items-<%= menu_item.id %>">
     <td class="menu_sort_handle">
-      <div></div>
+      <span class="menu_grip"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
+
+      <%= button_to move_up_menu_item_path(menu_item), method: :post,
+            disabled: menu_item.first?,
+            form: { class: "button_to menu_move" },
+            "aria-label" => t(".move_up"), title: t(".move_up") do %>
+        <%= icon("chevron-up", library: "tabler", "aria-hidden": true) %>
+      <% end %>
+
+      <%= button_to move_down_menu_item_path(menu_item), method: :post,
+            disabled: menu_item.last?,
+            form: { class: "button_to menu_move" },
+            "aria-label" => t(".move_down"), title: t(".move_down") do %>
+        <%= icon("chevron-down", library: "tabler", "aria-hidden": true) %>
+      <% end %>
     </td>
-    <td class="menu_item_title"><%= menu_item.title %></td>
-    <td><%= link_to t("admin.common.edit"), edit_menu_item_path(menu_item) %></td>
-    <td>
+    <td class="menu_item_title">
+      <%= menu_item.title %>
+      <% (I18n.available_locales - [:root, I18n.default_locale]).each do |locale| %>
+        <% translated = menu_item.translations.find_by(:locale => locale)&.title %>
+        <span class="menu_item_translation">
+          <span class="menu_item_translation_locale"><%= locale.to_s.upcase %></span>
+          <% if translated.present? %>
+            <%= translated %>
+          <% else %>
+            <span class="menu_item_translation_absent"><%= t(".falls_back") %></span>
+          <% end %>
+        </span>
+      <% end %>
+    </td>
+    <td class="menu_item_action">
+      <%= link_to edit_menu_item_path(menu_item),
+            "aria-label" => t("admin.common.edit"),
+            title: t("admin.common.edit") do %>
+        <%= icon("edit", library: "tabler", "aria-hidden": true) %>
+      <% end %>
+    </td>
+    <td class="menu_item_action">
       <%= button_to menu_item_path(menu_item), method: :delete,
-            form: { data: { confirm: t(".confirm_destroy") }, class: 'button_to destructive' } do %>
-        <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
+            form: { data: { confirm: t(".confirm_destroy") }, class: 'button_to destructive' },
+            "aria-label" => t("admin.common.destroy"),
+            title: t("admin.common.destroy") do %>
+        <%= icon("trash", library: "tabler", "aria-hidden": true) %>
       <% end %>
     </td>
   </tr>
