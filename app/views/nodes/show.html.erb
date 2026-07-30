@@ -194,25 +194,97 @@
 
     <div class="layout_row_label"><%= t(".links") %></div>
     <div class="layout_row_content info_group">
-      <div class="info_group_items">
-        <div class="info_item">
-          <span class="info_label"><%= t(".public") %></span>
-          <%= link_to @page.public_link, content_url(@node.unique_path) %>
+      <%
+        # Public addresses come from the head, previews from the draft, and
+        # those sets differ routinely -- a German head with a freshly
+        # translated English draft has one public address and two preview
+        # ones. Columns are the union; a kind with no address in a locale
+        # leaves that cell empty.
+        available     = I18n.available_locales - [:root]
+        head_locales  = (@node.head&.translated_locales  || []).map(&:to_sym) & available
+        draft_locales = (@node.draft&.translated_locales || []).map(&:to_sym) & available
+        link_locales  = (head_locales | draft_locales)
+        link_locales  = [I18n.default_locale] if link_locales.empty?
+        link_locales  = [I18n.default_locale] + (link_locales - [I18n.default_locale]).sort
+        locale_param  = ->(locale) { locale unless locale == I18n.default_locale }
+      %>
+
+      <div class="link_matrix link_matrix_<%= link_locales.size %>">
+        <div class="link_matrix_head">
+          <span></span>
+          <% link_locales.each do |locale| %>
+            <span class="link_matrix_locale"><%= locale.to_s.upcase %></span>
+          <% end %>
         </div>
-        <% if @node.draft %>
-          <div class="info_item">
-            <span class="info_label"><%= t(".admin_preview") %></span>
-            <%= link_to preview_page_path(@node.draft), preview_page_path(@node.draft) %>
+
+        <% if @node.head %>
+          <div class="link_matrix_row">
+            <span class="link_matrix_label">
+              <span class="info_label"><%= t(".public") %></span>
+              <%= link_to "/#{@node.unique_name}", content_url(@node.unique_path) %>
+            </span>
+            <span class="link_matrix_cells">
+              <% link_locales.each do |locale| %>
+                <span class="link_matrix_cell">
+                  <% if head_locales.include?(locale) %>
+                    <span class="link_locale_tag"><%= locale.to_s.upcase %></span>
+                    <%= render "nodes/link_cell",
+                          :url => content_url(@node.unique_path, :locale => locale_param.(locale)) %>
+                  <% end %>
+                </span>
+              <% end %>
+            </span>
           </div>
-          <div class="info_item">
-            <span class="info_label"><%= t(".public_preview") %></span>
+        <% end %>
+
+        <% if @node.draft %>
+          <div class="link_matrix_row">
+            <span class="link_matrix_label">
+              <span class="info_label"><%= t(".admin_preview") %></span>
+              <%= link_to preview_page_path(@node.draft), preview_page_url(@node.draft) %>
+            </span>
+            <span class="link_matrix_cells">
+              <% link_locales.each do |locale| %>
+                <span class="link_matrix_cell">
+                  <% if draft_locales.include?(locale) %>
+                    <span class="link_locale_tag"><%= locale.to_s.upcase %></span>
+                    <%= render "nodes/link_cell",
+                          :url => preview_page_url(@node.draft, :locale => locale_param.(locale)) %>
+                  <% end %>
+                </span>
+              <% end %>
+            </span>
+          </div>
+
+          <div class="link_matrix_row">
+            <span class="link_matrix_label">
+              <span class="info_label"><%= t(".public_preview") %></span>
+              <% if @node.draft.preview_token.present? %>
+                <%= link_to shared_preview_path(:token => @node.draft.preview_token),
+                            shared_preview_url(:token => @node.draft.preview_token),
+                            target: "_blank", rel: "noopener" %>
+              <% end %>
+            </span>
             <% if @node.draft.preview_token.present? %>
-              <div class="aligned_action_row">
-                <%= link_to shared_preview_path(token: @node.draft.preview_token), shared_preview_url(token: @node.draft.preview_token), target: "_blank", rel: "noopener" %>
-                <%= button_to t(".revoke"), revoke_shared_preview_node_path(@node), method: :put, form: { data: { confirm: t(".confirm_revoke") }, class: 'button_to state_changing' } %>
-              </div>
+              <span class="link_matrix_cells">
+                <% link_locales.each do |locale| %>
+                  <span class="link_matrix_cell">
+                    <% if draft_locales.include?(locale) %>
+                      <span class="link_locale_tag"><%= locale.to_s.upcase %></span>
+                      <%= render "nodes/link_cell",
+                            :url => shared_preview_url(:token => @node.draft.preview_token,
+                                                       :locale => locale_param.(locale)) %>
+                    <% end %>
+                  </span>
+                <% end %>
+              </span>
+              <%= button_to t(".revoke"), revoke_shared_preview_node_path(@node), method: :put,
+                    form: { data: { confirm: t(".confirm_revoke") },
+                            class: 'button_to state_changing link_matrix_actions' } %>
             <% else %>
-              <%= button_to t(".create_preview_link"), generate_shared_preview_node_path(@node), method: :put, form: { class: 'button_to state_changing' } %>
+              <span class="link_matrix_cells"></span>
+              <%= button_to t(".create_preview_link"), generate_shared_preview_node_path(@node), method: :put,
+                    form: { class: 'button_to state_changing link_matrix_actions' } %>
             <% end %>
           </div>
         <% end %>

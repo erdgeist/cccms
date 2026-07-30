@@ -351,6 +351,8 @@ en:
       confirm_trash: "Move this page and everything beneath it to the Trash? All published content in it will go offline."
       move_to_trash: "Move to Trash"
       locked_hint: "Locked — see People below to unlock before editing, publishing, or discarding."
+      visit: "Visit"
+      copy_url: "Copy URL"
       trash: "Trash"
       was_at: "Was at"
       restore_to: "Restore to"

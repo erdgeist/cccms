@@ -13,6 +13,7 @@
   --handle-fill:           color-mix(in srgb, CanvasText, Canvas 60%);  /* #989898 as fill */
   --link-underline:        color-mix(in srgb, CanvasText, Canvas 69%);  /* #b0b0b0 */
   --text-muted:            color-mix(in srgb, CanvasText, Canvas 47%);
+  --text-heavy:            color-mix(in srgb, CanvasText, Canvas 23%);
 
   --badge-scrim:           rgba(255, 255, 255, 0.85);
 
@@ -975,6 +976,168 @@ form.button_to button[type="submit"] {
 .node_search_form .action_button {
   height: 2.25rem;
   box-sizing: border-box;
+}
+
+/* ============================================================
+   Link matrix (nodes#show)
+   ============================================================
+   One block per link kind, each an independent grid with an identical
+   column template */
+
+.link_matrix_head {
+  display: none;
+}
+
+.link_matrix_row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.75rem;
+}
+
+.link_matrix_row:last-child {
+  margin-bottom: 0;
+}
+
+.link_matrix_cells {
+  margin-top: 0.7rem;
+}
+
+.link_matrix_row .link_matrix_actions {
+  margin-top: 1.25rem;
+}
+
+.link_matrix_label   { order: 0; }
+.link_matrix_cells   { order: 1; }
+.link_matrix_actions { order: 2; }
+
+.link_matrix_cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+}
+
+.link_matrix_cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.link_matrix_label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.link_matrix_label a {
+  overflow-wrap: anywhere;
+}
+
+.link_locale_tag {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.link_matrix_locale {
+  font-size: 0.8rem;
+  font-variant: all-small-caps;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.link_icon_button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background-color: var(--surface);
+  color: var(--text-heavy);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.link_icon_button:hover {
+  color: var(--on-solid);
+  background-color: var(--text);
+  border-color: var(--text);
+}
+
+.link_icon_button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* Transient "Copied!" text; empty at rest. */
+.link_icon_button .copy_button_label:not(:empty) {
+  margin-left: 0.35rem;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 1016px) {
+  /* ONE grid for the whole matrix, not one per row: separate grids compute
+     their auto columns independently, so identical templates do not align
+     unless every width is fixed. display: contents dissolves the row and
+     cell wrappers, making their children direct grid items that share the
+     tracks. */
+  .link_matrix {
+    display: grid;
+    align-items: start;
+    gap: 0.75rem 1rem;
+  }
+
+  /* Label sizes to its longest URL, one auto column per locale, one for
+     the token actions, then a spacer so the columns cluster near the
+     label rather than drifting to the right edge. */
+  .link_matrix_1 { grid-template-columns: auto auto auto minmax(0, 1fr); }
+  .link_matrix_2 { grid-template-columns: auto auto auto auto minmax(0, 1fr); }
+  .link_matrix_3 { grid-template-columns: auto auto auto auto auto minmax(0, 1fr); }
+
+  .link_matrix_head,
+  .link_matrix_row,
+  .link_matrix_cells {
+    display: contents;
+  }
+
+  /* Auto-placement must follow source order once the wrappers are gone. */
+  .link_matrix_label,
+  .link_matrix_cells,
+  .link_matrix_actions {
+    order: 0;
+  }
+
+  /* Forces each row to begin a new grid row without placeholder cells. */
+  .link_matrix_label {
+    grid-column-start: 1;
+  }
+
+  /* A display: contents element cannot carry a border, so the header rule
+     lives on the locale labels themselves -- which marks the columns
+     individually and avoids a stray line under the empty label cell. */
+  .link_matrix_locale {
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .link_matrix_locale,
+  .link_matrix_cell {
+    justify-self: center;
+  }
+
+  /* The header sits above the first row's buttons, which are themselves
+     top-aligned, so it needs no extra offset -- but the locale cells do,
+     to line up with the URL rather than the label. */
+  .link_matrix_cell {
+    padding-top: 0.1rem;
+  }
+
+  .link_locale_tag {
+    display: none;
+  }
+
+  .link_matrix_row .link_matrix_actions {
+    margin-top: 0;
+  }
 }
 
 /* Layout only -- the at-rest visibility (wavy underline) for these

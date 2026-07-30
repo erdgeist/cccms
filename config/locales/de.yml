@@ -404,6 +404,8 @@ de:
       confirm_trash: "Diese Seite und alles darunter in den Papierkorb verschieben? Alle veröffentlichten Inhalte darin gehen offline."
       move_to_trash: "In den Papierkorb"
       locked_hint: "Gesperrt — zum Bearbeiten, Veröffentlichen oder Verwerfen erst unter Personen entsperren."
+      visit: "besuchen"
+      copy_url: "URL kopieren"
       trash: "Papierkorb"
       was_at: "War unter"
       restore_to: "Wiederherstellen nach"
