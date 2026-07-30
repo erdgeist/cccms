@@ -3,7 +3,7 @@ class NodeAction < ApplicationRecord
   belongs_to :page, optional: true
   belongs_to :user, optional: true
 
-  has_many :action_participants, :dependent => :destroy
+  has_many :action_participants, -> { order(:id) }, :dependent => :destroy
 
   validates :action, presence: true
   validates :occurred_at, presence: true
