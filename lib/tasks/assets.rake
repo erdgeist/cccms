@@ -6,6 +6,7 @@ namespace :assets do
                                               FileAttachment::RASTERIZED_CONTENT_TYPES)
     scope = scope.where(id: ENV["ASSET_ID"]) if ENV["ASSET_ID"].present?
 
+    skipped = []
     scope.find_each do |asset|
       original_path = asset.send(:file_path, :original)
 
@@ -14,8 +15,16 @@ namespace :assets do
         next
       end
 
-      asset.send(:generate_all_variants, original_path)
-      puts "Regenerated variants for Asset##{asset.id} (#{asset.name})"
+      if asset.send(:generate_all_variants, original_path)
+        puts "Regenerated variants for Asset##{asset.id} (#{asset.name})"
+      else
+        skipped << asset.id
+        puts "Skipped Asset##{asset.id} (#{asset.name}) -- source has no rasterisable page"
+      end
+    end
+
+    if skipped.any?
+      puts "\n#{skipped.size} asset(s) skipped, no variants written: #{skipped.join(", ")}"
     end
   end
 
