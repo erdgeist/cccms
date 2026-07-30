@@ -65,7 +65,7 @@ module SocialHelper
 
   def og_image_alt
     asset = @page&.persisted? ? @page.headline_asset : nil
-    asset&.has_variant?(:og) ? asset.name.to_s : OG_SITE_NAME
+    asset&.has_variant?(:og) ? humanized_asset_name(asset) : OG_SITE_NAME
   end
 
   def og_title
