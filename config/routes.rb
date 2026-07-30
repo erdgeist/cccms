@@ -105,7 +105,7 @@ Cccms::Application.routes.draw do
     resource :otp_enrollment, :only => [:show, :create, :update, :destroy]
     resource :otp_challenge, :only => [:new, :create]
 
-    resources :menu_items do
+    resources :menu_items, :except => :show do
       member do
         post :sort
       end

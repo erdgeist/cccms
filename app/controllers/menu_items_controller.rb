@@ -11,9 +11,6 @@ class MenuItemsController < ApplicationController
     @menu_items = MenuItem.order("position ASC").all
   end
 
-  def show
-  end
-
   def new
     @menu_item = MenuItem.new
   end
