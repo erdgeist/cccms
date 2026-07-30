@@ -114,6 +114,82 @@ class ContentControllerTest < ActionController::TestCase
 
     assert_response :success
   end
+
+  test "a published page emits article social metadata" do
+    node  = create_node_under_root "og_article_test"
+    draft = find_or_create_draft(node, @user1)
+    draft.title    = "Offener Brief"
+    draft.abstract = "Wir veröffentlichen den Wortlaut eines Offenen Briefes."
+    draft.save
+    node.publish_draft!
+
+    get :render_page, params: { :locale => "de", :page_path => ["og_article_test"] }
+
+    assert_response :success
+    assert_select "meta[property='og:type'][content=?]",      "article"
+    assert_select "meta[property='og:title'][content=?]",     "Offener Brief"
+    assert_select "meta[property='og:site_name'][content=?]", "Chaos Computer Club"
+    assert_select "meta[property='og:locale'][content=?]",    "de_DE"
+    assert_select "meta[property='article:published_time']"
+
+    # og:title carries the bare title; page_title's "CCC | " prefix belongs
+    # to <title> only, since platforms render og:site_name separately.
+    assert_select "title", :text => "CCC | Offener Brief"
+
+    # A canonical URL must not carry a query string.
+    canonical = css_select("link[rel=canonical]").first["href"]
+    assert_match %r{/og_article_test\z}, canonical
+
+    assert_select "meta[name=robots]", false, "a public page must be indexable"
+  end
+
+  test "a page without a headline asset falls back to the default card" do
+    node = create_node_under_root "og_fallback_test"
+    find_or_create_draft(node, @user1).update!(:title => "Ohne Aufmacher")
+    node.publish_draft!
+
+    get :render_page, params: { :locale => "de", :page_path => ["og_fallback_test"] }
+
+    assert_response :success
+    assert_select "meta[property='og:image'][content=?]",
+                  "http://test.host/images/social_default.png"
+    assert_select "meta[property='og:image:width'][content=?]",  "1200"
+    assert_select "meta[property='og:image:height'][content=?]", "630"
+  end
+
+  test "a page with a headline asset points at its social card" do
+    node  = create_node_under_root "og_variant_test"
+    draft = find_or_create_draft(node, @user1)
+    draft.title = "Mit Aufmacher"
+    draft.save
+    node.publish_draft!
+    node.reload
+
+    asset = Asset.create!(:name => "aufmacher",
+                          :upload_file_name => "aufmacher.png",
+                          :upload_content_type => "image/png",
+                          :upload_updated_at => Time.at(1_700_000_000))
+    node.attach_asset!(asset, :user => @user1, :headline => true)
+
+    # has_variant? only tests File.exist?, so touching the path is enough
+    # and no ImageMagick runs in the suite. image/png takes .jpg for the
+    # card, per variant_filename's per-style rule.
+    card = Rails.root.join("tmp", "test_uploads", asset.id.to_s, "og", "aufmacher.jpg")
+
+    begin
+      FileUtils.mkdir_p(File.dirname(card))
+      FileUtils.touch(card)
+
+      get :render_page, params: { :locale => "de", :page_path => ["og_variant_test"] }
+
+      assert_response :success
+      assert_select "meta[property='og:image'][content=?]",
+                    "http://test.host/system/uploads/#{asset.id}/og/aufmacher.jpg?v=1700000000"
+      assert_select "meta[property='og:image:alt'][content=?]", "aufmacher"
+    ensure
+      FileUtils.rm_rf(Rails.root.join("tmp", "test_uploads", asset.id.to_s))
+    end
+  end
   
   protected
   

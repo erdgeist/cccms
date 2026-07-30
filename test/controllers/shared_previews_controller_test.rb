@@ -32,4 +32,19 @@ class SharedPreviewsControllerTest < ActionController::TestCase
 
     assert_redirected_to node.head.public_link
   end
+
+  test "a shared preview emits no social metadata and is not indexable" do
+    node = Node.root.children.create!(:slug => "shared_preview_no_og_test")
+    node.draft.update!(:title => "Unveröffentlichter Entwurf")
+    node.draft.ensure_preview_token!
+
+    get :show, params: { :token => node.draft.preview_token }
+
+    assert_response :success
+
+    # An unfurled preview link would otherwise hand the draft's title,
+    # abstract and headline image to everyone in the chat room.
+    assert_select "meta[property^='og:']", false, "a preview must emit no og tags"
+    assert_select "meta[name=robots][content=?]", "noindex, nofollow"
+  end
 end

@@ -671,3 +671,5 @@ de:
       switch_locale: "Sprache umschalten"
       scheme_override: "Hell/Dunkel umschalten"
       log_out: "Abmelden"
+    social_meta:
+      site_description: "Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung."

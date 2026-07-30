@@ -4,10 +4,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung."/>
 
-    <meta property="og:image" content="https://www.ccc.de/images/chaosknoten.svg" />
-    <meta property="og:description" content="Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung." />
+    <%= render :partial => "layouts/social_meta" %>
 
     <title><%= page_title %></title>
     <link rel="stylesheet" href="<%= mtime_busted_path('/stylesheets/ccc.css') %>">

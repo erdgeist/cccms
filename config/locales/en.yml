@@ -623,3 +623,5 @@ en:
       switch_locale: "Toggle language"
       scheme_override: "Toggle light/dark"
       log_out: "Log out"
+    social_meta:
+      site_description: "The Chaos Computer Club is a galactic community of life forms campaigning for freedom of information and the assessment of the impact of technology."
