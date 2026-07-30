@@ -919,4 +919,21 @@ class NodeTest < ActiveSupport::TestCase
     node.reload
     assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft! }
   end
+
+  test "refusals localise their message rather than hardcoding it" do
+    trash = Node.trash
+
+    I18n.with_locale(:de) do
+      error = assert_raises(ActiveRecord::RecordInvalid) { trash.trash! }
+      assert_includes error.message,
+                      I18n.t("activerecord.errors.models.node.attributes.base.trash_the_trash")
+    end
+
+    I18n.with_locale(:en) do
+      trash.errors.clear
+      error = assert_raises(ActiveRecord::RecordInvalid) { trash.trash! }
+      assert_includes error.message,
+                      I18n.t("activerecord.errors.models.node.attributes.base.trash_the_trash")
+    end
+  end
 end

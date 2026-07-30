@@ -628,7 +628,7 @@ class NodesControllerTest < ActionController::TestCase
   test "chapters renders the curated heading" do
     login_as :quentin
     get :chapters
-    assert_select "h1", "Chapters"
+    assert_select "h1", "Dezentrale"
   end
 
   test "sitemap collapses configured paths but leaves others open" do

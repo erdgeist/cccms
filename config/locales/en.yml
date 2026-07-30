@@ -66,6 +66,36 @@ en:
         node_id: "Node Id"
         path: "Path"
         title: "Title"
+      node:
+        slug: "Slug"
+        staged_slug: "Staged slug"
+        parent_id: "Parent node"
+        staged_parent_id: "Staged parent node"
+        head_id: "Head"
+      related_asset:
+        headline: "Headline"
+
+    errors:
+      models:
+        node:
+          reserved_for_trash: "is reserved for the Trash"
+          trash_immutable: "of the Trash node cannot change"
+          trash_must_be_empty: "must stay empty on the Trash node"
+          inside_trash: "cannot exist inside the Trash"
+          attributes:
+            base:
+              has_children: "Cannot destroy a node that still has children"
+              trash_undeletable: "The Trash node cannot be destroyed"
+              publish_in_trash: "Cannot publish a node in the Trash"
+              move_under_self: "Cannot move a node under itself or one of its own descendants"
+              trash_the_trash: "The Trash node itself cannot be trashed"
+              restore_target_invalid: "Restore target must be a living node"
+              destroy_outside_trash: "Nodes are only destroyed from the Trash"
+              attach_in_trash: "Cannot attach assets to a node in the Trash"
+        related_asset:
+          attributes:
+            headline:
+              images_and_pdfs_only: "can only be set on image or PDF assets"
 
   tags:
     index:

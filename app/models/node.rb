@@ -236,7 +236,8 @@ class Node < ApplicationRecord
     return nil unless self.draft || staged_slug || staged_parent_id
 
     if in_trash? || trash_node?
-      raise ActiveRecord::RecordInvalid.new(self), "Cannot publish a node in the Trash"
+      errors.add(:base, :publish_in_trash)
+      raise ActiveRecord::RecordInvalid.new(self)
     end
 
     path_before = self.unique_name
@@ -265,7 +266,8 @@ class Node < ApplicationRecord
         new_parent = Node.find(staged_parent_id)
 
         if new_parent == self || self.descendants.include?(new_parent)
-          raise ActiveRecord::RecordInvalid.new(self), "Cannot move a node under itself or one of its own descendants"
+          errors.add(:base, :move_under_self)
+          raise ActiveRecord::RecordInvalid.new(self)
         end
 
         self.staged_parent_id = nil
@@ -316,7 +318,10 @@ class Node < ApplicationRecord
   # at the root, carrying the leaving-public-view snapshot.
   def trash! current_user = nil
     return nil if in_trash?
-    raise ActiveRecord::RecordInvalid.new(self), "The Trash node itself cannot be trashed" if trash_node?
+    if trash_node?
+      errors.add(:base, :trash_the_trash)
+      raise ActiveRecord::RecordInvalid.new(self)
+    end
 
     ActiveRecord::Base.transaction do
       path_before        = unique_name
@@ -360,7 +365,8 @@ class Node < ApplicationRecord
 
     if new_parent.nil? || new_parent == self || descendants.include?(new_parent) ||
        new_parent.trash_node? || new_parent.in_trash?
-      raise ActiveRecord::RecordInvalid.new(self), "Restore target must be a living node"
+      errors.add(:base, :restore_target_invalid)
+      raise ActiveRecord::RecordInvalid.new(self)
     end
 
     ActiveRecord::Base.transaction do
@@ -376,7 +382,7 @@ class Node < ApplicationRecord
     end
   end
 
-  # Final deletion -- only from inside the Trash. Removes the whole
+  # Final deletion, only from inside the Trash. Removes the whole
   # subtree, deepest first, each node through a real destroy! so every
   # per-node cascade runs (the categorical difference from the old
   # delete_all nuke). refuse_destroy_with_children on bare destroy is
@@ -384,7 +390,10 @@ class Node < ApplicationRecord
   # One log entry at the root, per the subtree rule, written before the
   # rows die.
   def destroy_from_trash! current_user = nil
-    raise ActiveRecord::RecordInvalid.new(self), "Nodes are only destroyed from the Trash" unless in_trash?
+    unless in_trash?
+      errors.add(:base, :destroy_outside_trash)
+      raise ActiveRecord::RecordInvalid.new(self)
+    end
 
     ActiveRecord::Base.transaction do
       doomed = self_and_descendants_ordered_with_level
@@ -476,7 +485,8 @@ class Node < ApplicationRecord
   #           :headline => nil | :set | :kept_existing | :not_eligible }
   def attach_asset! asset, user:, headline: false
     if in_trash? || trash_node?
-      raise ActiveRecord::RecordInvalid.new(self), "Cannot attach assets to a node in the Trash"
+      errors.add(:base, :attach_in_trash)
+      raise ActiveRecord::RecordInvalid.new(self)
     end
 
     if lock_owner && lock_owner != user
@@ -610,7 +620,7 @@ class Node < ApplicationRecord
   # The Trash feature will be the ordinary path to deletion.
   def refuse_destroy_with_children
     return unless children.exists?
-    errors.add(:base, "Cannot destroy a node that still has children")
+    errors.add(:base, :has_children)
     throw :abort
   end
 
@@ -668,15 +678,15 @@ class Node < ApplicationRecord
 
     def reserved_slug_stays_reserved
       if parent&.root? && !trash_node_already_me?
-        errors.add(:slug, "is reserved for the Trash") if slug == CccConventions::TRASH_SLUG
-        errors.add(:staged_slug, "is reserved for the Trash") if staged_slug == CccConventions::TRASH_SLUG
+        errors.add(:slug, :reserved_for_trash) if slug == CccConventions::TRASH_SLUG
+        errors.add(:staged_slug, :reserved_for_trash) if staged_slug == CccConventions::TRASH_SLUG
       end
 
       if persisted? && slug_was == CccConventions::TRASH_SLUG && Node.find(id).trash_node?
-        errors.add(:slug, "of the Trash node cannot change") if slug_changed?
-        errors.add(:parent_id, "of the Trash node cannot change") if parent_id_changed?
-        errors.add(:staged_slug, "must stay empty on the Trash node") if staged_slug.present?
-        errors.add(:staged_parent_id, "must stay empty on the Trash node") if staged_parent_id.present?
+        errors.add(:slug, :trash_immutable) if slug_changed?
+        errors.add(:parent_id, :trash_immutable) if parent_id_changed?
+        errors.add(:staged_slug, :trash_must_be_empty) if staged_slug.present?
+        errors.add(:staged_parent_id, :trash_must_be_empty) if staged_parent_id.present?
       end
     end
 
@@ -687,12 +697,12 @@ class Node < ApplicationRecord
 
     def no_head_inside_trash
       return unless head_id.present?
-      errors.add(:head_id, "cannot exist inside the Trash") if in_trash? || trash_node?
+      errors.add(:head_id, :inside_trash) if in_trash? || trash_node?
     end
 
     def refuse_destroying_trash_node
       return unless trash_node?
-      errors.add(:base, "The Trash node cannot be destroyed")
+      errors.add(:base, :trash_undeletable)
       throw :abort
     end
 end

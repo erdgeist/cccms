@@ -29,7 +29,7 @@ class RelatedAssetTest < ActiveSupport::TestCase
 
     related.headline = true
     assert_not related.valid?
-    assert_includes related.errors[:headline], "can only be set on image or PDF assets"
+    assert_includes related.errors[:headline], I18n.t("activerecord.errors.models.related_asset.attributes.headline.images_and_pdfs_only")
   end
 
   test "the headline validation does not raise when asset is missing" do

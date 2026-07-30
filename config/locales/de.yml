@@ -114,6 +114,41 @@ de:
         node_id: "Node-ID"
         path: "Pfad"
         title: "Titel"
+      node:
+        slug: "Slug"
+        staged_slug: "Vorgemerkter Slug"
+        parent_id: "Eltern-Node"
+        staged_parent_id: "Vorgemerkter Eltern-Node"
+        head_id: "Head"
+      related_asset:
+        headline: "Aufmacher"
+
+    errors:
+      models:
+        node:
+          # Attribute messages: full_messages prefixes the human attribute
+          # name, so these read as fragments. Defined at model level rather
+          # than per attribute, because several attributes share a message.
+          reserved_for_trash: "ist für den Papierkorb reserviert"
+          trash_immutable: "des Papierkorb-Nodes kann nicht geändert werden"
+          trash_must_be_empty: "muss auf dem Papierkorb-Node leer bleiben"
+          inside_trash: "kann im Papierkorb nicht existieren"
+          attributes:
+            base:
+              # :base messages stand alone -- no attribute name is prefixed,
+              # so these are whole sentences.
+              has_children: "Ein Node mit Kindern kann nicht gelöscht werden"
+              trash_undeletable: "Der Papierkorb-Node kann nicht gelöscht werden"
+              publish_in_trash: "Ein Node im Papierkorb kann nicht veröffentlicht werden"
+              move_under_self: "Ein Node kann nicht unter sich selbst oder einen seiner Nachfahren verschoben werden"
+              trash_the_trash: "Der Papierkorb-Node selbst kann nicht in den Papierkorb verschoben werden"
+              restore_target_invalid: "Das Wiederherstellungsziel muss ein lebender Node sein"
+              destroy_outside_trash: "Nodes können nur aus dem Papierkorb gelöscht werden"
+              attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
+        related_asset:
+          attributes:
+            headline:
+              images_and_pdfs_only: "kann nur auf Bildern oder PDFs gesetzt werden"
 
   tags:
     index:
@@ -639,7 +674,7 @@ de:
     edit:
       title: "Menüeintrag bearbeiten"
     title_fields:
-      falls_back: "Menu-Title leer lassen, fall-back nach deutsch"
+      falls_back: "Menu-Titel. Leere Titel werden aus deutsch übernommen"
 
   layouts:
     application:
