@@ -10,21 +10,18 @@ root:
 first_child:
   id: 2
   parent_id: 1
-  draft_id: 100
   slug: first_child
   unique_name: first_child
 
 second_child:
   id: 3
   parent_id: 1
-  draft_id: 101
   slug: second_child
   unique_name: second_child
   
 third_child:
   id: 4
   parent_id: 1
-  draft_id: 102
   slug: third_child
   unique_name: third_child
   
