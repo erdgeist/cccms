@@ -282,7 +282,7 @@ de:
       title: "cccms Dashboard"
       search_placeholder: "Nodes und Tags durchsuchen…"
       create_post: "Beitrag anlegen"
-      find_chapter: "Chapter finden"
+      find_chapter: "Dezentrale finden"
       upload_asset: "Asset hochladen"
       add_in_tree: "Seite im Seitenbaum anlegen"
       drafts_widget: "In Arbeit (%{total})"
@@ -433,7 +433,7 @@ de:
     sitemap:
       title: "Sitemap"
     chapters:
-      title: "Chapters"
+      title: "Dezentrale"
       filter: "Filter"
     node_list:
       search_placeholder: "Titel, Abstract, Text durchsuchen…"
@@ -645,7 +645,7 @@ de:
     application:
       light_mode_aria: "Zwischen dunklem und hellem Modus wechseln"
       light_mode_label: "Licht"
-      admin: "Verwaltung"
+      admin: "Admin"
       overview: "Übersicht"
       edit: "Bearbeiten"
     flash:
@@ -668,6 +668,7 @@ de:
     nav_controls:
       dashboard: "Dashboard"
       search: "Suche"
+      public_site: "Zur Website"
       switch_locale: "Sprache umschalten"
       scheme_override: "Hell/Dunkel umschalten"
       log_out: "Abmelden"

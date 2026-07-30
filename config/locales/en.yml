@@ -620,6 +620,7 @@ en:
     nav_controls:
       dashboard: "Dashboard"
       search: "Search"
+      public_site: "To the website"
       switch_locale: "Toggle language"
       scheme_override: "Toggle light/dark"
       log_out: "Log out"

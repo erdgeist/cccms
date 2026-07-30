@@ -49,8 +49,8 @@
           <div class="main_navigation">
             <h2><%= t(".admin") %></h2>
             <ul>
-              <li><%= link_to admin_path do %><span class="inactive admin_edit_link">⚙️ <%= t(".overview") %></span><% end %></li>
-              <li><%= link_to node_path(@page.node) do %><span class="inactive admin_edit_link">✎ <%= t(".edit") %></span><% end %></li>
+              <li><%= link_to admin_path do %><span class="inactive admin_edit_link"><%= icon("settings", library: "tabler", "aria-hidden": true) %> <%= t(".overview") %></span><% end %></li>
+                        <li><%= link_to node_path(@page.node) do %><span class="inactive admin_edit_link"><%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t(".edit") %></span><% end %></li>
             </ul>
           </div>
         <% end %>

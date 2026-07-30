@@ -344,6 +344,12 @@ div#center_column {
 }
 }
 
+.admin_edit_link svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}
+
 /* Footer */
 #footer {
   border-bottom: 1px solid color-mix(in srgb, CanvasText, Canvas 60%);
