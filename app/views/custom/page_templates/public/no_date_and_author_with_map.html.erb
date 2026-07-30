@@ -1,5 +1,5 @@
 <div class="article">
-  <h2 class="headline"><%= @page.title %></h2>
+  <h1 class="headline"><%= @page.title %></h1>
   <p><%= sanitize( @page.abstract ) %></p>
   <object data="/system/uploads/327/original/map.svg" type="image/svg+xml"/>
   <%= aggregate?(@page.body) %>

@@ -1,5 +1,5 @@
 <div class="article" lang="<%= @page.effective_lang %>">
-  <h2 class="headline"><%= @page.title %></h2>
+  <h1 class="headline"><%= @page.title %></h1>
   <div class="author_and_date"><%= date_and_time_for_page @page %>, <%= @page.user.try(:login) %></div>
   <div class="abstract"><p><%= sanitize( @page.abstract )%></p></div>
   <div id="headline_image"><%= headline_image %></div>

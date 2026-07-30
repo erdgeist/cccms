@@ -229,7 +229,7 @@ h4 {
   text-decoration: none;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   word-wrap: anywhere;
   hyphens:auto;
 }
@@ -696,6 +696,11 @@ div#tags li {
   text-align: left;
 }
 
+div#center_column h1 {
+  font-size: 1.5em;
+  line-height: 1.2;
+}
+
 div#center_column h2 a {
   color: CanvasText;
   text-decoration: none;
@@ -705,8 +710,13 @@ div#center_column h2 a:hover {
   color: color-mix(in srgb, CanvasText, #808080 50%);
 }
 
+div#center_column h1.headline,
 div#center_column h2.headline {
   margin-top: 10px;
+}
+
+div#center_column h1.headline {
+  font-size: 1.5em;
 }
 
 div#center_column .article_partial h2.headline {

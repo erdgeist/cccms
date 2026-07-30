@@ -1,5 +1,5 @@
 <div class="article" lang="<%= @page.effective_lang %>">
-  <h2 class="headline"><%= @page.title %></h2>
+  <h1 class="headline"><%= @page.title %></h1>
   <div id="headline_image"><%= headline_image %></div>
   <%= aggregate?(@page.body) %>
   <%= render partial: 'content/asset_credits' %>
