@@ -34,6 +34,8 @@ class Node < ApplicationRecord
   validates_presence_of   :slug,                       :unless => -> { parent_id.nil? }
   validates_uniqueness_of :slug, :scope => :parent_id, :unless => -> { parent_id.nil? }
   validates_presence_of   :parent_id,                  :unless => -> { Node.root.nil? }
+  validates_format_of     :slug, :with => /\A[A-Za-z0-9][A-Za-z0-9_-]*\z/,
+                          :unless => -> { parent_id.nil? || slug.blank? }
 
   validate :reserved_slug_stays_reserved
   validate :no_head_inside_trash
