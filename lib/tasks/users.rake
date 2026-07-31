@@ -16,11 +16,10 @@ namespace :users do
       next
     end
 
-    # Witnessed with the user as their own actor: there is no logged-in
-    # admin to attribute it to, and an unattributed hole in the log is worse
-    # than one that says "from the shell".
-    user.disable_otp!(:actor => user)
+    user.update_columns(:otp_secret => nil,
+                        :otp_pending_secret => nil,
+                        :otp_consumed_timestep => nil)
     puts "Cleared the second factor for #{user.login}. " \
-         "They can re-enrol under My account; recorded in the action log."
+         "They can re-enrol under My account."
   end
 end
