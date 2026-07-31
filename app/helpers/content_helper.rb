@@ -124,7 +124,11 @@ module ContentHelper
       end
 
     rescue
-      sanitize(content, :attributes => cccms_attributes)
+      Rails.logger.error("aggregate shortcode failed on page #{@page&.id}: #{e.class}: #{e.message}")
+      fallback = content.sub(/\[aggregate[^\]]*\]/, "")
+      fallback = sanitize(fallback, :attributes => cccms_attributes)
+      fallback += content_tag(:p, t("content.aggregate_failed"), :class => "error_messages") if current_user
+      fallback
     end
   end
 

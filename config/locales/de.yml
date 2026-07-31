@@ -163,6 +163,7 @@ de:
       title: "Termine"
     tags:
       title: "Tags"
+    aggregate_failed: "Fehler: Der [aggregate]-Shortcode auf dieser Seite konnte nicht ausgeführt werden."
 
   search:
     index:

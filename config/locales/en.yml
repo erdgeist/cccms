@@ -110,6 +110,7 @@ en:
       title: "Calendar"
     tags:
       title: "Tags"
+    aggregate_failed: "Error: the [aggregate] shortcode on this page could not be evaluated."
 
   search:
     index:
