@@ -1,9 +1,11 @@
 class MenuItemsController < ApplicationController
   include PinnedToDefaultLocale
+  include RoleRequired
 
   # Private
 
   before_action :login_required
+  before_action :require_redaktion
   
   layout 'admin'
   

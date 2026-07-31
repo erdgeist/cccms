@@ -1,11 +1,13 @@
 class UsersController < ApplicationController
   include PinnedToDefaultLocale
+  include RoleRequired
 
   # Private
 
   before_action :login_required
   before_action :find_user,     :only => [:show, :edit, :update, :reset_otp, :deactivate, :reactivate]
-  before_action :verify_status, :except => [:index, :show]
+  before_action :require_admin, :only => [:index, :new, :create, :reset_otp, :deactivate, :reactivate]
+  before_action :verify_status, :except => [:index]
 
   layout 'admin'
 
@@ -54,8 +56,6 @@ class UsersController < ApplicationController
   end
 
   def deactivate
-    return deny_user_access unless current_user.is_admin?
-
     if @user == current_user
       flash[:error] = t("flash.users.cannot_deactivate_self")
     elsif @user.deactivate!(:actor => current_user)
@@ -66,8 +66,6 @@ class UsersController < ApplicationController
   end
 
   def reactivate
-    return deny_user_access unless current_user.is_admin?
-
     if @user.reactivate!(:actor => current_user)
       flash[:notice] = t("flash.users.reactivated", :login => @user.login)
     end
@@ -76,7 +74,6 @@ class UsersController < ApplicationController
   end
 
   def reset_otp
-    return deny_user_access unless current_user.admin?
     @user.disable_otp!(:actor => current_user)
     flash[:notice] = t("flash.users.otp_reset", :login => @user.login)
     redirect_to edit_user_path(@user)
@@ -106,7 +103,6 @@ class UsersController < ApplicationController
     end
 
     def deny_user_access
-      flash[:notice] = t("flash.common.admin_required")
-      redirect_to users_path
+      deny_role_access(:admin_required)
     end
 end

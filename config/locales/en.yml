@@ -533,6 +533,8 @@ en:
       headline_ineligible: "This asset type cannot be a headline."
       locked_by_other: "The page is locked by another editor."
       autosave_failed: "Autosave failed"
+      redaktion_required: "This page is reserved for Redaktion."
+      admin_required: "This page is reserved for administrators."
     sessions:
       otp_setup_now: "Your account requires a second factor -- set it up now."
       logged_out: "You have been logged out."

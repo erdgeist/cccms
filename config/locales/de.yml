@@ -574,6 +574,8 @@ de:
       headline_ineligible: "Dieser Asset-Typ kann kein Aufmacher sein."
       locked_by_other: "Die Seite ist gerade von jemand anderem gesperrt."
       autosave_failed: "Autosave fehlgeschlagen"
+      redaktion_required: "Diese Seite ist der Redaktion vorbehalten."
+      admin_required: "Diese Seite ist der Administration vorbehalten."
     sessions:
       otp_setup_now: "Dein Konto erfordert einen zweiten Faktor — richte ihn jetzt ein."
       logged_out: "Du wurdest abgemeldet."

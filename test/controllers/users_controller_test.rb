@@ -2,11 +2,11 @@ require 'test_helper'
 
 class UsersControllerTest < ActionController::TestCase
 
-  test "get index as regular user renders stripped partial" do
+  test "an editor without admin cannot reach the user list" do
     login_as :quentin
     get :index
-    assert_response :success
-    assert_select "a", { :count => 0, :text => "Destroy" }
+    assert_redirected_to admin_path
+    assert_equal I18n.t("flash.common.admin_required"), flash[:error]
   end
 
   test "get index as admin shows every group with per-row actions" do
@@ -27,10 +27,10 @@ class UsersControllerTest < ActionController::TestCase
     login_as :quentin
     get :new
     assert_response :redirect
-    assert_redirected_to users_path
+    assert_redirected_to admin_path
     assert_equal(
       I18n.t("flash.common.admin_required"),
-      flash[:notice]
+      flash[:error]
     )
   end
   
@@ -82,20 +82,20 @@ class UsersControllerTest < ActionController::TestCase
       }
     end
     
-    assert_redirected_to users_path
+    assert_redirected_to admin_path
     assert_equal(
       I18n.t("flash.common.admin_required"),
-      flash[:notice]
+      flash[:error]
     )
   end
   
   test "get edit of another user being logged in as regular user wont work" do
     login_as :quentin
     get :edit, params: { :id => User.find_by_login("aaron").id }
-    assert_redirected_to users_path
+    assert_redirected_to admin_path
     assert_equal(
       I18n.t("flash.common.admin_required"),
-      flash[:notice]
+      flash[:error]
     )
   end
   
@@ -115,10 +115,10 @@ class UsersControllerTest < ActionController::TestCase
     user = User.find_by_login("aaron")
     login_as :quentin
     put :update, params: { :id => user.id, :user => {:login => "random"} }
-    assert_redirected_to users_path
+    assert_redirected_to admin_path
     assert_equal(
       I18n.t("flash.common.admin_required"),
-      flash[:notice]
+      flash[:error]
     )
   end
   
@@ -140,7 +140,7 @@ class UsersControllerTest < ActionController::TestCase
 
   test "showing a user" do
     login_as :quentin
-    get :show, params: { :id => User.find_by_login("aaron").id }
+    get :show, params: { :id => users(:quentin).id }
     assert_response :success
   end
   
@@ -148,7 +148,7 @@ class UsersControllerTest < ActionController::TestCase
     login_as :quentin
     put :deactivate, params: { :id => users(:quentin).id }
 
-    assert_redirected_to users_path
+    assert_redirected_to admin_path
     assert_not users(:quentin).reload.alumni?
   end
   
@@ -226,5 +226,17 @@ class UsersControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_select "h2", :text => /#{I18n.t("users.index.group_alumni")}/
+  end
+
+  test "an editor without admin cannot create accounts" do
+    login_as :quentin
+    get :new
+    assert_redirected_to admin_path
+  end
+
+  test "an editor cannot read another account by id" do
+    login_as :quentin
+    get :show, params: { :id => users(:aaron).id }
+    assert_redirected_to admin_path
   end
 end

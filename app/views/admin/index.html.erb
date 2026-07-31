@@ -71,11 +71,15 @@
     <%= link_to assets_path, class: "action_button" do %>
       <%= icon("folder", library: "tabler", "aria-hidden": true) %> <%= t("assets.index.title") %>
     <% end %>
-    <%= link_to users_path, class: "action_button" do %>
-      <%= icon("users", library: "tabler", "aria-hidden": true) %> <%= t("users.index.users") %>
+    <% if current_user.is_admin? %>
+      <%= link_to users_path, class: "action_button" do %>
+        <%= icon("users", library: "tabler", "aria-hidden": true) %> <%= t("users.index.title") %>
+      <% end %>
     <% end %>
-    <%= link_to menu_items_path, class: "action_button" do %>
-      <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> <%= t(".navigation") %>
+    <% if current_user.redaktion? %>
+      <%= link_to menu_items_path, class: "action_button" do %>
+        <%= icon("menu-2", library: "tabler", "aria-hidden": true) %> <%= t(".navigation") %>
+      <% end %>
     <% end %>
     <% trash_count = Node.trash.children.count %>
     <%= link_to trashed_nodes_path, class: "action_button" do %>

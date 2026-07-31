@@ -14,3 +14,21 @@ aaron:
   crypted_password:          740a48caf7dd5ff11318d812d57c0a0928cfbc12 # 'monkey'
   created_at:                2024-01-02 00:00:00
   roles:                     ["admin", "redaktion"]
+
+redella:
+  id:                        3
+  login:                     redella
+  email:                     redella@example.com
+  salt:                      cf993996a70d31f924aff17a5f997722cb6ec2dd
+  crypted_password:          11c672158b0eb6e8c91c438b3eb844902308b138 # 'monkey'
+  created_at:                2024-01-03 00:00:00
+  roles:                     ["redaktion"]
+
+alufa:
+  id:                        4
+  login:                     alufa
+  email:                     alufa@example.com
+  salt:                      cf993996a70d31f924aff17a5f997722cb6ec2dd
+  crypted_password:          11c672158b0eb6e8c91c438b3eb844902308b138 # 'monkey'
+  created_at:                2024-01-04 00:00:00
+  roles:                     ["redaktion", "alumni"]
