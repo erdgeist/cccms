@@ -436,6 +436,7 @@ en:
       add_child: "Add child type %{kind}"
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Body (%{lang})"
+      restricted_hint: "Protected section — publishing and trashing are reserved for Redaktion. You can edit drafts freely."
     drafts:
       title: "Nodes with drafts, autosaves or locks"
     mine:

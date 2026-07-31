@@ -1,4 +1,5 @@
 <% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
+<% may_change_live = current_user.may_change_live?(@node) %>
 <div id="admin_layout" class="show_node">
   <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
   <div id="content">
@@ -48,8 +49,12 @@
         <% unless locked_by_other %>
           <% if @node.draft && !@node.autosave && !@node.in_trash? && !@node.trash_node? %>
             <div class="info_item">
-              <%= button_to t(".publish"), publish_node_path(@node), method: :put,
-                    form: { data: { confirm: t(".confirm_publish") }, class: 'button_to state_changing' } %>
+              <% if may_change_live %>
+                <%= button_to t(".publish"), publish_node_path(@node), method: :put,
+                      form: { data: { confirm: t(".confirm_publish") }, class: 'button_to state_changing' } %>
+              <% else %>
+                <span class="disabled_action"><%= t(".publish") %></span>
+              <% end %>
             </div>
           <% end %>
           <% if @node.autosave || (@node.draft && @node.head) %>
@@ -64,10 +69,17 @@
           <% end %>
           <% unless @node.trash_node? || @node.in_trash? || @node.root? %>
             <div class="info_item">
-              <%= button_to trash_node_path(@node), method: :put,
-                    form: { data: { confirm: t(".confirm_trash") }, class: 'button_to destructive' } do %>
-                <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-                <%= t(".move_to_trash") %>
+              <% if may_change_live %>
+                <%= button_to trash_node_path(@node), method: :put,
+                      form: { data: { confirm: t(".confirm_trash") }, class: 'button_to destructive' } do %>
+                  <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+                  <%= t(".move_to_trash") %>
+                <% end %>
+              <% else %>
+                <span class="disabled_action">
+                  <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+                  <%= t(".move_to_trash") %>
+                </span>
               <% end %>
             </div>
           <% end %>
@@ -76,6 +88,8 @@
 
       <% if locked_by_other %>
         <span class="field_hint"><%= t(".locked_hint") %></span>
+      <% elsif !may_change_live %>
+        <span class="field_hint"><%= t(".restricted_hint") %></span>
       <% end %>
     </div>
 

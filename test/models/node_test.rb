@@ -1004,4 +1004,49 @@ class NodeTest < ActiveSupport::TestCase
     node.publish_draft!
     assert_not_nil node.reload.head
   end
+
+  test "publishing a staged move into a restricted subtree is refused" do
+    editor = User.create!(:login => "move_editor", :email => "me@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    updates = Node.root.children.create!(:slug => "updates")
+    year    = updates.children.create!(:slug => "2026")
+    node    = Node.root.children.create!(:slug => "outside-post")
+    node.reload.draft.update!(:title => "Entwurf")
+    node.update!(:staged_parent_id => year.id)
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft!(editor) }
+    assert_nil node.reload.head
+    assert_equal Node.root.id, node.parent_id
+  end
+
+  test "a staged move within unrestricted space needs no role" do
+    editor = User.create!(:login => "move_free", :email => "mf@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    club = Node.root.children.create!(:slug => "club")
+    node = Node.root.children.create!(:slug => "movable-post")
+    node.reload.draft.update!(:title => "Entwurf")
+    node.update!(:staged_parent_id => club.id)
+
+    node.publish_draft!(editor)
+    assert_equal club.id, node.reload.parent_id
+  end
+
+  test "publishing a staged rename onto a restricted path is refused" do
+    editor = User.create!(:login => "rename_editor", :email => "re@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    node = Node.root.children.create!(:slug => "harmless")
+    node.reload.draft.update!(:title => "Entwurf")
+    node.update!(:staged_slug => "updates")
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft!(editor) }
+    assert_nil node.reload.head
+  end
+
+  test "a restricted subtree root cannot be claimed once it exists" do
+    Node.root.children.create!(:slug => "updates")
+
+    squatter = Node.root.children.build(:slug => "updates")
+    assert_not squatter.valid?
+    assert squatter.errors[:slug].any?
+  end
 end

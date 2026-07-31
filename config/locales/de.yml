@@ -493,6 +493,7 @@ de:
       add_child: "Kind vom Typ %{kind} anlegen"
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Text (%{lang})"
+      restricted_hint: "Geschützter Bereich — Veröffentlichen und Papierkorb sind der Redaktion vorbehalten. Entwürfe kannst du frei bearbeiten."
     drafts:
       title: "Nodes mit Entwürfen, Autosaves oder Sperren"
     mine:

@@ -236,7 +236,7 @@ class Node < ApplicationRecord
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
 
-    guard_live_change!(current_user)
+    guard_live_change!(current_user, :target_path => prospective_unique_name)
 
     if in_trash? || trash_node?
       errors.add(:base, :publish_in_trash)
@@ -574,15 +574,24 @@ class Node < ApplicationRecord
     false
   end
 
-  def restricted?
-    return true if root?
-
-    name = unique_name.to_s
+  def self.restricted_path? name
+    name = name.to_s
     return false if name.empty?
 
     CccConventions::RESTRICTED_SUBTREES.any? do |prefix|
       name == prefix || name.start_with?("#{prefix}/")
     end
+  end
+
+  def restricted?
+    root? || self.class.restricted_path?(unique_name)
+  end
+
+  def prospective_unique_name
+    target_parent = staged_parent_id ? Node.find_by(:id => staged_parent_id) : parent
+    return nil unless target_parent
+
+    [target_parent.unique_name.presence, staged_slug.presence || slug].compact.join("/")
   end
 
   # Returns immutable node id for all new nodes so that the atom feed entry ids
@@ -697,9 +706,9 @@ class Node < ApplicationRecord
 
   private
 
-    def guard_live_change! user
+    def guard_live_change! user, target_path: nil
       return if user.nil?
-      return if user.may_change_live?(self)
+      return if user.may_change_live?(self) && user.may_change_live_at?(target_path)
 
       errors.add(:base, :not_permitted)
       raise ActiveRecord::RecordInvalid.new(self)

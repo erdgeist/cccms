@@ -880,13 +880,20 @@ div.layout_row_content {
 }
 
 .info_group .disabled_action {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 4px 12px;
   font-weight: bold;
   color: var(--text-muted);
   cursor: not-allowed;
+}
+
+.info_group .disabled_action svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .info_group_items {

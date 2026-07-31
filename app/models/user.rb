@@ -110,6 +110,12 @@ class User < ApplicationRecord
     redaktion?
   end
 
+  def may_change_live_at?(path)
+    return true if path.nil?
+    return true unless Node.restricted_path?(path)
+    redaktion?
+  end
+
   def deactivate!(actor:)
     return false if alumni?
     transaction do
