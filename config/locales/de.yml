@@ -219,6 +219,8 @@ de:
     otp_enroll: "%{actor} hat einen zweiten Faktor eingerichtet"
     otp_disable: "%{actor} hat den zweiten Faktor entfernt"
     otp_reset: "%{actor} hat den zweiten Faktor von %{target} zurückgesetzt"
+    user_deactivate: "%{actor} hat %{target} deaktiviert"
+    user_reactivate: "%{actor} hat %{target} reaktiviert"
 
   open_gallery: "Gallerie anzeigen"
   asset_licenses:
@@ -281,6 +283,9 @@ de:
     user:
       confirm_destroy: "Benutzer %{login} wirklich löschen?"
       no_roles: "—"
+      deactivate: "Deaktivieren"
+      reactivate: "Reaktivieren"
+      confirm_deactivate: "%{login} deaktivieren? Die Anmeldung wird sofort verweigert, Zuschreibungen bleiben erhalten."
     index:
       title: "Benutzerkonten"
       create_editor: "Editor-Konto anlegen"
@@ -578,6 +583,9 @@ de:
       created: "Benutzer %{login} angelegt"
       updated: "Benutzer %{login} aktualisiert"
       otp_reset: "Zweiter Faktor von %{login} zurückgesetzt"
+      deactivated: "%{login} ist jetzt alumni und kann sich nicht mehr anmelden."
+      reactivated: "%{login} kann sich wieder anmelden."
+      cannot_deactivate_self: "Das eigene Konto kann nicht deaktiviert werden."
     assets:
       created: "Asset wurde angelegt."
       updated: "Asset wurde aktualisiert."

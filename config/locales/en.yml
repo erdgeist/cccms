@@ -167,6 +167,8 @@ en:
     otp_enroll: "%{actor} set up a second factor"
     otp_disable: "%{actor} removed their second factor"
     otp_reset: "%{actor} reset the second factor of %{target}"
+    user_deactivate: "%{actor} deactivated %{target}"
+    user_reactivate: "%{actor} reactivated %{target}"
 
   open_gallery: "Open gallery"
   asset_licenses:
@@ -229,6 +231,9 @@ en:
     user:
       confirm_destroy: "Do you really want to destroy user %{login}?"
       no_roles: "—"
+      deactivate: "Deactivate"
+      reactivate: "Reactivate"
+      confirm_deactivate: "Deactivate %{login}? Sign-in is refused immediately; attributions are preserved."
     index:
       title: "User accounts"
       create_editor: "Create editor account"
@@ -541,6 +546,9 @@ en:
       created: "User created %{login}"
       updated: "Updated user %{login}"
       otp_reset: "Second factor reset for %{login}"
+      deactivated: "%{login} is now an alumnus and can no longer sign in."
+      reactivated: "%{login} can sign in again."
+      cannot_deactivate_self: "You cannot deactivate your own account."
     assets:
       created: "Asset was successfully created."
       updated: "Asset was successfully updated."

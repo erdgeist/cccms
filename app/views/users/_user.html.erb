@@ -9,14 +9,22 @@
     <% end %>
   </td>
   <td><%= link_to t("admin.common.show"), user_path(user) %></td>
-  <% if current_user.admin? || current_user == user %>
-  <td><%= link_to t("admin.common.edit"), edit_user_path(user) %></td>
   <td>
-  <%= button_to user_path(user), method: :delete,
-        form: { data: { confirm: t(".confirm_destroy", :login => user.login) }, class: 'button_to destructive' } do %>
-    <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
-  <% end %>
+    <% if current_user.admin? || current_user == user %>
+      <%= link_to t("admin.common.edit"), edit_user_path(user) %>
+    <% end %>
   </td>
-  <% end %>
+  <td>
+    <% if current_user.admin? && current_user != user %>
+      <% if user.alumni? %>
+        <%= button_to t(".reactivate"), reactivate_user_path(user), method: :put,
+              form: { class: 'button_to state_changing' } %>
+      <% else %>
+        <%= button_to t(".deactivate"), deactivate_user_path(user), method: :put,
+              form: { data: { confirm: t(".confirm_deactivate", :login => user.login) },
+                      class: 'button_to destructive' } %>
+      <% end %>
+    <% end %>
+  </td>
 </tr>
 <% end %>

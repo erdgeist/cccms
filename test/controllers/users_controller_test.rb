@@ -13,7 +13,7 @@ class UsersControllerTest < ActionController::TestCase
     login_as :aaron
     get :index
     assert_response :success
-    assert_select "button[type=submit]", I18n.t("admin.common.destroy")
+    assert_select "button[type=submit]", I18n.t("users.user.deactivate")
     assert_select "a", I18n.t("admin.common.show")
   end
  
@@ -146,22 +146,38 @@ class UsersControllerTest < ActionController::TestCase
   
   test "destroying an user being logged in as regular user wont work" do
     login_as :quentin
-    assert_no_difference "User.count" do
-      delete :destroy, params: { :id => User.find_by_login("aaron").id }
-    end
+    put :deactivate, params: { :id => users(:quentin).id }
+
     assert_redirected_to users_path
-    assert_equal(
-      I18n.t("flash.common.admin_required"),
-      flash[:notice]
-    )
+    assert_not users(:quentin).reload.alumni?
   end
   
-  test "destroying an user being logged in as admin user" do
+  test "an admin deactivates another user, who can no longer sign in" do
     login_as :aaron
-    assert_difference "User.count", -1 do
-      delete :destroy, params: { :id => User.find_by_login("quentin").id }
-    end
+    user = users(:quentin)
+
+    put :deactivate, params: { :id => user.id }
+
     assert_redirected_to users_path
+    assert user.reload.alumni?
+    assert_equal ["admin", "alumni"].sort, user.roles.sort if user.is_admin?
+  end
+
+  test "reactivation restores the other roles untouched" do
+    login_as :aaron
+    user = users(:quentin)
+    user.update_column(:roles, ["alumni", "redaktion"])
+
+    put :reactivate, params: { :id => user.id }
+
+    assert_not user.reload.alumni?
+    assert_equal ["redaktion"], user.roles
+  end
+
+  test "an admin cannot deactivate their own account" do
+    login_as :aaron
+    put :deactivate, params: { :id => users(:aaron).id }
+    assert_not users(:aaron).reload.alumni?
   end
 
   test "enrolled user gets a working my account" do

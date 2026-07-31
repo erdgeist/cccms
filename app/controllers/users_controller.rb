@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   # Private
 
   before_action :login_required
-  before_action :find_user,     :only => [:show, :edit, :update, :destroy, :reset_otp]
+  before_action :find_user,     :only => [:show, :edit, :update, :reset_otp, :deactivate, :reactivate]
   before_action :verify_status, :except => [:index, :show]
 
   layout 'admin'
@@ -53,8 +53,25 @@ class UsersController < ApplicationController
   def show
   end
 
-  def destroy
-    @user.destroy if @user
+  def deactivate
+    return deny_user_access unless current_user.is_admin?
+
+    if @user == current_user
+      flash[:error] = t("flash.users.cannot_deactivate_self")
+    elsif @user.deactivate!(:actor => current_user)
+      flash[:notice] = t("flash.users.deactivated", :login => @user.login)
+    end
+
+    redirect_to users_path
+  end
+
+  def reactivate
+    return deny_user_access unless current_user.is_admin?
+
+    if @user.reactivate!(:actor => current_user)
+      flash[:notice] = t("flash.users.reactivated", :login => @user.login)
+    end
+
     redirect_to users_path
   end
 

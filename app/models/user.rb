@@ -105,6 +105,26 @@ class User < ApplicationRecord
     roles.map { |r| I18n.t("users.roles.#{r}", :default => r) }
   end
 
+  def deactivate!(actor:)
+    return false if alumni?
+    transaction do
+      update_column(:roles, (roles | ["alumni"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "user_deactivate", :target_login => login)
+    end
+    true
+  end
+
+  def reactivate!(actor:)
+    return false unless alumni?
+    transaction do
+      update_column(:roles, (roles - ["alumni"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "user_reactivate", :target_login => login)
+    end
+    true
+  end
+
   # otp_secret present == enrolled. otp_pending_secret holds the secret
   # between QR display and first-code confirmation. otp_consumed_timestep
   # makes every accepted code single-use (replay guard within the drift

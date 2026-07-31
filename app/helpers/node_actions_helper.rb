@@ -18,7 +18,9 @@ module NodeActionsHelper
     "asset_destroy"      => "file-x",
     "otp_enroll"         => "shield-lock",
     "otp_disable"        => "shield-off",
-    "otp_reset"          => "shield-x"
+    "otp_reset"          => "shield-x",
+    "user_deactivate"    => "user-off",
+    "user_reactivate"    => "user-check"
   }.freeze
 
   def verb_icon action
@@ -269,6 +271,16 @@ module NodeActionsHelper
 
   def summarize_otp_reset action
     t("node_actions.otp_reset", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_user_deactivate action
+    t("node_actions.user_deactivate", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_user_reactivate action
+    t("node_actions.user_reactivate", :actor => actor_ref(action),
        :target => user_participant_ref(action)).html_safe
   end
 end
