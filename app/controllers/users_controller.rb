@@ -7,6 +7,7 @@ class UsersController < ApplicationController
   before_action :login_required
   before_action :find_user,     :only => [:show, :edit, :update, :reset_otp, :deactivate, :reactivate]
   before_action :require_admin, :only => [:index, :new, :create, :reset_otp, :deactivate, :reactivate]
+  before_action :require_elevation, :only => [:new, :create, :reset_otp, :deactivate, :reactivate]
   before_action :verify_status, :except => [:index]
 
   layout 'admin'
@@ -87,7 +88,7 @@ class UsersController < ApplicationController
                                 :roles => [])
       # Checkbox arrays post a leading blank from the hidden field.
       permitted[:roles] = Array(permitted[:roles]).reject(&:blank?) if permitted.key?(:roles)
-      permitted.delete(:roles) unless current_user.is_admin?
+      permitted.delete(:roles) unless current_user.is_admin? && elevated?
       permitted
     end
 

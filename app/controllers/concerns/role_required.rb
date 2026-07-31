@@ -20,4 +20,13 @@ module RoleRequired
       flash[:error] = t("flash.common.#{key}")
       redirect_to admin_path
     end
+
+    # require_admin must precede this in the filter chain, so a non-admin is
+    # denied by role before elevation is ever considered.
+    def require_elevation
+      return if elevated?
+
+      session[:elevation_return_to] = request.fullpath
+      redirect_to new_elevation_path
+    end
 end

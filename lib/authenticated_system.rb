@@ -1,5 +1,6 @@
 module AuthenticatedSystem
   SESSION_MAX_AGE = 7.days
+  ELEVATION_MAX_AGE = 30.minutes
 
   protected
     # Returns true or false if the user is logged in.
@@ -18,6 +19,26 @@ module AuthenticatedSystem
     def current_user=(new_user)
       session[:user_id] = new_user ? new_user.id : nil
       @current_user = new_user || false
+    end
+
+    # Tied to is_admin? so losing the role closes the window at once, rather
+    # than leaving a timestamp that would count again if the role returned.
+    def elevated?
+      return false unless current_user&.is_admin?
+      session[:elevated_at].to_i > ELEVATION_MAX_AGE.ago.to_i
+    end
+
+    def elevation_expires_at
+      return nil unless elevated?
+      Time.at(session[:elevated_at].to_i) + ELEVATION_MAX_AGE
+    end
+
+    def elevate!
+      session[:elevated_at] = Time.now.to_i
+    end
+
+    def drop_elevation!
+      session.delete(:elevated_at)
     end
 
     # Check if the user is authorized
@@ -91,7 +112,8 @@ module AuthenticatedSystem
     # Inclusion hook to make #current_user and #logged_in?
     # available as ActionView helper methods.
     def self.included(base)
-      base.send :helper_method, :current_user, :logged_in?, :authorized? if base.respond_to? :helper_method
+      base.send :helper_method, :current_user, :logged_in?, :authorized?,
+                :elevated?, :elevation_expires_at if base.respond_to? :helper_method
     end
 
     #
@@ -123,7 +145,8 @@ module AuthenticatedSystem
     def logout_keeping_session!
       @current_user = false     # not logged in, and don't do it for me
       session[:user_id] = nil   # keeps the session but kill our variable
-      # explicitly kill any other session variables you set
+      session.delete(:elevated_at)
+      session.delete(:elevation_attempts)
     end
 
     # The session should only be reset at the tail end of a form POST --

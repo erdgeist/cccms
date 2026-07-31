@@ -28,6 +28,9 @@ class OtpChallengesController < ApplicationController
       reset_session
       self.current_user = user
       session[:logged_in_at] = Time.now.to_i
+      # an admin who logs in and goes straight to user management
+      # is already elevated
+      elevate! if user.is_admin?
       flash[:notice] = t("flash.common.logged_in")
       redirect_to safe_return_to(return_to, :default => admin_path)
     else

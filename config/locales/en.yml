@@ -587,6 +587,8 @@ en:
       none_to_remove: "No %{lang} translation exists to remove."
       last_translation: "Can't remove the only remaining translation."
       removed: "%{lang} translation removed from the draft. Publish to make this permanent."
+    elevation:
+      dropped: "Administrative rights dropped."
 
   assets:
     index:
@@ -663,6 +665,15 @@ en:
     show:
       title: "Compare"
       default_marker: "default"
+
+  elevations:
+    new:
+      title: "Request administrative rights"
+      hint: "User management needs a current second factor. The rights then last %{minutes} minutes."
+      code: "Current code"
+      elevate: "Request rights"
+      not_enrolled: "Administrative work requires a second factor. Please set one up first."
+      enrol: "Set up a second factor"
 
   layouts:
     application:

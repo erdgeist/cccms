@@ -19,6 +19,7 @@ class UsersControllerTest < ActionController::TestCase
  
   test "get new when logged in as admin" do
     login_as :aaron
+    elevate_session!
     get :new
     assert_response :success
   end
@@ -36,6 +37,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "creating new users being logged in as admin" do
     login_as :aaron
+    elevate_session!
     assert_difference "User.count", +1 do
       post :create, params: {
         :user => {
@@ -53,6 +55,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "creating new admin users being logged in as admin" do
     login_as :aaron
+    elevate_session!
     assert_difference "User.count", +1 do
       post :create, params: {
         :user => {
@@ -154,6 +157,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "an admin deactivates another user, who can no longer sign in" do
     login_as :aaron
+    elevate_session!
     user = users(:quentin)
 
     put :deactivate, params: { :id => user.id }
@@ -165,6 +169,7 @@ class UsersControllerTest < ActionController::TestCase
 
   test "reactivation restores the other roles untouched" do
     login_as :aaron
+    elevate_session!
     user = users(:quentin)
     user.update_column(:roles, ["alumni", "redaktion"])
 
@@ -189,6 +194,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "admin user can promote regular users to admins" do
     login_as :aaron
+    elevate_session!
     user = users(:quentin)
     put :update, params: { :id => user.id, :user => {:roles => ["admin", "redaktion"]} }
     
@@ -212,6 +218,7 @@ class UsersControllerTest < ActionController::TestCase
     assert user.reload.otp_enrolled?, "non-admin must be refused"
 
     login_as :aaron
+    elevate_session!
     put :reset_otp, params: { :id => user.id }
     assert_not user.reload.otp_enrolled?
     assert_equal "otp_reset", NodeAction.last.action
@@ -238,5 +245,20 @@ class UsersControllerTest < ActionController::TestCase
     login_as :quentin
     get :show, params: { :id => users(:aaron).id }
     assert_redirected_to admin_path
+  end
+
+  test "an admin without an open window is sent to elevation" do
+    login_as :aaron
+    get :new
+    assert_redirected_to new_elevation_path
+  end
+
+  test "an unelevated admin cannot change roles" do
+    login_as :aaron
+    user = users(:quentin)
+
+    put :update, params: { :id => user.id, :user => { :roles => ["admin"] } }
+
+    assert_not user.reload.is_admin?
   end
 end

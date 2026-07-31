@@ -628,6 +628,8 @@ de:
       none_to_remove: "Es existiert keine %{lang}-Übersetzung zum Entfernen."
       last_translation: "Die einzige verbliebene Übersetzung kann nicht entfernt werden."
       removed: "%{lang}-Übersetzung aus dem Entwurf entfernt. Veröffentlichen, um das dauerhaft zu machen."
+    elevation:
+      dropped: "Administrative Rechte abgelegt."
 
   assets:
     index:
@@ -720,6 +722,15 @@ de:
       title: "Menüeintrag bearbeiten"
     title_fields:
       falls_back: "Menu-Titel. Leere Titel werden aus deutsch übernommen"
+
+  elevations:
+    new:
+      title: "Administrative Rechte anfordern"
+      hint: "Für Benutzerverwaltung ist ein aktueller zweiter Faktor nötig. Die Rechte gelten dann %{minutes} Minuten."
+      code: "Aktueller Code"
+      elevate: "Rechte anfordern"
+      not_enrolled: "Für administrative Arbeiten ist ein zweiter Faktor erforderlich. Bitte zuerst einen einrichten."
+      enrol: "Zweiten Faktor einrichten"
 
   layouts:
     application:
