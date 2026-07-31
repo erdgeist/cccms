@@ -9,12 +9,12 @@ class UsersControllerTest < ActionController::TestCase
     assert_select "a", { :count => 0, :text => "Destroy" }
   end
 
-  test "get index as admin user renders admin partial" do
+  test "get index as admin shows every group with per-row actions" do
     login_as :aaron
     get :index
     assert_response :success
     assert_select "button[type=submit]", I18n.t("admin.common.destroy")
-    assert_select "a", "show"
+    assert_select "a", I18n.t("admin.common.show")
   end
  
   test "get new when logged in as admin" do
@@ -60,7 +60,7 @@ class UsersControllerTest < ActionController::TestCase
           :email                  => "foo@bar.com",
           :password               => "xxxzzz",
           :password_confirmation  => "xxxzzz",
-          :admin                  => true
+          :roles                  => ["admin", "redaktion"]
         }
       }
     end
@@ -174,19 +174,17 @@ class UsersControllerTest < ActionController::TestCase
   test "admin user can promote regular users to admins" do
     login_as :aaron
     user = users(:quentin)
-    put :update, params: { :id => user.id, :user => {:admin => true} }
+    put :update, params: { :id => user.id, :user => {:roles => ["admin", "redaktion"]} }
     
-    user.reload
-    assert_equal true, user.is_admin?
+    assert_equal true, user.reload.is_admin?
   end
   
   test "regular users cannot promote themselves to admins" do
     login_as :quentin
     user = users(:quentin)
-    put :update, params: { :id => user.id, :user => {:admin => true} }
+    put :update, params: { :id => user.id, :user => {:roles => ["admin", "redaktion"]} }
     
-    user.reload
-    assert_equal false, user.is_admin?
+    assert_equal false, user.reload.is_admin?
   end
   
   test "reset_otp is admin-only and witnessed" do
@@ -201,5 +199,16 @@ class UsersControllerTest < ActionController::TestCase
     put :reset_otp, params: { :id => user.id }
     assert_not user.reload.otp_enrolled?
     assert_equal "otp_reset", NodeAction.last.action
+  end
+
+  test "index groups a retired admin under alumni, not administration" do
+    login_as :aaron
+    user = users(:quentin)
+    user.update_column(:roles, ["admin", "alumni"])
+
+    get :index
+
+    assert_response :success
+    assert_select "h2", :text => /#{I18n.t("users.index.group_alumni")}/
   end
 end

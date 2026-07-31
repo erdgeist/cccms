@@ -21,8 +21,18 @@
     <div class="layout_row_content"><%= f.password_field :password_confirmation, :autocomplete => "new-password" %></div>
 
     <% if current_user.admin? %>
-    <div class="layout_row_label"><%= t("users.labels.admin") %></div>
-    <div class="layout_row_content"><%= f.check_box :admin %></div>
+      <div class="layout_row_label"><%= t("users.labels.roles") %></div>
+      <div class="layout_row_content">
+        <% User::ROLES.each do |role| %>
+          <label class="role_choice">
+            <%= check_box_tag "user[roles][]", role, @user.roles.include?(role),
+                  :id => "user_roles_#{role}" %>
+            <%= t("users.roles.#{role}") %>
+            <span class="field_hint"><%= t("users.role_hints.#{role}") %></span>
+          </label>
+        <% end %>
+        <%= hidden_field_tag "user[roles][]", "" %>
+      </div>
     <% end %>
 
     <div class="layout_row_label"></div>

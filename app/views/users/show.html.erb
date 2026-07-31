@@ -19,7 +19,9 @@
     <div class="layout_row_label"><%= t("users.labels.email") %></div>
     <div class="layout_row_content"><%= @user.email %></div>
 
-    <div class="layout_row_label"><%= t("users.labels.admin") %></div>
-    <div class="layout_row_content"><%= @user.admin ? t("admin.common.yes") : t("admin.common.no") %></div>
+    <div class="layout_row_label"><%= t("users.labels.roles") %></div>
+    <div class="layout_row_content">
+      <%= @user.roles.any? ? @user.role_labels.join(", ") : t("users.no_roles") %>
+    </div>
   </div>
 </div>

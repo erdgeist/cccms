@@ -1,11 +1,16 @@
 <% users.each do |user| %>
 <tr>
   <td class="user_login"><%= user.login %></td>
-  <td><%= link_to "show", user_path(user) %></td>
-  <% if current_user.admin? || current_user == user %>
-  <td>
-    <%= link_to "edit", edit_user_path(user) %>
+  <td class="user_roles">
+    <% if user.roles.any? %>
+      <%= user.role_labels.join(", ") %>
+    <% else %>
+      <span class="field_hint"><%= t(".no_roles") %></span>
+    <% end %>
   </td>
+  <td><%= link_to t("admin.common.show"), user_path(user) %></td>
+  <% if current_user.admin? || current_user == user %>
+  <td><%= link_to t("admin.common.edit"), edit_user_path(user) %></td>
   <td>
   <%= button_to user_path(user), method: :delete,
         form: { data: { confirm: t(".confirm_destroy", :login => user.login) }, class: 'button_to destructive' } do %>

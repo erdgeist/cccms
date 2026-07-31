@@ -102,7 +102,12 @@ module AuthenticatedSystem
     def login_from_session
       return unless session[:user_id]
       if session[:logged_in_at].to_i > SESSION_MAX_AGE.ago.to_i
-        self.current_user = User.find_by(:id => session[:user_id])
+        user = User.find_by(:id => session[:user_id])
+        if user.nil? || user.alumni?
+          session[:user_id] = nil
+        else
+          self.current_user = user
+        end
       else
         session[:user_id] = nil
       end

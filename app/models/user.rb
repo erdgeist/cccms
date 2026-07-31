@@ -9,6 +9,8 @@ class User < ApplicationRecord
   include Authentication
   include Authentication::ByPassword
 
+  ROLES = %w[redaktion admin alumni].freeze
+
   # Validations
   validates_presence_of     :login
   validates_length_of       :login, :within => 1..40
@@ -21,6 +23,8 @@ class User < ApplicationRecord
   validates_uniqueness_of   :email
   validates_format_of       :email, :with => Authentication.email_regex,
                             :message => Authentication.bad_email_message
+
+  validate :roles_are_known
 
   # Authenticates a user by their login name and unencrypted password. Returns the user or nil.
   def self.authenticate(login, password)
@@ -60,7 +64,45 @@ class User < ApplicationRecord
   end
   
   def is_admin?
-    !!admin
+    roles.include?("admin")
+  end
+
+  # Compatibility shims for the users form, which posts user[admin] as a
+  # checkbox. Goes away when that form learns about roles.
+  def admin
+    is_admin?
+  end
+
+  def admin?
+    is_admin?
+  end
+
+  def admin=(value)
+    if ActiveModel::Type::Boolean.new.cast(value)
+      self.roles = (roles | ["admin"])
+    else
+      self.roles = (roles - ["admin"])
+    end
+  end
+
+  def redaktion?
+    roles.include?("redaktion")
+  end
+
+  def alumni?
+    roles.include?("alumni")
+  end
+
+  def role_group
+    return :alumni    if alumni?
+    return :admin     if is_admin?
+    return :redaktion if redaktion?
+    :editor
+  end
+
+  # Human-readable role names, for the list and the forms.
+  def role_labels
+    roles.map { |r| I18n.t("users.roles.#{r}", :default => r) }
   end
 
   # otp_secret present == enrolled. otp_pending_secret holds the secret
@@ -133,4 +175,11 @@ class User < ApplicationRecord
     end
     true
   end
+
+  private
+
+    def roles_are_known
+      unknown = roles.to_a - ROLES
+      errors.add(:roles, :unknown, :list => unknown.join(", ")) if unknown.any?
+    end
 end

@@ -796,6 +796,25 @@ table.revisions_table tr:hover {
   margin: 0;
 }
 
+.user_group_heading {
+  margin-top: 1.5rem;
+}
+
+/* Retired accounts: present for attribution, not for action. */
+.user_group_alumni,
+.user_table_alumni {
+  color: var(--text-muted);
+}
+
+.role_choice {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.role_choice .field_hint {
+  margin-left: 0.5rem;
+}
+
 /* ============================================================
    Translation compare view (page_translations#show)
    ============================================================ */

@@ -9,14 +9,20 @@ class UsersController < ApplicationController
 
   layout 'admin'
 
+  ROLE_PRESETS = {
+    "editor"    => [],
+    "redaktion" => ["redaktion"],
+    "admin"     => ["admin", "redaktion"]
+  }.freeze
+
+  GROUP_ORDER = [:admin, :redaktion, :editor, :alumni].freeze
+
   def index
-    @users = User.order("login ASC").all.group_by do |user|
-      user.admin? ? :admin : :user
-    end
+    @users = User.order("login ASC").all.group_by(&:role_group)
   end
 
   def new
-    @user = User.new(admin: params[:admin].present?)
+    @user = User.new(:roles => ROLE_PRESETS.fetch(params[:preset], []))
   end
 
   def create
@@ -35,8 +41,7 @@ class UsersController < ApplicationController
 
   def update
     permitted = user_params
-    permitted.delete(:admin) unless current_user.is_admin?
-            
+
     if @user.update(permitted)
       flash[:notice] = t("flash.users.updated", :login => @user.login)
       redirect_to user_path(@user)
@@ -63,9 +68,13 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      allowed = [:login, :email, :password, :password_confirmation]
-      allowed << :admin if current_user.admin?
-      params.fetch(:user, {}).permit(allowed)
+      permitted = params.fetch(:user, {})
+                        .permit(:login, :email, :password, :password_confirmation,
+                                :roles => [])
+      # Checkbox arrays post a leading blank from the hidden field.
+      permitted[:roles] = Array(permitted[:roles]).reject(&:blank?) if permitted.key?(:roles)
+      permitted.delete(:roles) unless current_user.is_admin?
+      permitted
     end
 
     def find_user

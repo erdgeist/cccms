@@ -92,6 +92,10 @@ en:
               restore_target_invalid: "Restore target must be a living node"
               destroy_outside_trash: "Nodes are only destroyed from the Trash"
               attach_in_trash: "Cannot attach assets to a node in the Trash"
+        user:
+          attributes:
+            roles:
+              unknown: "contains unknown roles: %{list}"
         related_asset:
           attributes:
             headline:
@@ -224,11 +228,28 @@ en:
       admin: "admin?"
     user:
       confirm_destroy: "Do you really want to destroy user %{login}?"
+      no_roles: "—"
     index:
-      admins: "Admins"
-      create_admin: "Create admin user"
-      users: "Users"
-      create_user: "Create user"
+      title: "User accounts"
+      create_editor: "Create editor account"
+      create_redaktion: "Create Redaktion account"
+      create_admin: "Create admin account"
+      group_admin: "Administration"
+      group_redaktion: "Redaktion"
+      group_editor: "Editors"
+      group_alumni: "Alumni"
+      group_empty: "— none —"
+    labels:
+      roles: "Roles"
+    roles:
+      admin: "Administration"
+      redaktion: "Redaktion"
+      alumni: "Alumnus"
+    role_hints:
+      admin: "User management and navigation, each behind a fresh confirmation."
+      redaktion: "May publish in the protected sections."
+      alumni: "Can no longer log in; attributions are preserved."
+    no_roles: "no special roles"
     new:
       title: "Create new user"
 

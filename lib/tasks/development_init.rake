@@ -19,7 +19,7 @@ namespace :cccms do
       :email => 'admin@cccms.de', 
       :password => 'foobar',
       :password_confirmation => 'foobar',
-      :admin => true
+      :roles => ["admin", "redaktion"]
     )
   end
   

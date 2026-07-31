@@ -145,6 +145,10 @@ de:
               restore_target_invalid: "Das Wiederherstellungsziel muss ein lebender Node sein"
               destroy_outside_trash: "Nodes können nur aus dem Papierkorb gelöscht werden"
               attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
+        user:
+          attributes:
+            roles:
+              unknown: "enthält unbekannte Rollen: %{list}"
         related_asset:
           attributes:
             headline:
@@ -276,11 +280,28 @@ de:
       admin: "Admin?"
     user:
       confirm_destroy: "Benutzer %{login} wirklich löschen?"
+      no_roles: "—"
     index:
-      admins: "Admins"
-      create_admin: "Admin-Benutzer anlegen"
-      users: "Benutzer"
-      create_user: "Benutzer anlegen"
+      title: "Benutzerkonten"
+      create_editor: "Editor-Konto anlegen"
+      create_redaktion: "Redaktions-Konto anlegen"
+      create_admin: "Admin-Konto anlegen"
+      group_admin: "Administration"
+      group_redaktion: "Redaktion"
+      group_editor: "Editors"
+      group_alumni: "Ehemalige"
+      group_empty: "— keine —"
+    labels:
+      roles: "Rollen"
+    roles:
+      admin: "Administration"
+      redaktion: "Redaktion"
+      alumni: "Ehemalig"
+    role_hints:
+      admin: "Benutzerverwaltung und Navigation, jeweils nach erneuter Bestätigung."
+      redaktion: "Darf in den geschützten Bereichen veröffentlichen."
+      alumni: "Kein Login mehr möglich; Zuschreibungen bleiben erhalten."
+    no_roles: "keine besonderen Rollen"
     new:
       title: "Neuen Benutzer anlegen"
 

@@ -1,27 +1,32 @@
-<h1><%= t(".admins") %></h1>
-<%= link_to new_user_path(admin: true), class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_admin") %>
-<% end %>
-<table class="user_table">
-  <tr class="header">
-    <th><%= t("users.labels.login") %></th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  <%= render :partial => "user", :locals => {:users => @users[:admin] ||= []} %>
-</table>
+<h1><%= t(".title") %></h1>
 
-<h1><%= t(".users") %></h1>
-<%= link_to new_user_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_user") %>
+<p class="button_row">
+  <% UsersController::ROLE_PRESETS.each_key do |preset| %>
+    <%= link_to new_user_path(:preset => preset), class: 'action_button' do %>
+      <%= icon("plus", library: "tabler", "aria-hidden": true) %>
+      <%= t(".create_#{preset}") %>
+    <% end %>
+  <% end %>
+</p>
+
+<% UsersController::GROUP_ORDER.each do |group| %>
+  <% members = @users[group] || [] %>
+  <h2 class="user_group_heading <%= "user_group_alumni" if group == :alumni %>">
+    <%= t(".group_#{group}") %>
+    <span class="dashboard_widget_meta"><%= members.size %></span>
+  </h2>
+  <% if members.any? %>
+    <table class="user_table <%= "user_table_alumni" if group == :alumni %>">
+      <tr class="header">
+        <th><%= t("users.labels.login") %></th>
+        <th><%= t("users.labels.roles") %></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      <%= render :partial => "user", :locals => { :users => members } %>
+    </table>
+  <% else %>
+    <p class="field_hint"><%= t(".group_empty") %></p>
+  <% end %>
 <% end %>
-<table class="user_table">
-  <tr class="header">
-    <th><%= t("users.labels.login") %></th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  <%= render :partial => "user", :locals => {:users => @users[:user] ||= []} %>
-</table>
