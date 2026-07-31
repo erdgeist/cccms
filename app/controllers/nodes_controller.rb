@@ -26,7 +26,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @node = Node.new node_params
+    @node = Node.new node_create_params
     @selected_kind = CccConventions::NODE_KINDS.key?(params[:kind]) ? params[:kind] : "generic"
     @parent = Node.find(params[:parent_id]) if params.has_key?(:parent_id)
     @attach_asset = Asset.find(params[:asset_id]) if params.has_key?(:asset_id)
@@ -92,7 +92,7 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node.update(node_params)
+    @node.update(node_update_params)
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     @node.save_draft!(current_user)
 
@@ -124,7 +124,7 @@ class NodesController < ApplicationController
   end
 
   def autosave
-    @node.update(node_params)
+    @node.update(node_update_params)
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     head :ok
   rescue LockedByAnotherUser => e
@@ -268,8 +268,12 @@ class NodesController < ApplicationController
       title.to_s.parameterize
     end
 
-    def node_params
-      params.fetch(:node, {}).permit(:slug, :parent_id, :staged_slug, :staged_parent_id)
+    def node_create_params
+      params.fetch(:node, {}).permit(:slug, :parent_id)
+    end
+
+    def node_update_params
+      params.fetch(:node, {}).permit(:staged_slug, :staged_parent_id)
     end
 
     def page_params
