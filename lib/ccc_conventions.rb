@@ -52,4 +52,14 @@ module CccConventions
       hint:         "Automatically created under the Chaostreffs overview page, gets tag \"chaostreff-detail\", and uses the chapter detail template."
     }
   }.freeze
+
+  # Tags whose aggregates are forced into a subtree. Editors may apply any
+  # tag anywhere, but a page tagged "update" outside /updates will never
+  # appear in the front-page widget or the RSS feed, because every aggregate
+  # over that tag is scoped here rather than in the shortcode.
+  TAG_SCOPES = {
+    "update"           => "updates",
+    "pressemitteilung" => "updates",
+    "disclosure"       => "disclosure"
+  }.freeze
 end

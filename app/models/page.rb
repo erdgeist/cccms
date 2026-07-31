@@ -61,7 +61,7 @@ class Page < ApplicationRecord
     unless options[:tags].blank?
       tag_names = options[:tags].gsub(/\s/, ",").split(",").map(&:strip).map(&:downcase).uniq.reject(&:blank?)
 
-      unless tag_names.empty?
+    unless tag_names.empty?
         scope = scope
           .joins("JOIN taggings ON taggings.taggable_id = pages.id
                   AND taggings.taggable_type = 'Page'
@@ -70,6 +70,11 @@ class Page < ApplicationRecord
           .where("LOWER(tags.name) IN (?)", tag_names)
           .group("pages.id")
           .having("COUNT(DISTINCT tags.id) = ?", tag_names.length)
+      end
+
+      CccConventions::TAG_SCOPES.values_at(*tag_names).compact.uniq.each do |root|
+        scope = scope.where("nodes.unique_name = ? OR nodes.unique_name LIKE ?",
+                            root, "#{root}/%")
       end
     end
 

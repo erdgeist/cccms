@@ -9,8 +9,9 @@ class PageTest < ActiveSupport::TestCase
   
   def test_aggregation
     # Create two nodes and move them beneath the root node
-    n1 = Node.root.children.create! :slug => "one"
-    n2 = Node.root.children.create! :slug => "two"
+    updates = Node.root.children.create! :slug => "updates"
+    n1 = updates.children.create! :slug => "one"
+    n2 = updates.children.create! :slug => "two"
     
     # get the drafts and assign a user to it
     assert_not_nil d1 = find_or_create_draft(n1, @user1)
@@ -408,5 +409,20 @@ class PageTest < ActiveSupport::TestCase
 
     page.reload
     assert page.update(:abstract => "still saveable")
+  end
+
+  test "an aggregate over a scoped tag ignores pages outside that subtree" do
+    updates = Node.root.children.create!(:slug => "updates")
+    inside  = updates.children.create!(:slug => "inside-post")
+    outside = Node.root.children.create!(:slug => "outside-post")
+
+    [inside, outside].each do |node|
+      node.reload.draft.update!(:title => node.slug, :tag_list => "update")
+      node.publish_draft!
+    end
+
+    names = Page.aggregate({ :tags => "update" }).map { |p| p.node.unique_name }
+    assert_includes     names, "updates/inside-post"
+    assert_not_includes names, "outside-post"
   end
 end

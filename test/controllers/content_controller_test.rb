@@ -239,17 +239,16 @@ class ContentControllerTest < ActionController::TestCase
     end
 
     def fill_pages_with_content
-      d1 = find_or_create_draft(@first_child, @user1)
-      d1.title = "one"
-      d1.tag_list = "update"
-      d1.save
-      @first_child.publish_draft!
+      updates = Node.root.children.find_by(:slug => "updates") ||
+                Node.root.children.create!(:slug => "updates")
 
-      d2 = find_or_create_draft(@second_child, @user1)
-      d2.title = "two"
-      d2.tag_list = "update"
-      d2.save
-      @second_child.publish_draft!
+      [["one", "aggregated_one"], ["two", "aggregated_two"]].each do |title, slug|
+        node  = updates.children.create!(:slug => slug)
+        draft = find_or_create_draft(node, @user1)
+        draft.title = title
+        draft.tag_list = "update"
+        draft.save
+        node.publish_draft!
+      end
     end
-
 end

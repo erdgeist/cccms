@@ -6,7 +6,7 @@ xml.tag!("rdf:RDF", "xmlns:rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xml.title("Chaos Computer Club: Updates")
     xml.link("https://www.ccc.de")
     xml.description("Kabelsalat ist gesund.")
-    xml.tag!("dc:date", @items.first.published_at.xmlschema)
+    xml.tag!("dc:date", @items.first&.published_at&.xmlschema) if @items.any?
   end
 
   xml.image( "rdf:about" => "https://www.ccc.de/images/chaosknoten.gif") do

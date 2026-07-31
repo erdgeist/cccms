@@ -123,7 +123,7 @@ module ContentHelper
         sanitize(content, :attributes => cccms_attributes)
       end
 
-    rescue
+    rescue => e
       Rails.logger.error("aggregate shortcode failed on page #{@page&.id}: #{e.class}: #{e.message}")
       fallback = content.sub(/\[aggregate[^\]]*\]/, "")
       fallback = sanitize(fallback, :attributes => cccms_attributes)
