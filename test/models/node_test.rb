@@ -1049,4 +1049,27 @@ class NodeTest < ActiveSupport::TestCase
     assert_not squatter.valid?
     assert squatter.errors[:slug].any?
   end
+
+  test "restoring into a restricted subtree is refused" do
+    editor = User.create!(:login => "restore_editor", :email => "rs@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = Node.root.children.create!(:slug => "restorable")
+    node.reload.trash!
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.restore_from_trash!(updates, editor) }
+    assert node.reload.in_trash?
+  end
+
+  test "restoring into unrestricted space needs no role" do
+    editor = User.create!(:login => "restore_free", :email => "rf@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    club = Node.root.children.create!(:slug => "club")
+    node = Node.root.children.create!(:slug => "restorable_free")
+    node.reload.trash!
+
+    node.restore_from_trash!(club, editor)
+    assert_not node.reload.in_trash?
+    assert_equal club.id, node.parent_id
+  end
 end

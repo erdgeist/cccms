@@ -12,12 +12,16 @@
   <div class="layout_row_label"><%= t(".type") %></div>
   <div class="layout_row_content">
     <% CccConventions::NODE_KINDS.each do |kind, config| %>
+      <% prefix = resolve_kind_text(config[:path_prefix]) %>
       <p>
         <%= radio_button_tag :kind, kind, kind == @selected_kind,
-          data: { path_prefix: resolve_kind_text(config[:path_prefix]) } %>
+          data: { path_prefix: prefix } %>
         <%= resolve_kind_text(config[:label]) %>
         <% if config[:hint] %>
           <span class="field_hint"><%= resolve_kind_text(config[:hint]) %></span>
+        <% end %>
+        <% unless current_user.may_change_live_at?(prefix) %>
+          <span class="field_hint restricted_kind_hint"><%= t(".restricted_kind") %></span>
         <% end %>
       </p>
     <% end %>

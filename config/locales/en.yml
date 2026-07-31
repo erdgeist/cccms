@@ -325,6 +325,7 @@ en:
       attachment: "attachment"
       attach_hint: "This asset will automatically be attached to the new page."
       as_headline: "as the page's headline"
+      restricted_kind: "Publishing here is reserved for Redaktion. You can create and write freely, though."
     edit:
       save_draft: "Save Draft"
       save_unlock_exit: "Save + Unlock + Exit"
@@ -686,6 +687,7 @@ en:
       insert_image: "Insert image"
       insert_image_tooltip: "Insert one of this page's attached images"
       copied: "Copied!"
+      needs_redaktion: "Redaktion required"
     nav_controls:
       dashboard: "Dashboard"
       search: "Search"

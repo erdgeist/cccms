@@ -67,7 +67,9 @@ class AdminController < ApplicationController
 
       format.js do
         render( :json => @results.map do |node|
-          {:node_id => node.id, :title => node.title, :unique_name => node.unique_name, :node_path => node_path(node)}
+          { :node_id => node.id, :title => node.title,
+            :unique_name => node.unique_name, :node_path => node_path(node),
+            :needs_redaktion => !current_user.may_change_live?(node) }
           end
         )
 

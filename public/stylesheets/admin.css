@@ -889,6 +889,7 @@ div.layout_row_content {
   font-weight: bold;
   color: var(--text-muted);
   cursor: not-allowed;
+  line-height: 1.25rem;
 }
 
 .info_group .disabled_action svg {
@@ -971,6 +972,10 @@ form.button_to button[type="submit"] {
   font-size: 0.75rem;
   color: var(--text-muted);
   padding-bottom: 4px;
+}
+
+.restricted_kind_hint {
+  color: var(--accent);
 }
 
 .action_button + .field_hint {
@@ -1457,6 +1462,12 @@ input#menu_item_title {
   font-family: monospace;
   color: var(--text-muted);
   padding-bottom: 4px;
+}
+
+.search_results .restricted_result {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--accent);
 }
 
 .search_results p.search_more {

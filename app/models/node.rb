@@ -375,6 +375,9 @@ class Node < ApplicationRecord
       raise ActiveRecord::RecordInvalid.new(self)
     end
 
+    guard_live_change!(current_user,
+                       :target_path => [new_parent.unique_name.presence, slug].compact.join("/"))
+
     ActiveRecord::Base.transaction do
       path_before = unique_name
       move_to_child_of(new_parent)

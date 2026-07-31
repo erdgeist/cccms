@@ -382,6 +382,7 @@ de:
       attachment: "Anhang"
       attach_hint: "Dieses Asset wird der neuen Seite automatisch angehängt."
       as_headline: "als Aufmacher der Seite"
+      restricted_kind: "Veröffentlichen hier ist der Redaktion vorbehalten. Anlegen und schreiben kannst du aber."
     edit:
       save_draft: "Entwurf speichern"
       save_unlock_exit: "Speichern + Entsperren + Verlassen"
@@ -743,6 +744,7 @@ de:
       insert_image: "Bild einfügen"
       insert_image_tooltip: "Eines der angehängten Bilder dieser Seite einfügen"
       copied: "Kopiert!"
+      needs_redaktion: "Redaktion nötig"
     nav_controls:
       dashboard: "Dashboard"
       search: "Suche"

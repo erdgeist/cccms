@@ -46,6 +46,7 @@ function initSearchPicker(options) {
   var isActive = options.isActive;
   var resultsHeaderHtml = options.resultsHeaderHtml;
   var renderResults = options.renderResults;
+  var showRestricted = options.showRestricted;
   var loadOnFocus = options.loadOnFocus; // optional, fires an initial search on focus with no term typed yet
   var requestId = 0;
   var timeout;
@@ -75,6 +76,10 @@ function initSearchPicker(options) {
               var anchor = $("<a>").attr("href", onSelect ? "#" : node.node_path);
               anchor.append(document.createTextNode(node.title || ""));
               anchor.append($("<span>", { "class": "result_path" }).text(node.unique_name || ""));
+              if (showRestricted && node.needs_redaktion) {
+                anchor.append($("<span>", { "class": "restricted_result" })
+                              .text(ADMIN_STRINGS.needs_redaktion));
+              }
               var link = $("<p>").append(anchor);
 
               if (onSelect) {
@@ -192,6 +197,7 @@ parent_search = {
     initSearchPicker({
       inputSelector: "#parent_search_term",
       resultsSelector: "#parent_search_results",
+      showRestricted: true,
       onSelect: function(node) {
         $("#parent_search_term").val(node.title);
         $("#parent_id").val(node.node_id).attr("data-unique-name", node.unique_name);
@@ -248,6 +254,7 @@ move_to_search = {
     initSearchPicker({
       inputSelector: "#move_to_search_term",
       resultsSelector: "#move_to_search_results",
+      showRestricted: true,
       onSelect: function(node) {
         $("#move_to_search_term").val(node.title);
         $("#node_staged_parent_id").val(node.node_id);
@@ -261,6 +268,7 @@ restore_search = {
     initSearchPicker({
       inputSelector: "#restore_search_term",
       resultsSelector: "#restore_search_results",
+      showRestricted: true,
       onSelect: function(node) {
         $("#restore_search_term").val(node.title);
         $("#parent_id").val(node.node_id);

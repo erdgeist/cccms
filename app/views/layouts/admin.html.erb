@@ -18,7 +18,7 @@
     <%= javascript_tag nonce: true do %>
       var ADMIN_SEARCH_URL = "<%= admin_search_path %>";
       var ADMIN_MENU_SEARCH_URL = "<%= admin_menu_search_path %>";
-      var ADMIN_STRINGS = <%= raw({ :lock_lost_prefix => t(".lock_lost_prefix"), :lock_lost_link => t(".lock_lost_link"), :insert_image => t(".insert_image"), :insert_image_tooltip => t(".insert_image_tooltip"), :copied => t(".copied") }.to_json) %>;
+      var ADMIN_STRINGS = <%= raw({ :lock_lost_prefix => t(".lock_lost_prefix"), :lock_lost_link => t(".lock_lost_link"), :insert_image => t(".insert_image"), :insert_image_tooltip => t(".insert_image_tooltip"), :copied => t(".copied"), :needs_redaktion => t(".needs_redaktion") }.to_json) %>;
       var PARAMETERIZE_PREVIEW_URL = "<%= parameterize_preview_nodes_path %>";
       var DASHBOARD_SEARCH_URL = "<%= admin_dashboard_search_path %>";
     <% end %>
