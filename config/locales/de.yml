@@ -145,6 +145,7 @@ de:
               restore_target_invalid: "Das Wiederherstellungsziel muss ein lebender Node sein"
               destroy_outside_trash: "Nodes können nur aus dem Papierkorb gelöscht werden"
               attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
+              not_permitted: "In diesem Bereich dürfen nur Mitglieder der Redaktion veröffentlichte Inhalte ändern"
         user:
           attributes:
             roles:
@@ -153,6 +154,10 @@ de:
           attributes:
             headline:
               images_and_pdfs_only: "kann nur auf Bildern oder PDFs gesetzt werden"
+        asset:
+          attributes:
+            base:
+              not_permitted: "Dieses Asset ist an geschützte Seiten angehängt; nur die Redaktion darf es löschen"
 
   tags:
     index:

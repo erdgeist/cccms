@@ -92,6 +92,7 @@ en:
               restore_target_invalid: "Restore target must be a living node"
               destroy_outside_trash: "Nodes are only destroyed from the Trash"
               attach_in_trash: "Cannot attach assets to a node in the Trash"
+              not_permitted: "Only Redaktion members may change published content in this section"
         user:
           attributes:
             roles:

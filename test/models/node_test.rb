@@ -936,4 +936,72 @@ class NodeTest < ActiveSupport::TestCase
                       I18n.t("activerecord.errors.models.node.attributes.base.trash_the_trash")
     end
   end
+
+  test "restricted? covers the root node, the restricted subtrees and their descendants" do
+    assert Node.root.restricted?, "the front page aggregates the feed"
+
+    updates = Node.root.children.create!(:slug => "updates")
+    assert updates.restricted?
+    year = updates.children.create!(:slug => "2026")
+    assert year.reload.restricted?
+    post = year.children.create!(:slug => "some-post")
+    assert post.reload.restricted?
+
+    disclosure = Node.root.children.create!(:slug => "disclosure")
+    assert disclosure.restricted?
+
+    plain = Node.root.children.create!(:slug => "club")
+    assert_not plain.restricted?
+    child = plain.children.create!(:slug => "erfas")
+    assert_not child.reload.restricted?
+  end
+
+  test "restricted? does not match a prefix that is merely a substring" do
+    decoy = Node.root.children.create!(:slug => "updatesomething")
+    assert_not decoy.restricted?
+  end
+
+  test "publishing a restricted node is refused without the redaktion role" do
+    editor = User.create!(:login => "guard_editor", :email => "gd@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "guarded-post")
+    node.reload.draft.update!(:title => "Entwurf")
+
+    error = assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft!(editor) }
+    assert_includes error.message,
+                    I18n.t("activerecord.errors.models.node.attributes.base.not_permitted")
+    assert_nil node.reload.head
+  end
+
+  test "publishing a restricted node succeeds with the redaktion role" do
+    red = User.create!(:login => "guard_red", :email => "gr2@example.com",
+                       :password => "secret", :password_confirmation => "secret",
+                       :roles => ["redaktion"])
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "allowed-post")
+    node.reload.draft.update!(:title => "Entwurf")
+
+    node.publish_draft!(red)
+    assert_not_nil node.reload.head
+  end
+
+  test "publishing outside the restricted subtrees needs no role" do
+    editor = User.create!(:login => "guard_free", :email => "gf@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    node = Node.root.children.create!(:slug => "guard-free-post")
+    node.reload.draft.update!(:title => "Entwurf")
+
+    node.publish_draft!(editor)
+    assert_not_nil node.reload.head
+  end
+
+  test "a nil user is a system context and bypasses the gate" do
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "system-post")
+    node.reload.draft.update!(:title => "Entwurf")
+
+    node.publish_draft!
+    assert_not_nil node.reload.head
+  end
 end

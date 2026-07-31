@@ -105,6 +105,11 @@ class User < ApplicationRecord
     roles.map { |r| I18n.t("users.roles.#{r}", :default => r) }
   end
 
+  def may_change_live?(subject)
+    return true unless subject.restricted?
+    redaktion?
+  end
+
   def deactivate!(actor:)
     return false if alumni?
     transaction do

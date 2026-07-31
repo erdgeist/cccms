@@ -770,6 +770,20 @@ class NodesControllerTest < ActionController::TestCase
     assert_select "form[action=?]", node_path(node), count: 1
   end
 
+  test "publishing a restricted node without the redaktion role flashes and does not publish" do
+    login_as :quentin
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "controller-gated")
+    node.reload.draft.update!(:title => "Entwurf")
+
+    put :publish, params: { :id => node.id }
+
+    assert_redirected_to node_path(node)
+    assert_match I18n.t("activerecord.errors.models.node.attributes.base.not_permitted"),
+                 flash[:error]
+    assert_nil node.reload.head
+  end
+
 test "show annotates history rows with their lifecycle" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "history_annotation_test")

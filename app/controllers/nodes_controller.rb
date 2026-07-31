@@ -194,6 +194,9 @@ class NodesController < ApplicationController
     @node.publish_draft!(current_user)
     flash[:notice] = t("flash.nodes.published")
     redirect_to node_path(@node)
+  rescue ActiveRecord::RecordInvalid => e
+    flash[:error] = e.message
+    redirect_to node_path(@node)
   end
 
   def unlock

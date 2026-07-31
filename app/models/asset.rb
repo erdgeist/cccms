@@ -41,6 +41,13 @@ class Asset < ApplicationRecord
                :ids => page_ids).distinct
   end
 
+  # An asset's reach is the reach of the pages carrying it: destroying one
+  # removes it from every live page at once, so a single restricted
+  # attachment makes the destruction a restricted act.
+  def restricted?
+    attached_nodes.any?(&:restricted?)
+  end
+
   # Witnessed destruction. Destroying an asset is a public-facing act
   # even when unattached. The original and its variants are publicly
   # reachable under /system/uploads, so an entry is always written,
@@ -49,6 +56,11 @@ class Asset < ApplicationRecord
   # participates as the first non-Node subject (its participant row
   # dangles after destroy, by design, the name lives on in metadata).
   def destroy_witnessed! user:
+    if user && !user.may_change_live?(self)
+      errors.add(:base, :not_permitted)
+      raise ActiveRecord::RecordInvalid.new(self)
+    end
+
     ActiveRecord::Base.transaction do
       affected = attached_nodes.to_a
       headline_losses = affected.select do |node|

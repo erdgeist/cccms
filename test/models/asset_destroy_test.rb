@@ -48,4 +48,17 @@ class AssetDestroyTest < ActiveSupport::TestCase
     assert_equal "Doomed asset", action.metadata["asset_name"]
     assert_nil action.action_participants.first.subject
   end
+
+  test "destroying an asset attached to a restricted node needs the redaktion role" do
+    editor = User.create!(:login => "asset_gate", :email => "ag@example.com",
+                          :password => "secret", :password_confirmation => "secret")
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "gated-attachment")
+    node.reload.attach_asset!(@asset, :user => nil)
+
+    error = assert_raises(ActiveRecord::RecordInvalid) { @asset.destroy_witnessed!(:user => editor) }
+    assert_includes error.message,
+                    I18n.t("activerecord.errors.models.asset.attributes.base.not_permitted")
+    assert Asset.exists?(@asset.id)
+  end
 end

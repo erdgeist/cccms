@@ -126,6 +126,22 @@ class UserTest < ActiveSupport::TestCase
 
     assert user.update(:email => "quentin@example.org")
   end
+
+  test "may_change_live? gates restricted subjects on the redaktion role" do
+    editor    = User.create!(:login => "gate_editor", :email => "ge@example.com",
+                             :password => "secret", :password_confirmation => "secret")
+    redaktion = User.create!(:login => "gate_red", :email => "gr@example.com",
+                             :password => "secret", :password_confirmation => "secret",
+                             :roles => ["redaktion"])
+
+    restricted = Node.root
+    plain = Node.root.children.create!(:slug => "gate_plain")
+
+    assert     editor.may_change_live?(plain)
+    assert_not editor.may_change_live?(restricted)
+    assert     redaktion.may_change_live?(plain)
+    assert     redaktion.may_change_live?(restricted)
+  end
   
 protected
   def create_user(options = {})

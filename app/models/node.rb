@@ -236,6 +236,8 @@ class Node < ApplicationRecord
     # Return nil if nothing to publish and no staged changes
     return nil unless self.draft || staged_slug || staged_parent_id
 
+    guard_live_change!(current_user)
+
     if in_trash? || trash_node?
       errors.add(:base, :publish_in_trash)
       raise ActiveRecord::RecordInvalid.new(self)
@@ -319,6 +321,9 @@ class Node < ApplicationRecord
   # at the root, carrying the leaving-public-view snapshot.
   def trash! current_user = nil
     return nil if in_trash?
+
+    guard_live_change!(current_user)
+
     if trash_node?
       errors.add(:base, :trash_the_trash)
       raise ActiveRecord::RecordInvalid.new(self)
@@ -391,6 +396,8 @@ class Node < ApplicationRecord
   # One log entry at the root, per the subtree rule, written before the
   # rows die.
   def destroy_from_trash! current_user = nil
+    guard_live_change!(current_user)
+
     unless in_trash?
       errors.add(:base, :destroy_outside_trash)
       raise ActiveRecord::RecordInvalid.new(self)
@@ -485,6 +492,8 @@ class Node < ApplicationRecord
   # Returns { :attached => n, :already => n,
   #           :headline => nil | :set | :kept_existing | :not_eligible }
   def attach_asset! asset, user:, headline: false
+    guard_live_change!(user)
+
     if in_trash? || trash_node?
       errors.add(:base, :attach_in_trash)
       raise ActiveRecord::RecordInvalid.new(self)
@@ -563,6 +572,17 @@ class Node < ApplicationRecord
       current = current.parent
     end
     false
+  end
+
+  def restricted?
+    return true if root?
+
+    name = unique_name.to_s
+    return false if name.empty?
+
+    CccConventions::RESTRICTED_SUBTREES.any? do |prefix|
+      name == prefix || name.start_with?("#{prefix}/")
+    end
   end
 
   # Returns immutable node id for all new nodes so that the atom feed entry ids
@@ -676,6 +696,14 @@ class Node < ApplicationRecord
     end
 
   private
+
+    def guard_live_change! user
+      return if user.nil?
+      return if user.may_change_live?(self)
+
+      errors.add(:base, :not_permitted)
+      raise ActiveRecord::RecordInvalid.new(self)
+    end
 
     def reserved_slug_stays_reserved
       if parent&.root? && !trash_node_already_me?
