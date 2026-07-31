@@ -18,7 +18,6 @@ class Node < ApplicationRecord
   # them -- this dependent: :destroy is their only cleanup on node destroy.
   belongs_to  :autosave, :class_name => "Page", :foreign_key => :autosave_id, :dependent => :destroy, optional: true
 
-  has_many    :permissions, :dependent => :destroy
   has_many    :events, :dependent => :destroy
   belongs_to  :lock_owner, :class_name => "User", :foreign_key => :locking_user_id, optional: true
 
