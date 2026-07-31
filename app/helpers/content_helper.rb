@@ -149,7 +149,7 @@ module ContentHelper
   # Either return a custom partial path if it exsits or default to the standard
   # partial
   def select_partial partial
-    if partial && partial_exists?( partial )
+    if partial.to_s.match?(%r{\A[a-z0-9_]+(/[a-z0-9_]+)?\z}) && partial_exists?( partial )
       return "custom/partials/#{partial}"
     else
       return 'custom/partials/article'
