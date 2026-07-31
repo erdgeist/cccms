@@ -147,7 +147,7 @@ $(document).ready(function () {
     navigator.clipboard.writeText(text).then(function () {
       var label = button.querySelector('.copy_button_label');
       if (!label) return;
-      var original = label.textContent;
+      var original = ADMIN_STRINGS.copied;
       label.textContent = 'Copied!';
       setTimeout(function () { label.textContent = original; }, 1500);
     });

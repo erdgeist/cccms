@@ -707,6 +707,7 @@ de:
       lock_lost_link: "zurück zur veröffentlichten Seite"
       insert_image: "Bild einfügen"
       insert_image_tooltip: "Eines der angehängten Bilder dieser Seite einfügen"
+      copied: "Kopiert!"
     nav_controls:
       dashboard: "Dashboard"
       search: "Suche"
