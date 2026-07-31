@@ -5,7 +5,7 @@ class RssController < ApplicationController
   def updates
     expires_in 31.minutes, :public => true
     
-    I18n.locale = :de
+    I18n.locale = I18n.default_locale
   
     @items = Page.heads
       .joins("JOIN taggings ON taggings.taggable_id = pages.id
