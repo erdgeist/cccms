@@ -242,6 +242,7 @@ class User < ApplicationRecord
     def admin_needs_second_factor
       return unless roles.include?("admin")
       return if otp_secret.present?
+      return if persisted? && roles_in_database.to_a.include?("admin")
       errors.add(:roles, :admin_needs_otp)
     end
 end

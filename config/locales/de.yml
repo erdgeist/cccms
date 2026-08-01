@@ -598,7 +598,7 @@ de:
       code_mismatch_rescan: "Der Code hat nicht gepasst. Neu scannen oder auf den nächsten Code warten."
       wrong_password: "Falsches Passwort."
       wrong_credentials: "Passwort oder Code falsch — zweiter Faktor unverändert."
-      enabled: "Zweiter Faktor aktiviert. Der eben eingegebene Code ist verbraucht — für die Anmeldung auf den nächsten warten."
+      enabled: "Zweiter Faktor aktiviert. (Der eben eingegebene Code ist jetzt verbraucht.)"
       disabled: "Zweiter Faktor entfernt."
     users:
       created: "Benutzer %{login} angelegt"

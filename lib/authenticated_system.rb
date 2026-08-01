@@ -25,9 +25,10 @@ module AuthenticatedSystem
     # Tied to is_admin? so losing the role closes the window at once, rather
     # than leaving a timestamp that would count again if the role returned.
     def elevated?
-      return false unless current_user&.is_admin?
-      session[:elevated_at].to_i > ELEVATION_MAX_AGE.ago.to_i
-    end
+    return false unless current_user&.is_admin?
+    return false unless current_user.otp_enrolled?
+    session[:elevated_at].to_i > ELEVATION_MAX_AGE.ago.to_i
+  end
 
     def elevation_expires_at
       return nil unless elevated?

@@ -74,6 +74,38 @@ class UserOtpTest < ActiveSupport::TestCase
     assert_equal @user.login, action.metadata["target_login"]
   end
 
+  test "an admin without a factor can start enrollment" do
+    admin = users(:aaron)
+    assert admin.is_admin?
+    assert_not admin.otp_enrolled?
+
+    uri = admin.begin_otp_enrollment!
+
+    assert admin.reload.otp_pending_secret.present?
+    assert uri.present?
+  end
+
+  test "an admin disabling their factor keeps the role" do
+    admin = users(:aaron)
+    admin.update_column(:otp_secret, ROTP::Base32.random)
+
+    admin.disable_otp!(:actor => admin)
+
+    assert_not admin.reload.otp_enrolled?
+    assert admin.is_admin?
+  end
+
+  test "a fellow admin can reset an admin's factor" do
+    admin = users(:aaron)
+    admin.update_column(:otp_secret, ROTP::Base32.random)
+    actor = users(:redella)
+
+    admin.disable_otp!(:actor => actor)
+
+    assert_not admin.reload.otp_enrolled?
+    assert_equal "otp_reset", NodeAction.last.action
+  end
+
   private
 
     def enroll!(user)

@@ -558,7 +558,7 @@ en:
       code_mismatch_rescan: "That code did not match. Rescan or wait for the next code."
       wrong_password: "Wrong password."
       wrong_credentials: "Password or code wrong -- second factor unchanged."
-      enabled: "Second factor enabled. The code you just entered is spent -- wait for the next one before logging in with it."
+      enabled: "Second factor enabled. (The OTP code is spent now.)"
       disabled: "Second factor disabled."
     users:
       created: "User created %{login}"

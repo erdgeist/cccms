@@ -273,4 +273,16 @@ class UsersControllerTest < ActionController::TestCase
 
     assert_not user.reload.is_admin?
   end
+
+  test "clearing the factor closes an open elevation window" do
+    login_as :aaron
+    elevate_session!
+    get :new, params: { :locale => "de" }
+    assert_response :success
+
+    users(:aaron).update_column(:otp_secret, nil)
+
+    get :new, params: { :locale => "de" }
+    assert_redirected_to new_elevation_path
+  end
 end

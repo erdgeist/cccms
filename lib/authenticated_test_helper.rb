@@ -6,6 +6,10 @@ module AuthenticatedTestHelper
   end
 
   def elevate_session!
-    session[:elevated_at] = Time.now.to_i
+    user = User.find_by(:id => @request.session[:user_id])
+    if user && !user.otp_enrolled?
+      user.update_column(:otp_secret, ROTP::Base32.random)
+    end
+    @request.session[:elevated_at] = Time.now.to_i
   end
 end
