@@ -98,6 +98,9 @@ module ContentHelper
   #   order_by="published_at"
   #   order_direction="DESC"
   # ]
+  #
+  # order_by currently takes id, published_at, created_at, updated_at, title
+  #                      and slug
 
 
   def aggregate? content

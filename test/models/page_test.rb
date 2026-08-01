@@ -425,4 +425,17 @@ class PageTest < ActiveSupport::TestCase
     assert_includes     names, "updates/inside-post"
     assert_not_includes names, "outside-post"
   end
+
+  test "an aggregate can order by node slug" do
+    parent = Node.root.children.create!(:slug => "slug_order_parent")
+    %w[zulu alpha Mike].each do |slug|
+      node = parent.children.create!(:slug => slug)
+      node.reload.draft.update!(:title => "T-#{slug}", :tag_list => "slug-order-test")
+      node.publish_draft!
+    end
+
+    names = Page.aggregate({ :tags => "slug-order-test",
+                             :order_by => "slug" }).map { |p| p.node.slug }
+    assert_equal %w[alpha Mike zulu], names
+  end
 end

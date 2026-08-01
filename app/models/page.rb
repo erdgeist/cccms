@@ -92,6 +92,11 @@ class Page < ApplicationRecord
         .paginate(:page => page, :per_page => options[:limit])
     end
 
+    if options[:order_by] == "slug"
+      return scope.order(Arel.sql("MIN(LOWER(nodes.slug)) #{direction}"))
+                  .paginate(:page => page, :per_page => options[:limit])
+    end
+
     column = options[:order_by].to_s.sub(/\Apages\./, "")
     column = "id" unless %w[id published_at created_at updated_at].include?(column)
 

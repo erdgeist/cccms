@@ -752,25 +752,30 @@ div.author_and_date {
 }
 
 .chapter_partial_layout {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  display: flow-root;
 }
 
 .chapter_thumbnail {
-  flex-shrink: 0;
+  float: right;
+  margin: 0.5rem 0 8px 12px;
 }
 
 .chapter_thumbnail img {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
+  max-width: 150px;
+  height: auto;
   border-radius: 4px;
   display: block;
 }
 
-.chapter_partial_content {
-  min-width: 0;
+div#center_column .chapter_partial h2.headline {
+  border-top: none;
+  padding-top: 0;
+}
+
+div#center_column .chapter_partial + .chapter_partial {
+  border-top: 1px solid color-mix(in srgb, CanvasText, Canvas 70%);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
 }
 
 .article_partial_layout {

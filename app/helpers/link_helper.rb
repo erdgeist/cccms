@@ -21,8 +21,9 @@ module LinkHelper
       active = (page_path == path.sub(/^\//, ""))
     end
 
-    active_class = active ? {:class => 'active'} : {:class => 'inactive'}
-    html_options = html_options.merge(active_class)
+    html_options = html_options.merge(
+      :class => [html_options[:class], active ? "active" : "inactive"].compact.join(" ")
+    )
     locale = (params[:locale] || I18n.locale).to_sym == I18n.default_locale ? nil : (params[:locale] || I18n.locale)
 
     link_to(

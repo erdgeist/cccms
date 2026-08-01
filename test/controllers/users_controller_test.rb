@@ -13,8 +13,8 @@ class UsersControllerTest < ActionController::TestCase
     login_as :aaron
     get :index
     assert_response :success
-    assert_select "button[type=submit]", I18n.t("users.user.deactivate")
-    assert_select "a", I18n.t("admin.common.show")
+    assert_select "button[type=submit][aria-label=?]", I18n.t("users.user.deactivate")
+    assert_select "a[aria-label=?]", I18n.t("admin.common.show")
   end
  
   test "get new when logged in as admin" do
