@@ -137,6 +137,7 @@ input[type=radio] {
 
 #wrapper {
   margin: 0 5px;
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
 }
 
 @media(min-width:1016px) {
@@ -844,6 +845,33 @@ table.revisions_table tr:hover {
 .user_group_alumni,
 .user_table_alumni {
   color: var(--text-muted);
+}
+
+.user_table td.user_action {
+  width: 1px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.user_table td.user_action a {
+  text-decoration: none;
+}
+
+.user_table td.user_action svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.user_table td.user_action .field_hint svg {
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+/* Four groups stacked, and the last one needs clearance from the wrapper. */
+.user_table {
+  width: 100%;
+  max-width: 44rem;
+  margin-bottom: 1.5rem;
 }
 
 .role_choice {
