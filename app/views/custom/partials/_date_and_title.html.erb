@@ -1,0 +1,11 @@
+<div class="article_partial date_and_title_partial" lang="<%= page.effective_lang %>">
+  <div class="entry_date">
+    <time datetime="<%= (page.published_at || page.created_at).to_date.iso8601 %>"><%= date_for_page page %></time>
+  </div>
+  <div class="entry_body">
+    <h2 class="headline"><%= link_to_path page.title, page.node.unique_name %></h2>
+    <% if page.abstract.present? %>
+      <p class="excerpt"><%= page.abstract %></p>
+    <% end %>
+  </div>
+</div>

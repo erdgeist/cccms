@@ -730,6 +730,16 @@ div#center_column .chapter_partial h2.headline {
   border-top: none;
 }
 
+div#center_column .date_and_title_partial h2.headline {
+  border-top: none;
+  padding-top: 0;
+}
+
+.date_and_title_partial {
+  border-top: 1px solid color-mix(in srgb, CanvasText, Canvas 70%);
+  padding-top: 30px;
+}
+
 div.article_partial h2 a {
   text-decoration: none;
 }
