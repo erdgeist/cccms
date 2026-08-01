@@ -163,7 +163,7 @@ class NodesController < ApplicationController
     flash[:error] = t("flash.common.locked_by_other")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordInvalid => e
-    flash[:error] = e.message
+    flash[:error] = e.record.errors.full_messages.to_sentence
     redirect_to node_path(@node)
   end
 
@@ -176,7 +176,7 @@ class NodesController < ApplicationController
     flash[:error] = t("flash.nodes.restore_target_missing")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordInvalid => e
-    flash[:error] = e.message
+    flash[:error] = e.record.errors.full_messages.to_sentence
     redirect_to node_path(@node)
   end
 
@@ -186,7 +186,8 @@ class NodesController < ApplicationController
     redirect_to trashed_nodes_path
 
   rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed => e
-    flash[:error] = e.message
+    messages = e.record.errors.full_messages
+    flash[:error] = messages.any? ? messages.to_sentence : e.message
     redirect_to node_path(@node)
   end
 
@@ -195,7 +196,7 @@ class NodesController < ApplicationController
     flash[:notice] = t("flash.nodes.published")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordInvalid => e
-    flash[:error] = e.message
+    flash[:error] = e.record.errors.full_messages.to_sentence
     redirect_to node_path(@node)
   end
 

@@ -94,7 +94,7 @@ class AssetsController < ApplicationController
       format.xml  { head :ok }
     end
   rescue ActiveRecord::RecordInvalid => e
-    flash[:error] = e.message
+    flash[:error] = e.record.errors.full_messages.to_sentence
     respond_to do |format|
       format.html { redirect_to(asset_path(@asset)) }
       format.xml  { head :forbidden }
