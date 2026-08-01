@@ -8,6 +8,7 @@
     <% end %>
   <% end %>
 </p>
+<p class="field_hint"><%= t(".admin_hint") %></p>
 
 <% UsersController::GROUP_ORDER.each do |group| %>
   <% members = @users[group] || [] %>

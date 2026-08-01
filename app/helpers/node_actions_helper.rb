@@ -20,7 +20,9 @@ module NodeActionsHelper
     "otp_disable"        => "shield-off",
     "otp_reset"          => "shield-x",
     "user_deactivate"    => "user-off",
-    "user_reactivate"    => "user-check"
+    "user_reactivate"    => "user-check",
+    "redaktion_grant"    => "user-plus",
+    "redaktion_revoke"   => "user-minus"
   }.freeze
 
   def verb_icon action
@@ -281,6 +283,16 @@ module NodeActionsHelper
 
   def summarize_user_reactivate action
     t("node_actions.user_reactivate", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_redaktion_grant action
+    t("node_actions.redaktion_grant", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_redaktion_revoke action
+    t("node_actions.redaktion_revoke", :actor => actor_ref(action),
        :target => user_participant_ref(action)).html_safe
   end
 end

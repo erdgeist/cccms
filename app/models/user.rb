@@ -25,6 +25,7 @@ class User < ApplicationRecord
                             :message => Authentication.bad_email_message
 
   validate :roles_are_known
+  validate :admin_needs_second_factor
 
   # Authenticates a user by their login name and unencrypted password. Returns the user or nil.
   def self.authenticate(login, password)
@@ -136,6 +137,30 @@ class User < ApplicationRecord
     true
   end
 
+  def grant_redaktion!(actor:)
+    return :already if redaktion?
+    return :no_second_factor unless otp_enrolled?
+
+    transaction do
+      update_column(:roles, (roles | ["redaktion"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "redaktion_grant", :target_login => login)
+    end
+    :granted
+  end
+
+  def revoke_redaktion!(actor:)
+    return :already unless redaktion?
+    return :self unless actor != self
+
+    transaction do
+      update_column(:roles, (roles - ["redaktion"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "redaktion_revoke", :target_login => login)
+    end
+    :revoked
+  end
+
   # otp_secret present == enrolled. otp_pending_secret holds the secret
   # between QR display and first-code confirmation. otp_consumed_timestep
   # makes every accepted code single-use (replay guard within the drift
@@ -212,5 +237,11 @@ class User < ApplicationRecord
     def roles_are_known
       unknown = roles.to_a - ROLES
       errors.add(:roles, :unknown, :list => unknown.join(", ")) if unknown.any?
+    end
+
+    def admin_needs_second_factor
+      return unless roles.include?("admin")
+      return if otp_secret.present?
+      errors.add(:roles, :admin_needs_otp)
     end
 end

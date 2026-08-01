@@ -97,6 +97,7 @@ en:
           attributes:
             roles:
               unknown: "contains unknown roles: %{list}"
+              admin_needs_otp: "Administrator role requires an enrolled second factor. The user has to set one up under My account first"
         related_asset:
           attributes:
             headline:
@@ -170,6 +171,8 @@ en:
     otp_reset: "%{actor} reset the second factor of %{target}"
     user_deactivate: "%{actor} deactivated %{target}"
     user_reactivate: "%{actor} reactivated %{target}"
+    redaktion_grant: "%{actor} added %{target} to Redaktion"
+    redaktion_revoke: "%{actor} removed %{target} from Redaktion"
 
   open_gallery: "Open gallery"
   asset_licenses:
@@ -235,6 +238,12 @@ en:
       deactivate: "Deactivate"
       reactivate: "Reactivate"
       confirm_deactivate: "Deactivate %{login}? Sign-in is refused immediately; attributions are preserved."
+      grant_redaktion: "Add to Redaktion"
+      revoke_redaktion: "Remove from Redaktion"
+      confirm_grant_redaktion: "Add %{login} to Redaktion? They will be able to publish in the protected sections."
+      confirm_revoke_redaktion: "Remove %{login} from Redaktion?"
+      needs_otp: "no second factor"
+
     index:
       title: "User accounts"
       create_editor: "Create editor account"
@@ -245,6 +254,7 @@ en:
       group_editor: "Editors"
       group_alumni: "Alumni"
       group_empty: "— none —"
+      admin_hint: "Administrative rights can only be granted after the account has signed in and set up a second factor."
     labels:
       roles: "Roles"
     roles:
@@ -554,6 +564,11 @@ en:
       deactivated: "%{login} is now an alumnus and can no longer sign in."
       reactivated: "%{login} can sign in again."
       cannot_deactivate_self: "You cannot deactivate your own account."
+      redaktion_granted: "%{login} is now part of Redaktion."
+      redaktion_revoked: "%{login} is no longer part of Redaktion."
+      redaktion_needs_otp: "%{login} needs a second factor first."
+      redaktion_not_self: "You cannot give up your own Redaktion role."
+
     assets:
       created: "Asset was successfully created."
       updated: "Asset was successfully updated."

@@ -6,7 +6,7 @@ class UsersControllerTest < ActionController::TestCase
     login_as :quentin
     get :index
     assert_redirected_to admin_path
-    assert_equal I18n.t("flash.common.admin_required"), flash[:error]
+    assert_equal I18n.t("flash.common.redaktion_required"), flash[:error]
   end
 
   test "get index as admin shows every group with per-row actions" do
@@ -53,7 +53,7 @@ class UsersControllerTest < ActionController::TestCase
     assert !User.last.admin
   end
   
-  test "creating new admin users being logged in as admin" do
+  test "creating a Redaktion account" do
     login_as :aaron
     elevate_session!
     assert_difference "User.count", +1 do
@@ -63,13 +63,14 @@ class UsersControllerTest < ActionController::TestCase
           :email                  => "foo@bar.com",
           :password               => "xxxzzz",
           :password_confirmation  => "xxxzzz",
-          :roles                  => ["admin", "redaktion"]
+          :roles                  => ["redaktion"]
         }
       }
     end
     
     assert_redirected_to user_path(User.last)
-    assert User.last.admin
+    assert User.last.redaktion?
+    assert_not User.last.is_admin?
   end
   
   test "creating new users not being logged as regular user wont work" do
@@ -196,6 +197,7 @@ class UsersControllerTest < ActionController::TestCase
     login_as :aaron
     elevate_session!
     user = users(:quentin)
+    user.update_column(:otp_secret, ROTP::Base32.random)
     put :update, params: { :id => user.id, :user => {:roles => ["admin", "redaktion"]} }
     
     assert_equal true, user.reload.is_admin?
@@ -255,6 +257,16 @@ class UsersControllerTest < ActionController::TestCase
 
   test "an unelevated admin cannot change roles" do
     login_as :aaron
+    user = users(:quentin)
+
+    put :update, params: { :id => user.id, :user => { :roles => ["admin"] } }
+
+    assert_not user.reload.is_admin?
+  end
+
+  test "an account without a second factor cannot be promoted to admin" do
+    login_as :aaron
+    elevate_session!
     user = users(:quentin)
 
     put :update, params: { :id => user.id, :user => { :roles => ["admin"] } }

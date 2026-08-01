@@ -26,5 +26,22 @@
       <% end %>
     <% end %>
   </td>
+  <td>
+    <% if current_user.redaktion? && !user.alumni? %>
+      <% if user.redaktion? %>
+        <% unless user == current_user %>
+          <%= button_to t(".revoke_redaktion"), revoke_redaktion_user_path(user), method: :put,
+                form: { data: { confirm: t(".confirm_revoke_redaktion", :login => user.login) },
+                        class: 'button_to destructive' } %>
+        <% end %>
+      <% elsif user.otp_enrolled? %>
+        <%= button_to t(".grant_redaktion"), grant_redaktion_user_path(user), method: :put,
+              form: { data: { confirm: t(".confirm_grant_redaktion", :login => user.login) },
+                      class: 'button_to state_changing' } %>
+      <% else %>
+        <span class="field_hint"><%= t(".needs_otp") %></span>
+      <% end %>
+    <% end %>
+  </td>
 </tr>
 <% end %>

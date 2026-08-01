@@ -150,6 +150,7 @@ de:
           attributes:
             roles:
               unknown: "enthält unbekannte Rollen: %{list}"
+              admin_needs_otp: "Die Administrator-Rolle setzt einen zweiten Faktor voraus. Der Nutzer muss diesen zuerst selbst unter »Mein Konto« einrichten"
         related_asset:
           attributes:
             headline:
@@ -226,6 +227,8 @@ de:
     otp_reset: "%{actor} hat den zweiten Faktor von %{target} zurückgesetzt"
     user_deactivate: "%{actor} hat %{target} deaktiviert"
     user_reactivate: "%{actor} hat %{target} reaktiviert"
+    redaktion_grant: "%{actor} hat %{target} in die Redaktion aufgenommen"
+    redaktion_revoke: "%{actor} hat %{target} aus der Redaktion entfernt"
 
   open_gallery: "Gallerie anzeigen"
   asset_licenses:
@@ -291,6 +294,11 @@ de:
       deactivate: "Deaktivieren"
       reactivate: "Reaktivieren"
       confirm_deactivate: "%{login} deaktivieren? Die Anmeldung wird sofort verweigert, Zuschreibungen bleiben erhalten."
+      grant_redaktion: "In die Redaktion aufnehmen"
+      revoke_redaktion: "Aus der Redaktion entfernen"
+      confirm_grant_redaktion: "%{login} in die Redaktion aufnehmen? Damit darf %{login} in den geschützten Bereichen veröffentlichen."
+      confirm_revoke_redaktion: "%{login} aus der Redaktion entfernen?"
+      needs_otp: "zweiter Faktor fehlt"
     index:
       title: "Benutzerkonten"
       create_editor: "Editor-Konto anlegen"
@@ -301,6 +309,7 @@ de:
       group_editor: "Editors"
       group_alumni: "Ehemalige"
       group_empty: "— keine —"
+      admin_hint: "Administrative Rechte lassen sich erst vergeben, nachdem der Nutzer sich angemeldet und einen zweiten Faktor eingerichtet hat."
     labels:
       roles: "Rollen"
     roles:
@@ -595,6 +604,10 @@ de:
       deactivated: "%{login} ist jetzt alumni und kann sich nicht mehr anmelden."
       reactivated: "%{login} kann sich wieder anmelden."
       cannot_deactivate_self: "Das eigene Konto kann nicht deaktiviert werden."
+      redaktion_granted: "%{login} gehört jetzt zur Redaktion."
+      redaktion_revoked: "%{login} gehört nicht mehr zur Redaktion."
+      redaktion_needs_otp: "%{login} braucht zuerst einen zweiten Faktor."
+      redaktion_not_self: "Die eigene Redaktions-Rolle kann nicht abgegeben werden."
     assets:
       created: "Asset wurde angelegt."
       updated: "Asset wurde aktualisiert."

@@ -5,17 +5,17 @@ class UsersController < ApplicationController
   # Private
 
   before_action :login_required
-  before_action :find_user,     :only => [:show, :edit, :update, :reset_otp, :deactivate, :reactivate]
-  before_action :require_admin, :only => [:index, :new, :create, :reset_otp, :deactivate, :reactivate]
+  before_action :find_user,         :only => [:show, :edit, :update, :reset_otp, :deactivate, :reactivate, :grant_redaktion, :revoke_redaktion]
+  before_action :require_redaktion, :only => [:index]
+  before_action :require_admin,     :only => [:new, :create, :reset_otp, :deactivate, :reactivate]
   before_action :require_elevation, :only => [:new, :create, :reset_otp, :deactivate, :reactivate]
-  before_action :verify_status, :except => [:index]
+  before_action :verify_status,   :except => [:index, :grant_redaktion, :revoke_redaktion]
 
   layout 'admin'
 
   ROLE_PRESETS = {
     "editor"    => [],
     "redaktion" => ["redaktion"],
-    "admin"     => ["admin", "redaktion"]
   }.freeze
 
   GROUP_ORDER = [:admin, :redaktion, :editor, :alumni].freeze
@@ -69,6 +69,28 @@ class UsersController < ApplicationController
   def reactivate
     if @user.reactivate!(:actor => current_user)
       flash[:notice] = t("flash.users.reactivated", :login => @user.login)
+    end
+
+    redirect_to users_path
+  end
+
+  def grant_redaktion
+    return deny_role_access(:redaktion_required) unless current_user.redaktion?
+
+    case @user.grant_redaktion!(:actor => current_user)
+    when :granted           then flash[:notice] = t("flash.users.redaktion_granted", :login => @user.login)
+    when :no_second_factor  then flash[:error]  = t("flash.users.redaktion_needs_otp", :login => @user.login)
+    end
+
+    redirect_to users_path
+  end
+
+  def revoke_redaktion
+    return deny_role_access(:redaktion_required) unless current_user.redaktion?
+
+    case @user.revoke_redaktion!(:actor => current_user)
+    when :revoked then flash[:notice] = t("flash.users.redaktion_revoked", :login => @user.login)
+    when :self    then flash[:error]  = t("flash.users.redaktion_not_self")
     end
 
     redirect_to users_path

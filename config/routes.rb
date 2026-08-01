@@ -102,6 +102,8 @@ Cccms::Application.routes.draw do
         put :reset_otp
         put :deactivate
         put :reactivate
+        put :grant_redaktion
+        put :revoke_redaktion
       end
     end
     resource :otp_enrollment, :only => [:show, :create, :update, :destroy]
