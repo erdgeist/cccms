@@ -739,7 +739,6 @@ div#center_column .date_and_title_partial h2.headline {
 
 .date_and_title_partial:nth-child(odd of .date_and_title_partial) {
   background-color: color-mix(in srgb, CanvasText, Canvas 94%);
-  border: solid 1px color-mix(in srgb, CanvasText, Canvas 94%);;
   border-radius: 6px;
 }
 
