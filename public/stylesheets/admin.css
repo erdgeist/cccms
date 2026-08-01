@@ -837,6 +837,91 @@ table.revisions_table tr:hover {
   margin: 0;
 }
 
+.user_table {
+  width: 100%;
+  max-width: 44rem;
+  margin-bottom: 1.5rem;
+}
+
+.user_table td.user_actions {
+  width: 1px;
+  white-space: nowrap;
+}
+
+.user_table .user_action_grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.4rem;
+  justify-content: end;
+}
+
+.user_table .user_action {
+  display: inline-flex;
+  min-height: 2rem;
+}
+
+.user_table .user_action svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.user_table .user_action form.button_to {
+  display: inline-flex;
+  margin: 0;
+}
+
+.user_table .user_action a,
+.user_table .user_action button[type="submit"],
+.user_table .user_action .disabled_action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background-color: var(--surface-raised);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.user_table .user_action a:hover {
+  color: var(--surface);
+  background-color: var(--text);
+}
+
+.user_table .user_action form.button_to.destructive button:hover {
+  color: var(--on-solid);
+  background-color: var(--danger-solid);
+}
+
+.user_table .user_action form.button_to.state_changing button:hover {
+  color: var(--on-solid);
+  background-color: var(--action-solid);
+}
+
+.user_table .user_action .disabled_action {
+  color: var(--text-muted);
+  background-color: transparent;
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+
+.user_table .user_role {
+  display: block;
+}
+
+.user_table .user_login svg {
+  color: var(--text-muted);
+  vertical-align: -0.15em;
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.user_table .user_login .otp_missing svg {
+  color: var(--accent);
+}
+
 .user_group_heading {
   margin-top: 1.5rem;
 }
@@ -845,33 +930,6 @@ table.revisions_table tr:hover {
 .user_group_alumni,
 .user_table_alumni {
   color: var(--text-muted);
-}
-
-.user_table td.user_action {
-  width: 1px;
-  white-space: nowrap;
-  text-align: center;
-}
-
-.user_table td.user_action a {
-  text-decoration: none;
-}
-
-.user_table td.user_action svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.user_table td.user_action .field_hint svg {
-  color: var(--text-muted);
-  vertical-align: middle;
-}
-
-/* Four groups stacked, and the last one needs clearance from the wrapper. */
-.user_table {
-  width: 100%;
-  max-width: 44rem;
-  margin-bottom: 1.5rem;
 }
 
 .role_choice {
@@ -903,10 +961,6 @@ table.revisions_table tr:hover {
     flex: 1;
     min-width: 0;
   }
-}
-
-table.user_table td.user_login {
-  padding-right: 30px;
 }
 
 /* ============================================================
@@ -947,7 +1001,7 @@ div.layout_row_content {
   padding: 0.5rem 0.75rem;
 }
 
-.info_group .disabled_action {
+.disabled_action {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -960,7 +1014,7 @@ div.layout_row_content {
   line-height: 1.25rem;
 }
 
-.info_group .disabled_action svg {
+.disabled_action svg {
   width: 1.25rem;
   height: 1.25rem;
 }

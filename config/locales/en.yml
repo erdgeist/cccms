@@ -242,7 +242,10 @@ en:
       revoke_redaktion: "Remove from Redaktion"
       confirm_grant_redaktion: "Add %{login} to Redaktion? They will be able to publish in the protected sections."
       confirm_revoke_redaktion: "Remove %{login} from Redaktion?"
-      needs_otp: "no second factor"
+      otp_enrolled: "Second factor enrolled"
+      otp_pending: "Second factor started but not confirmed"
+      otp_missing: "No second factor"
+      grant_redaktion_blocked: "Add to Redaktion — only possible once the account has enrolled a second factor"
 
     index:
       title: "User accounts"

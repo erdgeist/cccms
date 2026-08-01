@@ -298,7 +298,10 @@ de:
       revoke_redaktion: "Aus der Redaktion entfernen"
       confirm_grant_redaktion: "%{login} in die Redaktion aufnehmen? Damit darf %{login} in den geschützten Bereichen veröffentlichen."
       confirm_revoke_redaktion: "%{login} aus der Redaktion entfernen?"
-      needs_otp: "zweiter Faktor fehlt"
+      otp_enrolled: "Zweiter Faktor eingerichtet"
+      otp_pending: "Zweiter Faktor begonnen, aber nicht bestätigt"
+      otp_missing: "Kein zweiter Faktor"
+      grant_redaktion_blocked: "In die Redaktion aufnehmen — erst möglich, wenn das Konto einen zweiten Faktor eingerichtet hat"
     index:
       title: "Benutzerkonten"
       create_editor: "Editor-Konto anlegen"

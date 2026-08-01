@@ -1,70 +1,95 @@
 <% users.each do |user| %>
 <tr>
-  <td class="user_login"><%= user.login %></td>
+  <td class="user_login">
+    <% if user.otp_enrolled? %>
+      <span role="img" title="<%= t(".otp_enrolled") %>" aria-label="<%= t(".otp_enrolled") %>">
+        <%= icon("shield-check", library: "tabler", "aria-hidden": true) %>
+      </span>
+    <% elsif user.otp_pending_secret.present? %>
+      <span role="img" class="otp_missing" title="<%= t(".otp_pending") %>" aria-label="<%= t(".otp_pending") %>">
+        <%= icon("shield-half", library: "tabler", "aria-hidden": true) %>
+      </span>
+    <% else %>
+      <span role="img" class="otp_missing" title="<%= t(".otp_missing") %>" aria-label="<%= t(".otp_missing") %>">
+        <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
+      </span>
+    <% end %>
+    <%= user.login %>
+  </td>
   <td class="user_roles">
     <% if user.roles.any? %>
-      <%= user.role_labels.join(", ") %>
+      <% user.role_labels.each do |label| %>
+        <span class="user_role"><%= label %></span>
+      <% end %>
     <% else %>
       <span class="field_hint"><%= t(".no_roles") %></span>
     <% end %>
   </td>
-  <td class="user_action">
-    <%= link_to user_path(user), "aria-label" => t("admin.common.show"),
-          title: t("admin.common.show") do %>
-      <%= icon("eye", library: "tabler", "aria-hidden": true) %>
-    <% end %>
-  </td>
-  <td class="user_action">
-    <% if current_user.admin? || current_user == user %>
-      <%= link_to edit_user_path(user), "aria-label" => t("admin.common.edit"),
-            title: t("admin.common.edit") do %>
-        <%= icon("edit", library: "tabler", "aria-hidden": true) %>
-      <% end %>
-    <% end %>
-  </td>
-  <td class="user_action">
-    <% if current_user.admin? && current_user != user %>
-      <% if user.alumni? %>
-        <%= button_to reactivate_user_path(user), method: :put,
-              form: { class: 'button_to state_changing' },
-              "aria-label" => t(".reactivate"), title: t(".reactivate") do %>
-          <%= icon("user-check", library: "tabler", "aria-hidden": true) %>
+  <td class="user_actions">
+    <div class="user_action_grid">
+      <span class="user_action">
+        <%= link_to user_path(user), "aria-label" => t("admin.common.show"),
+              title: t("admin.common.show") do %>
+          <%= icon("eye", library: "tabler", "aria-hidden": true) %>
         <% end %>
-      <% else %>
-        <%= button_to deactivate_user_path(user), method: :put,
-              form: { data: { confirm: t(".confirm_deactivate", :login => user.login) },
-                      class: 'button_to destructive' },
-              "aria-label" => t(".deactivate"), title: t(".deactivate") do %>
-          <%= icon("user-off", library: "tabler", "aria-hidden": true) %>
-        <% end %>
-      <% end %>
-    <% end %>
-  </td>
-  <td class="user_action">
-    <% if current_user.redaktion? && !user.alumni? %>
-      <% if user.redaktion? %>
-        <% unless user == current_user %>
-          <%= button_to revoke_redaktion_user_path(user), method: :put,
-                form: { data: { confirm: t(".confirm_revoke_redaktion", :login => user.login) },
-                        class: 'button_to destructive' },
-                "aria-label" => t(".revoke_redaktion"), title: t(".revoke_redaktion") do %>
-            <%= icon("user-minus", library: "tabler", "aria-hidden": true) %>
+      </span>
+
+      <span class="user_action">
+        <% if current_user.admin? || current_user == user %>
+          <%= link_to edit_user_path(user), "aria-label" => t("admin.common.edit"),
+                title: t("admin.common.edit") do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %>
           <% end %>
         <% end %>
-      <% elsif user.otp_enrolled? %>
-        <%= button_to grant_redaktion_user_path(user), method: :put,
-              form: { data: { confirm: t(".confirm_grant_redaktion", :login => user.login) },
-                      class: 'button_to state_changing' },
-              "aria-label" => t(".grant_redaktion"), title: t(".grant_redaktion") do %>
-          <%= icon("user-plus", library: "tabler", "aria-hidden": true) %>
+      </span>
+
+      <span class="user_action">
+        <% if current_user.admin? && current_user != user %>
+          <% if user.alumni? %>
+            <%= button_to reactivate_user_path(user), method: :put,
+                  form: { class: 'button_to state_changing' },
+                  "aria-label" => t(".reactivate"), title: t(".reactivate") do %>
+              <%= icon("user-check", library: "tabler", "aria-hidden": true) %>
+            <% end %>
+          <% else %>
+            <%= button_to deactivate_user_path(user), method: :put,
+                  form: { data: { confirm: t(".confirm_deactivate", :login => user.login) },
+                          class: 'button_to destructive' },
+                  "aria-label" => t(".deactivate"), title: t(".deactivate") do %>
+              <%= icon("user-off", library: "tabler", "aria-hidden": true) %>
+            <% end %>
+          <% end %>
         <% end %>
-      <% else %>
-        <span class="field_hint" title="<%= t(".needs_otp") %>"
-              aria-label="<%= t(".needs_otp") %>">
-          <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
-        </span>
-      <% end %>
-    <% end %>
+      </span>
+
+      <span class="user_action">
+        <% if current_user.redaktion? && !user.alumni? %>
+          <% if user.redaktion? %>
+            <% unless user == current_user %>
+              <%= button_to revoke_redaktion_user_path(user), method: :put,
+                    form: { data: { confirm: t(".confirm_revoke_redaktion", :login => user.login) },
+                            class: 'button_to destructive' },
+                    "aria-label" => t(".revoke_redaktion"), title: t(".revoke_redaktion") do %>
+                <%= icon("user-minus", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+            <% end %>
+          <% elsif user.otp_enrolled? %>
+            <%= button_to grant_redaktion_user_path(user), method: :put,
+                  form: { data: { confirm: t(".confirm_grant_redaktion", :login => user.login) },
+                          class: 'button_to state_changing' },
+                  "aria-label" => t(".grant_redaktion"), title: t(".grant_redaktion") do %>
+              <%= icon("user-plus", library: "tabler", "aria-hidden": true) %>
+            <% end %>
+          <% else %>
+            <button type="button" class="disabled_action" disabled
+                    title="<%= t(".grant_redaktion_blocked") %>"
+                    aria-label="<%= t(".grant_redaktion_blocked") %>">
+              <%= icon("user-plus", library: "tabler", "aria-hidden": true) %>
+            </button>
+          <% end %>
+        <% end %>
+      </span>
+    </div>
   </td>
 </tr>
 <% end %>
