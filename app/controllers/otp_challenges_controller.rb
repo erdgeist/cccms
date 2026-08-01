@@ -31,7 +31,12 @@ class OtpChallengesController < ApplicationController
       # an admin who logs in and goes straight to user management
       # is already elevated
       elevate! if user.is_admin?
-      flash[:notice] = t("flash.common.logged_in")
+      flash[:notice] = if user.is_admin?
+        t("flash.elevation.granted_at_login",
+          :minutes => AuthenticatedSystem::ELEVATION_MAX_AGE.in_minutes.to_i)
+      else
+        t("flash.common.logged_in")
+      end
       redirect_to safe_return_to(return_to, :default => admin_path)
     else
       flash.now[:error] = t("flash.otp.code_mismatch")

@@ -1,6 +1,7 @@
 module AuthenticatedSystem
   SESSION_MAX_AGE = 7.days
   ELEVATION_MAX_AGE = 30.minutes
+  MAX_ELEVATION_EXTENSIONS = 3
 
   protected
     # Returns true or false if the user is logged in.
@@ -35,10 +36,26 @@ module AuthenticatedSystem
 
     def elevate!
       session[:elevated_at] = Time.now.to_i
+      session[:elevation_extensions] = 0
+    end
+
+    def elevation_extensions_left
+      return 0 unless elevated?
+      MAX_ELEVATION_EXTENSIONS - session[:elevation_extensions].to_i
+    end
+
+    def renew_elevation!
+      return false unless elevated?
+      return false unless elevation_extensions_left > 0
+
+      session[:elevation_extensions] = session[:elevation_extensions].to_i + 1
+      session[:elevated_at] = Time.now.to_i
+      true
     end
 
     def drop_elevation!
       session.delete(:elevated_at)
+      session.delete(:elevation_extensions)
     end
 
     # Check if the user is authorized
@@ -113,7 +130,7 @@ module AuthenticatedSystem
     # available as ActionView helper methods.
     def self.included(base)
       base.send :helper_method, :current_user, :logged_in?, :authorized?,
-                :elevated?, :elevation_expires_at if base.respond_to? :helper_method
+                :elevated?, :elevation_expires_at, :elevation_extensions_left if base.respond_to? :helper_method
     end
 
     #
@@ -147,6 +164,7 @@ module AuthenticatedSystem
       session[:user_id] = nil   # keeps the session but kill our variable
       session.delete(:elevated_at)
       session.delete(:elevation_attempts)
+      session.delete(:elevation_extensions)
     end
 
     # The session should only be reset at the tail end of a form POST --

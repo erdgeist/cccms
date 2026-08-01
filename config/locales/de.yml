@@ -630,6 +630,9 @@ de:
       removed: "%{lang}-Übersetzung aus dem Entwurf entfernt. Veröffentlichen, um das dauerhaft zu machen."
     elevation:
       dropped: "Administrative Rechte abgelegt."
+      renewed: "Administrative Rechte um %{minutes} Minuten verlängert. Noch %{left} Verlängerungen möglich."
+      cannot_renew: "Verlängern nicht möglich. Rechte müssen mit einem aktuellen Code neu angefordert werden."
+      granted_at_login: "Angemeldet. Administrative Rechte gelten %{minutes} Minuten."
 
   assets:
     index:
@@ -767,3 +770,10 @@ de:
       log_out: "Abmelden"
     social_meta:
       site_description: "Der Chaos Computer Club ist eine galaktische Gemeinschaft von Lebewesen für Informationsfreiheit und Technikfolgenabschätzung."
+    elevation_banner:
+      active: "Administrative Rechte aktiv, "
+      minutes_short: "noch %{count} Min."
+      less_than_a_minute: "weniger als 1 Min."
+      expired: "abgelaufen"
+      renew: "Verlängern"
+      drop: "Ablegen"

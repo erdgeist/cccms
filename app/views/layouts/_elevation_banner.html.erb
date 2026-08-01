@@ -1,0 +1,47 @@
+<% if elevated? %>
+  <div id="elevation_banner"
+       data-expires-at="<%= elevation_expires_at.to_i %>"
+       data-label-minutes="<%= t(".minutes_short") %>"
+       data-label-less-than-a-minute="<%= t(".less_than_a_minute") %>"
+       data-label-expired="<%= t(".expired") %>">
+    <span class="elevation_state">
+      <%= icon("shield-check", library: "tabler", "aria-hidden": true) %>
+      <%= t(".active") %>
+      <span id="elevation_remaining"></span>
+    </span>
+    <span class="elevation_actions">
+      <% if elevation_extensions_left > 0 %>
+        <%= button_to t(".renew"), renew_elevation_path, method: :post,
+              form: { class: "button_to state_changing" } %>
+      <% end %>
+      <%= button_to t(".drop"), elevation_path, method: :delete,
+            form: { class: "button_to destructive" } %>
+    </span>
+  </div>
+
+  <%= javascript_tag nonce: true do %>
+    (function () {
+      var banner = document.getElementById("elevation_banner");
+      if (!banner) return;
+      var out = document.getElementById("elevation_remaining");
+      var expires = parseInt(banner.dataset.expiresAt, 10) * 1000;
+
+      function tick() {
+        var ms = expires - Date.now();
+        if (ms <= 0) {
+          out.textContent = banner.dataset.labelExpired;
+          banner.classList.remove("elevation_soon");
+          banner.classList.add("elevation_expired");
+          return;
+        }
+        var mins = Math.floor(ms / 60000);
+        out.textContent = mins < 1
+          ? banner.dataset.labelLessThanAMinute
+          : banner.dataset.labelMinutes.replace("%{count}", mins);
+        if (mins < 5) banner.classList.add("elevation_soon");
+        setTimeout(tick, 15000);
+      }
+      tick();
+    })();
+  <% end %>
+<% end %>

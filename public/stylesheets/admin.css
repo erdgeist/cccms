@@ -276,6 +276,46 @@ span.warning a {
   padding-left: 1.25rem;
 }
 
+#elevation_banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background-color: var(--accent-surface);
+}
+
+#elevation_banner .elevation_state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+#elevation_banner .elevation_actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+#elevation_banner svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+#elevation_banner #elevation_remaining {
+  color: var(--text-muted);
+}
+
+#elevation_banner.elevation_soon #elevation_remaining,
+#elevation_banner.elevation_expired #elevation_remaining {
+  color: var(--accent);
+  font-weight: bold;
+}
+
 /* ============================================================
    Pagination
    ============================================================ */

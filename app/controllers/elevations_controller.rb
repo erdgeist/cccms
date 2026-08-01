@@ -41,4 +41,15 @@ class ElevationsController < ApplicationController
     flash[:notice] = t("flash.elevation.dropped")
     redirect_to admin_path
   end
+
+  def renew
+    if renew_elevation!
+      flash[:notice] = t("flash.elevation.renewed",
+                         :minutes => AuthenticatedSystem::ELEVATION_MAX_AGE.in_minutes.to_i,
+                         :left => elevation_extensions_left)
+    else
+      flash[:error] = t("flash.elevation.cannot_renew")
+    end
+    redirect_back(:fallback_location => admin_path, :allow_other_host => false)
+  end
 end

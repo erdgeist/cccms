@@ -106,7 +106,9 @@ Cccms::Application.routes.draw do
     end
     resource :otp_enrollment, :only => [:show, :create, :update, :destroy]
     resource :otp_challenge, :only => [:new, :create]
-    resource :elevation, :only => [:new, :create, :destroy]
+    resource :elevation, :only => [:new, :create, :destroy] do
+      post :renew
+    end
 
     resources :menu_items, :except => :show do
       member do
