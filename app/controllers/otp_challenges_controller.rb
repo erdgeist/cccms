@@ -28,6 +28,8 @@ class OtpChallengesController < ApplicationController
       reset_session
       self.current_user = user
       session[:logged_in_at] = Time.now.to_i
+      user.update_column(:last_login_at, Time.now)
+
       # an admin who logs in and goes straight to user management
       # is already elevated
       elevate! if user.is_admin?

@@ -30,6 +30,7 @@ class SessionsController < ApplicationController
       else
         self.current_user = user
         session[:logged_in_at] = Time.now.to_i
+        user.update_column(:last_login_at, Time.now)
 
         if user.otp_required?
           flash[:error] = t("flash.sessions.otp_setup_now")
