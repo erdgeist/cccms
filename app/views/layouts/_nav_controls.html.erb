@@ -9,7 +9,8 @@
 <% end %>
 
 <span class="nav_group">
-  <%= link_to url_for(locale: (:en unless I18n.locale == :en)),
+  <% locale_target = request.query_parameters.symbolize_keys.except(:controller, :action, :only_path, :host, :port, :protocol, :anchor, :script_name).merge(:locale => (:en unless I18n.locale == :en)) %>
+  <%= link_to url_for(locale_target),
         class: "nav_toggle nav_locale",
         "aria-label" => t(".switch_locale"), title: t(".switch_locale") do %>
     <%= I18n.locale == :en ? "DE" : "EN" %>

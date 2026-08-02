@@ -1019,6 +1019,19 @@ div.layout_row_content {
   height: 1.25rem;
 }
 
+.diff_step_bar .disabled_action {
+  border: none;
+  padding: 0;
+  font-weight: normal;
+}
+
+.diff_step_bar > a,
+.diff_step_bar .disabled_action {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 8ch;
+}
+
 .info_group_items {
   display: flex;
   flex-wrap: wrap;

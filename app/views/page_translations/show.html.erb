@@ -1,6 +1,6 @@
 <h1><%= t(".title") %> — <%= title_for_node(@node) %></h1>
 
-<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :locale => @locale) %></p>
+<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :translation_locale => @locale) %></p>
 
 <div class="translation_compare">
   <div class="translation_compare_column">

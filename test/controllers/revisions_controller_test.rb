@@ -146,7 +146,9 @@ class RevisionsControllerTest < ActionController::TestCase
 
     post(:diff, params: { :node_id => @node.id, :start_revision => "head", :end_revision => "draft" })
     assert_response :success
-    assert_select "a", I18n.t("revisions.side_by_side")
+    assert_select "select[name='view'] option", :text => I18n.t("revisions.side_by_side")
+    assert_select "input[type='hidden'][name='start_revision'][value='head']"
+    assert_select "input[type='hidden'][name='end_revision'][value='draft']"
   end
 
   test "diffing two revisions also shows tag, template, and asset changes" do

@@ -4,56 +4,50 @@
   <%= link_to t(".revisions_link"), node_revisions_path(@node) %>
 </p>
 
-<p class="diff_comparison_label">
-  <%= t(".comparing") %> <strong><%= describe_page_reference(params[:start_revision]) %></strong>
-  <%= t(".against") %> <strong><%= describe_page_reference(params[:end_revision]) %></strong>
-  <%= t(".showing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_suffix") %>
-</p>
+<% numeric_comparison = params[:start_revision].to_s =~ /\A\d+\z/ && params[:end_revision].to_s =~ /\A\d+\z/ %>
+<% start_control = numeric_comparison ?
+     select_tag(:start_revision, options_for_select(@node.pages.map(&:revision), params[:start_revision].to_i)) :
+     content_tag(:strong, describe_page_reference(params[:start_revision])) + hidden_field_tag(:start_revision, params[:start_revision]) %>
+<% end_control = numeric_comparison ?
+     select_tag(:end_revision, options_for_select(@node.pages.map(&:revision), params[:end_revision].to_i)) :
+     content_tag(:strong, describe_page_reference(params[:end_revision])) + hidden_field_tag(:end_revision, params[:end_revision]) %>
+<% locale_control = select_tag(:translation_locale, options_for_select(
+     @locale_summary.map { |s| [s[:changed] ? t("revisions.locale_changed", :lang => s[:locale].to_s.upcase) : s[:locale].to_s.upcase, s[:locale]] },
+     @translation_locale)) %>
+<% view_control = select_tag(:view, options_for_select(
+     [[t("revisions.inline"), "inline"], [t("revisions.side_by_side"), "side_by_side"]], @diff_view.to_s)) %>
+<% earlier, later = neighbour_revision_pairs(@node, params[:start_revision], params[:end_revision]) %>
 
-<% if @locale_summary.size > 1 %>
-  <p class="diff_locale_toggle">
-    <%= t("revisions.locale_label") %>
-    <% @locale_summary.each_with_index do |s, i| %>
-      <%= " &middot; ".html_safe if i > 0 %>
-      <% label = "#{s[:locale].to_s.upcase}#{' *' if s[:changed]}" %>
-      <% if s[:locale] == @locale %>
-        <strong><%= label %></strong>
-      <% else %>
-        <%= link_to label, diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: @diff_view, locale: s[:locale]) %>
-      <% end %>
+<%= form_tag diff_node_revisions_path(@node), :method => :get, :class => "diff_controls" do %>
+  <p class="diff_comparison_label">
+    <%= t(".comparing_html", :start => start_control, :end => end_control,
+          :lang => locale_control, :view => view_control) %>
+  </p>
+  <p class="node_action_bar standalone_action_bar diff_step_bar">
+    <% if earlier %>
+      <%= link_to t(".pair_link", :from => earlier.first, :to => earlier.last), diff_node_revisions_path(@node,
+            start_revision: earlier.first, end_revision: earlier.last,
+            view: @diff_view, translation_locale: @translation_locale) %>
+    <% else %>
+      <span class="disabled_action">&mdash;</span>
+    <% end %>
+    <%= submit_tag t(".diff_button") %>
+    <% if later %>
+      <%= link_to t(".pair_link", :from => later.first, :to => later.last), diff_node_revisions_path(@node,
+            start_revision: later.first, end_revision: later.last,
+            view: @diff_view, translation_locale: @translation_locale) %>
+    <% else %>
+      <span class="disabled_action">&mdash;</span>
     <% end %>
   </p>
-  <p class="field_hint"><%= t(".changed_hint") %></p>
 <% end %>
 
-<p class="diff_view_toggle">
-  <%= t(".view_label") %>
-  <% if @diff_view == :inline %>
-    <strong><%= t("revisions.inline") %></strong>
-  <% else %>
-    <%= link_to t("revisions.inline"), diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'inline', locale: @locale) %>
-  <% end %>
-  &middot;
-  <% if @diff_view == :side_by_side %>
-    <strong><%= t("revisions.side_by_side") %></strong>
-  <% else %>
-    <%= link_to t("revisions.side_by_side"), diff_node_revisions_path(@node, start_revision: params[:start_revision], end_revision: params[:end_revision], view: 'side_by_side', locale: @locale) %>
-  <% end %>
-</p>
-
-<% numeric_comparison = params[:start_revision].to_s =~ /\A\d+\z/ && params[:end_revision].to_s =~ /\A\d+\z/ %>
-
-<% if numeric_comparison %>
-  <%= form_tag diff_node_revisions_path do %>
-    <%= select_tag :start_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:start_revision].to_i) %>
-    <%= select_tag :end_revision, options_for_select(@node.pages.map{|x| x.revision}, params[:end_revision].to_i) %>
-    <%= hidden_field_tag :view, @diff_view %>
-    <%= hidden_field_tag :locale, @locale %>
-    <%= submit_tag t(".diff_button") %>
-  <% end %>
-<% else %>
-  <p class="node_action_bar standalone_action_bar"><%= link_to t(".compare_numbered"), node_revisions_path(@node) %></p>
+<% unless numeric_comparison %>
+  <p class="node_action_bar standalone_action_bar">
+    <%= link_to t(".compare_numbered"), node_revisions_path(@node) %>
+  </p>
 <% end %>
+
 
 <% if @available_layer_pairs.present? %>
   <div class="node_action_bar standalone_action_bar">
@@ -62,7 +56,7 @@
       <%= button_to t("nodes.show.diff_layers", :from => t("nodes.show.layer_#{pair.first}"), :to => t("nodes.show.layer_#{pair.last}")),
             diff_node_revisions_path(@node),
             method: :get,
-            params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view, locale: @locale },
+            params: { start_revision: pair.first, end_revision: pair.last, view: @diff_view, translation_locale: @translation_locale },
             form: { class: 'button_to computation' } %>
     <% end %>
     <% if !@locked_by_other && (@node.autosave || @node.draft) %>

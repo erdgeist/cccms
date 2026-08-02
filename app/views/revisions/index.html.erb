@@ -9,10 +9,10 @@
     <%= t("revisions.locale_label") %>
     <% ([I18n.default_locale] + Page.non_default_locales).each_with_index do |locale, i| %>
       <%= " &middot; ".html_safe if i > 0 %>
-      <% if locale == @locale %>
+      <% if locale == @translation_locale %>
         <strong><%= locale.to_s.upcase %></strong>
       <% else %>
-        <%= link_to locale.to_s.upcase, node_revisions_path(@node, :locale => locale) %>
+        <%= link_to locale.to_s.upcase, node_revisions_path(@node, :translation_locale => locale) %>
       <% end %>
     <% end %>
   </p>
@@ -34,7 +34,7 @@
       <td colspan="8">
         <%= button_to t(".diff_revisions"), diff_node_revisions_path(@node),
               method: :post,
-              params: { locale: @locale },
+              params: { translation_locale: @translation_locale },
               form: { id: 'diff_form', class: 'button_to computation' },
               disabled: true %>
         <span id="diff_selection_label" data-against="<%= t(".against_word") %>" data-selected="<%= t(".selected_word") %>"></span>
@@ -50,10 +50,10 @@
       <td><%= radio_button_tag :start_revision, page.revision, index == 1 %></td>
       <td><%= radio_button_tag :end_revision, page.revision, index == 0 %></td>
       <td class="revision"><%= page.revision %></td>
-      <td class="title"><%= page.translations.find_by(:locale => @locale)&.title || "—" %></td>
+      <td class="title"><%= page.translations.find_by(:locale => @translation_locale)&.title || "—" %></td>
       <td class="user"><%= page.editor.try(:login) %></td>
       <td class="date"><%= page.updated_at %></td>
-      <td><%= link_to t(".show_link"), node_revision_path(@node, page, :locale => @locale) %></td>
+      <td><%= link_to t(".show_link"), node_revision_path(@node, page, :translation_locale => @translation_locale) %></td>
       <td>
         <%= button_to t(".restore_link"), restore_node_revision_path(@node, page),
               method: :put,

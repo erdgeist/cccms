@@ -25,9 +25,9 @@
           <br/>
           <% if action_entry.page && action_entry.node %>
             <% if (diff_params = action_entry.diff_link_params) %>
-              <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params.merge(:locale => locale)) %>
+              <%= link_to t("node_actions.view_diff"), diff_node_revisions_path(action_entry.node, diff_params.merge(:translation_locale => locale)) %>
             <% else %>
-              <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page, :locale => locale) %>
+              <%= link_to t("node_actions.view_revision"), node_revision_path(action_entry.node, action_entry.page, :translation_locale => locale) %>
             <% end %>
           <% end %>
         </td>

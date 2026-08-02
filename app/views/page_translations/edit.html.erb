@@ -2,7 +2,7 @@
   <%= t(".editing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_of") %> <strong><%= title_for_node(@node) %></strong>.
 </div>
 
-<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :locale => @locale) %></p>
+<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :translation_locale => @locale) %></p>
 
 <p class="field_hint">
   <%= t(".metadata_hint_prefix") %> <%= link_to t(".metadata_hint_link"), edit_node_path(@node) %>.
