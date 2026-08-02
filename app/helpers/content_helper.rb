@@ -106,7 +106,8 @@ module ContentHelper
   def aggregate? content
     options = {}
 
-    cccms_attributes = ActionView::Base.sanitized_allowed_attributes + ['lang']
+    cccms_attributes = ActionView::Base.sanitized_allowed_attributes +
+                       %w[lang target rel data-gallery]
 
     begin
       if content =~ /\[aggregate([^\]]*)\]/
