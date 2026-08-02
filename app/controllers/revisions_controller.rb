@@ -33,7 +33,13 @@ class RevisionsController < ApplicationController
 
     @locale_summary     = @end.locale_diff_summary(@start)
     requested_locale    = params[:translation_locale].presence&.to_sym
-    default_locale      = @locale_summary.find { |s| s[:changed] }&.dig(:locale) || I18n.default_locale
+
+    available           = @locale_summary.map { |s| s[:locale] }
+    default_locale      = @locale_summary.find { |s| s[:changed] }&.dig(:locale) ||
+                               (I18n.default_locale if available.include?(I18n.default_locale)) ||
+                                available.first ||
+                                I18n.default_locale
+
     @translation_locale = @locale_summary.any? { |s| s[:locale] == requested_locale } ? requested_locale : default_locale
 
     @diff_view              = params[:view] == "side_by_side" ? :side_by_side : :inline
