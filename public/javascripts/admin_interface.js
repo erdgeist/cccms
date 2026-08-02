@@ -8,7 +8,7 @@ $(document).ready(function () {
     menubar: false,
     plugins: 'code link lists visualblocks',
     toolbar: 'bold italic underline | bullist numlist | link unlink | insertpageimage | blocks | code',
-    extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions],a[href|target|rel|class|data-gallery],img[class|src|alt|title|width|height|style|border]',
+    extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions],a[href|title|target|rel|class|data-gallery],img[class|src|alt|title|width|height|style|border]',
     relative_urls: false,
     entity_encoding: 'raw',
     content_style: '.inline-image--full { width: 100%; margin: 1rem 0; } .inline-image--half { width: 48%; margin-bottom: 1rem; } .inline-image--left { float: left; margin-right: 1rem; } .inline-image--right { float: right; margin-left: 1rem; }',
