@@ -697,6 +697,8 @@ de:
       compare_numbered: "Stattdessen zwei nummerierte Revisionen vergleichen"
       none_marker: "(keins)"
       no_change: "Keine Änderung."
+      unchanged_here_html: "Keine Änderung in der Übersetzung %{lang} zwischen diesen Revisionen — geändert wurde %{others}."
+      unchanged_anywhere: "Zwischen diesen Revisionen wurde keine Übersetzung geändert."
     index:
       title: "Revisionen für Node: %{path}"
       back_to_node: "Zurück zum Node"

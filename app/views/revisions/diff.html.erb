@@ -71,6 +71,22 @@
 <% end %>
 
 <div id="diffview">
+  <% current_summary = @locale_summary.find { |s| s[:locale] == @translation_locale } %>
+  <% if current_summary && !current_summary[:changed] %>
+    <% elsewhere = @locale_summary.select { |s| s[:changed] }.map { |s|
+         link_to s[:locale].to_s.upcase, diff_node_revisions_path(@node,
+           start_revision: params[:start_revision], end_revision: params[:end_revision],
+           view: @diff_view, translation_locale: s[:locale]) } %>
+    <p class="diff_unchanged diff_locale_pointer">
+      <% if elsewhere.any? %>
+        <%= t(".unchanged_here_html", :lang => @translation_locale.to_s.upcase,
+              :others => safe_join(elsewhere, ", ")) %>
+      <% else %>
+        <%= t(".unchanged_anywhere") %>
+      <% end %>
+    </p>
+  <% end %>
+
   <% if @diff_view == :side_by_side %>
     <div class="diff_side_by_side">
       <div class="diff_column">

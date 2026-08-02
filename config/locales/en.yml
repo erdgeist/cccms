@@ -660,6 +660,8 @@ en:
       compare_numbered: "Compare two numbered revisions instead"
       none_marker: "(none)"
       no_change: "No change."
+      unchanged_here_html: "No change in the %{lang} translation between these revisions — %{others} changed."
+      unchanged_anywhere: "No translation changed between these revisions."
     index:
       title: "Revisions for Node: %{path}"
       back_to_node: "Back to node"
