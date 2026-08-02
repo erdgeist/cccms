@@ -273,6 +273,7 @@ en:
       stale_amber: "Not signed in since %{year}, remove roles?"
       stale_red: "Not signed in since %{year}, deactivate?"
       stale_never: "Never signed in, chase it up?"
+      action_log: "Recent changes by this account"
 
     index:
       title: "User accounts"

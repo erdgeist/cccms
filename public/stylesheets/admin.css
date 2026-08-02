@@ -847,11 +847,12 @@ table.revisions_table tr:hover {
 .user_table td.user_actions {
   width: 1px;
   white-space: nowrap;
+  padding-right: 0;
 }
 
 .user_table .user_action_grid {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: repeat(3, auto);
   gap: 0.4rem;
   justify-content: end;
 }

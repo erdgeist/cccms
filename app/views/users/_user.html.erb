@@ -55,6 +55,13 @@
       </span>
 
       <span class="user_action">
+        <%= link_to admin_log_path(:user_id => user.id),
+              "aria-label" => t(".action_log"), title: t(".action_log") do %>
+          <%= icon("history", library: "tabler", "aria-hidden": true) %>
+        <% end %>
+      </span>
+
+      <span class="user_action">
         <% if current_user.admin? && current_user != user %>
           <% if user.alumni? %>
             <%= button_to reactivate_user_path(user), method: :put,

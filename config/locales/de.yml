@@ -326,6 +326,7 @@ de:
       stale_amber: "Seit %{year} nicht angemeldet, Rollen entziehen?"
       stale_red: "Seit %{year} nicht angemeldet, deaktivieren?"
       stale_never: "Noch nie angemeldet, nachfassen?"
+      action_log: "Letzte Änderungen dieses Kontos"
     index:
       title: "Benutzerkonten"
       create_editor: "Editor-Konto anlegen"
