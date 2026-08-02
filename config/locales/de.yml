@@ -185,6 +185,7 @@ de:
     backfilled: "rekonstruiert"
     show_changes: "Änderungen im Detail"
     view_revision: "Diese Revision ansehen"
+    view_diff: "Diff anzeigen"
     unknown: "%{actor} hat %{action} auf %{subject} ausgeführt"
     publish: "%{actor} hat %{revision} von %{subject} veröffentlicht"
     publish_rollback: "%{actor} hat %{subject} auf %{revision} zurückgesetzt"
@@ -285,6 +286,7 @@ de:
     labels:
       login: "Anmeldename"
       email: "E-Mail"
+      roles: "Rollen"
       password: "Passwort"
       confirm: "bestätigen"
       admin: "Admin?"
@@ -313,8 +315,6 @@ de:
       group_alumni: "Ehemalige"
       group_empty: "— keine —"
       admin_hint: "Administrative Rechte lassen sich erst vergeben, nachdem der Nutzer sich angemeldet und einen zweiten Faktor eingerichtet hat."
-    labels:
-      roles: "Rollen"
     roles:
       admin: "Administration"
       redaktion: "Redaktion"
@@ -684,18 +684,16 @@ de:
 
   revisions:
     locale_label: "Sprache:"
-    inline: "Inline"
-    side_by_side: "Nebeneinander"
+    inline: "inline"
+    side_by_side: "nebeneinander"
+    locale_changed: "%{lang} (geändert)"
     diff:
       title: "Revisionen vergleichen"
-      revisions_link: "Revisionen"
-      comparing: "Vergleiche"
-      against: "mit"
-      showing_prefix: "— gezeigt wird die"
-      translation_suffix: "Übersetzung"
-      changed_hint: "* unterscheidet sich zwischen diesen beiden Versionen."
-      view_label: "Ansicht:"
-      diff_button: "Diff"
+      comparing_html: "Vergleiche Revision %{start} mit %{end} %{view} in der Übersetzung %{lang}."
+      comparing_layers_html: "Vergleiche %{start} mit %{end} %{view} in der Übersetzung %{lang}."
+      diff_button: "Diff aktualisieren"
+      pair_link: "%{from} → %{to}"
+      revisions_link: "Alle Revisionen"
       compare_numbered: "Stattdessen zwei nummerierte Revisionen vergleichen"
       none_marker: "(keins)"
       no_change: "Keine Änderung."

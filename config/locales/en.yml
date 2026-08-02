@@ -3,9 +3,8 @@
 
 en:
   more: "more …"
-  images: images
-  sponsors: sponsors
-  hello: "Hello world"
+  images: "images"
+  sponsors: "sponsors"
   show_tag_headline: "Pages tagged with:"
   old_ccc_de: the old ccc.de
   event_schedule_time: "at %{time}"
@@ -102,6 +101,10 @@ en:
           attributes:
             headline:
               images_and_pdfs_only: "can only be set on image or PDF assets"
+        assets:
+          attributes:
+            base:
+              not_permitted: "Only Redaktion members may change assets related to nodes in this section"
 
   tags:
     index:
@@ -129,6 +132,7 @@ en:
     backfilled: "backfilled"
     show_changes: "Change details"
     view_revision: "view this revision"
+    view_diff: "Show diff"
     unknown: "%{actor} did %{action} on %{subject}"
     publish: "%{actor} published %{revision} of %{subject}"
     publish_rollback: "%{actor} rolled %{subject} back to %{revision}"
@@ -228,6 +232,7 @@ en:
       reset_confirm: "Reset %{login}'s second factor? They will log in with password only afterwards."
     labels:
       login: "login"
+      roles: "roles"
       email: "e-mail"
       password: "password"
       confirm: "confirm"
@@ -258,8 +263,6 @@ en:
       group_alumni: "Alumni"
       group_empty: "— none —"
       admin_hint: "Administrative rights can only be granted after the account has signed in and set up a second factor."
-    labels:
-      roles: "Roles"
     roles:
       admin: "Administration"
       redaktion: "Redaktion"
@@ -541,7 +544,6 @@ en:
     common:
       logged_in: "Logged in successfully"
       otp_required: "Your account requires a second factor -- set it up to continue."
-      admin_required: "Sorry, you need to be an admin for this action"
       now_headline: "It is now the page's headline."
       headline_ineligible: "This asset type cannot be a headline."
       locked_by_other: "The page is locked by another editor."
@@ -645,18 +647,16 @@ en:
 
   revisions:
     locale_label: "Locale:"
-    inline: "Inline"
-    side_by_side: "Side by side"
+    inline: "inline"
+    side_by_side: "side by side"
+    locale_changed: "%{lang} (changed)"
     diff:
       title: "Compare revisions"
-      revisions_link: "Revisions"
-      comparing: "Comparing"
-      against: "against"
-      showing_prefix: "— showing the"
-      translation_suffix: "translation"
-      changed_hint: "* has a difference between these two versions."
-      view_label: "View:"
-      diff_button: "Diff"
+      comparing_html: "Comparing revision %{start} against %{end} in %{lang} translation using %{view} view."
+      comparing_layers_html: "Comparing %{start} against %{end} in %{lang} translation using %{view} view."
+      diff_button: "Update diff"
+      pair_link: "%{from} → %{to}"
+      revisions_link: "All revisions"
       compare_numbered: "Compare two numbered revisions instead"
       none_marker: "(none)"
       no_change: "No change."
