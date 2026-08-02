@@ -254,6 +254,8 @@ en:
       password: "password"
       confirm: "confirm"
       admin: "admin?"
+      last_login: "last login"
+      never_signed_in: "never signed in"
     user:
       confirm_destroy: "Do you really want to destroy user %{login}?"
       no_roles: "—"

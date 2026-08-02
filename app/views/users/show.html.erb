@@ -24,4 +24,13 @@
       <%= @user.roles.any? ? @user.role_labels.join(", ") : t("users.no_roles") %>
     </div>
   </div>
+
+  <div class="layout_row_label"><%= t("users.labels.last_login") %></div>
+  <div class="layout_row_content">
+    <% if @user.last_login_at %>
+      <%= I18n.l(@user.last_login_at, :format => :ccc_date) %>
+    <% else %>
+      <%= t("users.never_signed_in") %>
+    <% end %>
+  </div>
 </div>

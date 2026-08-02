@@ -307,6 +307,8 @@ de:
       password: "Passwort"
       confirm: "bestätigen"
       admin: "Admin?"
+      last_login: "letzter Login"
+      never_signed_in: "noch nie angemeldet"
     user:
       confirm_destroy: "Benutzer %{login} wirklich löschen?"
       no_roles: "—"
