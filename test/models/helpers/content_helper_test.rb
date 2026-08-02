@@ -125,4 +125,16 @@ class ContentHelperTest < ActionView::TestCase
     assert_match "Document A", result
     assert_match "Document B", result
   end
+
+  test "aggregate? keeps the anchor attributes the editor is allowed to author" do
+    html = %(<p><a href="https://example.org" target="_blank" rel="noopener" ) +
+           %(title="Beispiel" data-gallery="g1">x</a></p>)
+
+    out = aggregate?(html)
+
+    assert_includes out, 'target="_blank"'
+    assert_includes out, 'rel="noopener"'
+    assert_includes out, 'title="Beispiel"'
+    assert_includes out, 'data-gallery="g1"'
+  end
 end
