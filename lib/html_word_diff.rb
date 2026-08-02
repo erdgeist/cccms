@@ -49,7 +49,7 @@ module HtmlWordDiff
   end
 
   def self.tokenize(html)
-    html.to_s.scan(TOKEN_REGEXP)
+    html.to_s.gsub(/\r\n?/, "\n").scan(TOKEN_REGEXP)
   end
 
   def self.tag_token?(token)
