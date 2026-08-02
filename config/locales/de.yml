@@ -244,6 +244,7 @@ de:
     detail_event_description: "Beschreibung geändert"
     detail_event_coordinates: "Koordinaten geändert"
     detail_event_allday: "ganztägig %{from} → %{to}"
+    detail_event_end: "Ende %{from} → %{to}"
     event_none: "—"
     unknown_event: "ein Termin"
 

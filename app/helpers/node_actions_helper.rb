@@ -106,10 +106,16 @@ module NodeActionsHelper
                   :from => c.dig("title", "from"), :to => c.dig("title", "to"))
     end
 
-    if %w[rrule start_time end_time].any? { |field| c.key?(field) }
+    if %w[rrule start_time].any? { |field| c.key?(field) }
       items << t("node_actions.detail_event_schedule",
                   :from => event_schedule_side(m, c, "from"),
                   :to   => event_schedule_side(m, c, "to"))
+    end
+
+    if c["end_time"]
+      items << t("node_actions.detail_event_end",
+                  :from => event_time_ref(c.dig("end_time", "from")),
+                  :to   => event_time_ref(c.dig("end_time", "to")))
     end
 
     if c["allday"]
@@ -147,6 +153,11 @@ module NodeActionsHelper
       acc[field.to_sym] = changes.key?(field) ? changes.dig(field, side) : metadata[field]
     end
     event_schedule_text(Event.new(attributes)).presence || t("node_actions.event_none")
+  end
+
+  def event_time_ref iso
+    return t("node_actions.event_none") if iso.blank?
+    I18n.l(Time.zone.parse(iso), :format => :ccc)
   end
 
   def translation_changes diff
