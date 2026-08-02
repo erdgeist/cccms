@@ -30,7 +30,7 @@ class Occurrence < ApplicationRecord
     return if event.start_time.nil?
     
     node        = event.node
-    duration    = (event.end_time - event.start_time)
+    duration    = event.end_time ? (event.end_time - event.start_time) : 0
     occurrences = self.generate_dates(event)
     
     occurrences.each do |occurrence|
