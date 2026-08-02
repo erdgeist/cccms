@@ -930,6 +930,15 @@ table.revisions_table tr:hover {
   color: var(--accent);
 }
 
+.user_table .user_login .stale_flag_amber svg {
+  color: var(--accent);
+}
+
+.user_table .user_login .stale_flag_red svg,
+.user_table .user_login .stale_flag_never svg {
+  color: var(--danger);
+}
+
 .user_group_heading {
   margin-top: 1.5rem;
 }

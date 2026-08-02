@@ -10,6 +10,8 @@ class User < ApplicationRecord
   include Authentication::ByPassword
 
   ROLES = %w[redaktion admin alumni].freeze
+  STALE_AMBER_YEARS = 3
+  STALE_RED_YEARS   = 10
 
   # Validations
   validates_presence_of     :login
@@ -243,6 +245,14 @@ class User < ApplicationRecord
     true
   end
 
+  def staleness_tier(now = Time.zone.now)
+    return nil if alumni?
+    return :never if last_login_at.nil?
+
+    return :red   if last_login_at <= now - STALE_RED_YEARS.years
+    return :amber if roles.any? && last_login_at <= now - STALE_AMBER_YEARS.years
+    nil
+    end
   private
 
     def roles_are_known

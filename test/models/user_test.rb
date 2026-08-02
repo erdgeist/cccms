@@ -142,6 +142,51 @@ class UserTest < ActiveSupport::TestCase
     assert     redaktion.may_change_live?(plain)
     assert     redaktion.may_change_live?(restricted)
   end
+
+  test "amber needs a role to remove, red does not" do
+    now   = Time.zone.parse("2026-08-03")
+    roled = users(:redella)
+    plain = users(:quentin)
+
+    [roled, plain].each { |u| u.update_column(:last_login_at, now - 4.years) }
+
+    assert_equal :amber, roled.staleness_tier(now)
+    assert_nil plain.staleness_tier(now)
+
+    [roled, plain].each { |u| u.update_column(:last_login_at, now - 11.years) }
+
+    assert_equal :red, roled.staleness_tier(now)
+    assert_equal :red, plain.staleness_tier(now), "dormant credentials are dormant whatever the roles"
+  end
+
+  test "staleness_tier boundaries" do
+    now  = Time.zone.parse("2026-08-03")
+    user = users(:redella)
+
+    user.update_column(:last_login_at, now - 2.years - 11.months)
+    assert_nil user.staleness_tier(now)
+
+    user.update_column(:last_login_at, now - 3.years)
+    assert_equal :amber, user.staleness_tier(now)
+
+    user.update_column(:last_login_at, now - 9.years - 11.months)
+    assert_equal :amber, user.staleness_tier(now)
+
+    user.update_column(:last_login_at, now - 10.years)
+    assert_equal :red, user.staleness_tier(now)
+  end
+
+  test "alumni are exempt, an account that never signed in is not" do
+    now = Time.zone.parse("2026-08-03")
+
+    alufa = users(:alufa)
+    alufa.update_column(:last_login_at, now - 20.years)
+    assert_nil alufa.staleness_tier(now), "alumni are the outcome, not a candidate"
+
+    redella = users(:redella)
+    redella.update_column(:last_login_at, nil)
+    assert_equal :never, redella.staleness_tier(now)
+  end
   
 protected
   def create_user(options = {})

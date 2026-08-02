@@ -270,6 +270,9 @@ en:
       otp_pending: "Second factor started but not confirmed"
       otp_missing: "No second factor"
       grant_redaktion_blocked: "Add to Redaktion — only possible once the account has enrolled a second factor"
+      stale_amber: "Not signed in since %{year}, remove roles?"
+      stale_red: "Not signed in since %{year}, deactivate?"
+      stale_never: "Never signed in, chase it up?"
 
     index:
       title: "User accounts"

@@ -323,6 +323,9 @@ de:
       otp_pending: "Zweiter Faktor begonnen, aber nicht bestätigt"
       otp_missing: "Kein zweiter Faktor"
       grant_redaktion_blocked: "In die Redaktion aufnehmen — erst möglich, wenn das Konto einen zweiten Faktor eingerichtet hat"
+      stale_amber: "Seit %{year} nicht angemeldet, Rollen entziehen?"
+      stale_red: "Seit %{year} nicht angemeldet, deaktivieren?"
+      stale_never: "Noch nie angemeldet, nachfassen?"
     index:
       title: "Benutzerkonten"
       create_editor: "Editor-Konto anlegen"

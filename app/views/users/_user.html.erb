@@ -15,6 +15,15 @@
           <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
         </span>
       <% end %>
+      <% if (tier = user.staleness_tier) %>
+        <% hint = tier == :never ? t(".stale_never")
+                                 : t(".stale_#{tier}", :year => user.last_login_at.year) %>
+        <span role="img" class="stale_flag stale_flag_<%= tier %>"
+              title="<%= hint %>" aria-label="<%= hint %>">
+          <%= icon(tier == :amber ? "clock-exclamation" : "alert-triangle",
+                   library: "tabler", "aria-hidden": true) %>
+        </span>
+      <% end %>
     </span>
     <%= user.login %>
   </td>

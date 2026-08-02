@@ -26,10 +26,13 @@ namespace :users do
   desc "Seed last_login_at from whatever the database still remembers. " \
        "There is no login history, so the column is reconstructed once " \
        "from the newest trace each account left: log entries, authorship, " \
-       "editing, tagging. Accounts with no trace fall back to their own " \
-       "created_at, which tells an ancient untraceable account apart from " \
-       "one made yesterday. Dry run unless WRITE=1; FORCE=1 is required " \
-       "once any real login has been recorded."
+       "editing, tagging. An account with no trace is left nil, which the " \
+       "roster renders as never signed in -- do not substitute created_at, " \
+       "which is evidence that an account exists, not that anyone used it, " \
+       "and shadows exactly the signal worth seeing. Dry run unless " \
+       "WRITE=1. FORCE=1 is required once the column holds anything, and " \
+       "re-running then overwrites real logins: an account that signs in " \
+       "regularly but never edits leaves no trace and would be reset."
   task :seed_last_login => :environment do
     write = ENV["WRITE"] == "1"
     force = ENV["FORCE"] == "1"
@@ -64,17 +67,10 @@ namespace :users do
     users.each do |user|
       clues        = newest.transform_values { |by_id| by_id[user.id] }.compact
       source, date = clues.max_by { |_, at| at }
-      source, date = "created", user.created_at if date.nil?
-      source, date = "floor",   floor           if date.nil?
-
-      if date.nil?
-        puts format("%-18s %-12s %-8s %s", user.login, "SKIPPED", "none", user.roles.join(","))
-        next
-      end
 
       user.update_columns(:last_login_at => date) if write
-      puts format("%-18s %-12s %-8s %s", user.login, date.to_date, source, user.roles.join(","))
+      puts format("%-18s %-12s %-8s %s", user.login,
+                  date ? date.to_date : "never", source || "-", user.roles.join(","))
     end
   end
-
 end
