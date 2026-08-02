@@ -13,6 +13,10 @@ class EventTest < ActiveSupport::TestCase
     @cal_node.publish_draft!
     @cal_node.head.reload
   end
+
+  def event_entries
+    NodeAction.where(:action => %w[event_create event_update event_destroy]).order(:id)
+  end
   
   test 'verfy setup data' do 
     assert_not_nil @cal_node
@@ -106,5 +110,72 @@ class EventTest < ActiveSupport::TestCase
     expected_days = [28, 25, 25, 29, 27, 24, 29, 26, 30, 28, 25, 30]
     chaosradio_days = scoped_occurrences.map {|x| x.start_time.day}
     assert_equal expected_days, chaosradio_days
+  end
+
+  test "creating an event is witnessed with a full snapshot" do
+    event = Event.new(:title => "Chaostreff",
+                      :start_time => Time.utc(2026, 9, 1, 19, 0),
+                      :end_time => Time.utc(2026, 9, 1, 21, 0),
+                      :rrule => "FREQ=WEEKLY;BYDAY=TU", :location => "Zentrale",
+                      :tag_list => "open-day")
+
+    assert_difference -> { event_entries.count }, 1 do
+      assert event.save_witnessed(:actor => users(:aaron))
+    end
+
+    entry = event_entries.last
+    assert_equal "event_create", entry.action
+    assert_equal users(:aaron).id, entry.user_id
+    assert_equal "Chaostreff", entry.metadata["event_title"]
+    assert_equal "FREQ=WEEKLY;BYDAY=TU", entry.metadata["rrule"]
+    assert_equal ["open-day"], entry.metadata["event_tags"]
+    assert_equal event.id, entry.action_participants.first.subject_id
+    assert_equal "Event", entry.action_participants.first.subject_type
+  end
+
+  test "updating an event records only what changed" do
+    event = Event.new(:title => "Chaostreff", :location => "Zentrale")
+    event.save_witnessed(:actor => users(:aaron))
+
+    assert_difference -> { event_entries.count }, 1 do
+      assert event.update_witnessed({ :location => "Neue Zentrale" }, :actor => users(:aaron))
+    end
+
+    entry = event_entries.last
+    assert_equal "event_update", entry.action
+    assert_equal({ "from" => "Zentrale", "to" => "Neue Zentrale" },
+                 entry.metadata.dig("changes", "location"))
+    assert_nil entry.metadata.dig("changes", "title")
+    assert_equal "Neue Zentrale", entry.metadata["location"]
+  end
+
+  test "an update that changes nothing records no entry" do
+    event = Event.new(:title => "Chaostreff")
+    event.save_witnessed(:actor => users(:aaron))
+
+    assert_no_difference -> { event_entries.count } do
+      assert event.update_witnessed({ :title => "Chaostreff" }, :actor => users(:aaron))
+    end
+  end
+
+  test "deleting an event is witnessed before the row goes" do
+    event = Event.new(:title => "Chaostreff", :location => "Zentrale")
+    event.save_witnessed(:actor => users(:aaron))
+
+    assert_difference -> { event_entries.count }, 1 do
+      assert event.destroy_witnessed(:actor => users(:aaron))
+    end
+
+    entry = event_entries.last
+    assert_equal "event_destroy", entry.action
+    assert_equal "Chaostreff", entry.metadata["event_title"]
+    assert_equal "Zentrale", entry.metadata["location"]
+    assert_nil Event.find_by(:id => event.id)
+  end
+
+  test "an event may start without ending" do
+    event = Event.new(:title => "Chaostreff", :start_time => Time.utc(2026, 9, 1, 19, 0))
+    assert event.save
+    assert_equal event.start_time, event.occurrences.first&.start_time
   end
 end

@@ -65,7 +65,7 @@ class EventsController < ApplicationController
     @event = Event.new(event_params)
 
     respond_to do |format|
-      if @event.save
+      if @event.save_witnessed(:actor => current_user)
         flash[:notice] = t("flash.events.created")
         format.html { redirect_to(safe_return_to(params[:return_to] || (@event.node ? edit_node_path(@event.node) : edit_event_path(@event)))) }
         format.xml  { render :xml => @event, :status => :created, :location => @event }
@@ -82,7 +82,7 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
 
     respond_to do |format|
-      if @event.update(event_params)
+      if @event.update_witnessed(event_params, :actor => current_user)
         flash[:notice] = t("flash.events.updated")
         format.html { redirect_to(safe_return_to(params[:return_to] || events_path)) }
         format.xml  { head :ok }
@@ -97,7 +97,7 @@ class EventsController < ApplicationController
   # DELETE /events/1.xml
   def destroy
     @event = Event.find(params[:id])
-    @event.destroy
+    @event.destroy_witnessed(:actor => current_user)
 
     respond_to do |format|
       format.html { redirect_to(events_url) }

@@ -107,6 +107,36 @@ class NodeAction < ApplicationRecord
   # participant differ:
   #   "target_login" -- flat string, the affected account's login
   #
+  # "event_create" / "event_update" / "event_destroy" (calendar
+  # entries; participants: the Event and, when it has one, its Node,
+  # which also fills the node column. Deliberately not gated --
+  # events reach chapter pages and widgets, never the feeds, and
+  # protection here follows emission, not position).
+  #
+  # Events carry no revisions, so the log is their only history:
+  # every entry holds a full snapshot of the state it produced, and
+  # walking an event's entries reconstructs it. Times are ISO 8601
+  # and the rrule is raw, never humanised -- entries are read in both
+  # locales and event_schedule_text resolves that at render time.
+  #   "event_title" -- flat string; the title, else the node's
+  #                    unique_name, else "#<id>"
+  #   "start_time", "end_time" -- ISO 8601, when set
+  #   "allday"      -- boolean
+  #   "rrule"       -- raw RRULE, when set
+  #   "location", "url" -- flat strings, when set
+  #   "event_tags"  -- array of names, sorted, always. Named apart
+  #                    from the node verbs' "tags", which is a pair,
+  #                    so one renderer cannot mistake the other.
+  #   "path"        -- the node's unique_name, when it has a node
+  #
+  # On "event_update" only, and only when something changed -- an
+  # update that changes nothing records no entry at all:
+  #   "changes"     -- {field => pair}, node_id resolved to paths
+  #                    under "node_path", tag_list under "tags",
+  #                    times as ISO 8601
+  #   "description_changed" -- boolean; prose, flagged not quoted,
+  #                    as abstract_changed and body_changed are
+  #
   # Reserved: "demote" (via "trash" | "depublish") for an explicit
   # depublish workflow, if ever built.
   #

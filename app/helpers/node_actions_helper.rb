@@ -23,7 +23,10 @@ module NodeActionsHelper
     "user_deactivate"    => "user-off",
     "user_reactivate"    => "user-check",
     "redaktion_grant"    => "users-plus",
-    "redaktion_revoke"   => "users-minus"
+    "redaktion_revoke"   => "users-minus",
+    "event_create"       => "calendar-plus",
+    "event_update"       => "calendar-event",
+    "event_destroy"      => "calendar-x"
   }.freeze
 
   def verb_icon action
@@ -57,6 +60,7 @@ module NodeActionsHelper
   def action_details? action
     m = action.metadata
     return true if m["translation_diff"].present?
+    return true if m["changes"].present? || m["description_changed"]
     return true if m["title"].is_a?(Hash) && m.dig("title", "from") != m.dig("title", "to")
     %w[author tags template_changed assets assets_changed assets_reordered
        abstract_changed body_changed].any? { |key| m[key].present? }
@@ -90,6 +94,59 @@ module NodeActionsHelper
     items << t("node_actions.assets_reordered") if m["assets_reordered"]
     items << t("node_actions.assets_changed")   if m["assets_changed"]
     items
+  end
+
+  def event_changes_list action
+    m = action.metadata
+    c = m["changes"] || {}
+    items = []
+
+    if c["title"]
+      items << t("node_actions.detail_title",
+                  :from => c.dig("title", "from"), :to => c.dig("title", "to"))
+    end
+
+    if %w[rrule start_time end_time].any? { |field| c.key?(field) }
+      items << t("node_actions.detail_event_schedule",
+                  :from => event_schedule_side(m, c, "from"),
+                  :to   => event_schedule_side(m, c, "to"))
+    end
+
+    if c["allday"]
+      items << t("node_actions.detail_event_allday",
+                  :from => t("admin.common.#{c.dig("allday", "from") ? "yes" : "no"}"),
+                  :to   => t("admin.common.#{c.dig("allday", "to") ? "yes" : "no"}"))
+    end
+
+    %w[location url].each do |field|
+      next unless c[field]
+      items << t("node_actions.detail_event_#{field}",
+                  :from => c.dig(field, "from").presence || t("node_actions.event_none"),
+                  :to   => c.dig(field, "to").presence   || t("node_actions.event_none"))
+    end
+
+    if c["tags"]
+      items << t("node_actions.detail_tags",
+                  :from => Array(c.dig("tags", "from")).join(", "),
+                  :to   => Array(c.dig("tags", "to")).join(", "))
+    end
+
+    if c["node_path"]
+      items << t("node_actions.detail_event_moved",
+                  :from => c.dig("node_path", "from") || t("node_actions.event_none"),
+                  :to   => c.dig("node_path", "to")   || t("node_actions.event_none"))
+    end
+
+    items << t("node_actions.detail_event_description") if m["description_changed"]
+    items << t("node_actions.detail_event_coordinates") if c["latitude"] || c["longitude"]
+    items
+  end
+
+  def event_schedule_side metadata, changes, side
+    attributes = %w[rrule start_time end_time].each_with_object({}) do |field, acc|
+      acc[field.to_sym] = changes.key?(field) ? changes.dig(field, side) : metadata[field]
+    end
+    event_schedule_text(Event.new(attributes)).presence || t("node_actions.event_none")
   end
 
   def translation_changes diff
@@ -186,6 +243,12 @@ module NodeActionsHelper
     participant = action.action_participants.detect { |p| p.subject_type == "User" }&.subject
     name = h(action.metadata["target_login"].presence || "unknown")
     participant ? link_to(name, edit_user_path(participant)) : name
+  end
+
+  def event_ref action
+    event = action.action_participants.detect { |p| p.subject_type == "Event" }&.subject
+    name  = h(action.metadata["event_title"].presence || t("node_actions.unknown_event"))
+    event ? link_to(name, edit_event_path(event)) : name
   end
 
   def summarize_publish action
@@ -300,5 +363,27 @@ module NodeActionsHelper
   def summarize_user_create action
     t("node_actions.user_create", :actor => actor_ref(action),
        :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_event_create action
+    event_sentence(action, "event_create")
+  end
+
+  def summarize_event_update action
+    event_sentence(action, "event_update")
+  end
+
+  def summarize_event_destroy action
+    event_sentence(action, "event_destroy")
+  end
+
+  def event_sentence action, key
+    if action.node
+      t("node_actions.#{key}_on", :actor => actor_ref(action),
+         :event => event_ref(action), :subject => subject_ref(action)).html_safe
+    else
+      t("node_actions.#{key}", :actor => actor_ref(action),
+         :event => event_ref(action)).html_safe
+    end
   end
 end

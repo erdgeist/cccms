@@ -17,6 +17,12 @@
         </td>
       </tr>
     <% end %>
+    <% if (event_items = event_changes_list(action_entry)).any? %>
+      <tr>
+        <th></th>
+        <td><%= safe_join(event_items, tag.br) %></td>
+      </tr>
+    <% end %>
     <% (action_entry.metadata["translation_diff"] || {}).each do |locale, diff| %>
       <tr>
         <th><%= locale.upcase %></th>

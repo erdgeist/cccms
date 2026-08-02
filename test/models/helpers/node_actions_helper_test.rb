@@ -143,4 +143,17 @@ class NodeActionsHelperTest < ActionView::TestCase
     assert_includes verb_icon(entry("publish", { "via" => "revision" })), "node_action_icon--history"
     assert_includes verb_icon(entry("frobnicate")), "node_action_icon--circle-dashed"
   end
+
+  test "an event entry renders after its event is gone" do
+    event = Event.new(:title => "Chaostreff", :rrule => "FREQ=WEEKLY;BYDAY=TU",
+                      :start_time => Time.utc(2026, 9, 1, 19, 0),
+                      :end_time => Time.utc(2026, 9, 1, 21, 0))
+    event.save_witnessed(:actor => users(:aaron))
+    event.destroy_witnessed(:actor => users(:aaron))
+
+    entry = NodeAction.where(:action => "event_destroy").order(:id).last
+
+    assert_match "Chaostreff", action_summary(entry)
+    assert_nothing_raised { event_changes_list(entry) }
+  end
 end
