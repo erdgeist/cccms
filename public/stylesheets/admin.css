@@ -325,6 +325,7 @@ div.pagination {
   padding-top: 5px;
   padding-bottom: 15px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
 }
