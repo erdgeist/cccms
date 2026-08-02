@@ -1,19 +1,21 @@
 <% users.each do |user| %>
 <tr>
   <td class="user_login">
-    <% if user.otp_enrolled? %>
-      <span role="img" title="<%= t(".otp_enrolled") %>" aria-label="<%= t(".otp_enrolled") %>">
-        <%= icon("shield-check", library: "tabler", "aria-hidden": true) %>
-      </span>
-    <% elsif user.otp_pending_secret.present? %>
-      <span role="img" class="otp_missing" title="<%= t(".otp_pending") %>" aria-label="<%= t(".otp_pending") %>">
-        <%= icon("shield-half", library: "tabler", "aria-hidden": true) %>
-      </span>
-    <% else %>
-      <span role="img" class="otp_missing" title="<%= t(".otp_missing") %>" aria-label="<%= t(".otp_missing") %>">
-        <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
-      </span>
-    <% end %>
+    <span class="user_flag_stack">
+      <% if user.otp_enrolled? %>
+        <span role="img" title="<%= t(".otp_enrolled") %>" aria-label="<%= t(".otp_enrolled") %>">
+          <%= icon("shield-check", library: "tabler", "aria-hidden": true) %>
+        </span>
+      <% elsif user.otp_pending_secret.present? %>
+        <span role="img" class="otp_missing" title="<%= t(".otp_pending") %>" aria-label="<%= t(".otp_pending") %>">
+          <%= icon("shield-half", library: "tabler", "aria-hidden": true) %>
+        </span>
+      <% else %>
+        <span role="img" class="otp_missing" title="<%= t(".otp_missing") %>" aria-label="<%= t(".otp_missing") %>">
+          <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
+        </span>
+      <% end %>
+    </span>
     <%= user.login %>
   </td>
   <td class="user_roles">
