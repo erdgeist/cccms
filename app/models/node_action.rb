@@ -98,12 +98,13 @@ class NodeAction < ApplicationRecord
   #   "detached_from"         -- array of unique_names, only when any
   #   "headline_removed_from" -- array of unique_names, only when any
   #
-  # "otp_enroll" / "otp_disable" / "otp_reset" / "user_deactivate" /
-  # "user_reactivate" (second-factor lifecycle; node column nil;
-  # participants: the affected User
-  # User-typed subject. otp_disable is self-service; otp_reset is an
-  # administrator clearing someone else's factor, where actor and
-  # participant differ):
+  # "otp_enroll" / "otp_disable" / "otp_reset" (second-factor
+  # lifecycle) and "user_create" / "user_deactivate" /
+  # "user_reactivate" (account lifecycle). Node column nil;
+  # participants: the affected User, a User-typed subject.
+  # otp_disable is self-service; otp_reset and all three account
+  # verbs are an administrator acting on someone else, so actor and
+  # participant differ:
   #   "target_login" -- flat string, the affected account's login
   #
   # Reserved: "demote" (via "trash" | "depublish") for an explicit

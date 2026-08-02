@@ -226,6 +226,7 @@ de:
     otp_enroll: "%{actor} hat einen zweiten Faktor eingerichtet"
     otp_disable: "%{actor} hat den zweiten Faktor entfernt"
     otp_reset: "%{actor} hat den zweiten Faktor von %{target} zurückgesetzt"
+    user_create: "%{actor} hat das Konto %{target} angelegt"
     user_deactivate: "%{actor} hat %{target} deaktiviert"
     user_reactivate: "%{actor} hat %{target} reaktiviert"
     redaktion_grant: "%{actor} hat %{target} in die Redaktion aufgenommen"

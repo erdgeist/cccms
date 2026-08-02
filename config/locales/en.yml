@@ -173,6 +173,7 @@ en:
     otp_enroll: "%{actor} set up a second factor"
     otp_disable: "%{actor} removed their second factor"
     otp_reset: "%{actor} reset the second factor of %{target}"
+    user_create: "%{actor} created the account %{target}"
     user_deactivate: "%{actor} deactivated %{target}"
     user_reactivate: "%{actor} reactivated %{target}"
     redaktion_grant: "%{actor} added %{target} to Redaktion"

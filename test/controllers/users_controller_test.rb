@@ -285,4 +285,21 @@ class UsersControllerTest < ActionController::TestCase
     get :new, params: { :locale => "de" }
     assert_redirected_to new_elevation_path
   end
+
+  test "creating a user is witnessed" do
+    login_as :aaron
+    elevate_session!
+
+    assert_difference -> { NodeAction.where(:action => "user_create").count }, 1 do
+      post :create, params: { :locale => "de", :user => {
+        :login => "newcomer", :email => "n@example.org",
+        :password => "secret123", :password_confirmation => "secret123" } }
+    end
+
+    entry = NodeAction.where(:action => "user_create").last
+    assert_equal users(:aaron).id, entry.user_id
+    assert_equal "newcomer", entry.metadata["target_login"]
+    assert_equal User.find_by(:login => "newcomer").id,
+                 entry.action_participants.first.subject_id
+  end
 end

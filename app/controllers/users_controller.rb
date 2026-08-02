@@ -31,7 +31,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new user_params
 
-    if @user.save
+    if @user.save_witnessed(:actor => current_user)
       flash[:notice] = t("flash.users.created", :login => @user.login)
       redirect_to user_path(@user)
     else

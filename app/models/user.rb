@@ -117,6 +117,17 @@ class User < ApplicationRecord
     redaktion?
   end
 
+  def save_witnessed(actor:)
+    saved = false
+    transaction do
+      saved = save
+      raise ActiveRecord::Rollback unless saved
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "user_create", :target_login => login)
+    end
+    saved
+  end
+
   def deactivate!(actor:)
     return false if alumni?
     transaction do
