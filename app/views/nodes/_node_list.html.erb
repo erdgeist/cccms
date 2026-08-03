@@ -34,7 +34,7 @@
       <%= link_to 'revisions', node_revisions_path(node) %>
     </td>
     <td><%= node.lock_owner.login if node.lock_owner %></td>
-    <td><%= node.draft ? node.draft.revision : (node.head ? node.head.revision : "EMPTY") %></td>
+    <td><%= node.draft ? node.draft.revision : (node.head ? node.head.revision : t(".no_revision")) %></td>
   </tr>
   <% end %>
 </table>

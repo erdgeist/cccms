@@ -107,6 +107,10 @@ en:
               not_permitted: "Only Redaktion members may change assets related to nodes in this section"
             upload:
               unreadable_image: "could not be read as an image. It may be damaged, or not the format its name suggests."
+        event:
+          attributes:
+            url:
+              must_be_http: "must start with http:// or https://"
 
   tags:
     index:
@@ -487,11 +491,15 @@ en:
       title: "Nodes tagged: %{tag}"
     sitemap:
       title: "Sitemap"
+      descendants:
+        one: "1 descendant"
+        other: "%{count} descendants"
     chapters:
       title: "Chapters"
       filter: "Filter"
     node_list:
       search_placeholder: "Search title, abstract, body…"
+      no_revision: "none"
     trashed:
       title: "Trash"
       empty: "The Trash is empty."

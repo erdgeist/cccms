@@ -24,16 +24,12 @@
 <% @events.each do |event| %>
   <tr>
     <td><%= link_to event.display_title, event %></td>
-    <td><%=h event.start_time %></td>
-    <td><%=h event.end_time %></td>
+    <td><%= admin_datetime(event.start_time) %></td>
+    <td><%= admin_datetime(event.end_time) %></td>
     <td class="rrule_cell"><span class="rrule_text"><%= rrule_with_break_opportunities(event.rrule) %></span></td>
-    <td><%=h event.allday %> → <%= event.allday ? t("admin.common.yes") : t("admin.common.no") %></td>
-    <td class="url_cell">
-    <% if event.url.present? %>
-    <span class="truncate"><%= link_to event.url, event.url %></span>
-    <% end %>
-    </td>
-    <td><%= event.node ? link_to(event.node_id, node_path(event.node)) : '' %></td>
+    <td><%= t("admin.common.#{event.allday ? "yes" : "no"}") %></td>
+    <td class="url_cell"><span class="truncate"><%= external_url_link(event.url) %></span></td>
+    <td><%= event.node ? link_to(event.node.unique_name, node_path(event.node)) : "" %></td>
     <td><%= link_to t(".edit_link"), edit_event_path(event) %></td>
   </tr>
 <% end %>

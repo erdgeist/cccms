@@ -6,6 +6,9 @@ class Event < ApplicationRecord
   acts_as_taggable_on :tags
 
   validates :title, presence: true, unless: -> { node_id.present? }
+  validates :url, :format => { :with => %r{\Ahttps?://}i,
+                               :allow_blank => true,
+                               :message => :must_be_http }
 
   after_save :generate_occurrences
 

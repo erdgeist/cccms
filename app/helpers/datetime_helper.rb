@@ -50,4 +50,13 @@ module DatetimeHelper
     locale == :de ? "vor #{count} #{word}" : "#{count} #{word} ago"
   end
 
+  def admin_datetime(time)
+    return "" if time.blank?
+    I18n.l(time, :format => :ccc)
+  end
+
+  def admin_date(time)
+    return "" if time.blank?
+    I18n.l(time, :format => :ccc_date)
+  end
 end

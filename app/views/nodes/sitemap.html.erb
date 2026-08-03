@@ -23,7 +23,7 @@
   <% if next_level && next_level > level %>
     <details<%= ' open' if sitemap_node_open?(node) %>>
       <summary>
-        <%= pluralize(@sitemap_descendant_counts[node.id], 'descendant', 'descendants') %>
+        <%= t(".descendants", :count => @sitemap_descendant_counts[node.id]) %>
       </summary>
     <% open_details.push(level) %>
   <% end %>

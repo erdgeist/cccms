@@ -20,11 +20,11 @@
 <% @events.each do |event| %>
   <tr>
     <td><%= link_to event.display_title, event %></td>
-    <td><%=h event.start_time %></td>
-    <td><%=h event.end_time %></td>
-    <td><%=h event.allday %> → <%= event.allday ? t("admin.common.yes") : t("admin.common.no") %></td>
+    <td><%= admin_datetime(event.start_time) %></td>
+    <td><%= admin_datetime(event.end_time) %></td>
+    <td><%= t("admin.common.#{event.allday ? "yes" : "no"}") %></td>
     <td><%=h event.url %></td>
-    <td><%= link_to t("events.index.edit_link"), edit_event_path(event) %></td>
+    <td class="url_cell"><span class="truncate"><%= external_url_link(event.url) %></span></td>
   </tr>
 <% end %>
 </table>

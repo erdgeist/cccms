@@ -24,10 +24,10 @@
     </div>
 
     <div class="layout_row_label"><%= Event.human_attribute_name(:start_time) %></div>
-    <div class="layout_row_content"><%=h @event.start_time %></div>
+    <div class="layout_row_content"><%= admin_datetime(@event.start_time) %></div>
 
     <div class="layout_row_label"><%= Event.human_attribute_name(:end_time) %></div>
-    <div class="layout_row_content"><%=h @event.end_time %></div>
+    <div class="layout_row_content"><%= admin_datetime(@event.end_time) %></div>
 
     <div class="layout_row_label"><%= Event.human_attribute_name(:rrule) %></div>
     <div class="layout_row_content"><%=h @event.rrule %></div>

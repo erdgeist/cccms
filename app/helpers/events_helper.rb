@@ -10,4 +10,9 @@ module EventsHelper
     return "" if rrule.blank?
     raw(rrule.split(';', -1).map { |part| CGI.escapeHTML(part) }.join(';<wbr>'))
   end
+
+  def external_url_link(url)
+    return nil if url.blank?
+    url.match?(%r{\Ahttps?://}i) ? link_to(url, url) : h(url)
+  end
 end

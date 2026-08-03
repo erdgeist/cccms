@@ -28,7 +28,7 @@
   <div class="layout_row_label"><%= t("users.labels.last_login") %></div>
   <div class="layout_row_content">
     <% if @user.last_login_at %>
-      <%= I18n.l(@user.last_login_at, :format => :ccc_date) %>
+      <%= admin_date(@user.last_login_at) %>
     <% else %>
       <%= t("users.never_signed_in") %>
     <% end %>

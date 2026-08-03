@@ -52,7 +52,7 @@
       <td class="revision"><%= page.revision %></td>
       <td class="title"><%= page.translations.find_by(:locale => @translation_locale)&.title || "—" %></td>
       <td class="user"><%= page.editor.try(:login) %></td>
-      <td class="date"><%= page.updated_at %></td>
+      <td class="date"><%= admin_datetime(page.updated_at) %></td>
       <td><%= link_to t(".show_link"), node_revision_path(@node, page, :translation_locale => @translation_locale) %></td>
       <td>
         <%= button_to t(".restore_link"), restore_node_revision_path(@node, page),

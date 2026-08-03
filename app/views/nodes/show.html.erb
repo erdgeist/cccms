@@ -195,12 +195,12 @@
       <div class="info_group_items">
         <div class="info_item">
           <span class="info_label"><%= t(".last_updated") %></span>
-          <%= @page.updated_at %>
+          <%= admin_datetime(@page.updated_at) %>
         </div>
         <% if @page.published_at.present? %>
           <div class="info_item">
             <span class="info_label"><%= @page.public? ? t(".published_at") : t(".will_publish_at") %></span>
-            <%= @page.published_at %>
+            <%= admin_datetime(@page.published_at) %>
           </div>
         <% end %>
       </div>

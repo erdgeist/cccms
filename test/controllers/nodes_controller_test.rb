@@ -671,7 +671,7 @@ class NodesControllerTest < ActionController::TestCase
     erfas_details = erfas_node_div.next_element
 
     assert_equal 'details', erfas_details.name
-    assert_match "2 descendants", erfas_details.at_css('summary').text
+    assert_match I18n.t("nodes.sitemap.descendants", :count => 2), @response.body
   end
 
   test "sitemap shows Show and Create Child, not Revisions" do

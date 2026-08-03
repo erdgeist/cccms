@@ -161,6 +161,10 @@ de:
               not_permitted: "Dieses Asset ist an geschützte Seiten angehängt; nur die Redaktion darf es löschen"
             upload:
               unreadable_image: "konnte nicht als Bild gelesen werden. Möglicherweise ist sie beschädigt oder hat ein anderes Format, als der Name vermuten lässt."
+        event:
+          attributes:
+            url:
+              must_be_http: "must start with http:// or https://"
 
   tags:
     index:
@@ -540,11 +544,15 @@ de:
       title: "Nodes mit Tag: %{tag}"
     sitemap:
       title: "Sitemap"
+      descendants:
+        one: "1 Unterseite"
+        other: "%{count} Unterseiten"
     chapters:
       title: "Dezentrale"
       filter: "Filter"
     node_list:
       search_placeholder: "Titel, Abstract, Text durchsuchen…"
+      no_revision: "keine"
     trashed:
       title: "Papierkorb"
       empty: "Der Papierkorb ist leer."

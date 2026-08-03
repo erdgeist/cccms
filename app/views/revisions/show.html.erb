@@ -22,10 +22,10 @@
     <div class="layout_row_content"><%= @page.editor.try(:login) %></div>
 
     <div class="layout_row_label"><%= t("nodes.show.last_updated") %></div>
-    <div class="layout_row_content"><%= @page.updated_at %></div>
+    <div class="layout_row_content"><%= admin_datetime(@page.updated_at) %></div>
 
     <div class="layout_row_label"><%= t("nodes.show.published_at") %></div>
-    <div class="layout_row_content"><%= @page.published_at %></div>
+    <div class="layout_row_content"><%= admin_datetime(@page.published_at) %></div>
 
     <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
     <div class="layout_row_content"><%= translation&.title %></div>
