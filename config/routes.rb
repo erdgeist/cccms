@@ -27,7 +27,6 @@ Cccms::Application.routes.draw do
     scope '/admin' do
       resources :events
       resources :assets
-      resources :tags
 
       resources :nodes do
         collection do
@@ -114,6 +113,7 @@ Cccms::Application.routes.draw do
       post :renew
     end
 
+    resources :tags
     resource :session
 
     get  'rss/updates',         :to => 'rss#updates', :as => :rss,      :defaults => { :format => :xml }

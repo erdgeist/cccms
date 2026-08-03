@@ -393,7 +393,7 @@ menu_item_sorter = {
       stop : function(){
         $.ajax({
           type: "POST",
-          url: "/menu_items/0/sort",
+          url: "/admin/menu_items/0/sort",
           data: $(this).sortable("serialize"),
           success : function() {
             // The controller answers head :ok, so there is nothing to parse
