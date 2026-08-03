@@ -105,6 +105,7 @@ class UsersControllerTest < ActionController::TestCase
   
   test "get edit of another user being logged in as admin user" do
     login_as :aaron
+    elevate_session!
     get :edit, params: { :id => User.find_by_login("quentin").id }
     assert_response :success
   end
@@ -129,6 +130,7 @@ class UsersControllerTest < ActionController::TestCase
   test "updating an user when being login in as admin user" do
     user = User.find_by_login("quentin")
     login_as :aaron
+    elevate_session!
     put :update, params: { :id => user.id, :user => {:login => "random"} }
     assert_redirected_to user_path(user)
     assert_equal "random", user.reload.login
@@ -301,5 +303,58 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal "newcomer", entry.metadata["target_login"]
     assert_equal User.find_by(:login => "newcomer").id,
                  entry.action_participants.first.subject_id
+  end
+
+  test "editing another account without elevation prompts for a code" do
+    login_as :aaron
+    get :edit, params: { :locale => "de", :id => users(:quentin).id }
+    assert_redirected_to new_elevation_path
+  end
+
+  test "editing your own account needs no elevation" do
+    login_as :aaron
+    get :edit, params: { :locale => "de", :id => users(:aaron).id }
+    assert_response :success
+  end
+
+  test "a role change submitted without elevation is refused, not silently dropped" do
+    login_as :aaron
+    target = users(:quentin)
+    assert_empty target.roles
+
+    put :update, params: { :locale => "de", :id => target.id,
+                           :user => { :roles => ["", "redaktion"] } }
+
+    assert_redirected_to new_elevation_path
+    assert_empty target.reload.roles
+    assert_nil flash[:notice]
+  end
+
+  test "a role change with elevation goes through" do
+    login_as :aaron
+    elevate_session!
+    target = users(:redella)
+    target.update_column(:otp_secret, ROTP::Base32.random)
+
+    put :update, params: { :locale => "de", :id => target.id,
+                           :user => { :roles => ["", "redaktion", "admin"] } }
+
+    assert_redirected_to user_path(target)
+    assert_equal ["admin", "redaktion"], target.reload.roles.sort
+  end
+
+  test "editing your own account without elevation does not prompt" do
+    login_as :aaron
+    put :update, params: { :locale => "de", :id => users(:aaron).id,
+                           :user => { :roles => ["", "admin", "redaktion"] } }
+    assert_redirected_to user_path(users(:aaron))
+  end
+
+  test "changing your own roles without elevation is refused" do
+    login_as :aaron
+    put :update, params: { :locale => "de", :id => users(:aaron).id,
+                           :user => { :roles => [""] } }
+    assert_redirected_to new_elevation_path
+    assert_equal ["admin", "redaktion"], users(:aaron).reload.roles.sort
   end
 end

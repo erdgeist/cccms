@@ -10,6 +10,7 @@ class UsersController < ApplicationController
   before_action :require_admin,     :only => [:new, :create, :reset_otp, :deactivate, :reactivate]
   before_action :require_elevation, :only => [:new, :create, :reset_otp, :deactivate, :reactivate]
   before_action :verify_status,   :except => [:index, :grant_redaktion, :revoke_redaktion]
+  before_action :require_elevation_for_other_accounts, :only => [:edit, :update]
 
   layout 'admin'
 
@@ -43,6 +44,11 @@ class UsersController < ApplicationController
   end
 
   def update
+    if roles_change_needs_elevation?
+      session[:elevation_return_to] = request.fullpath
+      return redirect_to new_elevation_path
+    end
+
     permitted = user_params
 
     if @user.update(permitted)
@@ -127,5 +133,17 @@ class UsersController < ApplicationController
 
     def deny_user_access
       deny_role_access(:admin_required)
+    end
+
+    def require_elevation_for_other_accounts
+      return if @user == current_user
+      require_elevation
+    end
+
+    def roles_change_needs_elevation?
+      return false unless params[:user].respond_to?(:key?) && params[:user].key?(:roles)
+      submitted = Array(params[:user][:roles]).reject(&:blank?).sort
+      return false if submitted == @user.roles.sort
+      !(current_user.is_admin? && elevated?)
     end
 end
