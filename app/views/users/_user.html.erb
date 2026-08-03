@@ -1,28 +1,19 @@
 <% users.each do |user| %>
 <tr>
   <td class="user_login">
-    <span class="user_flag_stack">
+    <span class="flag_stack">
       <% if user.otp_enrolled? %>
-        <span role="img" title="<%= t(".otp_enrolled") %>" aria-label="<%= t(".otp_enrolled") %>">
-          <%= icon("shield-check", library: "tabler", "aria-hidden": true) %>
-        </span>
+        <%= flag("shield-check", t(".otp_enrolled")) %>
       <% elsif user.otp_pending_secret.present? %>
-        <span role="img" class="otp_missing" title="<%= t(".otp_pending") %>" aria-label="<%= t(".otp_pending") %>">
-          <%= icon("shield-half", library: "tabler", "aria-hidden": true) %>
-        </span>
+        <%= flag("shield-half", t(".otp_pending"), :tier => :attention) %>
       <% else %>
-        <span role="img" class="otp_missing" title="<%= t(".otp_missing") %>" aria-label="<%= t(".otp_missing") %>">
-          <%= icon("shield-off", library: "tabler", "aria-hidden": true) %>
-        </span>
+        <%= flag("shield-off", t(".otp_missing"), :tier => :attention) %>
       <% end %>
       <% if (tier = user.staleness_tier) %>
         <% hint = tier == :never ? t(".stale_never")
-                                 : t(".stale_#{tier}", :year => user.last_login_at.year) %>
-        <span role="img" class="stale_flag stale_flag_<%= tier %>"
-              title="<%= hint %>" aria-label="<%= hint %>">
-          <%= icon(tier == :amber ? "clock-exclamation" : "alert-triangle",
-                   library: "tabler", "aria-hidden": true) %>
-        </span>
+                                : t(".stale_#{tier}", :year => user.last_login_at.year) %>
+        <%= flag(tier == :amber ? "clock-exclamation" : "alert-triangle", hint,
+                 :tier => tier == :amber ? :attention : :alert) %>
       <% end %>
     </span>
     <%= user.login %>

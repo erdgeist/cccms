@@ -15,7 +15,6 @@
     <th><%= Event.human_attribute_name(:start_time) %></th>
     <th><%= Event.human_attribute_name(:end_time) %></th>
     <th><%= Event.human_attribute_name(:rrule) %></th>
-    <th><%= Event.human_attribute_name(:allday) %></th>
     <th><%= Event.human_attribute_name(:url) %></th>
     <th><%= Event.human_attribute_name(:start_node) %></th>
     <th></th>
@@ -23,11 +22,15 @@
 
 <% @events.each do |event| %>
   <tr>
-    <td><%= link_to event.display_title, event %></td>
+    <td>
+      <span class="flag_stack">
+        <%= flag("clock-off", Event.human_attribute_name(:allday)) if event.allday %>
+      </span>
+      <%= link_to event.display_title, event %>
+    </td>
     <td><%= admin_datetime(event.start_time) %></td>
     <td><%= admin_datetime(event.end_time) %></td>
     <td class="rrule_cell"><span class="rrule_text"><%= rrule_with_break_opportunities(event.rrule) %></span></td>
-    <td><%= t("admin.common.#{event.allday ? "yes" : "no"}") %></td>
     <td class="url_cell"><span class="truncate"><%= external_url_link(event.url) %></span></td>
     <td><%= event.node ? link_to(event.node.unique_name, node_path(event.node)) : "" %></td>
     <td><%= link_to t(".edit_link"), edit_event_path(event) %></td>
