@@ -21,20 +21,13 @@ Cccms::Application.routes.draw do
   # Adding a new locale requires updating all three locations.
   scope '(:locale)', locale: /de|en/ do
 
-    resources :tags
-
-    resources :events do
-      collection do
-        get :without_node
-      end
-    end
-
-    get  'pages/:id/preview',     to: 'pages#preview',     as: :preview_page
-
-    get 'preview/:token', to: 'shared_previews#show', as: :shared_preview
+    get 'pages/:id/preview', to: 'pages#preview',        as: :preview_page
+    get 'preview/:token',    to: 'shared_previews#show', as: :shared_preview
 
     scope '/admin' do
+      resources :events
       resources :assets
+      resources :tags
 
       resources :nodes do
         collection do
@@ -84,6 +77,24 @@ Cccms::Application.routes.draw do
         end
       end
 
+      resources :menu_items, :except => :show do
+        member do
+          post :sort
+          post :move_up
+          post :move_down
+        end
+      end
+
+      resources :users, :except => :destroy do
+        member do
+          put :reset_otp
+          put :deactivate
+          put :reactivate
+          put :grant_redaktion
+          put :revoke_redaktion
+        end
+      end
+
       match ''                 => 'admin#index',            :as => :admin,                  :via => :get
       match 'search'           => 'admin#search',           :as => :admin_search,           :via => :get
       match 'menu_search'      => 'admin#menu_search',      :as => :admin_menu_search,      :via => :get
@@ -97,27 +108,10 @@ Cccms::Application.routes.draw do
     match '/login'       => 'sessions#new',     :as => :login,        :via => :get
     match 'search'       => 'search#index',     :as => :search,       :via => :get
 
-    resources :users, :except => :destroy do
-      member do
-        put :reset_otp
-        put :deactivate
-        put :reactivate
-        put :grant_redaktion
-        put :revoke_redaktion
-      end
-    end
     resource :otp_enrollment, :only => [:show, :create, :update, :destroy]
     resource :otp_challenge, :only => [:new, :create]
     resource :elevation, :only => [:new, :create, :destroy] do
       post :renew
-    end
-
-    resources :menu_items, :except => :show do
-      member do
-        post :sort
-        post :move_up
-        post :move_down
-      end
     end
 
     resource :session

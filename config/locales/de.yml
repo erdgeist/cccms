@@ -574,7 +574,6 @@ de:
     index:
       title: "Termine"
       create_event: "Termin anlegen"
-      without_page_link: "Termine ohne Seite anzeigen →"
       edit_link: "bearbeiten"
     show:
       title: "Termin"
@@ -585,9 +584,6 @@ de:
       title: "Termin bearbeiten"
       change_node: "Node ändern"
       change_node_hint: "Verknüpft den Termin mit einem anderen Node (selten nötig)."
-    without_node:
-      title: "Termine ohne Node"
-      all_events_link: "← Alle Termine"
     form:
       node_hint: "Optional — Node suchen und auswählen, um diesen Termin mit einer Seite zu verknüpfen."
       recurrence: "Wiederholung"

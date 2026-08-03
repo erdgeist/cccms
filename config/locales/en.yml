@@ -521,15 +521,11 @@ en:
     index:
       title: "Events"
       create_event: "Create event"
-      without_page_link: "View events without a page →"
       edit_link: "edit"
     edit:
       title: "Editing event"
       change_node: "Change node"
       change_node_hint: "This will re-link the event to a different node — rarely needed."
-    without_node:
-      title: "Events without a node"
-      all_events_link: "← All events"
     show:
       title: "Event"
       title_for_node: "Event for node %{path}"
