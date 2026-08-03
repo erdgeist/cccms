@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.2.11'
+ruby '3.4.10'
 
 # ── Core framework ────────────────────────────────────────────────────────────
 
@@ -62,6 +62,7 @@ gem 'diff-lcs', require: 'diff/lcs'
 # ── Operational ───────────────────────────────────────────────────────────────
 
 gem 'exception_notification', '~> 4.5'
+gem 'csv'
 
 # chaos_calendar: C extension wrapping libical for the public events calendar.
 # Pinned to custom branch; includes FreeBSD 15.1 / libical 3.x header path fix
