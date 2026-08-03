@@ -37,6 +37,20 @@ module FileAttachment
     "MAGICK_CONFIGURE_PATH" => Rails.root.join("config", "imagemagick").to_s
   }.freeze
 
+  # ImageMagick picks its decoder from the file, not from the multipart
+  # header. Where the two disagree, believe ImageMagick: otherwise
+  # generate_all_variants dispatches on a claim and hands a file to a
+  # pipeline built for something else.
+  MAGICK_FORMAT_CONTENT_TYPES = {
+    "JPEG" => "image/jpeg",
+    "PNG"  => "image/png",
+    "GIF"  => "image/gif",
+    "WEBP" => "image/webp",
+    "SVG"  => "image/svg+xml",
+    "MSVG" => "image/svg+xml",
+    "PDF"  => "application/pdf"
+  }.freeze
+
   IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
   VECTOR_CONTENT_TYPES   = %w[image/svg+xml].freeze
   RASTERIZED_CONTENT_TYPES = %w[application/pdf].freeze
@@ -88,6 +102,7 @@ module FileAttachment
     after_initialize :build_upload_proxy
     after_save       :process_upload
     before_destroy   :delete_upload_files
+    validate         :upload_must_be_readable_when_it_claims_to_be_an_image
   end
 
   def upload=(uploaded_file)
@@ -95,7 +110,10 @@ module FileAttachment
     @pending_upload = uploaded_file
     # Populate the database columns immediately so validations can use them
     self.upload_file_name    = sanitize_filename(uploaded_file.original_filename)
-    self.upload_content_type = uploaded_file.content_type.to_s.split(';').first.strip
+    detected = detected_content_type(uploaded_file)
+    @upload_unreadable = detected.nil?
+    self.upload_content_type = detected ||
+                               uploaded_file.content_type.to_s.split(';').first.strip
     self.upload_file_size    = uploaded_file.size
     self.upload_updated_at   = Time.current
     build_upload_proxy
@@ -160,7 +178,9 @@ module FileAttachment
     STYLES.each do |style, options|
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
-      system(MAGICK_ENV, "magick", original_path, *extra_args, *options[:args], dest_path)
+      if !system(MAGICK_ENV, "magick", original_path, *extra_args, *options[:args], dest_path)
+        Rails.logger.warn("Asset##{id}: magick failed for #{style} of #{upload_file_name}")
+      end
     end
   end
 
@@ -180,7 +200,7 @@ module FileAttachment
     dest_path = file_path(:og)
     FileUtils.mkdir_p(File.dirname(dest_path))
 
-    if og_full_bleed?(original_path)
+    ok = if og_full_bleed?(original_path)
       system(MAGICK_ENV, "magick", "#{original_path}[0]",
              "-resize", "#{OG_WIDTH}x#{OG_HEIGHT}^",
              "-gravity", "center", "-extent", "#{OG_WIDTH}x#{OG_HEIGHT}",
@@ -189,6 +209,9 @@ module FileAttachment
     else
       system(MAGICK_ENV, *og_template_command(dest_path))
     end
+
+    Rails.logger.warn("Asset##{id}: magick failed for og of #{upload_file_name}") unless ok
+    ok
   end
 
   def generate_all_variants(original_path)
@@ -214,8 +237,11 @@ module FileAttachment
   end
 
   def source_dimensions(path)
-    out, status = Open3.capture2(MAGICK_ENV, "magick", "identify", "-format", "%w %h", "#{path}[0]")
-    return nil unless status.success?
+    out, err, status = Open3.capture3(MAGICK_ENV, "magick", "identify", "-format", "%w %h", "#{path}[0]")
+    unless status.success?
+      Rails.logger.warn("Asset##{id}: magick identify failed for #{path}: #{err.lines.first&.strip}")
+      return nil
+    end
 
     width, height = out.split.map(&:to_i)
     (width.positive? && height.positive?) ? [width, height] : nil
@@ -288,10 +314,28 @@ module FileAttachment
     end
   end
 
+  def detected_content_type(uploaded_file)
+    path = uploaded_file.try(:tempfile).try(:path) || uploaded_file.try(:path)
+    return nil if path.blank? || !File.exist?(path)
+
+    out, _err, status = Open3.capture3(MAGICK_ENV, "magick", "identify", "-format", "%m", "#{path}[0]")
+    return nil unless status.success?
+
+    MAGICK_FORMAT_CONTENT_TYPES[out.strip.upcase]
+  rescue StandardError
+    nil
+  end
 
   def delete_upload_files
     dir = upload_root.join(id.to_s)
     FileUtils.rm_rf(dir) if Dir.exist?(dir)
+  end
+
+  def upload_must_be_readable_when_it_claims_to_be_an_image
+    return unless @upload_unreadable
+    return unless IMAGE_CONTENT_TYPES.include?(upload_content_type)
+
+    errors.add(:upload, :unreadable_image)
   end
 
   def file_path(style)

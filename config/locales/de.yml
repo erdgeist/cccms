@@ -159,6 +159,8 @@ de:
           attributes:
             base:
               not_permitted: "Dieses Asset ist an geschützte Seiten angehängt; nur die Redaktion darf es löschen"
+            upload:
+              unreadable_image: "konnte nicht als Bild gelesen werden. Möglicherweise ist sie beschädigt oder hat ein anderes Format, als der Name vermuten lässt."
 
   tags:
     index:

@@ -105,6 +105,8 @@ en:
           attributes:
             base:
               not_permitted: "Only Redaktion members may change assets related to nodes in this section"
+            upload:
+              unreadable_image: "could not be read as an image. It may be damaged, or not the format its name suggests."
 
   tags:
     index:

@@ -1,4 +1,5 @@
 require 'test_helper'
+require "rack/test/uploaded_file"
 
 class AssetTest < ActiveSupport::TestCase
   
@@ -52,5 +53,27 @@ class AssetTest < ActiveSupport::TestCase
                        :creator => "Jane Doe", :source_url => "https://example.org", :license_key => "cc_by_4")
     assert asset.has_credit?
     assert_not asset.show_credit?
+  end
+
+  test "an upload that claims to be an image but is not is refused" do
+    Tempfile.create(["fake", ".jpg"]) do |f|
+      f.write("this is not a jpeg")
+      f.flush
+
+      asset = Asset.new(:name => "fake")
+      asset.upload = Rack::Test::UploadedFile.new(f.path, "image/jpeg")
+
+      assert_not asset.valid?
+      assert_includes asset.errors.full_messages.to_sentence,
+                      I18n.t("activerecord.errors.models.asset.attributes.upload.unreadable_image")
+    end
+  end
+
+  test "a real image is accepted and its type comes from the file" do
+    asset = Asset.new(:name => "real")
+    asset.upload = Rack::Test::UploadedFile.new(file_fixture("test_image.png"), "image/jpeg")
+
+    assert asset.valid?, asset.errors.full_messages.to_sentence
+    assert_equal "image/png", asset.upload_content_type
   end
 end
