@@ -1,8 +1,17 @@
 $(document).ready(function () {
   admin_search.initialize();
 
+  function effective_scheme() {
+    var declared = getComputedStyle(document.documentElement).colorScheme;
+    if (declared === "dark")  { return "dark"; }
+    if (declared === "light") { return "light"; }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  var dark_editor = effective_scheme() === "dark";
   tinymce.init({
     selector: 'textarea.with_editor',
+    skin: dark_editor ? 'oxide-dark' : 'oxide',
+    content_css: dark_editor ? 'dark' : 'default',
     license_key: 'gpl',
     promotion: false,
     menubar: false,
