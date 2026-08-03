@@ -29,6 +29,14 @@ module FileAttachment
     large:    { args: ["-resize", "1600x1600>"] }
   }.freeze
 
+  # Prepended to ImageMagick's configuration search path on every
+  # invocation, so config/imagemagick/policy.xml is read before the
+  # installed one. Per-invocation rather than in the environment, so it
+  # cannot leak into anything else on the host.
+  MAGICK_ENV = {
+    "MAGICK_CONFIGURE_PATH" => Rails.root.join("config", "imagemagick").to_s
+  }.freeze
+
   IMAGE_CONTENT_TYPES    = %w[image/jpeg image/gif image/png image/webp].freeze
   VECTOR_CONTENT_TYPES   = %w[image/svg+xml].freeze
   RASTERIZED_CONTENT_TYPES = %w[application/pdf].freeze
@@ -152,7 +160,7 @@ module FileAttachment
     STYLES.each do |style, options|
       dest_path = file_path(style)
       FileUtils.mkdir_p(File.dirname(dest_path))
-      system("magick", original_path, *extra_args, *options[:args], dest_path)
+      system(MAGICK_ENV, "magick", original_path, *extra_args, *options[:args], dest_path)
     end
   end
 
@@ -173,13 +181,13 @@ module FileAttachment
     FileUtils.mkdir_p(File.dirname(dest_path))
 
     if og_full_bleed?(original_path)
-      system("magick", "#{original_path}[0]",
+      system(MAGICK_ENV, "magick", "#{original_path}[0]",
              "-resize", "#{OG_WIDTH}x#{OG_HEIGHT}^",
              "-gravity", "center", "-extent", "#{OG_WIDTH}x#{OG_HEIGHT}",
              "-background", OG_GROUND, "-alpha", "remove", "-alpha", "off",
              *og_output_args, dest_path)
     else
-      system(*og_template_command(dest_path))
+      system(MAGICK_ENV, *og_template_command(dest_path))
     end
   end
 
@@ -206,7 +214,7 @@ module FileAttachment
   end
 
   def source_dimensions(path)
-    out, status = Open3.capture2("magick", "identify", "-format", "%w %h", "#{path}[0]")
+    out, status = Open3.capture2(MAGICK_ENV, "magick", "identify", "-format", "%w %h", "#{path}[0]")
     return nil unless status.success?
 
     width, height = out.split.map(&:to_i)

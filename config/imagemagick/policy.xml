@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Read because FileAttachment sets MAGICK_CONFIGURE_PATH to this directory
+  on every magick invocation. ImageMagick prepends that path to its search
+  list rather than replacing it, so /usr/local/etc/ImageMagick-7/policy.xml
+  is still read afterwards and any hardening the port gains still applies.
+  Rules are processed in order, so these win.
+
+  Coders kept readable and why:
+    PDF, PS   the rasterised branch and the 150dpi social card
+    SVG, MSVG the vector social card
+    JPEG PNG GIF WEBP  the four accepted image types
+    LABEL     used by internal operations
+-->
+<policymap>
+  <!-- Variants are generated synchronously on upload, so an oversized or
+       slow source blocks a request thread. A decompression bomb needs no
+       vulnerability at all. -->
+  <policy domain="resource" name="memory" value="256MiB"/>
+  <policy domain="resource" name="map" value="512MiB"/>
+  <policy domain="resource" name="area" value="128MP"/>
+  <policy domain="resource" name="disk" value="1GiB"/>
+  <policy domain="resource" name="width" value="16KP"/>
+  <policy domain="resource" name="height" value="16KP"/>
+  <policy domain="resource" name="list-length" value="64"/>
+  <policy domain="resource" name="time" value="120"/>
+
+  <!-- @file means "read this path as the argument", and - is stdin. -->
+  <policy domain="path" rights="none" pattern="@*"/>
+  <policy domain="path" rights="none" pattern="-"/>
+
+  <!-- ImageMagick picks its decoder from the file's bytes, not from the
+       declared content type, so an upload announced as image/jpeg is
+       decoded as MVG if that is what it contains. These are the coders
+       that turn that into a file read or a fetch. -->
+  <policy domain="coder" rights="none" pattern="MVG"/>
+  <policy domain="coder" rights="none" pattern="MSL"/>
+  <policy domain="coder" rights="none" pattern="URL"/>
+  <policy domain="coder" rights="none" pattern="HTTP"/>
+  <policy domain="coder" rights="none" pattern="HTTPS"/>
+  <policy domain="coder" rights="none" pattern="FTP"/>
+  <policy domain="coder" rights="none" pattern="EPHEMERAL"/>
+  <policy domain="coder" rights="none" pattern="SHOW"/>
+  <policy domain="coder" rights="none" pattern="WIN"/>
+  <policy domain="coder" rights="none" pattern="PLT"/>
+  <policy domain="coder" rights="none" pattern="XPS"/>
+  <policy domain="coder" rights="none" pattern="TEXT"/>
+</policymap>
