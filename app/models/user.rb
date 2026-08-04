@@ -132,6 +132,7 @@ class User < ApplicationRecord
 
   def deactivate!(actor:)
     return false if alumni?
+    return false if actor == self
     transaction do
       update_column(:roles, (roles | ["alumni"]).sort)
       NodeAction.record!(:participants => [self], :user => actor,
@@ -172,6 +173,56 @@ class User < ApplicationRecord
                           :action => "redaktion_revoke", :target_login => login)
     end
     :revoked
+  end
+
+  def grant_admin!(actor:)
+    return :already if is_admin?
+    return :no_second_factor unless otp_enrolled?
+
+    transaction do
+      update_column(:roles, (roles | ["admin"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "admin_grant", :target_login => login)
+    end
+    :granted
+  end
+
+  def revoke_admin!(actor:)
+    return :already unless is_admin?
+    return :self unless actor != self
+
+    transaction do
+      update_column(:roles, (roles - ["admin"]).sort)
+      NodeAction.record!(:participants => [self], :user => actor,
+                          :action => "admin_revoke", :target_login => login)
+    end
+    :revoked
+  end
+
+  def update_roles!(desired, actor:)
+    desired = Array(desired).map(&:to_s) & ROLES
+    refusals = []
+
+    transaction do
+      refusals << :admin_not_self         if is_admin?  && !desired.include?("admin")     && actor == self
+      refusals << :redaktion_not_self     if redaktion? && !desired.include?("redaktion") && actor == self
+      refusals << :cannot_deactivate_self if !alumni?   &&  desired.include?("alumni")    && actor == self
+      refusals << :admin_needs_otp        if !is_admin?  && desired.include?("admin")     && !otp_enrolled?
+      refusals << :redaktion_needs_otp    if !redaktion? && desired.include?("redaktion") && !otp_enrolled?
+
+      raise ActiveRecord::Rollback if refusals.any?
+
+      revoke_admin!(:actor => actor)     if is_admin?   && !desired.include?("admin")
+      revoke_redaktion!(:actor => actor) if redaktion?  && !desired.include?("redaktion")
+      reactivate!(:actor => actor)       if alumni?     && !desired.include?("alumni")
+
+      grant_admin!(:actor => actor)     if !is_admin?  && desired.include?("admin")
+      grant_redaktion!(:actor => actor) if !redaktion? && desired.include?("redaktion")
+
+      deactivate!(:actor => actor) if !alumni? && desired.include?("alumni")
+    end
+
+    refusals
   end
 
   # otp_secret present == enrolled. otp_pending_secret holds the secret

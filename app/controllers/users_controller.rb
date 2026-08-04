@@ -50,12 +50,26 @@ class UsersController < ApplicationController
     end
 
     permitted = user_params
+    desired   = permitted.key?(:roles) ? permitted.delete(:roles) : nil
+    refusals  = []
+    saved     = false
 
-    if @user.update(permitted)
+    User.transaction do
+      saved = @user.update(permitted)
+      raise ActiveRecord::Rollback unless saved
+
+      refusals = desired ? @user.update_roles!(desired, :actor => current_user) : []
+      raise ActiveRecord::Rollback if refusals.any?
+    end
+
+    if !saved
+      render :edit
+    elsif refusals.any?
+      flash.now[:error] = refusals.map { |r| t("flash.users.#{r}", :login => @user.login) }.to_sentence
+      render :edit
+    else
       flash[:notice] = t("flash.users.updated", :login => @user.login)
       redirect_to user_path(@user)
-    else
-      render :edit
     end
   end
 

@@ -237,6 +237,8 @@ de:
     user_reactivate: "%{actor} hat %{target} reaktiviert"
     redaktion_grant: "%{actor} hat %{target} in die Redaktion aufgenommen"
     redaktion_revoke: "%{actor} hat %{target} aus der Redaktion entfernt"
+    admin_grant: "%{actor} hat %{target} zum Administrator gemacht"
+    admin_revoke: "%{actor} hat %{target} die Administratorenrechte entzogen"
     event_create: "%{actor} hat den Termin %{event} angelegt"
     event_create_on: "%{actor} hat den Termin %{event} unter %{subject} angelegt"
     event_update: "%{actor} hat den Termin %{event} geändert"
@@ -553,6 +555,10 @@ de:
     node_list:
       search_placeholder: "Titel, Abstract, Text durchsuchen…"
       no_revision: "keine"
+      flag_locked: "Gesperrt von %{login}"
+      flag_embargo: "Wird am %{date} veröffentlicht"
+      flag_draft: "Unveröffentlichter Entwurf"
+      flag_no_head: "Noch nie veröffentlicht"
     trashed:
       title: "Papierkorb"
       empty: "Der Papierkorb ist leer."
@@ -640,6 +646,8 @@ de:
       redaktion_revoked: "%{login} gehört nicht mehr zur Redaktion."
       redaktion_needs_otp: "%{login} braucht zuerst einen zweiten Faktor."
       redaktion_not_self: "Die eigene Redaktions-Rolle kann nicht abgegeben werden."
+      admin_not_self: "Du kannst dir die Administratorenrechte nicht selbst entziehen."
+      admin_needs_otp: "%{login} muss zuerst einen zweiten Faktor einrichten, um Administrator zu werden."
     assets:
       created: "Asset wurde angelegt."
       updated: "Asset wurde aktualisiert."

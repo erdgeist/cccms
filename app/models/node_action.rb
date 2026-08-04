@@ -105,6 +105,12 @@ class NodeAction < ApplicationRecord
   # otp_disable is self-service; otp_reset and all three account
   # verbs are an administrator acting on someone else, so actor and
   # participant differ:
+  #   "redaktion_grant" / "redaktion_revoke" / "admin_grant" /
+  #   "admin_revoke" -- role changes. Both pairs come from
+  #   User#grant_* / #revoke_*, so the roles form reaches them through
+  #   update_roles! rather than writing the attribute: witnessing is the
+  #   reason the form does not touch roles directly. Alumni changes record
+  #   as user_deactivate / user_reactivate, not as a role verb.
   #   "target_login" -- flat string, the affected account's login
   #
   # "event_create" / "event_update" / "event_destroy" (calendar

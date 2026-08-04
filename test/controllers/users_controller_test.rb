@@ -357,4 +357,50 @@ class UsersControllerTest < ActionController::TestCase
     assert_redirected_to new_elevation_path
     assert_equal ["admin", "redaktion"], users(:aaron).reload.roles.sort
   end
+
+  test "promoting through the roles form leaves a log entry" do
+    login_as :aaron
+    elevate_session!
+    target = users(:redella)
+    target.update_column(:otp_secret, ROTP::Base32.random)
+
+    assert_difference -> { NodeAction.where(:action => "admin_grant").count }, 1 do
+      put :update, params: { :locale => "de", :id => target.id,
+                             :user => { :roles => ["", "redaktion", "admin"] } }
+    end
+
+    assert_redirected_to user_path(target)
+    assert_equal %w[admin redaktion], target.reload.roles.sort
+  end
+
+  test "a refused promotion re-renders with an error and changes nothing" do
+    login_as :aaron
+    elevate_session!
+    target = users(:quentin)
+
+    assert_no_difference -> { NodeAction.count } do
+      put :update, params: { :locale => "de", :id => target.id,
+                             :user => { :roles => ["", "admin"] } }
+    end
+
+    assert_response :success
+    assert_empty target.reload.roles
+    assert_not_nil flash[:error]
+    assert_nil flash[:notice]
+  end
+
+  test "a validation failure leaves no promotion behind" do
+    login_as :aaron
+    elevate_session!
+    target = users(:redella)
+    target.update_column(:otp_secret, ROTP::Base32.random)
+
+    assert_no_difference -> { NodeAction.count } do
+      put :update, params: { :locale => "de", :id => target.id,
+                             :user => { :email => "", :roles => ["", "redaktion", "admin"] } }
+    end
+
+    assert_response :success
+    assert_equal %w[redaktion], target.reload.roles
+  end
 end

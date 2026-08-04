@@ -6,6 +6,11 @@ class UserTest < ActiveSupport::TestCase
   include AuthenticatedTestHelper
   fixtures :users
 
+  def role_entries
+    NodeAction.where(:action => %w[admin_grant admin_revoke redaktion_grant
+                                   redaktion_revoke user_deactivate user_reactivate])
+  end
+
   def test_should_create_user
     assert_difference 'User.count' do
       user = create_user
@@ -186,6 +191,67 @@ class UserTest < ActiveSupport::TestCase
     redella = users(:redella)
     redella.update_column(:last_login_at, nil)
     assert_equal :never, redella.staleness_tier(now)
+  end
+
+  test "granting a role through update_roles! is witnessed" do
+    target = users(:redella)
+    target.update_column(:otp_secret, ROTP::Base32.random)
+
+    assert_difference -> { role_entries.count }, 1 do
+      assert_empty target.update_roles!(%w[redaktion admin], :actor => users(:aaron))
+    end
+
+    assert_equal %w[admin redaktion], target.reload.roles.sort
+    entry = role_entries.order(:id).last
+    assert_equal "admin_grant", entry.action
+    assert_equal users(:aaron).id, entry.user_id
+    assert_equal "redella", entry.metadata["target_login"]
+  end
+
+  test "a refused grant applies nothing at all" do
+    target = users(:quentin)
+    assert_not target.otp_enrolled?
+
+    assert_no_difference -> { role_entries.count } do
+      refusals = target.update_roles!(%w[redaktion admin], :actor => users(:aaron))
+      assert_includes refusals, :admin_needs_otp
+      assert_includes refusals, :redaktion_needs_otp
+    end
+
+    assert_empty target.reload.roles, "a refusal must leave the stored set untouched"
+  end
+
+  test "nobody demotes themselves through update_roles!" do
+    actor = users(:aaron)
+
+    refusals = actor.update_roles!([], :actor => actor)
+
+    assert_includes refusals, :admin_not_self
+    assert_includes refusals, :redaktion_not_self
+    assert_equal %w[admin redaktion], actor.reload.roles.sort
+  end
+
+  test "marking an account alumni through update_roles! is witnessed as a deactivation" do
+    target = users(:redella)
+
+    assert_difference -> { role_entries.where(:action => "user_deactivate").count }, 1 do
+      assert_empty target.update_roles!(%w[redaktion alumni], :actor => users(:aaron))
+    end
+
+    assert target.reload.alumni?
+    assert target.redaktion?, "deactivate! preserves the other roles"
+  end
+
+  test "revoking and granting in one submission apply in the right order" do
+    target = users(:redella)
+    target.update_column(:otp_secret, ROTP::Base32.random)
+
+    assert_empty target.update_roles!(%w[admin], :actor => users(:aaron))
+
+    assert_equal %w[admin], target.reload.roles
+    actions = role_entries.order(:id).last(2).map(&:action)
+    assert_includes actions, "redaktion_revoke"
+    assert_includes actions, "admin_grant"
   end
   
 protected

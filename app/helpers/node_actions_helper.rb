@@ -24,6 +24,8 @@ module NodeActionsHelper
     "user_reactivate"    => "user-check",
     "redaktion_grant"    => "users-plus",
     "redaktion_revoke"   => "users-minus",
+    "admin_grant"        => "shield-plus",
+    "admin_revoke"       => "shield-minus",
     "event_create"       => "calendar-plus",
     "event_update"       => "calendar-event",
     "event_destroy"      => "calendar-x"
@@ -368,6 +370,16 @@ module NodeActionsHelper
 
   def summarize_redaktion_revoke action
     t("node_actions.redaktion_revoke", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_admin_grant action
+    t("node_actions.admin_grant", :actor => actor_ref(action),
+       :target => user_participant_ref(action)).html_safe
+  end
+
+  def summarize_admin_revoke action
+    t("node_actions.admin_revoke", :actor => actor_ref(action),
        :target => user_participant_ref(action)).html_safe
   end
 
