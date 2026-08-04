@@ -79,7 +79,7 @@
                     form: { data: { confirm: t(".confirm_revoke_redaktion", :login => user.login) },
                             class: 'button_to destructive' },
                     "aria-label" => t(".revoke_redaktion"), title: t(".revoke_redaktion") do %>
-                <%= icon("user-minus", library: "tabler", "aria-hidden": true) %>
+                <%= icon("users-minus", library: "tabler", "aria-hidden": true) %>
               <% end %>
             <% end %>
           <% elsif user.otp_enrolled? %>
@@ -87,13 +87,13 @@
                   form: { data: { confirm: t(".confirm_grant_redaktion", :login => user.login) },
                           class: 'button_to state_changing' },
                   "aria-label" => t(".grant_redaktion"), title: t(".grant_redaktion") do %>
-              <%= icon("user-plus", library: "tabler", "aria-hidden": true) %>
+              <%= icon("users-plus", library: "tabler", "aria-hidden": true) %>
             <% end %>
           <% else %>
             <button type="button" class="disabled_action" disabled
                     title="<%= t(".grant_redaktion_blocked") %>"
                     aria-label="<%= t(".grant_redaktion_blocked") %>">
-              <%= icon("user-plus", library: "tabler", "aria-hidden": true) %>
+              <%= icon("users-plus", library: "tabler", "aria-hidden": true) %>
             </button>
           <% end %>
         <% end %>

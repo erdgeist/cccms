@@ -1,8 +1,8 @@
-<h1><%= t(".title") %></h1>
-
-<%= link_to new_menu_item_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_item") %>
-<% end %>
+<%= render "shared/page_actions",
+      :title => t(".title"),
+      :icon_name => "list-details",
+      :label => t(".create_item"),
+      :options => [[t(".create_item"), new_menu_item_path]] %>
 
 <p class="field_hint"><%= t(".reorder_hint") %></p>
 

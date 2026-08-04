@@ -1,8 +1,8 @@
-<h1><%= t(".title") %></h1>
-
-<%= link_to new_asset_path, class: 'action_button' do %>
-  <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_asset") %>
-<% end %>
+<%= render "shared/page_actions",
+      :title => t(".title"),
+      :icon_name => "photo-plus",
+      :label => t(".create_asset"),
+      :options => [[t(".create_asset"), new_asset_path]] %>
 
 <%= will_paginate @assets %>
 

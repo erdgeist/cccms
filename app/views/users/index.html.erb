@@ -1,14 +1,10 @@
-<h1><%= t(".title") %></h1>
-
-<p class="button_row">
-  <% UsersController::ROLE_PRESETS.each_key do |preset| %>
-    <%= link_to new_user_path(:preset => preset), class: 'action_button' do %>
-      <%= icon("plus", library: "tabler", "aria-hidden": true) %>
-      <%= t(".create_#{preset}") %>
-    <% end %>
-  <% end %>
-</p>
-<p class="field_hint"><%= t(".admin_hint") %></p>
+<%= render "shared/page_actions",
+      :title => t(".title"),
+      :icon_name => "user-plus",
+      :label => t(".create_account"),
+      :options => UsersController::ROLE_PRESETS.each_key.map { |preset|
+                    [t(".create_#{preset}"), new_user_path(:preset => preset)] },
+      :hint => t(".admin_hint") %>
 
 <% UsersController::GROUP_ORDER.each do |group| %>
   <% members = @users[group] || [] %>

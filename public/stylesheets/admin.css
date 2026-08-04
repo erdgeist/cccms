@@ -338,7 +338,7 @@ div.pagination span.gap {
   justify-content: center;
   min-width: 1.75rem;
   height: 1.75rem;
-  padding: 0 0.4rem;
+  padding: 0 0.2rem;
   border-radius: 4px;
   font-style: normal;
 }
@@ -355,6 +355,11 @@ div.pagination em.current {
 
 div.pagination span.gap {
   color: var(--text-muted);
+}
+
+div.pagination .previous_page,
+div.pagination .next_page {
+  min-width: 2rem;
 }
 
 div.pagination .previous_page.disabled,
@@ -824,11 +829,6 @@ table.revisions_table tr:hover {
 .node_table td.actions {
   width: 1px;
   white-space: nowrap;
-}
-
-/* Only where the action column is last. In the node lists rev. follows it,
-   and the 25px gutter is a real gap between columns there. */
-.user_table td.actions {
   padding-right: 0;
 }
 
@@ -901,6 +901,7 @@ table.revisions_table tr:hover {
 .flag_stack {
   display: inline-flex;
   flex-direction: column;
+  flex-shrink: 0;
   align-items: flex-start;
   gap: 0.25rem;
   vertical-align: -0.15em;
@@ -917,6 +918,11 @@ table.revisions_table tr:hover {
 .flag_stack .flag_attention svg { color: var(--accent); }
 .flag_stack .flag_alert svg     { color: var(--danger); }
 
+table.node_table td {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+
 .title_with_flags {
   display: flex;
   align-items: flex-start;
@@ -931,8 +937,14 @@ table.revisions_table tr:hover {
 }
 
 .node_table .node_path {
-  margin-top: 0.15rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
 }
+
+.node_table .node_path a {
+  color: var(--text-muted);
+}
+
 
 .user_group_heading {
   margin-top: 1.5rem;
@@ -1514,6 +1526,88 @@ input#menu_item_title {
   #admin_overview {
     margin-left: -125px;
   }
+}
+
+.page_actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Pushes the actions to the right of the heading. */
+.page_actions h1 {
+  margin: 0 auto 0 0;
+}
+
+.page_action_group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.action_menu {
+  position: relative;
+}
+
+/* Safari renders a disclosure triangle unless both are set. */
+.action_menu > summary,
+.action_hint > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.action_menu > summary::-webkit-details-marker,
+.action_hint > summary::-webkit-details-marker {
+  display: none;
+}
+
+.action_menu_items {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.action_hint > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+.action_hint {
+  position: relative;
+}
+
+.action_hint p {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  width: max-content;
+  max-width: 22rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem;
+  color: var(--text-muted);
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 /* ============================================================

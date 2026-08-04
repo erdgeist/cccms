@@ -27,9 +27,9 @@ en:
       ccc_date: "%d %B, %Y"
 
   will_paginate:
-    previous_label: "&#8592; Previous"
+    previous_label: "&#8592;"
     previous_aria_label: "Previous page"
-    next_label: "Next &#8594;"
+    next_label: "&#8594;"
     next_aria_label: "Next page"
     page_gap: "&hellip;"
     container_aria_label: "Pagination"
@@ -285,6 +285,7 @@ en:
 
     index:
       title: "User accounts"
+      create_account: "Create an account"
       create_editor: "Create editor account"
       create_redaktion: "Create Redaktion account"
       create_admin: "Create admin account"
@@ -322,14 +323,12 @@ en:
       toggle_preview: "Toggle live preview"
       force_render: "Force preview render"
       revisions: "revisions"
+      explain: "What does this do?"
       "yes": "yes"
       "no": "no"
     columns:
-      id: "ID"
       title: "Title"
-      actions: "Actions"
       locked_by: "Locked by"
-      rev: "Rev."
       path: "Path"
       preview: "Preview"
       name: "Name"

@@ -1,0 +1,32 @@
+<div class="page_actions">
+  <h1><%= title %></h1>
+
+  <% if options.size == 1 %>
+    <%= link_to options.first.last, class: "action_button",
+          "aria-label" => options.first.first, title: options.first.first do %>
+      <%= icon(icon_name, library: "tabler", "aria-hidden": true) %>
+    <% end %>
+  <% else %>
+    <div class="page_action_group">
+      <details class="action_menu">
+        <summary class="action_button" aria-label="<%= label %>" title="<%= label %>">
+          <%= icon(icon_name, library: "tabler", "aria-hidden": true) %>
+          <%= icon("chevron-down", library: "tabler", "aria-hidden": true) %>
+        </summary>
+        <div class="action_menu_items">
+          <% options.each do |option_label, path| %>
+            <%= link_to option_label, path, class: "action_button" %>
+          <% end %>
+        </div>
+      </details>
+
+      <% if local_assigns[:hint].present? %>
+        <details class="action_hint">
+          <summary aria-label="<%= t("admin.common.explain") %>"
+               title="<%= t("admin.common.explain") %>">?</summary>
+          <p><%= hint %></p>
+        </details>
+      <% end %>
+    </div>
+  <% end %>
+</div>

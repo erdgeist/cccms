@@ -14,11 +14,6 @@
 
 <%= will_paginate @nodes %>
 <table class="node_table">
-  <tr class="header">
-    <th class="title"><%= t("admin.columns.title") %></th>
-    <th class="actions"><%= t("admin.columns.actions") %></th>
-    <th class="revision"><%= t("admin.columns.rev") %></th>
-  </tr>
   <% @nodes.each do |node| %>
   <tr class="<%= cycle("even", "odd") %>">
     <td class="title">
@@ -30,7 +25,7 @@
                    t(".flag_embargo", :date => admin_datetime(node.head.published_at)),
                    :tier => :attention) if node.embargoed? %>
           <%= flag("file-pencil", t(".flag_draft")) if node.draft %>
-          <%= flag("file-off", t(".flag_no_head")) unless node.head %>
+          <%= flag("world-off", t(".flag_no_head")) unless node.head %>
         </span>
         <div class="title_body">
           <div class="node_title"><%= link_to title_for_node(node), node_path(node) %></div>
@@ -54,7 +49,6 @@
         </span>
       </div>
     </td>
-    <td><%= node.head ? node.head.revision : t(".no_revision") %></td>
   </tr>
   <% end %>
 </table>

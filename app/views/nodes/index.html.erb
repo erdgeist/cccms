@@ -1,10 +1,8 @@
-<h1><%= t(".title") %></h1>
-
-<div>
-  <%= link_to new_node_path, class: 'action_button' do %>
-    <%= icon("plus", library: "tabler", "aria-hidden": true) %> <%= t(".create_node") %>
-  <% end %>
-  <span class="field_hint"><%= t(".create_hint") %></span>
-</div>
+<%= render "shared/page_actions",
+      :title => t(".title"),
+      :icon_name => "file-plus",
+      :label => t(".create_node"),
+      :options => [[t(".create_node"), new_node_path]],
+      :hint => t(".create_hint") %>
 
 <%= render 'node_list' %>

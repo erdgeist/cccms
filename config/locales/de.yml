@@ -76,9 +76,9 @@ de:
       skip_last_comma: true
 
   will_paginate:
-    previous_label: "&#8592; Zurück"
+    previous_label: "&#8592;"
     previous_aria_label: "Vorherige Seite"
-    next_label: "Weiter &#8594;"
+    next_label: "&#8594;"
     next_aria_label: "Nächste Seite"
     page_gap: "&hellip;"
     container_aria_label: "Seitennavigation"
@@ -337,6 +337,7 @@ de:
       action_log: "Letzte Änderungen dieses Kontos"
     index:
       title: "Benutzerkonten"
+      create_account: "Konto anlegen"
       create_editor: "Editor-Konto anlegen"
       create_redaktion: "Redaktions-Konto anlegen"
       create_admin: "Admin-Konto anlegen"
@@ -374,14 +375,12 @@ de:
       toggle_preview: "Live-Vorschau umschalten"
       force_render: "Vorschau neu rendern"
       revisions: "Revisionen"
+      explain: "Was macht das?"
       "yes": "ja"
       "no": "nein"
     columns:
-      id: "ID"
       title: "Titel"
-      actions: "Aktionen"
       locked_by: "Gesperrt von"
-      rev: "Rev."
       path: "Pfad"
       preview: "Vorschau"
       name: "Name"
