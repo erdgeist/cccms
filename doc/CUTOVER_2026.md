@@ -1,4 +1,11 @@
-# CCCMS Installation Guide
+# Rails 2 to Rails 8 cutover, June 2026
+
+A historical record of one migration onto a fresh FreeBSD jail. NOT an
+installation guide and no longer maintained: branch names, Ruby and
+gemset versions, migration stamps and expected test counts are all
+stale. See INSTALL.md for setting the project up.
+
+## CCCMS Installation Guide
 
 This document covers the non-obvious steps required to install the CCCMS
 stack on a fresh FreeBSD jail. It assumes a FreeBSD 14.x base jail with
