@@ -321,6 +321,7 @@ en:
       unlock_confirm: "Are you sure you want to unlock?\nLocked by %{login}\nLast modified %{time}"
       toggle_preview: "Toggle live preview"
       force_render: "Force preview render"
+      revisions: "revisions"
       "yes": "yes"
       "no": "no"
     columns:

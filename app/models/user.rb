@@ -70,24 +70,6 @@ class User < ApplicationRecord
     roles.include?("admin")
   end
 
-  # Compatibility shims for the users form, which posts user[admin] as a
-  # checkbox. Goes away when that form learns about roles.
-  def admin
-    is_admin?
-  end
-
-  def admin?
-    is_admin?
-  end
-
-  def admin=(value)
-    if ActiveModel::Type::Boolean.new.cast(value)
-      self.roles = (roles | ["admin"])
-    else
-      self.roles = (roles - ["admin"])
-    end
-  end
-
   def redaktion?
     roles.include?("redaktion")
   end

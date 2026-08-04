@@ -648,6 +648,10 @@ class Node < ApplicationRecord
     )
   end
 
+  def embargoed?
+    head&.published_at.present? && head.published_at > Time.zone.now
+  end
+
   # Nodes are never destroyed recursively
   # Descendants must be removed or reparented individually first.
   # The Trash feature will be the ordinary path to deletion.

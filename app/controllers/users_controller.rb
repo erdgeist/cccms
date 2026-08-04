@@ -140,7 +140,7 @@ class UsersController < ApplicationController
 
     def verify_status
       @user ||= User.new
-      unless @user.id == current_user.id || current_user.admin
+      unless @user.id == current_user.id || current_user.is_admin?
         deny_user_access
       end
     end

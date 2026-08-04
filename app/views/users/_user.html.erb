@@ -27,17 +27,17 @@
       <span class="field_hint"><%= t(".no_roles") %></span>
     <% end %>
   </td>
-  <td class="user_actions">
-    <div class="user_action_grid">
-      <span class="user_action">
+  <td class="actions">
+    <div class="action_grid">
+      <span class="action_item">
         <%= link_to user_path(user), "aria-label" => t("admin.common.show"),
               title: t("admin.common.show") do %>
           <%= icon("eye", library: "tabler", "aria-hidden": true) %>
         <% end %>
       </span>
 
-      <span class="user_action">
-        <% if current_user.admin? || current_user == user %>
+      <span class="action_item">
+        <% if current_user.is_admin? || current_user == user %>
           <%= link_to edit_user_path(user), "aria-label" => t("admin.common.edit"),
                 title: t("admin.common.edit") do %>
             <%= icon("edit", library: "tabler", "aria-hidden": true) %>
@@ -45,15 +45,15 @@
         <% end %>
       </span>
 
-      <span class="user_action">
+      <span class="action_item">
         <%= link_to admin_log_path(:user_id => user.id),
               "aria-label" => t(".action_log"), title: t(".action_log") do %>
           <%= icon("history", library: "tabler", "aria-hidden": true) %>
         <% end %>
       </span>
 
-      <span class="user_action">
-        <% if current_user.admin? && current_user != user %>
+      <span class="action_item">
+        <% if current_user.is_admin? && current_user != user %>
           <% if user.alumni? %>
             <%= button_to reactivate_user_path(user), method: :put,
                   form: { class: 'button_to state_changing' },
@@ -71,7 +71,7 @@
         <% end %>
       </span>
 
-      <span class="user_action">
+      <span class="action_item">
         <% if current_user.redaktion? && !user.alumni? %>
           <% if user.redaktion? %>
             <% unless user == current_user %>

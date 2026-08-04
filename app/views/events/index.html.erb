@@ -22,10 +22,12 @@
 <% @events.each do |event| %>
   <tr>
     <td>
-      <span class="flag_stack">
-        <%= flag("clock-off", Event.human_attribute_name(:allday)) if event.allday %>
-      </span>
-      <%= link_to event.display_title, event %>
+      <div class="title_with_flags">
+        <span class="flag_stack">
+          <%= flag("clock-off", Event.human_attribute_name(:allday)) if event.allday %>
+        </span>
+        <div class="title_body"><%= link_to event.display_title, event %></div>
+      </div>
     </td>
     <td><%= admin_datetime(event.start_time) %></td>
     <td><%= admin_datetime(event.end_time) %></td>

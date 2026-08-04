@@ -20,7 +20,7 @@
     <div class="layout_row_label"><%= t("users.labels.confirm") %></div>
     <div class="layout_row_content"><%= f.password_field :password_confirmation, :autocomplete => "new-password" %></div>
 
-    <% if current_user.admin? %>
+    <% if current_user.is_admin? %>
       <div class="layout_row_label"><%= t("users.labels.roles") %></div>
       <div class="layout_row_content">
         <% User::ROLES.each do |role| %>
@@ -62,7 +62,7 @@
         <% end %>
       <% end %>
     </div>
-  <% elsif current_user.admin? && @user.otp_enrolled? %>
+  <% elsif current_user.is_admin? && @user.otp_enrolled? %>
     <div class="layout_row_label"><%= t(".second_factor") %></div>
     <div class="layout_row_content">
       <%= t(".enabled") %>

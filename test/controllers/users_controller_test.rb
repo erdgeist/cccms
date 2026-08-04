@@ -50,7 +50,7 @@ class UsersControllerTest < ActionController::TestCase
     end
     
     assert_redirected_to user_path(User.last)
-    assert !User.last.admin
+    assert_not User.last.is_admin?
   end
   
   test "creating a Redaktion account" do

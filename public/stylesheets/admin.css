@@ -644,24 +644,20 @@ table tr.header {
   text-align: left;
 }
 
-table.node_table ,
+table.node_table,
 table.assets_table,
 table.user_table,
 table.events_table {
   border-collapse: collapse;
 }
 
-table.node_table tr {
-  border-bottom: 1px solid var(--text);
-}
-
+table.node_table tr,
 table.assets_table tr,
 table.user_table tr,
 table.events_table tr {
   border-bottom: 1px solid var(--hairline);
 }
 
-table.node_table th.node_id,
 table.node_table th.revision {
   min-width: 4rem;
 }
@@ -682,14 +678,7 @@ table.events_table tr.header {
   text-align: left;
 }
 
-table.node_table td {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-right: 25px;
-  padding-left: 0px;
-  min-width: 2rem;
-}
-
+table.node_table td,
 table.assets_table td,
 table.user_table td,
 table.events_table td {
@@ -698,15 +687,6 @@ table.events_table td {
   padding-right: 25px;
   padding-left: 0px;
   min-width: 2rem;
-}
-
-table.node_table .node_id {
-  padding-left: 10px;
-  padding-right: 15px;
-}
-
-table.node_table .actions {
-  text-transform: lowercase;
 }
 
 table.node_table tr.header:hover,
@@ -721,10 +701,6 @@ table.assets_table tr:hover,
 table.user_table tr:hover,
 table.events_table tr:hover {
   background-color: var(--surface-tint);
-}
-
-#admin_sitemap_table .node_id:before {
-  content: "• ";
 }
 
 table.revisions_table {
@@ -844,37 +820,47 @@ table.revisions_table tr:hover {
   margin-bottom: 1.5rem;
 }
 
-.user_table td.user_actions {
+.user_table td.actions,
+.node_table td.actions {
   width: 1px;
   white-space: nowrap;
+}
+
+/* Only where the action column is last. In the node lists rev. follows it,
+   and the 25px gutter is a real gap between columns there. */
+.user_table td.actions {
   padding-right: 0;
 }
 
-.user_table .user_action_grid {
+.action_grid {
   display: grid;
-  grid-template-columns: repeat(3, auto);
   gap: 0.4rem;
   justify-content: end;
 }
 
-.user_table .user_action {
+.user_table .action_grid { grid-template-columns: repeat(3, auto); }
+.node_table .action_grid { grid-template-columns: repeat(2, auto); }
+
+/* min-height keeps a row the same height whether or not the viewer may see
+   the lower controls. */
+.action_item {
   display: inline-flex;
   min-height: 2rem;
 }
 
-.user_table .user_action svg {
+.action_item svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.user_table .user_action form.button_to {
+.action_item form.button_to {
   display: inline-flex;
   margin: 0;
 }
 
-.user_table .user_action a,
-.user_table .user_action button[type="submit"],
-.user_table .user_action .disabled_action {
+.action_item a,
+.action_item form.button_to button[type="submit"],
+.action_item .disabled_action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -886,22 +872,22 @@ table.revisions_table tr:hover {
   text-decoration: none;
 }
 
-.user_table .user_action a:hover {
+.action_item a:hover {
   color: var(--surface);
   background-color: var(--text);
 }
 
-.user_table .user_action form.button_to.destructive button:hover {
+.action_item form.button_to.destructive button:hover {
   color: var(--on-solid);
   background-color: var(--danger-solid);
 }
 
-.user_table .user_action form.button_to.state_changing button:hover {
+.action_item form.button_to.state_changing button:hover {
   color: var(--on-solid);
   background-color: var(--action-solid);
 }
 
-.user_table .user_action .disabled_action {
+.action_item .disabled_action {
   color: var(--text-muted);
   background-color: transparent;
   border-color: var(--border);
@@ -915,21 +901,38 @@ table.revisions_table tr:hover {
 .flag_stack {
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 1rem;
+  align-items: flex-start;
   gap: 0.25rem;
   vertical-align: -0.15em;
   margin-right: 0.5rem;
+  width: 1.5rem;
 }
 
 .flag_stack svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
   color: var(--text-muted);
 }
 
 .flag_stack .flag_attention svg { color: var(--accent); }
 .flag_stack .flag_alert svg     { color: var(--danger); }
+
+.title_with_flags {
+  display: flex;
+  align-items: flex-start;
+}
+
+.title_body {
+  min-width: 0;
+}
+
+.node_table .node_title {
+  font-weight: bold;
+}
+
+.node_table .node_path {
+  margin-top: 0.15rem;
+}
 
 .user_group_heading {
   margin-top: 1.5rem;
