@@ -581,6 +581,7 @@ de:
       title: "Termine"
       create_event: "Termin anlegen"
       edit_link: "bearbeiten"
+      search_placeholder: "Titel, Beschreibung, Ort, Tags durchsuchen…"
     show:
       title: "Termin"
       title_for_node: "Termin für Node %{path}"
@@ -691,6 +692,7 @@ de:
     index:
       title: "Assets"
       create_asset: "Asset anlegen"
+      search_placeholder: "Name, Urheber, Dateiname, Typ durchsuchen…"
     show:
       thumbnail: "Vorschaubild"
       attached_to: "Angehängt an"

@@ -4,6 +4,8 @@
       :label => t(".create_event"),
       :options => [[t(".create_event"), new_event_path]] %>
 
+<%= render "shared/search_form", :placeholder => t(".search_placeholder") %>
+
 <%= will_paginate @events %>
 
 <table class="events_table">

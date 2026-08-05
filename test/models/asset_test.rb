@@ -76,4 +76,31 @@ class AssetTest < ActiveSupport::TestCase
     assert asset.valid?, asset.errors.full_messages.to_sentence
     assert_equal "image/png", asset.upload_content_type
   end
+
+  def build_asset(name:, creator: nil)
+    asset = Asset.new(:name => name, :creator => creator)
+    asset.upload = Rack::Test::UploadedFile.new(
+      file_fixture("test_document.pdf"), "application/pdf")
+    asset.save!
+    asset
+  end
+
+  test "editor_search matches across columns" do
+    pdf   = build_asset(:name => "Offener Brief")
+    other = build_asset(:name => "Nothing distinctive", :creator => "Someone")
+
+    assert_includes Asset.editor_search("brief"), pdf
+    assert_not_includes Asset.editor_search("brief"), other
+    assert_includes Asset.editor_search("pdf"), pdf,
+      "upload_content_type should be searchable"
+    assert_includes Asset.editor_search("someone"), other,
+      "creator should be searchable"
+  end
+
+  test "editor_search ANDs multiple words" do
+    build_asset(:name => "Offener Brief")
+
+    assert_not_empty Asset.editor_search("offener brief")
+    assert_empty Asset.editor_search("offener zzzznomatch")
+  end
 end

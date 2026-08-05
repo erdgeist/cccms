@@ -178,4 +178,29 @@ class EventTest < ActiveSupport::TestCase
     assert event.save
     assert_equal event.start_time, event.occurrences.first&.start_time
   end
+
+  test "editor_search matches across columns" do
+    match = Event.create!(:title => "Chaosradio Spezial", :location => "Zentrale")
+    other = Event.create!(:title => "Nothing distinctive")
+
+    assert_includes Event.editor_search("chaosradio"), match
+    assert_not_includes Event.editor_search("chaosradio"), other
+    assert_includes Event.editor_search("zentrale"), match,
+      "location should be searchable"
+  end
+
+  test "editor_search ANDs multiple words" do
+    Event.create!(:title => "Chaosradio Spezial")
+
+    assert_not_empty Event.editor_search("chaosradio spezial")
+    assert_empty Event.editor_search("chaosradio zzzznomatch")
+  end
+
+  test "editor_search finds an event by its tag" do
+    event = Event.create!(:title => "Nothing distinctive")
+    event.tag_list.add("open-day")
+    event.save!
+
+    assert_includes Event.editor_search("open-day"), event
+  end
 end

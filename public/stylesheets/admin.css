@@ -575,7 +575,7 @@ form.button_to svg  {
 }
 
 .button_row .action_button,
-.node_search_form .action_button {
+.search_form .action_button {
   margin-bottom: 0;
 }
 
@@ -1147,14 +1147,14 @@ form.button_to button[type="submit"] {
   margin-bottom: 0;
 }
 
-.node_search_form {
+.search_form {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
-.node_search_form input[type=text] {
+.search_form input[type=text] {
   padding: 4px 12px;
   box-sizing: border-box;
   height: 2.25rem;
@@ -1163,7 +1163,7 @@ form.button_to button[type="submit"] {
   border-radius: 2px;
 }
 
-.node_search_form .action_button {
+.search_form .action_button {
   height: 2.25rem;
   box-sizing: border-box;
 }

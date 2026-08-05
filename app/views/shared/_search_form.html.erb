@@ -1,0 +1,15 @@
+<%= form_tag url_for(:controller => params[:controller], :action => params[:action]),
+      :method => :get, :class => "search_form" do %>
+  <% Array(local_assigns[:hidden]).each do |field_name, value| %>
+    <%= hidden_field_tag field_name, value %>
+  <% end %>
+  <%= text_field_tag :q, params[:q], :placeholder => placeholder %>
+  <%= button_tag :type => "submit", :class => "action_button" do %>
+    <%= icon("search", library: "tabler", "aria-hidden": true) %>
+    <%= t("admin.common.search") %>
+  <% end %>
+  <% if params[:q].present? || Array(local_assigns[:hidden]).any? %>
+    <%= link_to t("admin.common.reset"),
+          url_for(:controller => params[:controller], :action => params[:action]) %>
+  <% end %>
+<% end %>

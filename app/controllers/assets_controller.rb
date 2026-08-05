@@ -6,12 +6,10 @@ class AssetsController < ApplicationController
   before_action :login_required
   
   layout 'admin'
-  
+
   def index
-    @assets = Asset.order('id DESC').paginate(
-      :page     => params[:page],
-      :per_page => 20
-    )
+    scope = params[:q].present? ? Asset.editor_search(params[:q]) : Asset.all
+    @assets = scope.order("id DESC").paginate(:page => params[:page], :per_page => 20)
   end
 
   # GET /assets/1

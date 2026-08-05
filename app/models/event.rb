@@ -54,6 +54,24 @@ class Event < ApplicationRecord
     destroyed
   end
 
+  def self.editor_search(term)
+    words = term.to_s.split(/\s+/).reject(&:blank?)
+    return none if words.empty?
+
+    words.inject(all) do |scope, word|
+      like = "%#{sanitize_sql_like(word)}%"
+      tagged = ActsAsTaggableOn::Tagging
+                 .where(:taggable_type => base_class.name)
+                 .joins(:tag).where("tags.name ILIKE ?", like)
+                 .select(:taggable_id)
+      scope.where(
+        "events.title ILIKE :t OR events.description ILIKE :t OR " \
+        "events.location ILIKE :t OR events.url ILIKE :t OR " \
+        "events.id IN (:tagged)", :t => like, :tagged => tagged
+      )
+    end
+  end
+
   private
     def generate_occurrences
       Occurrence.generate self

@@ -528,6 +528,7 @@ en:
       title: "Events"
       create_event: "Create event"
       edit_link: "edit"
+      search_placeholder: "Search title, description, location, tags…"
     edit:
       title: "Editing event"
       change_node: "Change node"
@@ -653,6 +654,7 @@ en:
     index:
       title: "Assets"
       create_asset: "Create asset"
+      search_placeholder: "Search name, creator, filename, type…"
     show:
       thumbnail: "Thumbnail"
       attached_to: "Attached to"

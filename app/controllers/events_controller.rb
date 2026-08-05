@@ -10,11 +10,12 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.xml
   def index
-    @events = Event.order(:id)
+    scope = Event.order(Arel.sql("start_time DESC NULLS LAST"))
+    scope = scope.merge(Event.editor_search(params[:q])) if params[:q].present?
 
     respond_to do |format|
-      format.html { @events = @events.paginate(page: params[:page], per_page: 25) }
-      format.xml  { render :xml => @events }
+      format.html { @events = scope.paginate(:page => params[:page], :per_page => 25) }
+      format.xml  { render :xml => scope }
     end
   end
 

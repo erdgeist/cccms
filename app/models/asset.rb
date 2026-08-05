@@ -82,4 +82,18 @@ class Asset < ApplicationRecord
       destroy!
     end
   end
+
+  def self.editor_search(term)
+    words = term.to_s.split(/\s+/).reject(&:blank?)
+    return none if words.empty?
+
+    words.inject(all) do |scope, word|
+      like = "%#{sanitize_sql_like(word)}%"
+      scope.where(
+        "assets.name ILIKE :t OR assets.creator ILIKE :t OR " \
+        "assets.upload_file_name ILIKE :t OR assets.source_url ILIKE :t OR " \
+        "assets.upload_content_type ILIKE :t", :t => like
+      )
+    end
+  end
 end

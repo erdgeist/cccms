@@ -4,6 +4,8 @@
       :label => t(".create_asset"),
       :options => [[t(".create_asset"), new_asset_path]] %>
 
+<%= render "shared/search_form", :placeholder => t(".search_placeholder") %>
+
 <%= will_paginate @assets %>
 
 <table class="assets_table">
