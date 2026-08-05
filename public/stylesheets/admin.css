@@ -763,21 +763,6 @@ table.revisions_table tr:hover {
   background-color: var(--surface-tint);
 }
 
-.events_table .rrule_text {
-  display: inline-block;
-  max-width: 300px;
-  overflow-wrap: break-word;
-}
-
-.events_table .truncate {
-  display: inline-block;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: bottom;
-}
-
 #diffview del {
   background: var(--diff-del-bg);
   color: var(--diff-del-fg);
@@ -832,6 +817,50 @@ table.revisions_table tr:hover {
   padding-right: 0;
 }
 
+.events_table td.title,
+.events_table th.title {
+  padding-right: 0.75rem;
+}
+
+.events_table .event_title {
+  font-weight: bold;
+}
+
+.events_table .event_meta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.875rem;
+}
+
+.events_table .event_meta svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.events_table .event_meta a {
+  overflow-wrap: anywhere;
+  color: var(--text-muted);
+}
+
+.events_table .event_when {
+  overflow-wrap: normal;
+  min-width: 7rem;
+  padding-right: 0.75rem;
+}
+
+.events_table .event_when .rrule_raw {
+  overflow-wrap: anywhere;
+}
+
+.events_table td.actions {
+  width: 1px;
+  white-space: nowrap;
+  padding-right: 0;
+}
+
 .action_grid {
   display: grid;
   gap: 0.4rem;
@@ -840,6 +869,7 @@ table.revisions_table tr:hover {
 
 .user_table .action_grid { grid-template-columns: repeat(3, auto); }
 .node_table .action_grid { grid-template-columns: repeat(2, auto); }
+.events_table .action_grid { grid-template-columns: repeat(2, auto); }
 
 /* min-height keeps a row the same height whether or not the viewer may see
    the lower controls. */

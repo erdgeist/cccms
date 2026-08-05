@@ -41,6 +41,7 @@ de:
       short: "%e. %B, %H:%M Uhr"
       ccc: "%e. %B %Y, %H:%M Uhr"
       ccc_date: "%e. %B %Y"
+      ccc_month: "%B %Y"
       long: "%A, %e. %B %Y, %H:%M Uhr"
       time: "%H:%M"
 
@@ -580,8 +581,8 @@ de:
     index:
       title: "Termine"
       create_event: "Termin anlegen"
-      edit_link: "bearbeiten"
       search_placeholder: "Titel, Beschreibung, Ort, Tags durchsuchen…"
+      flag_own_title: "Hat einen eigenen Titel"
     show:
       title: "Termin"
       title_for_node: "Termin für Node %{path}"
@@ -595,6 +596,11 @@ de:
       node_hint: "Optional — Node suchen und auswählen, um diesen Termin mit einer Seite zu verknüpfen."
       recurrence: "Wiederholung"
       title_hint: "Optional. Bleibt das Feld leer, wird der Titel des verknüpften Nodes verwendet."
+    schedule:
+      none: "kein Datum"
+      same_month: "%{from_day}.–%{to_day}. %{to_month}"
+      spanning: "%{from_full} – %{to_full}"
+      evening: "%{date}, %{from}–%{to} Uhr"
     rrule_builder:
       weekly: "Wöchentlich"
       monthly: "Monatlich"

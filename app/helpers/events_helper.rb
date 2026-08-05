@@ -13,6 +13,37 @@ module EventsHelper
 
   def external_url_link(url)
     return nil if url.blank?
-    url.match?(%r{\Ahttps?://}i) ? link_to(url, url) : h(url)
+    return h(url) unless url.match?(%r{\Ahttps?://}i)
+    link_to(url, url, :target => "_blank", :rel => "noopener")
   end
+
+  def event_date_range(event)
+    return t("events.schedule.none") if event.start_time.blank?
+
+    from = event.start_time
+    to   = event.end_time
+
+    return one_day_range(from, event.allday) if to.blank? || to.to_date == from.to_date
+
+    if !event.allday && (to - from) <= 12.hours
+      return t("events.schedule.evening",
+               :date => admin_date(from),
+               :from => I18n.l(from, :format => :time),
+               :to   => I18n.l(to,   :format => :time))
+    end
+
+    key = from.year == to.year && from.month == to.month ? :same_month : :spanning
+    t("events.schedule.#{key}",
+       :from_day   => from.day, :to_day => to.day,
+       :from_month => I18n.l(from, :format => :ccc_month),
+       :to_month   => I18n.l(to,   :format => :ccc_month),
+       :from_full  => admin_date(from), :to_full => admin_date(to))
+  end
+
+  private
+
+    def one_day_range(from, allday)
+      return admin_date(from) if allday
+      admin_datetime(from)
+    end
 end

@@ -23,8 +23,9 @@ en:
 
   time:
     formats:
-      ccc: "%d %B, %Y %H:%M"
-      ccc_date: "%d %B, %Y"
+      ccc: "%-d %B %Y, %H:%M"
+      ccc_date: "%-d %B %Y"
+      ccc_month: "%B %Y"
 
   will_paginate:
     previous_label: "&#8592;"
@@ -527,8 +528,8 @@ en:
     index:
       title: "Events"
       create_event: "Create event"
-      edit_link: "edit"
       search_placeholder: "Search title, description, location, tags…"
+      flag_own_title: "Has its own title"
     edit:
       title: "Editing event"
       change_node: "Change node"
@@ -542,6 +543,11 @@ en:
       node_hint: "Optional — search and pick a node to associate this event with a page."
       recurrence: "Recurrence"
       title_hint: "Optional — if left blank, the associated node's title is used."
+    schedule:
+      none: "no date"
+      same_month: "%{from_day}.–%{to_day}. %{to_month}"
+      spanning: "%{from_full} – %{to_full}"
+      evening: "%{date}, %{from}–%{to}"
     rrule_builder:
       weekly: "Weekly"
       monthly: "Monthly"

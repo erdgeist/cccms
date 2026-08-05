@@ -11,11 +11,7 @@
 <table class="events_table">
   <tr class="header">
     <th><%= t("admin.columns.title") %></th>
-    <th><%= Event.human_attribute_name(:start_time) %></th>
-    <th><%= Event.human_attribute_name(:end_time) %></th>
-    <th><%= Event.human_attribute_name(:rrule) %></th>
-    <th><%= Event.human_attribute_name(:url) %></th>
-    <th><%= Event.human_attribute_name(:start_node) %></th>
+    <th><%= t(".when") %></th>
     <th></th>
   </tr>
 
@@ -24,17 +20,52 @@
     <td>
       <div class="title_with_flags">
         <span class="flag_stack">
-          <%= flag("clock-off", Event.human_attribute_name(:allday)) if event.allday %>
+          <%= flag("hours-24", Event.human_attribute_name(:allday)) if event.allday %>
+          <%= flag("sticker", t(".flag_own_title")) if event.title.present? %>
         </span>
-        <div class="title_body"><%= link_to event.display_title, event %></div>
+        <div class="title_body">
+          <div class="event_title"><%= link_to event.display_title, event %></div>
+          <% if event.node %>
+            <div class="event_meta">
+              <%= icon("file", library: "tabler", "aria-hidden": true) %>
+              <%= link_to event.node.unique_name, node_path(event.node) %>
+            </div>
+          <% end %>
+          <% if event.url.present? %>
+            <div class="event_meta">
+              <%= icon("external-link", library: "tabler", "aria-hidden": true) %>
+              <%= external_url_link(event.url) %>
+            </div>
+          <% end %>
+        </div>
       </div>
     </td>
-    <td><%= admin_datetime(event.start_time) %></td>
-    <td><%= admin_datetime(event.end_time) %></td>
-    <td class="rrule_cell"><span class="rrule_text"><%= rrule_with_break_opportunities(event.rrule) %></span></td>
-    <td class="url_cell"><span class="truncate"><%= external_url_link(event.url) %></span></td>
-    <td><%= event.node ? link_to(event.node.unique_name, node_path(event.node)) : "" %></td>
-    <td><%= link_to t(".edit_link"), edit_event_path(event) %></td>
+    <td class="event_when">
+      <% if event.rrule.present? %>
+        <span class="rrule_raw" title="<%= event.rrule %>"><%= event_schedule_text(event) %></span>
+        <% if event.humanize_rrule.nil? && event.start_time %>
+          <div class="event_meta"><%= admin_date(event.start_time) %></div>
+        <% end %>
+      <% else %>
+        <%= event_date_range(event) %>
+      <% end %>
+    </td>
+    <td class="actions">
+      <div class="action_grid">
+        <span class="action_item">
+          <%= link_to event_path(event), "aria-label" => t("admin.common.show"),
+                title: t("admin.common.show") do %>
+            <%= icon("eye", library: "tabler", "aria-hidden": true) %>
+          <% end %>
+        </span>
+        <span class="action_item">
+          <%= link_to edit_event_path(event), "aria-label" => t("admin.common.edit"),
+                title: t("admin.common.edit") do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %>
+          <% end %>
+        </span>
+      </div>
+    </td>
   </tr>
 <% end %>
 </table>
