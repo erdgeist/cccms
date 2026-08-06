@@ -551,7 +551,6 @@ de:
       create_at_root: "Seite auf oberster Ebene anlegen"
       create_child: "Hier eine Seite anlegen"
       flag_restricted: "Veröffentlichen unterhalb erfordert Redaktion"
-      flag_external: "Leitet weiter — hier keine Seiten anlegen"
       descendants:
         one: "1 Unterseite"
         other: "%{count} Unterseiten"

@@ -498,7 +498,6 @@ en:
       create_at_root: "Create a top-level page"
       create_child: "Add a page here"
       flag_restricted: "Publishing below this point needs Redaktion"
-      flag_external: "Redirects elsewhere — do not add pages under this"
       descendants:
         one: "1 descendant"
         other: "%{count} descendants"

@@ -24,7 +24,6 @@
       <div class="title_with_flags">
         <span class="flag_stack">
           <%= flag("file-text-shield", t(".flag_restricted"), :tier => :attention) if node.restricted? %>
-          <%= flag("external-link", t(".flag_external")) if node.external_url.present? %>
         </span>
         <div class="title_body">
           <div class="node_title"><%= link_to title_for_node(node), node_path(node) %></div>
