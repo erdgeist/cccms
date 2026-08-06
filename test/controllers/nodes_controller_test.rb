@@ -631,29 +631,19 @@ class NodesControllerTest < ActionController::TestCase
     assert_select "h1", "Dezentrale"
   end
 
-  test "sitemap collapses configured paths but leaves others open" do
+  test "sitemap collapses every subtree by default" do
     club = Node.root.children.create!(:slug => "club")
     erfas = club.children.create!(:slug => "erfas")
     erfas.children.create!(:slug => "one_chapter")
-    other = Node.root.children.create!(:slug => "sitemap_controller_open_test")
-    other.children.create!(:slug => "sitemap_controller_open_child")
 
     login_as :quentin
     get :sitemap
     assert_response :success
 
     doc = Nokogiri::HTML::DocumentFragment.parse(response.body)
-
-    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.node_path')&.text&.include?(erfas.unique_name) }
-    other_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.node_path')&.text&.include?(other.unique_name) }
-
-    erfas_details = erfas_node_div.next_element
-    other_details = other_node_div.next_element
-
-    assert_equal 'details', erfas_details.name
-    assert_equal 'details', other_details.name
-    assert_not erfas_details.key?('open')
-    assert other_details.key?('open')
+    assert doc.css("details").any?, "expected at least one disclosure"
+    assert_empty doc.css("details[open]"),
+                 "subtrees are collapsed by default; nothing should be open"
   end
 
   test "sitemap shows how many descendants a collapsed branch is hiding" do
