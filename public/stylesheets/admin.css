@@ -145,10 +145,6 @@ input[type=radio] {
     margin: 0 125px;
   }
 
-  .node_action_bar.node_action_bar_save {
-    margin-left: 120px;
-  }
-
   .standalone_action_bar {
     margin-left: -125px;
   }
@@ -165,7 +161,6 @@ input[type=radio] {
 }
 
 .right { text-align: right; }
-.clear_left { clear: left; }
 
 #login_form {
   max-width: 22rem;
@@ -2055,10 +2050,6 @@ input#menu_item_title {
   border-radius: 4px;
 }
 
-.thumbnail_list li {
-  position: relative;
-}
-
 .thumbnail_list li .headline_indicator {
   position: absolute;
   top: 4px;
@@ -2334,12 +2325,6 @@ input#menu_item_title {
 /* ============================================================
    Trash section
    ============================================================ */
-
-.restore_form {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .restore_picker {
   position: relative;
