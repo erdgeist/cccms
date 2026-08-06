@@ -134,6 +134,7 @@ class NodeAction < ApplicationRecord
   #                    from the node verbs' "tags", which is a pair,
   #                    so one renderer cannot mistake the other.
   #   "path"        -- the node's unique_name, when it has a node
+  #   "external_url" -- pair
   #
   # On "event_update" only, and only when something changed -- an
   # update that changes nothing records no entry at all:

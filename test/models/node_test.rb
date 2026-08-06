@@ -1072,4 +1072,33 @@ class NodeTest < ActiveSupport::TestCase
     assert_not node.reload.in_trash?
     assert_equal club.id, node.parent_id
   end
+
+  test "setting an external url is gated and witnessed" do
+    node = Node.root.children.create!(:slug => "chapter_url_test")
+
+    assert_difference -> { NodeAction.where(:action => "node_external_url").count }, 1 do
+      assert node.update_external_url!("https://example.org", users(:aaron))
+    end
+
+    assert_equal "https://example.org", node.reload.external_url
+    entry = NodeAction.where(:action => "node_external_url").last
+    assert_equal({ "from" => nil, "to" => "https://example.org" },
+                 entry.metadata["external_url"])
+  end
+
+  test "a javascript url is refused" do
+    node = Node.root.children.create!(:slug => "chapter_url_reject")
+    assert_raises(ActiveRecord::RecordInvalid) do
+      node.update_external_url!("javascript:alert(1)", users(:aaron))
+    end
+  end
+
+  test "setting an external url on a restricted node needs redaktion" do
+    node = Node.find_by(:unique_name => "updates") ||
+           Node.root.children.create!(:slug => "updates")
+
+    assert_raises(ActiveRecord::RecordInvalid) do
+      node.update_external_url!("https://example.org", users(:quentin))
+    end
+  end
 end

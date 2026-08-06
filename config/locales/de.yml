@@ -255,6 +255,7 @@ de:
     detail_event_allday: "ganztägig %{from} → %{to}"
     detail_event_end: "Ende %{from} → %{to}"
     event_none: "—"
+    node_external_url: "%{actor} hat die externe Homepage von %{subject} geändert"
     unknown_event: "ein Termin"
 
   open_gallery: "Gallerie anzeigen"
@@ -456,6 +457,8 @@ de:
       set_headline_label: "Als Aufmacherbild setzen"
       set_headline_title: "Dieses Foto als Aufmacherbild der Seite verwenden"
       remove_image_label: "Bild entfernen"
+      external_url: "Externe Homepage"
+      external_url_hint: "Die eigene Website einer Dezentrale, wird auf dessen Seite angezeigt. Vorsicht, Änderung wird ohne Draft sofort veröffentlicht."
     show:
       status: "Status"
       head: "Head"

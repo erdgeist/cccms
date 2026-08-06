@@ -114,6 +114,12 @@
            %>
         </div>
 
+        <div class="layout_row_label"><%= t(".external_url") %></div>
+        <div class="layout_row_content">
+          <%= f.text_field :external_url %>
+          <p class="field_hint"><%= t(".external_url_hint") %></p>
+        </div>
+
         <div class="layout_row_label"><%= t(".tags") %></div>
         <div class="layout_row_content">
           <%= text_field_tag :tag_list, @page.tag_list.join(', ') %>

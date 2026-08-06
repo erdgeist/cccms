@@ -42,6 +42,9 @@ class Node < ApplicationRecord
             :inclusion   => { :in => ->(_) { Page.custom_templates } },
             :allow_blank => true,
             :if          => :default_template_name_changed?
+  validates :external_url, :format => { :with => %r{\Ahttps?://}i,
+                                        :allow_blank => true,
+                                        :message => :must_be_http }
 
   # Everything outside the Trash subtree, the Trash node included.
   # Relies on unique_name being authoritative for tree position --
@@ -603,6 +606,23 @@ class Node < ApplicationRecord
   def feed_id
     new_id_format_date = "2009-11-14".to_time
     self.created_at < new_id_format_date ? unique_path : id
+  end
+
+  def update_external_url!(url, current_user = nil)
+    normalised = url.presence
+    return false if normalised == external_url
+
+    guard_live_change!(current_user)
+    previous = external_url
+
+    transaction do
+      update!(:external_url => normalised)
+      NodeAction.record!(:node => self, :user => current_user,
+                         :action => "node_external_url",
+                         :path => unique_name,
+                         :external_url => { "from" => previous, "to" => normalised })
+    end
+    true
   end
 
   # Full-text search across all locale translations using PostgreSQL tsvector.

@@ -28,7 +28,8 @@ module NodeActionsHelper
     "admin_revoke"       => "shield-minus",
     "event_create"       => "calendar-plus",
     "event_update"       => "calendar-event",
-    "event_destroy"      => "calendar-x"
+    "event_destroy"      => "calendar-x",
+    "node_external_url"  => "world"
   }.freeze
 
   def verb_icon action
@@ -64,6 +65,7 @@ module NodeActionsHelper
     return true if m["translation_diff"].present?
     return true if m["changes"].present? || m["description_changed"]
     return true if m["title"].is_a?(Hash) && m.dig("title", "from") != m.dig("title", "to")
+    return true if m["external_url"].present?
     %w[author tags template_changed assets assets_changed assets_reordered
        abstract_changed body_changed].any? { |key| m[key].present? }
   end
@@ -95,6 +97,9 @@ module NodeActionsHelper
     end
     items << t("node_actions.assets_reordered") if m["assets_reordered"]
     items << t("node_actions.assets_changed")   if m["assets_changed"]
+    items << t("node_actions.detail_external_url",
+            :from => m.dig("external_url", "from").presence || t("node_actions.event_none"),
+            :to   => m.dig("external_url", "to").presence   || t("node_actions.event_none")) if m["external_url"]
     items
   end
 
@@ -398,6 +403,11 @@ module NodeActionsHelper
 
   def summarize_event_destroy action
     event_sentence(action, "event_destroy")
+  end
+
+  def summarize_node_external_url action
+    t("node_actions.node_external_url", :actor => actor_ref(action),
+       :subject => subject_ref(action)).html_safe
   end
 
   def event_sentence action, key

@@ -116,7 +116,8 @@ class NodesController < ApplicationController
   rescue LockedByAnotherUser => e
     flash[:error] = e.message
     redirect_to node_path(@node)
-  rescue ActiveRecord::RecordInvalid
+  rescue ActiveRecord::RecordInvalid => e
+    flash.now[:error] = e.record.errors.full_messages.to_sentence
     @page = @node.autosave || @node.draft || @node.head
     render :action => :edit
   end
