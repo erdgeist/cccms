@@ -4,9 +4,7 @@
 en:
   more: "more …"
   images: "images"
-  sponsors: "sponsors"
   show_tag_headline: "Pages tagged with:"
-  old_ccc_de: the old ccc.de
   event_schedule_time: "at %{time}"
   event_schedule_unrecognized: "Schedule not automatically readable"
   event_schedule_none: "No schedule"
@@ -15,9 +13,6 @@ en:
   upcoming_events: "Upcoming events"
   open_today: "Open today"
   published: "published"
-  published_by: "published by %{editor}"
-  last_edited: "last edited"
-  last_edited_by: "last edited by %{editor}"
   publisher_self: "you"
   editor_self: "you"
 
@@ -102,7 +97,7 @@ en:
           attributes:
             headline:
               images_and_pdfs_only: "can only be set on image or PDF assets"
-        assets:
+        asset:
           attributes:
             base:
               not_permitted: "Only Redaktion members may change assets related to nodes in this section"
@@ -509,7 +504,6 @@ en:
       filter: "Filter"
     node_list:
       search_placeholder: "Search title, abstract, body…"
-      no_revision: "none"
       flag_locked: "Locked by %{login}"
       flag_embargo: "Publishes %{date}"
       flag_draft: "Unpublished draft"
