@@ -70,8 +70,4 @@ module NodesHelper
     path = node.unique_path
     CccConventions::NODE_KINDS.select { |_, config| config[:parent_match]&.call(path) }
   end
-
-  def sitemap_node_open?(node)
-    !CccConventions::SITEMAP_COLLAPSED_PATHS.include?(node.unique_name)
-  end
 end

@@ -2,7 +2,6 @@ module CccConventions
   TRASH_SLUG              = "trash"
   ERFA_PARENT_NAME        = "club/erfas"
   CHAOSTREFF_PARENT_NAME  = "club/chaostreffs"
-  SITEMAP_COLLAPSED_PATHS = %w[updates club/erfas club/chaostreffs disclosure].freeze
   RESTRICTED_SUBTREES     = %w[updates disclosure].freeze
 
   NODE_KINDS = {

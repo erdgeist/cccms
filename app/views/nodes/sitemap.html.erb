@@ -15,8 +15,8 @@
 
 <% @sitemap.each_with_index do |(node, level), index| %>
   <% while open_details.any? && open_details.last >= level %>
-    </details>
-    <% open_details.pop %>
+    <% closing = open_details.pop %>
+    <% if closing.zero? %></div><% else %></details><% end %>
   <% end %>
 
   <% unless level.zero? %>
@@ -52,12 +52,22 @@
 
   <% next_level = @sitemap[index + 1]&.last %>
   <% if next_level && next_level > level %>
-    <details<%= ' open' if sitemap_node_open?(node) %>>
-      <summary>
-        <%= t(".descendants", :count => @sitemap_descendant_counts[node.id]) %>
-      </summary>
+    <% if level.zero? %>
+      <%# Root's children are the top level: a tree does not hide its own
+          first rank behind a toggle. A plain div keeps the closing-tag
+          bookkeeping symmetric with the details branches. %>
+      <div class="sitemap_children">
+    <% else %>
+      <details>
+        <summary>
+          <%= t(".descendants", :count => @sitemap_descendant_counts[node.id]) %>
+        </summary>
+    <% end %>
     <% open_details.push(level) %>
   <% end %>
 <% end %>
-<% open_details.length.times { %></details><% } %>
+<% while open_details.any? %>
+  <% closing = open_details.pop %>
+  <% if closing.zero? %></div><% else %></details><% end %>
+<% end %>
 </div>

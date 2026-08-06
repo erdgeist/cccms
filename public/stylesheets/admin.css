@@ -1442,6 +1442,10 @@ form.button_to button[type="submit"] {
   max-width: 60rem;
 }
 
+#sitemap .node_title a {
+  font-weight: bold;
+}
+
 #sitemap .title_with_flags {
   align-items: start;
 }
@@ -1454,7 +1458,7 @@ form.button_to button[type="submit"] {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  margin-top: 0.15rem;
+  margin-top: 0.25rem;
   font-size: 0.875rem;
   color: var(--text-muted);
 }
@@ -1492,38 +1496,34 @@ form.button_to button[type="submit"] {
   border-bottom: 1px solid var(--hairline);
 }
 
-#sitemap > .sitemap_node {
-  border-bottom-width: 8px;
-  margin-bottom: 0.75rem;
-}
-
-#sitemap > details > summary {
-  display: none;
-}
-
-#sitemap details details {
+#sitemap details {
   margin-left: 0.75rem;
   padding-left: 0.5rem;
 }
 
 @media(min-width:1016px) {
-  #sitemap details details {
+  #sitemap details {
     margin-left: 1.5rem;
     border-left: 1px solid var(--hairline);
     padding-left: 0.75rem;
   }
 }
 
+/* The two margin-left rules make the triangle align optically with the
+   globe above it, so the two meta lines read as one block under the
+   title. Tuned by eye at both indent widths. Re-check if the indent
+   changes. */
 #sitemap summary {
-  padding: 0.10rem 0 0.5rem 0;
-  margin-left: -0.25rem;
-  margin-top: -0.1rem;
+  padding: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  margin-left: 1rem;
   color: var(--text-muted);
 }
 
-#sitemap details:not([open]) > summary {
-  color: var(--accent);
-  font-weight: bold;
+@media (min-width: 1016px) {
+  #sitemap summary {
+    margin-left: -0.1rem;
+  }
 }
 
 .aligned_action_row {
