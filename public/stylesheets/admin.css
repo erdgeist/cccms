@@ -811,7 +811,8 @@ table.revisions_table tr:hover {
 }
 
 .user_table td.actions,
-.node_table td.actions {
+.node_table td.actions,
+.assets_table td.actions {
   width: 1px;
   white-space: nowrap;
   padding-right: 0;
@@ -822,24 +823,29 @@ table.revisions_table tr:hover {
   padding-right: 0.75rem;
 }
 
+.assets_table .asset_name,
 .events_table .event_title {
   font-weight: bold;
 }
 
+.assets_table .asset_meta,
 .events_table .event_meta {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  margin-top: 0.15rem;
+  margin-top: 0.35rem;
   font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
+.assets_table .asset_meta svg,
 .events_table .event_meta svg {
   width: 0.875rem;
   height: 0.875rem;
   flex-shrink: 0;
 }
 
+.assets_table .asset_meta a,
 .events_table .event_meta a {
   overflow-wrap: anywhere;
   color: var(--text-muted);
@@ -861,6 +867,69 @@ table.revisions_table tr:hover {
   padding-right: 0;
 }
 
+.assets_table .asset_thumb img {
+  display: block;
+  max-width: 120px;
+  max-height: 120px;
+}
+
+.assets_table td.asset_thumb {
+  padding-right: 0.75rem;
+}
+
+@media (max-width: 34rem) {
+  .events_table,
+  .events_table tbody,
+  .assets_table,
+  .assets_table tbody {
+    display: block;
+  }
+
+  .events_table tr.header,
+  .assets_table tr.header {
+    display: none;
+  }
+
+  .events_table td,
+  .assets_table td {
+    display: contents;
+  }
+
+  .assets_table tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "thumb actions"
+      "thumb type"
+      "name  name"
+      "file  file";
+    align-items: start;
+    column-gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .events_table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "title actions"
+      "when  when";
+    align-items: start;
+    column-gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .events_table .title_with_flags { grid-area: title; }
+  .assets_table .asset_thumb_link { grid-area: thumb; }
+  .assets_table .asset_type       { grid-area: type; align-self: end; }
+  .events_table .when_body       { grid-area: when; margin-top: 0.4rem; padding-left: 2rem; }
+  .assets_table .asset_name       { grid-area: name; margin-top: 0.4rem; }
+  .assets_table .asset_file       { grid-area: file; }
+
+  .events_table .action_grid,
+  .assets_table .action_grid      { grid-area: actions; }
+}
+
 .action_grid {
   display: grid;
   gap: 0.4rem;
@@ -870,6 +939,7 @@ table.revisions_table tr:hover {
 .user_table .action_grid { grid-template-columns: repeat(3, auto); }
 .node_table .action_grid { grid-template-columns: repeat(2, auto); }
 .events_table .action_grid { grid-template-columns: repeat(2, auto); }
+.assets_table .action_grid { grid-template-columns: repeat(3, auto); }
 
 /* min-height keeps a row the same height whether or not the viewer may see
    the lower controls. */
@@ -1566,9 +1636,8 @@ input#menu_item_title {
   margin-bottom: 1rem;
 }
 
-/* Pushes the actions to the right of the heading. */
 .page_actions h1 {
-  margin: 0 auto 0 0;
+  margin: 0 0.75rem 0 0;
 }
 
 .page_action_group {

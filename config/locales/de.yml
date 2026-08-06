@@ -388,7 +388,6 @@ de:
       editor: "Editor"
       date: "Datum"
       author: "Autor"
-      type: "Typ"
     index:
       title: "cccms Dashboard"
       search_placeholder: "Nodes und Tags durchsuchen…"
@@ -601,6 +600,7 @@ de:
       same_month: "%{from_day}.–%{to_day}. %{to_month}"
       spanning: "%{from_full} – %{to_full}"
       evening: "%{date}, %{from}–%{to} Uhr"
+      unreadable: "Termin-Regel nicht lesbar"
     rrule_builder:
       weekly: "Wöchentlich"
       monthly: "Monatlich"

@@ -12,21 +12,55 @@
   <tr class="header">
     <th><%= t("admin.columns.preview") %></th>
     <th><%= t("admin.columns.name") %></th>
-    <th><%= t("admin.columns.type") %></th>
-    <th></th>
-    <th></th>
     <th></th>
   </tr>
 <% @assets.each do |asset| %>
   <tr>
-    <td><% if asset.has_variant?(:thumb) %><%= image_tag asset.upload.url(:thumb), style: "max-width: 100px; max-height: 100px;" %><% end %></td>
-    <td><%= link_to asset.name, asset.upload.url %></td>
-    <td><%= asset.upload.content_type %></td>
-    <td><%= link_to t("admin.common.show"), asset %></td>
-    <td><%= link_to t("admin.common.edit"), edit_asset_path(asset) %></td>
-    <td><%= button_to asset, method: :delete, form: { data: { confirm: t("admin.common.confirm_sure") }, class: 'button_to destructive' } do %>
-      <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
-    <% end %></td>
+    <td class="asset_thumb">
+      <% if asset.has_variant?(:thumb) %>
+        <%= link_to image_tag(asset.upload.url(:thumb), :alt => ""), asset,
+              :class => "asset_thumb_link" %>
+      <% end %>
+    </td>
+    <td>
+      <div class="asset_name">
+        <%= link_to asset.name.presence || asset.upload_file_name, asset %>
+      </div>
+      <div class="asset_meta asset_file">
+        <%= icon("external-link", library: "tabler", "aria-hidden": true) %>
+        <%= link_to asset.upload_file_name, asset.upload.url,
+              :target => "_blank", :rel => "noopener" %>
+      </div>
+      <div class="asset_meta asset_type">
+        <%= asset.upload.content_type %> ·
+        <%= number_to_human_size(asset.upload.size) %>
+      </div>
+    </td>
+    <td class="actions">
+      <div class="action_grid">
+        <span class="action_item">
+          <%= link_to asset, "aria-label" => t("admin.common.show"),
+                title: t("admin.common.show") do %>
+            <%= icon("eye", library: "tabler", "aria-hidden": true) %>
+          <% end %>
+        </span>
+        <span class="action_item">
+          <%= link_to edit_asset_path(asset), "aria-label" => t("admin.common.edit"),
+                title: t("admin.common.edit") do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %>
+          <% end %>
+        </span>
+        <span class="action_item">
+          <%= button_to asset, method: :delete,
+                form: { data: { confirm: t("admin.common.confirm_sure") },
+                        class: 'button_to destructive' },
+                "aria-label" => t("admin.common.destroy"),
+                title: t("admin.common.destroy") do %>
+            <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+          <% end %>
+        </span>
+      </div>
+    </td>
   </tr>
 <% end %>
 </table>

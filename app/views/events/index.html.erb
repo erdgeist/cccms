@@ -17,7 +17,7 @@
 
 <% @events.each do |event| %>
   <tr>
-    <td>
+    <td class="title">
       <div class="title_with_flags">
         <span class="flag_stack">
           <%= flag("hours-24", Event.human_attribute_name(:allday)) if event.allday %>
@@ -41,14 +41,22 @@
       </div>
     </td>
     <td class="event_when">
-      <% if event.rrule.present? %>
-        <span class="rrule_raw" title="<%= event.rrule %>"><%= event_schedule_text(event) %></span>
-        <% if event.humanize_rrule.nil? && event.start_time %>
-          <div class="event_meta"><%= admin_date(event.start_time) %></div>
+      <div class="when_body">
+        <% if event.rrule.present? %>
+          <% if event.humanize_rrule %>
+            <span title="<%= event.rrule %>"><%= event_schedule_text(event) %></span>
+          <% else %>
+            <span class="rrule_raw" title="<%= event.rrule %>">
+              <%= t("events.schedule.unreadable") %>
+            </span>
+            <% if event.start_time %>
+              <div class="event_meta"><%= admin_date(event.start_time) %></div>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= event_date_range(event) %>
         <% end %>
-      <% else %>
-        <%= event_date_range(event) %>
-      <% end %>
+      </div>
     </td>
     <td class="actions">
       <div class="action_grid">
