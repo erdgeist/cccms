@@ -325,6 +325,7 @@ en:
       force_render: "Force preview render"
       revisions: "revisions"
       explain: "What does this do?"
+      no_title: "no title"
       "yes": "yes"
       "no": "no"
     columns:

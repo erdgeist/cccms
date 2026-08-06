@@ -61,7 +61,9 @@ module NestedTree
   def self_and_descendants_ordered_with_level
     nodes = [self] + descendants.to_a
     children_by_parent = nodes.group_by(&:parent_id)
-    children_by_parent.each_value { |list| list.sort_by!(&:id) }
+    children_by_parent.each_value do |list|
+      list.sort_by! { |n| [children_by_parent.key?(n.id) ? 0 : 1, n.slug.to_s] }
+    end
 
     result = []
     visit = ->(node, level) do

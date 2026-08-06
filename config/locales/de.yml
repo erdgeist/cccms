@@ -377,6 +377,7 @@ de:
       force_render: "Vorschau neu rendern"
       revisions: "Revisionen"
       explain: "Was macht das?"
+      no_title: "kein Titel"
       "yes": "ja"
       "no": "nein"
     columns:

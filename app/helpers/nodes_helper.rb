@@ -1,15 +1,11 @@
 module NodesHelper
   
   def title_for_node node
-    if node.head
-      node.head.title
-    else
-      if not node.draft or not node.draft.title
-        logger.error "Missing title in node #{node.id}"
-        return "NO TITLE"
-      end
-      node.draft.title
-    end
+    return node.head.title if node.head&.title.present?
+    return node.draft.title if node.draft&.title.present?
+
+    logger.error "Missing title in node #{node.id}"
+    t("admin.common.no_title")
   end
   
   def truncated_title_for_node node

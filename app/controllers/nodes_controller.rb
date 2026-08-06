@@ -256,6 +256,12 @@ class NodesController < ApplicationController
 
   def sitemap
     @sitemap = Node.root.self_and_descendants_ordered_with_level
+
+    ActiveRecord::Associations::Preloader.new(
+      :records      => @sitemap.map(&:first),
+      :associations => [{ :head => :translations }, { :draft => :translations }]
+    ).call
+
     @sitemap_descendant_counts = descendant_counts_for(@sitemap)
   end
 
