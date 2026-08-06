@@ -835,7 +835,6 @@ table.revisions_table tr:hover {
   gap: 0.3rem;
   margin-top: 0.35rem;
   font-size: 0.875rem;
-  color: var(--text-muted);
 }
 
 .assets_table .asset_meta svg,
@@ -1439,23 +1438,67 @@ form.button_to button[type="submit"] {
   margin-bottom: 0;
 }
 
+#sitemap {
+  max-width: 60rem;
+}
+
+#sitemap .title_with_flags {
+  align-items: start;
+}
+
+#sitemap .title_body {
+  flex: 1;
+}
+
+#sitemap .node_path {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+#sitemap .node_path svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+#sitemap .node_path a {
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+#sitemap .action_grid {
+  grid-template-columns: repeat(2, auto);
+}
+
 .sitemap_node {
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--hairline);
 }
 
-.sitemap_node h4 {
-  margin: 0;
+#sitemap .sitemap_node:has(+ details) {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0.25rem;
 }
 
-.sitemap_node .field_hint {
-  display: block;
-  margin: 2px 0 0;
+#sitemap .sitemap_node:has(+ details) + details > summary {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--hairline);
 }
 
-.sitemap_node p {
-  margin: 2px 0 0;
+#sitemap > .sitemap_node {
+  border-bottom-width: 8px;
+  margin-bottom: 0.75rem;
+}
+
+#sitemap > details > summary {
+  display: none;
 }
 
 #sitemap details details {
@@ -1472,7 +1515,10 @@ form.button_to button[type="submit"] {
 }
 
 #sitemap summary {
-  padding: 4px 0;
+  padding: 0.10rem 0 0.5rem 0;
+  margin-left: -0.25rem;
+  margin-top: -0.1rem;
+  color: var(--text-muted);
 }
 
 #sitemap details:not([open]) > summary {

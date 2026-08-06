@@ -1,23 +1,55 @@
-<h1><%= t(".title") %></h1>
+<%= render "shared/page_actions",
+      :title => t(".title"),
+      :icon_name => "file-plus",
+      :label => t(".create_at_root"),
+      :options => [[t(".create_at_root"), new_node_path(:parent_id => Node.root.id)]] %>
 
 <div id="sitemap">
+
 <%
   open_details = [] # levels with a currently-open <details>
+  world_icon   = icon("world", library: "tabler", "aria-hidden": true)
+  create_icon  = icon("file-plus", library: "tabler", "aria-hidden": true)
+  show_icon    = icon("eye", library: "tabler", "aria-hidden": true)
 %>
+
 <% @sitemap.each_with_index do |(node, level), index| %>
   <% while open_details.any? && open_details.last >= level %>
     </details>
     <% open_details.pop %>
   <% end %>
 
-  <div class="sitemap_node">
-    <h4><%= link_to title_for_node(node), node_path(node) %></h4>
-    <span class="field_hint"><%= link_to_path("#{node.unique_name} ↗", node.unique_name) %></span>
-    <p class="sitemap_node_actions">
-      <%= link_to 'Show', node_path(node) %>
-      <%= link_to 'Create Child', new_node_path(:parent_id => node.id) %>
-    </p>
-  </div>
+  <% unless level.zero? %>
+    <div class="sitemap_node">
+      <div class="title_with_flags">
+        <span class="flag_stack">
+          <%= flag("file-text-shield", t(".flag_restricted"), :tier => :attention) if node.restricted? %>
+          <%= flag("external-link", t(".flag_external")) if node.external_url.present? %>
+        </span>
+        <div class="title_body">
+          <div class="node_title"><%= link_to title_for_node(node), node_path(node) %></div>
+          <div class="node_path">
+            <%= world_icon %>
+            <%= link_to_path(node.unique_name, node.unique_name) %>
+          </div>
+        </div>
+        <div class="action_grid">
+          <span class="action_item">
+            <%= link_to new_node_path(:parent_id => node.id),
+                  "aria-label" => t(".create_child"), title: t(".create_child") do %>
+              <%= create_icon %>
+            <% end %>
+          </span>
+          <span class="action_item">
+            <%= link_to node_path(node), "aria-label" => t("admin.common.show"),
+                  title: t("admin.common.show") do %>
+              <%= show_icon %>
+            <% end %>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <% next_level = @sitemap[index + 1]&.last %>
   <% if next_level && next_level > level %>

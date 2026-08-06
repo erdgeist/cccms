@@ -231,7 +231,7 @@
           <% end %>
         </div>
 
-        <% if @node.head %>
+        <% if @node.head && !@node.root? %>
           <div class="link_matrix_row">
             <span class="link_matrix_label">
               <span class="info_label"><%= t(".public") %></span>
@@ -247,6 +247,15 @@
                   <% end %>
                 </span>
               <% end %>
+            </span>
+          </div>
+        <% end %>
+
+        <% if @node.root? %>
+          <div class="link_matrix_row">
+            <span class="link_matrix_label">
+              <span class="info_label"><%= t(".public") %></span>
+              <span class="field_hint"><%= t(".root_has_no_public_url") %></span>
             </span>
           </div>
         <% end %>

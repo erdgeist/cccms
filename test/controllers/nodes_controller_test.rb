@@ -644,8 +644,8 @@ class NodesControllerTest < ActionController::TestCase
 
     doc = Nokogiri::HTML::DocumentFragment.parse(response.body)
 
-    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(erfas.unique_name) }
-    other_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(other.unique_name) }
+    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.node_path')&.text&.include?(erfas.unique_name) }
+    other_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.node_path')&.text&.include?(other.unique_name) }
 
     erfas_details = erfas_node_div.next_element
     other_details = other_node_div.next_element
@@ -667,20 +667,24 @@ class NodesControllerTest < ActionController::TestCase
     assert_response :success
 
     doc = Nokogiri::HTML::DocumentFragment.parse(response.body)
-    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.field_hint')&.text&.include?(erfas.unique_name) }
+    erfas_node_div = doc.css('.sitemap_node').find { |div| div.at_css('.node_path')&.text&.include?(erfas.unique_name) }
     erfas_details = erfas_node_div.next_element
 
     assert_equal 'details', erfas_details.name
     assert_match I18n.t("nodes.sitemap.descendants", :count => 2), @response.body
   end
 
-  test "sitemap shows Show and Create Child, not Revisions" do
-    node = Node.root.children.create!(:slug => "sitemap_actions_test")
+  test "sitemap offers Create Child and Show, not Revisions" do
+    Node.root.children.create!(:slug => "sitemap_actions_test")
     login_as :quentin
     get :sitemap
-    assert_select ".sitemap_node_actions", :text => /Show/
-    assert_select ".sitemap_node_actions", :text => /Create Child/
-    assert_select ".sitemap_node_actions", :text => /Revisions/, :count => 0
+
+    assert_select ".sitemap_node .action_grid a[title=?]",
+                  I18n.t("nodes.sitemap.create_child")
+    assert_select ".sitemap_node .action_grid a[title=?]",
+                  I18n.t("admin.common.show")
+    assert_select ".sitemap_node .action_grid a[title=?]",
+                  I18n.t("admin.common.revisions"), :count => 0
   end
 
   test "create logs a create NodeAction with path and title" do

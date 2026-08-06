@@ -538,7 +538,8 @@ de:
       add_child: "Kind vom Typ %{kind} anlegen"
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Text (%{lang})"
-      restricted_hint: "Geschützter Bereich — Veröffentlichen und Papierkorb sind der Redaktion vorbehalten. Entwürfe kannst du frei bearbeiten."
+      restricted_hint: "Geschützter Bereich. Veröffentlichen und Papierkorb sind der Redaktion vorbehalten. Entwürfe kannst du frei bearbeiten."
+      root_has_no_public_url: "Der Root-Node hat keine öffentliche Adresse. Er wird von der Startseite geliefert."
     drafts:
       title: "Nodes mit Entwürfen, Autosaves oder Sperren"
     mine:
@@ -547,6 +548,10 @@ de:
       title: "Nodes mit Tag: %{tag}"
     sitemap:
       title: "Sitemap"
+      create_at_root: "Seite auf oberster Ebene anlegen"
+      create_child: "Hier eine Seite anlegen"
+      flag_restricted: "Veröffentlichen unterhalb erfordert Redaktion"
+      flag_external: "Leitet weiter — hier keine Seiten anlegen"
       descendants:
         one: "1 Unterseite"
         other: "%{count} Unterseiten"

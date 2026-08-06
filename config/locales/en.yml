@@ -485,7 +485,8 @@ en:
       add_child: "Add child type %{kind}"
       abstract_locale: "Abstract (%{lang})"
       body_locale: "Body (%{lang})"
-      restricted_hint: "Protected section — publishing and trashing are reserved for Redaktion. You can edit drafts freely."
+      restricted_hint: "Protected section. Publishing and trashing are reserved for Redaktion. You can edit drafts freely."
+      root_has_no_public_url: "The root node has no public address. It is served from the home page."
     drafts:
       title: "Nodes with drafts, autosaves or locks"
     mine:
@@ -494,6 +495,10 @@ en:
       title: "Nodes tagged: %{tag}"
     sitemap:
       title: "Sitemap"
+      create_at_root: "Create a top-level page"
+      create_child: "Add a page here"
+      flag_restricted: "Publishing below this point needs Redaktion"
+      flag_external: "Redirects elsewhere — do not add pages under this"
       descendants:
         one: "1 descendant"
         other: "%{count} descendants"
