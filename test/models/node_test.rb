@@ -488,7 +488,7 @@ class NodeTest < ActiveSupport::TestCase
     a = Node.root.children.create!(:slug => "cycle_guard_a")
     b = a.children.create!(:slug => "cycle_guard_b")
 
-    a.staged_parent_id = b.id
+    a.draft.update!(:parent_node_id => b.id)
 
     assert_raises(ActiveRecord::RecordInvalid) { a.publish_draft! }
 
@@ -702,16 +702,15 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal "New Title",      action.metadata.dig("title", "to")
   end
 
-  test "publishing a staged slug change logs a move with the path pair" do
+  test "publishing a slug change logs a move with the path pair" do
     node = create_node_with_published_page
     path_before = node.unique_name
-    node.staged_slug = "moved-#{node.slug}"
-    node.save!
-    publish_count_before = NodeAction.where(:action => "publish").count
+    find_or_create_draft(node, @user1)
+    node.draft.update!(:slug => "moved-#{node.slug}")
 
     node.publish_draft!(@user1)
-
     node.reload
+
     assert_not_equal path_before, node.unique_name
 
     action = NodeAction.where(:action => "move").last
@@ -719,16 +718,12 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal @user1,           action.user
     assert_equal path_before,      action.metadata.dig("path", "from")
     assert_equal node.unique_name, action.metadata.dig("path", "to")
-
-    # No draft was pending: path change alone must not fabricate a publish.
-    assert_equal publish_count_before, NodeAction.where(:action => "publish").count
   end
 
-  test "publishing a draft together with a staged move logs two entries" do
+  test "publishing a draft together with a move logs two entries" do
     node = create_node_with_published_page
     find_or_create_draft(node, @user1)
-    node.staged_slug = "relocated-#{node.slug}"
-    node.save!
+    node.draft.update!(:slug => "relocated-#{node.slug}")
 
     assert_difference "NodeAction.count", 2 do
       node.publish_draft!(@user1)
@@ -890,7 +885,8 @@ class NodeTest < ActiveSupport::TestCase
     Node.trash
 
     assert_not Node.root.children.build(:slug => CccConventions::TRASH_SLUG).valid?
-    assert_not Node.root.children.build(:slug => "fine", :staged_slug => CccConventions::TRASH_SLUG).valid?
+    page = Page.new(:slug => CccConventions::TRASH_SLUG, :parent_node_id => Node.root.id)
+    assert_not page.valid?
     assert Node.trash.children.create!(:slug => "sub").children.build(:slug => CccConventions::TRASH_SLUG).valid?
   end
 
@@ -1012,7 +1008,7 @@ class NodeTest < ActiveSupport::TestCase
     year    = updates.children.create!(:slug => "2026")
     node    = Node.root.children.create!(:slug => "outside-post")
     node.reload.draft.update!(:title => "Entwurf")
-    node.update!(:staged_parent_id => year.id)
+    node.draft.update!(:parent_node_id => year.id)
 
     assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft!(editor) }
     assert_nil node.reload.head
@@ -1025,7 +1021,7 @@ class NodeTest < ActiveSupport::TestCase
     club = Node.root.children.create!(:slug => "club")
     node = Node.root.children.create!(:slug => "movable-post")
     node.reload.draft.update!(:title => "Entwurf")
-    node.update!(:staged_parent_id => club.id)
+    node.draft.update!(:parent_node_id => club.id)
 
     node.publish_draft!(editor)
     assert_equal club.id, node.reload.parent_id
@@ -1036,7 +1032,7 @@ class NodeTest < ActiveSupport::TestCase
                           :password => "secret", :password_confirmation => "secret")
     node = Node.root.children.create!(:slug => "harmless")
     node.reload.draft.update!(:title => "Entwurf")
-    node.update!(:staged_slug => "updates")
+    node.draft.update!(:slug => "updates")
 
     assert_raises(ActiveRecord::RecordInvalid) { node.publish_draft!(editor) }
     assert_nil node.reload.head
@@ -1057,7 +1053,9 @@ class NodeTest < ActiveSupport::TestCase
     node    = Node.root.children.create!(:slug => "restorable")
     node.reload.trash!
 
-    assert_raises(ActiveRecord::RecordInvalid) { node.restore_from_trash!(updates, editor) }
+    node.reload.draft.update!(:parent_node_id => updates.id)
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.restore_from_trash!(editor) }
     assert node.reload.in_trash?
   end
 
@@ -1068,7 +1066,8 @@ class NodeTest < ActiveSupport::TestCase
     node = Node.root.children.create!(:slug => "restorable_free")
     node.reload.trash!
 
-    node.restore_from_trash!(club, editor)
+    node.reload.draft.update!(:parent_node_id => club.id)
+    node.restore_from_trash!(editor)
     assert_not node.reload.in_trash?
     assert_equal club.id, node.parent_id
   end
@@ -1100,5 +1099,66 @@ class NodeTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) do
       node.update_external_url!("https://example.org", users(:quentin))
     end
+  end
+
+  test "a new node's draft carries the node's address" do
+    parent = Node.root.children.create!(:slug => "addr_parent")
+    node   = parent.children.create!(:slug => "addr_child")
+
+    assert_equal "addr_child", node.draft.slug
+    assert_equal parent.id, node.draft.parent_node_id
+  end
+
+  test "an autosave inherits the draft's address" do
+    node = Node.root.children.create!(:slug => "addr_autosave")
+    node.draft.update!(:slug => "renamed")
+    node.lock_for_editing!(users(:quentin))
+    node.autosave!({ :title => "x" }, users(:quentin))
+
+    assert_equal "renamed", node.autosave.slug
+  end
+
+  test "a blank slug in an autosave leaves the address unchanged" do
+    node = Node.root.children.create!(:slug => "addr_blank")
+    node.lock_for_editing!(users(:quentin))
+    node.autosave!({ :slug => "", :title => "x" }, users(:quentin))
+
+    assert_equal "addr_blank", node.autosave.slug
+  end
+
+  test "a node with no draft has nothing to publish" do
+    node = create_node_with_published_page
+    assert_nil node.draft
+
+    assert_nil node.publish_draft!(@user1)
+  end
+
+  test "prospective_unique_name reports the draft's intended address" do
+    parent = Node.root.children.create!(:slug => "prospective_parent")
+    node   = Node.root.children.create!(:slug => "prospective_child")
+    node.draft.update!(:parent_node_id => parent.id)
+
+    assert_equal "prospective_parent/prospective_child",
+                 node.prospective_unique_name
+  end
+
+  test "prospective_unique_name falls back to the live address when the parent is gone" do
+    parent = Node.root.children.create!(:slug => "doomed_parent")
+    node   = Node.root.children.create!(:slug => "orphan_child")
+    node.draft.update!(:parent_node_id => parent.id)
+    parent.destroy!
+
+    assert node.reload.draft.parent_node_missing?
+    assert_equal "orphan_child", node.prospective_unique_name
+  end
+
+  test "publishing a draft whose parent is gone is refused" do
+    parent = Node.root.children.create!(:slug => "doomed_parent_two")
+    node   = Node.root.children.create!(:slug => "orphan_child_two")
+    node.draft.update!(:parent_node_id => parent.id)
+    parent.destroy!
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.reload.publish_draft! }
+    assert_nil node.reload.head
   end
 end

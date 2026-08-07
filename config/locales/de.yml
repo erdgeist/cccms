@@ -112,9 +112,7 @@ de:
         title: "Titel"
       node:
         slug: "Slug"
-        staged_slug: "Vorgemerkter Slug"
         parent_id: "Eltern-Node"
-        staged_parent_id: "Vorgemerkter Eltern-Node"
         head_id: "Head"
       related_asset:
         headline: "Aufmacher"
@@ -137,11 +135,16 @@ de:
               trash_undeletable: "Der Papierkorb-Node kann nicht gelöscht werden"
               publish_in_trash: "Ein Node im Papierkorb kann nicht veröffentlicht werden"
               move_under_self: "Ein Node kann nicht unter sich selbst oder einen seiner Nachfahren verschoben werden"
+              move_target_missing: "Die Seite, unter die verschoben werden sollte, gibt es nicht mehr."
               trash_the_trash: "Der Papierkorb-Node selbst kann nicht in den Papierkorb verschoben werden"
               restore_target_invalid: "Das Wiederherstellungsziel muss ein lebender Node sein"
               destroy_outside_trash: "Nodes können nur aus dem Papierkorb gelöscht werden"
               attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
               not_permitted: "In diesem Bereich dürfen nur Mitglieder der Redaktion veröffentlichte Inhalte ändern"
+        page:
+          attributes:
+            slug:
+              reserved_for_trash: "ist für den Papierkorb reserviert"
         user:
           attributes:
             roles:
@@ -676,7 +679,6 @@ de:
       trashed: "Seite wurde in den Papierkorb verschoben"
       already_trashed: "Seite ist bereits im Papierkorb"
       restored: "Seite wurde aus dem Papierkorb wiederhergestellt"
-      restore_target_missing: "Wiederherstellungsziel nicht gefunden"
       deleted: "Seite wurde endgültig gelöscht"
       published: "Entwurf wurde veröffentlicht"
       unlocked: "Node entsperrt"

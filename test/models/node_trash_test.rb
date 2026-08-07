@@ -76,7 +76,8 @@ class NodeTrashTest < ActiveSupport::TestCase
     node.trash!(@user1)
     target = Node.root.children.create!(:slug => "restore_target")
 
-    node.reload.restore_from_trash!(target, @user1)
+    node.reload.draft.update!(:parent_node_id => target.id)
+    node.reload.restore_from_trash!(@user1)
     node.reload
 
     assert_equal target, node.parent
@@ -91,8 +92,11 @@ class NodeTrashTest < ActiveSupport::TestCase
     node.trash!(@user1)
     other_trashed = Node.trash.children.create!(:slug => "also_trashed")
 
-    assert_raises(ActiveRecord::RecordInvalid) { node.reload.restore_from_trash!(Node.trash, @user1) }
-    assert_raises(ActiveRecord::RecordInvalid) { node.reload.restore_from_trash!(other_trashed, @user1) }
+    node.reload.draft.update!(:parent_node_id => Node.trash.id)
+    assert_raises(ActiveRecord::RecordInvalid) { node.reload.restore_from_trash!(@user1) }
+
+    node.reload.draft.update!(:parent_node_id => other_trashed.id)
+    assert_raises(ActiveRecord::RecordInvalid) { node.reload.restore_from_trash!(@user1) }
   end
 
   test "destroy_from_trash! refuses nodes outside the Trash" do

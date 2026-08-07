@@ -1566,7 +1566,7 @@ form.button_to button[type="submit"] {
 }
 
 input[type=text]#tag_list,
-input[type=text]#node_staged_slug,
+input[type=text]#page_slug,
 input#move_to_search_term {
   padding: 5px;
 }
@@ -1644,7 +1644,7 @@ input[type=text]#page_title {
 }
 
 input#tag_list,
-input#node_staged_slug,
+input#page_slug,
 input#move_to_search_term {
   box-sizing: border-box;
   width: 100%;

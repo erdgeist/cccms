@@ -193,7 +193,8 @@ class NodesControllerTest < ActionController::TestCase
   test "publish draft with staged_slug unqueal slug" do
     login_as :quentin
 
-    test_node = Node.root.children.create! :slug => "test_node", :staged_slug => "peter_pan"
+    test_node = Node.root.children.create!(:slug => "test_node")
+    test_node.draft.update!(:slug => "peter_pan")
 
     put :publish, params: { :id => test_node.id }
 
@@ -205,7 +206,8 @@ class NodesControllerTest < ActionController::TestCase
   test "publish draft with staged_slug with more levels of nodes" do
     login_as :quentin
 
-    test_node = Node.root.children.create! :slug => "test_node", :staged_slug => "peter_pan"
+    test_node = Node.root.children.create!(:slug => "test_node")
+    test_node.draft.update!(:slug => "peter_pan")
     test_node2 = test_node.children.create! :slug => "test_node2"
 
     put :publish, params: { :id => test_node.id }
@@ -215,12 +217,13 @@ class NodesControllerTest < ActionController::TestCase
     assert_equal "peter_pan", test_node.unique_name
   end
 
-  test "publish draft with staged_parent_id" do
+  test "publish draft with a moved parent" do
     login_as :quentin
 
-    parent = Node.root.children.create! :slug => "parent"
-    test_node = Node.root.children.create! :slug => "test_node", :staged_parent_id => parent.id
-    test_node2 = test_node.children.create! :slug => "test_node2"
+    parent    = Node.root.children.create!(:slug => "parent")
+    test_node = Node.root.children.create!(:slug => "test_node")
+    test_node.draft.update!(:parent_node_id => parent.id)
+    test_node2 = test_node.children.create!(:slug => "test_node2")
 
     put :publish, params: { :id => test_node.id }
 
@@ -229,18 +232,13 @@ class NodesControllerTest < ActionController::TestCase
     assert_equal "parent/test_node/test_node2", test_node2.unique_name
   end
 
-  test "publish draft with staged_parent_id and staged_slug" do
+  test "publish draft with a moved parent and a renamed slug" do
     login_as :quentin
 
-    parent = Node.root.children.create! :slug => "parent"
-
-    test_node = Node.root.children.create!(
-      :slug => "test_node",
-      :staged_parent_id => parent.id,
-      :staged_slug => "peter_pan"
-    )
-
-    test_node2 = test_node.children.create! :slug => "test_node2"
+    parent    = Node.root.children.create!(:slug => "parent")
+    test_node = Node.root.children.create!(:slug => "test_node")
+    test_node.draft.update!(:parent_node_id => parent.id, :slug => "peter_pan")
+    test_node2 = test_node.children.create!(:slug => "test_node2")
 
     put :publish, params: { :id => test_node.id }
 
@@ -293,7 +291,7 @@ class NodesControllerTest < ActionController::TestCase
 
     other_node = Node.root.children.create( :slug => "other" )
 
-    node.staged_parent_id = other_node.id
+    node.draft.update!(:parent_node_id => other_node.id)
     node.publish_draft!
 
     assert Node.valid?
@@ -711,16 +709,31 @@ class NodesControllerTest < ActionController::TestCase
     assert flash[:error].present?
   end
 
-  test "restore_from_trash reparents to the given parent" do
+  test "restore_from_trash reparents to the 'old' parent" do
     login_as :quentin
     node = Node.root.children.create!(:slug => "restore_me")
     node.trash!(users(:quentin))
     target = Node.root.children.create!(:slug => "restore_home")
 
-    put :restore_from_trash, params: { :id => node.id, :parent_id => target.id }
+    node.reload.draft.update!(:parent_node_id => target.id)
+    put :restore_from_trash, params: { :locale => "de", :id => node.id }
 
     assert_redirected_to node_path(node)
     assert_equal target, node.reload.parent
+  end
+
+  test "restore_from_trash follows an explicitly chosen parent" do
+    login_as :quentin
+    node = Node.root.children.create!(:slug => "restore_pick")
+    node.trash!(users(:quentin))
+    chosen = Node.root.children.create!(:slug => "chosen_home")
+
+    put :restore_from_trash, params: { :locale => "de", :id => node.id,
+                                       :parent_id => chosen.id }
+
+    assert_equal chosen, node.reload.parent
+    assert_equal chosen.id, node.draft.parent_node_id,
+      "the choice is recorded on the draft, not applied behind its back"
   end
 
   test "destroy refuses a node outside the Trash" do

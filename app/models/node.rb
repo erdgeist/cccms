@@ -128,6 +128,7 @@ class Node < ApplicationRecord
 
   def autosave! attributes, current_user
     ensure_autosave!(current_user)
+    attributes = attributes.except(:slug, "slug") if attributes[:slug].blank? && attributes["slug"].blank?
     self.autosave.assign_attributes(attributes)
     self.autosave.save!
     self.autosave
@@ -227,17 +228,9 @@ class Node < ApplicationRecord
     self.reload
   end
 
-  def staged_slug=(value)
-    if head.blank?
-      self.slug = value
-    else
-      super
-    end
-  end
-
   def publish_draft! current_user = nil
-    # Return nil if nothing to publish and no staged changes
-    return nil unless self.draft || staged_slug || staged_parent_id
+    # Return nil if nothing to publish
+    return nil unless self.draft
 
     guard_live_change!(current_user, :target_path => prospective_unique_name)
 
@@ -263,26 +256,28 @@ class Node < ApplicationRecord
                             **NodeAction.head_diff(outgoing_head, self.head))
       end
 
-      if staged_slug && (staged_slug != slug)
-        self.slug = staged_slug
-        self.staged_slug = nil
+      if self.head.slug.present? && self.head.slug != slug
+        self.slug = self.head.slug
       end
 
-      if staged_parent_id && (staged_parent_id != parent_id)
-        new_parent = Node.find(staged_parent_id)
+      if self.head.parent_node_id && self.head.parent_node_id != parent_id
+        new_parent = Node.find_by(:id => self.head.parent_node_id)
 
-        if new_parent == self || self.descendants.include?(new_parent)
+        unless new_parent
+          errors.add(:base, :move_target_missing)
+          raise ActiveRecord::RecordInvalid.new(self)
+        end
+
+        if new_parent == self || self.descendants.include?(new_parent) ||
+           new_parent.trash_node? || new_parent.in_trash?
           errors.add(:base, :move_under_self)
           raise ActiveRecord::RecordInvalid.new(self)
         end
 
-        self.staged_parent_id = nil
         self.save!
         self.move_to_child_of(new_parent)
       else
-        unless self.save
-          raise ActiveRecord::RecordInvalid.new(self)
-        end
+        raise ActiveRecord::RecordInvalid.new(self) unless self.save
       end
 
       self.reload
@@ -369,8 +364,11 @@ class Node < ApplicationRecord
   # subtree comes back exactly as it sits in the Trash: all drafts,
   # nothing published. Republication is a separate, witnessed act
   # per node.
-  def restore_from_trash! new_parent, current_user = nil
+  def restore_from_trash! current_user = nil
     return nil unless in_trash?
+
+    target = (draft || head)&.parent_node_id
+    new_parent = target ? Node.find_by(:id => target) : nil
 
     if new_parent.nil? || new_parent == self || descendants.include?(new_parent) ||
        new_parent.trash_node? || new_parent.in_trash?
@@ -593,11 +591,9 @@ class Node < ApplicationRecord
     root? || self.class.restricted_path?(unique_name)
   end
 
+  # Falls back to the live address when the draft records none.
   def prospective_unique_name
-    target_parent = staged_parent_id ? Node.find_by(:id => staged_parent_id) : parent
-    return nil unless target_parent
-
-    [target_parent.unique_name.presence, staged_slug.presence || slug].compact.join("/")
+    (draft || head)&.prospective_unique_name || unique_name
   end
 
   # Returns immutable node id for all new nodes so that the atom feed entry ids
@@ -702,7 +698,7 @@ class Node < ApplicationRecord
     # that draft and publishes it.
     def initialize_empty_page
       if self.pages.empty?
-        self.draft = self.pages.create!
+        self.draft = self.pages.create!(:slug => self.slug, :parent_node_id => self.parent_id)
         self.save
       end
     end
@@ -744,14 +740,11 @@ class Node < ApplicationRecord
     def reserved_slug_stays_reserved
       if parent&.root? && !trash_node_already_me?
         errors.add(:slug, :reserved_for_trash) if slug == CccConventions::TRASH_SLUG
-        errors.add(:staged_slug, :reserved_for_trash) if staged_slug == CccConventions::TRASH_SLUG
       end
 
       if persisted? && slug_was == CccConventions::TRASH_SLUG && Node.find(id).trash_node?
         errors.add(:slug, :trash_immutable) if slug_changed?
         errors.add(:parent_id, :trash_immutable) if parent_id_changed?
-        errors.add(:staged_slug, :trash_must_be_empty) if staged_slug.present?
-        errors.add(:staged_parent_id, :trash_must_be_empty) if staged_parent_id.present?
       end
     end
 

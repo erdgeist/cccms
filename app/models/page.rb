@@ -20,9 +20,13 @@ class Page < ApplicationRecord
             :inclusion   => { :in => ->(_) { Page.custom_templates } },
             :allow_blank => true,
             :if          => :template_name_changed?
+  validates_format_of   :slug, :with => /\A[A-Za-z0-9][A-Za-z0-9_-]*\z/,
+                        :unless => -> { slug.blank? }
+  validate :page_slug_not_reserved
 
   # Associations
   belongs_to :node, optional: true
+  belongs_to :parent_node, :class_name => "Node", :optional => true
   belongs_to :user, optional: true
   belongs_to :editor, :class_name => "User", optional: true
   has_many   :related_assets, :dependent => :destroy
@@ -202,6 +206,8 @@ class Page < ApplicationRecord
     page.translations.reload
 
     # Clone untranslated attributes
+    self.slug             = page.slug
+    self.parent_node_id   = page.parent_node_id
     self.tag_list         = page.tag_list
     self.template_name  ||= page.template_name
     self.published_at     = page.published_at
@@ -292,6 +298,20 @@ class Page < ApplicationRecord
     published_at.nil? ? true : published_at < Time.now
   end
 
+  # The address this page will have once published.
+  def prospective_unique_name
+    return nil if parent_node_id.nil?
+
+    parent = Node.find_by(:id => parent_node_id)
+    return nil unless parent
+
+    [parent.unique_name.presence, slug].compact.join("/")
+  end
+
+  def parent_node_missing?
+    parent_node_id.present? && !Node.exists?(:id => parent_node_id)
+  end
+
   def effective_lang
     if translated_locales.empty?
       return 'de'
@@ -331,6 +351,14 @@ class Page < ApplicationRecord
     else
       return false
     end
+  end
+
+  def page_slug_not_reserved
+    return unless slug == CccConventions::TRASH_SLUG
+    return if node&.trash_node?
+    return unless parent_node_id && Node.find_by(:id => parent_node_id)&.root?
+
+    errors.add(:slug, :reserved_for_trash)
   end
 
   # Installs (or re-installs) the trigger that keeps page_translations'

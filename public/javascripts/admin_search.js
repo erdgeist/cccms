@@ -257,7 +257,7 @@ move_to_search = {
       showRestricted: true,
       onSelect: function(node) {
         $("#move_to_search_term").val(node.title);
-        $("#node_staged_parent_id").val(node.node_id);
+        $("#page_parent_node_id").val(node.node_id);
       }
     });
   }

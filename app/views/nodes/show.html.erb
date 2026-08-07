@@ -105,7 +105,7 @@
           <% end %>
           <div class="info_item">
             <span class="info_label"><%= t(".restore_to") %></span>
-            <% suggestion = @node.suggested_restore_parent %>
+            <% suggestion = @node.draft&.parent_node || @node.suggested_restore_parent %>
             <%= form_tag restore_from_trash_node_path(@node), :method => :put, :class => "aligned_action_row" do %>
               <div class="restore_picker">
                 <%= text_field_tag :restore_search_term,

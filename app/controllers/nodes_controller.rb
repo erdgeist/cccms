@@ -90,7 +90,6 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node.update(node_update_params)
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     @node.save_draft!(current_user)
 
@@ -123,7 +122,6 @@ class NodesController < ApplicationController
   end
 
   def autosave
-    @node.update(node_update_params)
     @node.autosave!( page_params.merge(:tag_list => params[:tag_list]), current_user )
     head :ok
   rescue LockedByAnotherUser => e
@@ -167,12 +165,12 @@ class NodesController < ApplicationController
   end
 
   def restore_from_trash
-    parent = Node.find(params[:parent_id])
-    @node.restore_from_trash!(parent, current_user)
+    if params[:parent_id].present? && @node.draft
+      @node.draft.update!(:parent_node_id => params[:parent_id])
+    end
+
+    @node.restore_from_trash!(current_user)
     flash[:notice] = t("flash.nodes.restored")
-    redirect_to node_path(@node)
-  rescue ActiveRecord::RecordNotFound
-    flash[:error] = t("flash.nodes.restore_target_missing")
     redirect_to node_path(@node)
   rescue ActiveRecord::RecordInvalid => e
     flash[:error] = e.record.errors.full_messages.to_sentence
@@ -281,12 +279,9 @@ class NodesController < ApplicationController
       params.fetch(:node, {}).permit(:slug, :parent_id)
     end
 
-    def node_update_params
-      params.fetch(:node, {}).permit(:staged_slug, :staged_parent_id)
-    end
-
     def page_params
-      params.fetch(:page, {}).permit(:title, :abstract, :body, :template_name, :published_at, :user_id)
+      params.fetch(:page, {}).permit(:title, :abstract, :body, :template_name,
+                                 :published_at, :user_id, :slug, :parent_node_id)
     end
 
     def find_node

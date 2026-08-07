@@ -96,20 +96,20 @@
       <div id="metadata">
         <div class="layout_row_label"><%= t(".slug") %></div>
         <div class="layout_row_content">
-          <%= f.text_field(
-                :staged_slug, :value => @node.staged_slug || @node.slug
+          <%= d.text_field(
+                :slug, :value => @page.slug || @node.slug
               )
             %>
         </div>
 
         <div class="layout_row_label"><%= t(".parent") %></div>
         <div class="layout_row_content">
-          <%= text_field_tag :move_to_search_term, @node.parent.title rescue "" %>
+          <%= text_field_tag :move_to_search_term, (Node.find_by(:id => @page.parent_node_id) || @node.parent)&.title %>
           <p class="field_hint"><%= t(".parent_hint") %></p>
           <div id="move_to_search_results" class="search_results"></div>
-          <%= f.hidden_field(
-                :staged_parent_id,
-                :value => @node.staged_parent_id || @node.parent_id
+          <%= d.hidden_field(
+                :parent_node_id,
+                :value => @page.parent_node_id || @node.parent_id
               )
            %>
         </div>
