@@ -27,10 +27,14 @@ namespace :cccms do
       end
 
       node = parent ? parent.children.create!(:slug => slug) : Node.create!
+      if parent.nil?
+        node.reload
+        node.update_column(:draft_id, node.pages.first.id) if node.draft_id.nil?
+      end
       Globalize.with_locale(I18n.default_locale) do
         node.draft.update!(:title => title, :body => body.to_s)
       end
-      node.publish_draft!
+      node.publish_draft! if parent
       puts format("  %-14s created  (%d)", slug || "root", node.id)
       node
     end
