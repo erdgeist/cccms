@@ -50,8 +50,13 @@
           <% if @node.draft && !@node.autosave && !@node.in_trash? && !@node.trash_node? %>
             <div class="info_item">
               <% if may_change_live %>
+                <% confirm = t(".confirm_publish") %>
+                <% if @node.prospective_unique_name != @node.unique_name %>
+                  <% confirm += " " + t(".confirm_publish_moves",
+                                        :path => @node.prospective_unique_name) %>
+                <% end %>
                 <%= button_to t(".publish"), publish_node_path(@node), method: :put,
-                      form: { data: { confirm: t(".confirm_publish") }, class: 'button_to state_changing' } %>
+                      form: { data: { confirm: confirm }, class: 'button_to state_changing' } %>
               <% else %>
                 <span class="disabled_action"><%= t(".publish") %></span>
               <% end %>
@@ -222,6 +227,13 @@
         link_locales  = [I18n.default_locale] + (link_locales - [I18n.default_locale]).sort
         locale_param  = ->(locale) { locale unless locale == I18n.default_locale }
       %>
+
+      <% if @node.prospective_unique_name != @node.unique_name %>
+        <p class="pending_address">
+          <%= icon("arrow-move-right", library: "tabler", "aria-hidden": true) %>
+          <%= t(".pending_address", :path => @node.prospective_unique_name) %>
+        </p>
+      <% end %>
 
       <div class="link_matrix link_matrix_<%= link_locales.size %>">
         <div class="link_matrix_head">

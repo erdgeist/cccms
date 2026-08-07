@@ -477,6 +477,7 @@ de:
       layer_autosave: "Autosave"
       publish: "Veröffentlichen"
       confirm_publish: "Diesen Entwurf veröffentlichen?"
+      confirm_publish_moves: "Dabei wird die Seite nach %{path} verschoben."
       destroy_draft: "Entwurf löschen"
       discard_autosave: "Autosave verwerfen"
       confirm_trash: "Diese Seite und alles darunter in den Papierkorb verschieben? Alle veröffentlichten Inhalte darin gehen offline."
@@ -512,6 +513,7 @@ de:
       will_publish_at: "Wird veröffentlicht am"
       links: "Links"
       public: "Öffentlich"
+      pending_address: "Beim Veröffentlichen wird diese Seite nach %{path} verschoben"
       admin_preview: "Admin-Vorschau"
       public_preview: "Öffentliche Vorschau"
       revoke: "Zurückziehen"
@@ -747,6 +749,7 @@ de:
       no_change: "Keine Änderung."
       unchanged_here_html: "Keine Änderung in der Übersetzung %{lang} zwischen diesen Revisionen — geändert wurde %{others}."
       unchanged_anywhere: "Zwischen diesen Revisionen wurde keine Übersetzung geändert."
+      address: "Adresse"
     index:
       title: "Revisionen für Node: %{path}"
       back_to_node: "Zurück zum Node"

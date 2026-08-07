@@ -221,8 +221,8 @@ module NodeActionsHelper
   end
 
   def subject_ref action
-    action.node ? link_to(h(action.subject_name), node_path(action.node))
-                : h(action.subject_name)
+    name = action.subject_name.presence || t("admin.common.no_title")
+    action.node ? link_to(h(name), node_path(action.node)) : h(name)
   end
 
   def asset_ref action

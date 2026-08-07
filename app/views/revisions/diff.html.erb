@@ -115,6 +115,16 @@
     <%= raw @diff[:body] %>
   <% end %>
 
+  <h3><%= t(".address") %></h3>
+  <% if @diff[:address][:changed] %>
+    <p>
+      <del><%= @diff[:address][:from] || t(".none_marker") %></del>
+      <ins><%= @diff[:address][:to] || t(".none_marker") %></ins>
+    </p>
+  <% else %>
+    <p class="diff_unchanged"><%= t(".no_change") %></p>
+  <% end %>
+
   <h3><%= Page.human_attribute_name(:tag_list) %></h3>
   <% if @diff[:tags][:added].empty? && @diff[:tags][:removed].empty? %>
     <p class="diff_unchanged"><%= t(".no_change") %></p>

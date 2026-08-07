@@ -272,6 +272,7 @@ class Page < ApplicationRecord
       end
 
     text_diffs.merge(
+      address:       address_diff_against(other),
       tags:          { added: tag_list.to_a - other.tag_list.to_a, removed: other.tag_list.to_a - tag_list.to_a },
       template_name: { from: other.template_name, to: template_name, changed: template_name != other.template_name },
       assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a }
@@ -416,5 +417,13 @@ class Page < ApplicationRecord
       end
 
       self.body = doc.to_html
+    end
+
+    def address_diff_against other
+      changed = slug != other.slug || parent_node_id != other.parent_node_id
+
+      { :from    => other.prospective_unique_name,
+        :to      => prospective_unique_name,
+        :changed => changed }
     end
 end
