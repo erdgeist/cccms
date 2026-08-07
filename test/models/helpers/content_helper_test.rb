@@ -137,4 +137,19 @@ class ContentHelperTest < ActionView::TestCase
     assert_includes out, 'title="Beispiel"'
     assert_includes out, 'data-gallery="g1"'
   end
+
+  test "the date_and_title partial still exists and renders" do
+    node = Node.root.children.find_by(:slug => "disclosure") ||
+           Node.root.children.create!(:slug => "disclosure")
+    entry = node.children.create!(:slug => "some_disclosure")
+    entry.draft.update!(:title => "Ein Fund")
+    entry.publish_draft!
+    entry.head.tag_list.add("disclosure")
+    entry.head.save!
+
+    html = aggregate?('[aggregate tags="disclosure" partial="date_and_title"]')
+
+    assert_includes html, "date_and_title_partial"
+    assert_includes html, "Ein Fund"
+  end
 end
