@@ -281,7 +281,8 @@ class NodesController < ApplicationController
 
     def page_params
       params.fetch(:page, {}).permit(:title, :abstract, :body, :template_name,
-                                 :published_at, :user_id, :slug, :parent_node_id)
+                                 :published_at, :user_id, :slug, :parent_node_id,
+                                 :external_url)
     end
 
     def find_node

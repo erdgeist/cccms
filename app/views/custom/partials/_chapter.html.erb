@@ -7,8 +7,8 @@
     <% if page.abstract.present? %>
       <div class="chapter_location"><%= page.abstract %></div>
     <% end %>
-    <% if page.node.external_url.present? %>
-      <div class="chapter_url"><%= link_to page.node.external_url, page.node.external_url, target: '_blank', rel: 'noopener' %></div>
+    <% if page.external_url.present? %>
+      <div class="chapter_url"><%= link_to page.external_url, page.external_url, target: '_blank', rel: 'noopener' %></div>
     <% end %>
     <% open_days = page.node.events.tagged_with('open-day').order(:start_time) %>
     <% if open_days.any? %>

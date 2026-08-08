@@ -30,4 +30,32 @@ namespace :pages do
 
     puts "#{write ? "updated" : "would update"} #{touched} pages"
   end
+
+  desc "Backfill pages.external_url from each page's node."
+  task :backfill_external_url => :environment do
+    write = ENV["WRITE"] == "1"
+    puts "DRY RUN -- nothing written. Re-run with WRITE=1." unless write
+
+    touched = 0
+    Node.where.not(:external_url => [nil, ""]).find_each do |node|
+      scope = node.pages.where("external_url IS DISTINCT FROM :u", :u => node.external_url)
+      count = scope.count
+      next if count.zero?
+
+      scope.update_all(:external_url => node.external_url) if write
+      touched += count
+    end
+
+    # Autosaves carry no node_id, so has_many :pages does not cover them.
+    Node.where.not(:autosave_id => nil).where.not(:external_url => [nil, ""])
+        .includes(:autosave).find_each do |node|
+      a = node.autosave
+      next if a.nil? || a.external_url == node.external_url
+
+      a.update_columns(:external_url => node.external_url) if write
+      touched += 1
+    end
+
+    puts "#{write ? "updated" : "would update"} #{touched} pages"
+  end
 end

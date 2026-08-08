@@ -1,8 +1,8 @@
 <div class="article" lang="<%= @page.effective_lang %>">
   <h1 class="headline"><%= @page.title %></h1>
   <%= headline_image %>
-  <% if @page.node.external_url.present? %>
-    <div class="chapter_url"><%= link_to @page.node.external_url, @page.node.external_url, target: '_blank', rel: 'noopener' %></div>
+  <% if @page.external_url.present? %>
+    <div class="chapter_url"><%= link_to @page.external_url, @page.external_url, target: '_blank', rel: 'noopener' %></div>
   <% end %>
   <p><%= sanitize(@page.abstract) %></p>
   <%= aggregate?(@page.body) %>

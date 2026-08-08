@@ -35,6 +35,7 @@ class NodeAction < ApplicationRecord
   #   "title"  -- pair, always; "from" null on first publish
   #   "author" -- pair, when the byline changed (incl. first publish)
   #   "tags"   -- pair of arrays, when changed
+  #   "external_url" -- pair, when a chapter's homepage changed
   #   "assets" -- {"added" => [asset names], "removed" => [asset names]},
   #               keys only when any; a delta, not a pair. The event IS
   #               the delta, full sets would bloat every entry. Changed
@@ -134,7 +135,6 @@ class NodeAction < ApplicationRecord
   #                    from the node verbs' "tags", which is a pair,
   #                    so one renderer cannot mistake the other.
   #   "path"        -- the node's unique_name, when it has a node
-  #   "external_url" -- pair
   #
   # On "event_update" only, and only when something changed -- an
   # update that changes nothing records no entry at all:
@@ -199,11 +199,15 @@ class NodeAction < ApplicationRecord
                          "to"   => title_of.call(new_page) } }
     unless old_page
       diff[:author] = { "from" => nil, "to" => new_page.user&.login } if new_page.user
+      diff[:external_url] = { "from" => nil, "to" => new_page.external_url } if new_page.external_url.present?
       return diff
     end
 
     old_author, new_author = old_page.user&.login, new_page.user&.login
     diff[:author] = { "from" => old_author, "to" => new_author } if old_author != new_author
+
+    old_url, new_url = old_page.external_url, new_page.external_url
+    diff[:external_url] = { "from" => old_url, "to" => new_url } if old_url != new_url
 
     old_tags, new_tags = old_page.tag_list.sort, new_page.tag_list.sort
     diff[:tags] = { "from" => old_tags, "to" => new_tags } if old_tags != new_tags

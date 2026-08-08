@@ -20,6 +20,9 @@ class Page < ApplicationRecord
             :inclusion   => { :in => ->(_) { Page.custom_templates } },
             :allow_blank => true,
             :if          => :template_name_changed?
+  validates :external_url, :format => { :with => %r{\Ahttps?://}i,
+                                      :allow_blank => true,
+                                      :message => :must_be_http }
   validates_format_of   :slug, :with => /\A[A-Za-z0-9][A-Za-z0-9_-]*\z/,
                         :unless => -> { slug.blank? }
   validate :page_slug_not_reserved
@@ -208,6 +211,7 @@ class Page < ApplicationRecord
     # Clone untranslated attributes
     self.slug             = page.slug
     self.parent_node_id   = page.parent_node_id
+    self.external_url     = page.external_url
     self.tag_list         = page.tag_list
     self.template_name  ||= page.template_name
     self.published_at     = page.published_at

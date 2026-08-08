@@ -91,6 +91,8 @@ en:
           attributes:
             slug:
               reserved_for_trash: "is reserved for the Trash"
+            external_url:
+              must_be_http: "must start with http:// or https://"
         user:
           attributes:
             roles:
@@ -199,7 +201,6 @@ en:
     detail_event_coordinates: "coordinates changed"
     detail_event_allday: "all-day %{from} → %{to}"
     detail_event_end: "end %{from} → %{to}"
-    node_external_url: "%{actor} changed the external homepage of %{subject}"
     event_none: "—"
     unknown_event: "an event"
 
@@ -403,7 +404,6 @@ en:
       set_headline_title: "Use this photo as the page's headline image"
       remove_image_label: "Remove image"
       external_url: "External homepage"
-      external_url_hint: "A chapter's own website, shown on its page. N.B.: Changing takes effect immediately."
     show:
       status: "Status"
       head: "Head"

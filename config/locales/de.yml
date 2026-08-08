@@ -120,17 +120,12 @@ de:
     errors:
       models:
         node:
-          # Attribute messages: full_messages prefixes the human attribute
-          # name, so these read as fragments. Defined at model level rather
-          # than per attribute, because several attributes share a message.
           reserved_for_trash: "ist für den Papierkorb reserviert"
           trash_immutable: "des Papierkorb-Nodes kann nicht geändert werden"
           trash_must_be_empty: "muss auf dem Papierkorb-Node leer bleiben"
           inside_trash: "kann im Papierkorb nicht existieren"
           attributes:
             base:
-              # :base messages stand alone -- no attribute name is prefixed,
-              # so these are whole sentences.
               has_children: "Ein Node mit Kindern kann nicht gelöscht werden"
               trash_undeletable: "Der Papierkorb-Node kann nicht gelöscht werden"
               publish_in_trash: "Ein Node im Papierkorb kann nicht veröffentlicht werden"
@@ -145,6 +140,8 @@ de:
           attributes:
             slug:
               reserved_for_trash: "ist für den Papierkorb reserviert"
+            external_url:
+              must_be_http: "muss mit http:// oder https:// beginnen"
         user:
           attributes:
             roles:
@@ -163,7 +160,7 @@ de:
         event:
           attributes:
             url:
-              must_be_http: "must start with http:// or https://"
+              must_be_http: "muss mit http:// oder https:// beginnen"
 
   tags:
     index:
@@ -253,7 +250,6 @@ de:
     detail_event_allday: "ganztägig %{from} → %{to}"
     detail_event_end: "Ende %{from} → %{to}"
     event_none: "—"
-    node_external_url: "%{actor} hat die externe Homepage von %{subject} geändert"
     unknown_event: "ein Termin"
 
   open_gallery: "Gallerie anzeigen"
@@ -456,7 +452,6 @@ de:
       set_headline_title: "Dieses Foto als Aufmacherbild der Seite verwenden"
       remove_image_label: "Bild entfernen"
       external_url: "Externe Homepage"
-      external_url_hint: "Die eigene Website einer Dezentrale, wird auf dessen Seite angezeigt. Vorsicht, Änderung wird ohne Draft sofort veröffentlicht."
     show:
       status: "Status"
       head: "Head"

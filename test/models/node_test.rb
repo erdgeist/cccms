@@ -1072,32 +1072,29 @@ class NodeTest < ActiveSupport::TestCase
     assert_equal club.id, node.parent_id
   end
 
-  test "setting an external url is gated and witnessed" do
+  test "an external url is carried by the draft and applied on publish" do
     node = Node.root.children.create!(:slug => "chapter_url_test")
-
-    assert_difference -> { NodeAction.where(:action => "node_external_url").count }, 1 do
-      assert node.update_external_url!("https://example.org", users(:aaron))
-    end
+    node.draft.update!(:external_url => "https://example.org")
+    node.publish_draft!(users(:aaron))
 
     assert_equal "https://example.org", node.reload.external_url
-    entry = NodeAction.where(:action => "node_external_url").last
-    assert_equal({ "from" => nil, "to" => "https://example.org" },
-                 entry.metadata["external_url"])
+    assert_equal "https://example.org", node.head.external_url
   end
 
-  test "a javascript url is refused" do
+  test "a javascript url is refused on the draft" do
     node = Node.root.children.create!(:slug => "chapter_url_reject")
     assert_raises(ActiveRecord::RecordInvalid) do
-      node.update_external_url!("javascript:alert(1)", users(:aaron))
+      node.draft.update!(:external_url => "javascript:alert(1)")
     end
   end
 
-  test "setting an external url on a restricted node needs redaktion" do
-    node = Node.find_by(:unique_name => "updates") ||
-           Node.root.children.create!(:slug => "updates")
+  test "publishing an external url change on a restricted node needs redaktion" do
+    updates = Node.root.children.create!(:slug => "updates")
+    node = updates.children.create!(:slug => "chapter_url_gated")
+    node.draft.update!(:external_url => "https://example.org")
 
     assert_raises(ActiveRecord::RecordInvalid) do
-      node.update_external_url!("https://example.org", users(:quentin))
+      node.publish_draft!(users(:quentin))
     end
   end
 
