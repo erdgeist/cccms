@@ -134,6 +134,9 @@ test:
   database: psql_test
   username: rails
   password:
+  collation: en_US.UTF-8
+  ctype:     en_US.UTF-8
+  template:  template0
 
 production:
   adapter: postgresql

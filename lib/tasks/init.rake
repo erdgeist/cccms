@@ -77,3 +77,7 @@ namespace :cccms do
     end
   end
 end
+
+Rake::Task["db:schema:load"].enhance do
+  Page.ensure_search_vector_trigger!
+end

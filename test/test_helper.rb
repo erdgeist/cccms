@@ -2,6 +2,12 @@ ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'rails/test_help'
 
+# rails/test_help calls maintain_test_schema!, which reloads db/schema.rb
+# in this process when a migration is pending. That recreates
+# page_translations and drops the search_vector trigger the initializer
+# installed at boot. Reinstall it here, after any such reload.
+Page.ensure_search_vector_trigger!
+
 module ActiveRecord
   class FixtureSet
     class << self
