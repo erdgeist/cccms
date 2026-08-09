@@ -2366,6 +2366,25 @@ input#menu_item_title {
   display: none;
 }
 
+.asset_attach_form .restore_picker {
+  max-width: 22rem;
+}
+
+.asset_attach_form label {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.asset_attach_form .action_button {
+  margin-bottom: 0;
+}
+
+.asset_attach_form .action_button + .field_hint {
+  display: block;
+  margin-left: 0;
+  margin-top: 0.5rem;
+}
+
 /* ============================================================
    User section
    ============================================================ */

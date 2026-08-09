@@ -672,6 +672,8 @@ en:
       pending_only: "pending versions only"
       not_attached: "— not attached to any page —"
       attach_button: "Attach"
+      attach_hint: "Attaches this asset to the page's draft, to go live when the draft is published."
+      new_page: "new page"
       new_page_with_attachment: "New page with this attachment"
       public_path: "Public Path"
       copy_url: "Copy URL"

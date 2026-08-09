@@ -44,19 +44,28 @@
       <% else %>
         <%= t(".not_attached") %>
       <% end %>
-      <%= link_to new_node_path(:asset_id => @asset.id), :class => "action_button" do %>
-        <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> <%= t(".new_page_with_attachment") %>
-      <% end %>
+    </div>
+
+    <div class="layout_row_label"><%= t("assets.form.attach_to_page") %></div>
+    <div class="layout_row_content">
       <%= form_tag attach_to_node_asset_path(@asset), :class => "asset_attach_form" do %>
         <div class="restore_picker">
           <%= text_field_tag :asset_node_search_term, nil,
                 :placeholder => t("assets.form.attach_search_placeholder"), :autocomplete => "off" %>
           <div id="asset_node_search_results" class="search_results" style="display: none"></div>
         </div>
-        <%= hidden_field_tag :node_id, nil %>
         <label><%= check_box_tag :headline, "1" %> <%= t("assets.form.as_headline") %></label>
-        <%= submit_tag t(".attach_button") %>
-        <span class="field_hint"><%= t("assets.form.attach_hint") %></span>
+        <%= button_tag :type => "submit", :class => "action_button" do %>
+          <%= icon("paperclip", library: "tabler", "aria-hidden": true) %> <%= t(".attach_button") %>
+        <% end %>
+        <span class="field_hint"><%= t(".attach_hint") %></span>
+      <% end %>
+    </div>
+
+    <div class="layout_row_label"><%= t(".new_page") %></div>
+    <div class="layout_row_content">
+      <%= link_to new_node_path(:asset_id => @asset.id), :class => "action_button" do %>
+        <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> <%= t(".new_page_with_attachment") %>
       <% end %>
     </div>
 

@@ -703,6 +703,8 @@ de:
       attached_to: "Angehängt an"
       pending_only: "nur in ausstehenden Versionen"
       not_attached: "— an keine Seite angehängt —"
+      attach_hint: "Hängt dieses Asset an den Entwurf der Seite an; es wird mit dem Entwurf veröffentlicht."
+      new_page: "neue Seite"
       new_page_with_attachment: "Neue Seite mit diesem Anhang"
       attach_button: "Anhängen"
       public_path: "Öffentlicher Pfad"
