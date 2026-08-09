@@ -41,4 +41,19 @@ class RssControllerTest < ActionController::TestCase
     assert_includes     @response.body, "feed-inside"
     assert_not_includes @response.body, "feed-outside"
   end
+
+  test "the feed escapes markup characters in a title" do
+    updates = Node.root.children.find_by(:slug => "updates")
+    node    = updates.children.create!(:slug => "feed-escaping")
+    node.reload.draft.update!(:title => %{Fnord & <b>bold</b> "quoted"},
+                              :tag_list => "update")
+    node.publish_draft!
+
+    get :updates, params: { :format => :xml }
+
+    assert_response :success
+    assert_includes     @response.body, "Fnord &amp; &lt;b&gt;bold&lt;/b&gt;"
+    assert_not_includes @response.body, "<b>bold</b>"
+    assert_not_includes @response.body, "&amp;amp;"
+  end
 end
