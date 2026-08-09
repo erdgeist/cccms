@@ -102,7 +102,9 @@ class AssetsControllerTest < ActionController::TestCase
     assert_response :redirect
     asset = Asset.last
     assert_includes node.draft.assets.reload, asset
-    assert_equal I18n.t("flash.assets.attached_to_draft", :title => node.title), flash[:notice]
+    assert_equal [I18n.t("flash.assets.created"),
+              I18n.t("flash.assets.attached_to_draft", :title => node.title)].join(" "),
+             flash[:notice]
   end
 
   test "create with node_id creates a draft when none is pending" do
@@ -116,7 +118,9 @@ class AssetsControllerTest < ActionController::TestCase
     assert_includes node.draft.assets.reload, Asset.last
     assert_empty node.head.assets.reload
     assert_equal users(:quentin), node.draft.editor
-    assert_equal I18n.t("flash.assets.attached_new_draft", :title => node.title), flash[:notice]
+    assert_equal [I18n.t("flash.assets.created"),
+              I18n.t("flash.assets.attached_new_draft", :title => node.title)].join(" "),
+             flash[:notice]
   end
 
   test "create against a foreign-locked node keeps the asset but refuses the attach" do
@@ -157,6 +161,19 @@ class AssetsControllerTest < ActionController::TestCase
     action = NodeAction.last
     assert_equal "asset_create", action.action
     assert_equal users(:quentin), action.user
+  end
+
+  test "update with node_id attaches the asset to the node's draft" do
+    node  = Node.root.children.create!(:slug => "asset_update_attach")
+    asset = Asset.create!(:name => "Existing", :upload_content_type => "image/png")
+
+    put :update, params: { id: asset.id, asset: { name: "Existing" }, node_id: node.id }
+
+    assert_response :redirect
+    assert_includes node.draft.assets.reload, asset
+    assert_equal [I18n.t("flash.assets.updated"),
+                  I18n.t("flash.assets.attached_to_draft", :title => node.title)].join(" "),
+                 flash[:notice]
   end
 
   # --- edit ---

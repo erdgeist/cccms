@@ -38,13 +38,14 @@ class AssetsController < ApplicationController
   # GET /assets/1/edit
   def edit
     @asset = Asset.find(params[:id])
+    @attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
   end
 
   # POST /assets
   # POST /assets.xml
   def create
     @asset = Asset.new(asset_params)
-    attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
+    @attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
 
     respond_to do |format|
       if @asset.save
@@ -54,7 +55,7 @@ class AssetsController < ApplicationController
                             :asset_name   => @asset.name,
                             :content_type => @asset.upload_content_type,
                             :path         => @asset.upload.url.sub(/\?\d+$/, ""))
-        attach_to(attach_node) if attach_node
+        attach_to(@attach_node) if @attach_node
         format.html { redirect_to(@asset) }
         format.xml  { render :xml => @asset, :status => :created, :location => @asset }
       else
@@ -68,10 +69,12 @@ class AssetsController < ApplicationController
   # PUT /assets/1.xml
   def update
     @asset = Asset.find(params[:id])
+    @attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
 
     respond_to do |format|
       if @asset.update(asset_params)
         flash[:notice] = t("flash.assets.updated")
+        attach_to(@attach_node) if @attach_node
         format.html { redirect_to(@asset) }
         format.xml  { head :ok }
       else
@@ -108,7 +111,7 @@ class AssetsController < ApplicationController
     def attach_to node
       result = node.attach_asset!(@asset, :user => current_user,
                                    :headline => params[:headline].present?)
-      flash[:notice] =
+      sentence =
         if result[:attached].zero?
           t("flash.assets.already_attached", :title => node.title)
         elsif result[:draft_created]
@@ -117,10 +120,11 @@ class AssetsController < ApplicationController
           t("flash.assets.attached_to_draft", :title => node.title)
         end
       case result[:headline]
-      when :set           then flash[:notice] += " " + t("flash.common.now_headline")
+      when :set           then sentence += " " + t("flash.common.now_headline")
       when :kept_existing then flash[:headline_kept_path] = node_path(node)
       when :not_eligible  then flash[:error] = t("flash.common.headline_ineligible")
       end
+      flash[:notice] = [flash[:notice], sentence].compact.join(" ")
     rescue LockedByAnotherUser
       flash[:locked_by]        = node.lock_owner&.login
       flash[:locked_node_path] = node_path(node)

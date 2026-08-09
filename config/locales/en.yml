@@ -624,7 +624,7 @@ en:
     assets:
       created: "Asset was successfully created."
       updated: "Asset was successfully updated."
-      already_attached: "Asset saved — it was already attached to “%{title}”."
+      already_attached: "It was already attached to “%{title}”."
       attached_to_draft: "Attached to the draft of %{title}. Publish it to make the change live."
       attached_new_draft: "Created a draft of %{title} with this attachment. Publish it to make the change live."
     events:
@@ -689,7 +689,7 @@ en:
       none_option: "— none —"
       attach_to_page: "attach to page"
       attach_search_placeholder: "Search for a page…"
-      attach_hint: "Optional — attaches this asset to that page, all pending versions included."
+      attach_hint: "Optional: attach this asset to that page's draft, to go live when the draft is published."
       as_headline: "attach as the page's headline"
       headline_hint: "Applies only if the page has no headline yet."
 
