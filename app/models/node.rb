@@ -257,8 +257,6 @@ class Node < ApplicationRecord
         self.slug = self.head.slug
       end
 
-      self.external_url = self.head.external_url
-
       if self.head.parent_node_id && self.head.parent_node_id != parent_id
         new_parent = Node.find_by(:id => self.head.parent_node_id)
 

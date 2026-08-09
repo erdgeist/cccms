@@ -1077,7 +1077,6 @@ class NodeTest < ActiveSupport::TestCase
     node.draft.update!(:external_url => "https://example.org")
     node.publish_draft!(users(:aaron))
 
-    assert_equal "https://example.org", node.reload.external_url
     assert_equal "https://example.org", node.head.external_url
   end
 
