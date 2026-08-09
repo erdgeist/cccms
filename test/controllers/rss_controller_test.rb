@@ -16,20 +16,12 @@ class RssControllerTest < ActionController::TestCase
   end
 
   test "updates feed contains tagged pages" do
-    begin
-      get :updates, params: { format: :xml }
-    rescue ActionView::Template::Error => e
-      raise unless e.message =~ /superclass mismatch/
-    end
+    get :updates, params: { format: :xml }
     assert assigns(:items).any?, "Expected at least one page tagged with 'update'"
   end
 
   test "updates feed is limited to 20 items" do
-    begin
-      get :updates, params: { format: :xml }
-    rescue ActionView::Template::Error => e
-      raise unless e.message =~ /superclass mismatch/
-    end
+    get :updates, params: { format: :xml }
     assert assigns(:items).length <= 20
   end
 
