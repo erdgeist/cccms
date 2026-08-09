@@ -94,7 +94,7 @@ class AssetsControllerTest < ActionController::TestCase
 
   # --- create with attach ---
 
-  test "create with node_id attaches the asset to the node's draft" do
+  test "create with node_id attaches the asset to an existing draft" do
     node = Node.root.children.create!(:slug => "asset_attach_target")
 
     post :create, params: { asset: { name: 'Attach me' }, node_id: node.id }
@@ -102,7 +102,21 @@ class AssetsControllerTest < ActionController::TestCase
     assert_response :redirect
     asset = Asset.last
     assert_includes node.draft.assets.reload, asset
-    assert_equal I18n.t("flash.assets.attached", :title => node.title), flash[:notice]
+    assert_equal I18n.t("flash.assets.attached_to_draft", :title => node.title), flash[:notice]
+  end
+
+  test "create with node_id creates a draft when none is pending" do
+    node = Node.root.children.create!(:slug => "asset_attach_no_draft")
+    node.publish_draft!(users(:quentin))
+    assert_nil node.reload.draft
+
+    post :create, params: { asset: { name: 'Attach me too' }, node_id: node.id }
+
+    node.reload
+    assert_includes node.draft.assets.reload, Asset.last
+    assert_empty node.head.assets.reload
+    assert_equal users(:quentin), node.draft.editor
+    assert_equal I18n.t("flash.assets.attached_new_draft", :title => node.title), flash[:notice]
   end
 
   test "create against a foreign-locked node keeps the asset but refuses the attach" do
@@ -133,14 +147,16 @@ class AssetsControllerTest < ActionController::TestCase
     assert_equal node_path(node), flash[:headline_kept_path]
   end
 
-  test "create with node_id writes an asset_create and an asset_attach entry" do
-    node = Node.root.children.create!(:slug => "asset_log_pair")
-    assert_difference 'NodeAction.where(:action => "asset_create").count' do
-      assert_difference 'NodeAction.where(:action => "asset_attach").count' do
-        post :create, params: { asset: { name: 'Logged twice' }, node_id: node.id }
-      end
+  test "create with node_id writes only an asset_create entry" do
+    node = Node.root.children.create!(:slug => "asset_log_single")
+
+    assert_difference 'NodeAction.count', 1 do
+      post :create, params: { asset: { name: 'Logged once' }, node_id: node.id }
     end
-    assert_equal users(:quentin), NodeAction.last.user
+
+    action = NodeAction.last
+    assert_equal "asset_create", action.action
+    assert_equal users(:quentin), action.user
   end
 
   # --- edit ---

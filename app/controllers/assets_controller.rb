@@ -111,8 +111,10 @@ class AssetsController < ApplicationController
       flash[:notice] =
         if result[:attached].zero?
           t("flash.assets.already_attached", :title => node.title)
+        elsif result[:draft_created]
+          t("flash.assets.attached_new_draft", :title => node.title)
         else
-          t("flash.assets.attached", :title => node.title)
+          t("flash.assets.attached_to_draft", :title => node.title)
         end
       case result[:headline]
       when :set           then flash[:notice] += " " + t("flash.common.now_headline")
@@ -122,5 +124,8 @@ class AssetsController < ApplicationController
     rescue LockedByAnotherUser
       flash[:locked_by]        = node.lock_owner&.login
       flash[:locked_node_path] = node_path(node)
+    rescue ActiveRecord::RecordInvalid => e
+      flash[:error]             = e.record.errors.full_messages.to_sentence
+      flash[:resolve_node_path] = node_path(node)
     end
 end

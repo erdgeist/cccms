@@ -13,6 +13,11 @@
       <%= link_to t(".locked_link"), flash[:locked_node_path] %><%= t(".locked_suffix") %>
     </span>
   <% end %>
+  <% if flash[:resolve_node_path] %>
+    <span class="warning">
+      <%= link_to t(".resolve_link"), flash[:resolve_node_path] %>
+    </span>
+  <% end %>
   <% if flash[:headline_kept_path] %>
     <span class="warning"><%= t(".headline_prefix") %>
       <%= link_to t(".headline_link"), flash[:headline_kept_path] %><%= t(".headline_suffix") %>

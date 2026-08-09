@@ -9,49 +9,67 @@ class NodeAttachAssetTest < ActiveSupport::TestCase
     @image = create_image_asset
   end
 
-  test "attaches to a draft-only node" do
+  test "attaches to an existing draft" do
     result = @node.attach_asset!(@image, :user => @user)
     assert_equal 1, result[:attached]
+    assert_not result[:draft_created]
     assert_includes @node.draft.assets, @image
   end
 
-  test "attaches to head when no draft is pending" do
+  test "creates a draft when none is pending and leaves head untouched" do
     @node.publish_draft!(@user)
     result = @node.attach_asset!(@image, :user => @user)
     assert_equal 1, result[:attached]
-    assert_includes @node.head.assets, @image
+    assert result[:draft_created]
+    assert_includes @node.draft.assets, @image
+    assert_empty @node.head.assets.reload
   end
 
-  test "attaches to head and pending draft alike" do
+  test "attaches to a pending draft and leaves head untouched" do
     @node.publish_draft!(@user)
     @node.lock_for_editing!(@user)
     @node.create_new_draft(@user)
     result = @node.attach_asset!(@image, :user => @user)
-    assert_equal 2, result[:attached]
-    assert_includes @node.head.assets, @image
+    assert_equal 1, result[:attached]
+    assert_not result[:draft_created]
     assert_includes @node.draft.assets, @image
+    assert_empty @node.head.assets.reload
   end
 
-  test "attaches to all three lifecycle rows" do
+  test "refuses when an autosave exists and writes nothing" do
     @node.publish_draft!(@user)
     @node.lock_for_editing!(@user)
     @node.create_new_draft(@user)
     @node.autosave!({ :title => "wip" }, @user)
-    result = @node.attach_asset!(@image, :user => @user)
-    assert_equal 3, result[:attached]
-    [@node.head, @node.draft, @node.autosave].each do |row|
-      assert_includes row.assets, @image
-    end
+    assert_raises(ActiveRecord::RecordInvalid) { @node.attach_asset!(@image, :user => @user) }
+    assert_empty @node.draft.assets.reload
+    assert_empty @node.autosave.assets.reload
   end
 
-  test "skips rows that already carry the asset" do
+  test "reports an asset the draft already carries without duplicating it" do
     @node.draft.related_assets.create!(:asset => @image)
-    @node.publish_draft!(@user)
-    @node.lock_for_editing!(@user)
-    @node.create_new_draft(@user)
     result = @node.attach_asset!(@image, :user => @user)
     assert_equal 0, result[:attached]
-    assert_equal 2, result[:already]
+    assert_equal 1, result[:already]
+    assert_not result[:draft_created]
+    assert_equal 1, @node.draft.related_assets.where(:asset_id => @image.id).count
+  end
+
+  test "creates no draft when head already carries the asset" do
+    @node.draft.related_assets.create!(:asset => @image)
+    @node.publish_draft!(@user)
+    assert_nil @node.draft
+
+    result = @node.attach_asset!(@image, :user => @user)
+    assert_equal 0, result[:attached]
+    assert_not result[:draft_created]
+    assert_nil @node.reload.draft
+  end
+
+  test "attaching twice leaves one join row" do
+    @node.attach_asset!(@image, :user => @user)
+    result = @node.attach_asset!(@image, :user => @user)
+    assert_equal 0, result[:attached]
     assert_equal 1, @node.draft.related_assets.where(:asset_id => @image.id).count
   end
 
@@ -82,6 +100,17 @@ class NodeAttachAssetTest < ActiveSupport::TestCase
     assert_includes @node.draft.assets, @image
   end
 
+  test "keeps a headline the new draft inherited from head" do
+    incumbent = create_image_asset
+    @node.draft.related_assets.create!(:asset => incumbent, :headline => true)
+    @node.publish_draft!(@user)
+
+    result = @node.attach_asset!(@image, :user => @user, :headline => true)
+    assert result[:draft_created]
+    assert_equal :kept_existing, result[:headline]
+    assert_equal incumbent, @node.draft.reload.headline_asset
+  end
+
   test "declines the headline flag for ineligible asset types" do
     plain = create_plain_asset
     result = @node.attach_asset!(plain, :user => @user, :headline => true)
@@ -95,23 +124,17 @@ class NodeAttachAssetTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) { @node.attach_asset!(@image, :user => @user) }
   end
 
-  test "attaching writes an asset_attach entry with node and asset participants" do
-    result = @node.attach_asset!(@image, :user => @user, :headline => true)
-    assert_equal :set, result[:headline]
-
-    action = NodeAction.where(:action => "asset_attach").last
-    assert_equal @node, action.node
-    subjects = action.action_participants.map { |p| [p.subject_type, p.subject_id] }
-    assert_includes subjects, ["Node", @node.id]
-    assert_includes subjects, ["Asset", @image.id]
-    assert action.metadata["headline"]
-  end
-
-  test "a fully redundant attach writes no entry" do
-    @node.attach_asset!(@image, :user => @user)
-    assert_no_difference 'NodeAction.count' do
+  test "attaching writes no log entry -- publish carries the witnessing" do
+    assert_no_difference "NodeAction.count" do
       @node.attach_asset!(@image, :user => @user)
     end
+  end
+
+  test "attaching under a restricted surface needs no redaktion role" do
+    updates = Node.root.children.create!(:slug => "updates")
+    node    = updates.children.create!(:slug => "gated-attachment")
+    result  = node.reload.attach_asset!(@image, :user => @user)
+    assert_equal 1, result[:attached]
   end
 
   private

@@ -136,6 +136,7 @@ de:
               destroy_outside_trash: "Nodes können nur aus dem Papierkorb gelöscht werden"
               attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
               not_permitted: "In diesem Bereich dürfen nur Mitglieder der Redaktion veröffentlichte Inhalte ändern"
+              attach_with_autosave: "An einen Node mit ungespeicherten Änderungen im Editor können keine Assets angehängt werden"
         page:
           attributes:
             slug:
@@ -659,8 +660,9 @@ de:
     assets:
       created: "Asset wurde angelegt."
       updated: "Asset wurde aktualisiert."
-      attached: "Asset wurde angelegt und an „%{title}“ angehängt."
-      already_attached: "Asset gespeichert — es war bereits an „%{title}“ angehängt."
+      already_attached: "Asset wurde gespeichert. Es war bereits an „%{title}“ angehängt."
+      attached_to_draft: "Zum Entwurf von %{title} hinzugefügt. Zum Veröffentlichen den Entwurf freigeben."
+      attached_new_draft: "Entwurf von %{title} mit diesem Anhang angelegt. Zum Veröffentlichen den Entwurf freigeben."
     events:
       created: "Termin wurde angelegt."
       updated: "Termin wurde aktualisiert."

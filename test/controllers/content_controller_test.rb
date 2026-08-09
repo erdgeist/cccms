@@ -170,6 +170,8 @@ class ContentControllerTest < ActionController::TestCase
                           :upload_content_type => "image/png",
                           :upload_updated_at => Time.at(1_700_000_000))
     node.attach_asset!(asset, :user => @user1, :headline => true)
+    node.publish_draft!
+    node.reload
 
     # has_variant? only tests File.exist?, so touching the path is enough
     # and no ImageMagick runs in the suite. image/png takes .jpg for the

@@ -6,8 +6,8 @@ class Node < ApplicationRecord
   has_many    :pages, -> { order("revision ASC") }, :dependent => :destroy
 
   # Entries where this node is the primary subject (fast-path column).
-  # For a *complete* history -- including subtree trash/destroy entries
-  # recorded at an ancestor -- use participated_actions instead.
+  # For a *complete* history, including subtree trash/destroy entries
+  # recorded at an ancestor, use participated_actions instead.
   has_many    :node_actions, :dependent => :nullify
   has_many    :action_participations, :class_name => "ActionParticipant", :as => :subject
   has_many    :participated_actions, :through => :action_participations, :source => :node_action
@@ -15,7 +15,7 @@ class Node < ApplicationRecord
   belongs_to  :head,  :class_name => "Page",  :foreign_key => :head_id, optional: true
   belongs_to  :draft, :class_name => "Page",  :foreign_key => :draft_id, optional: true
   # Autosave pages carry no node_id, so has_many :pages does not cover
-  # them -- this dependent: :destroy is their only cleanup on node destroy.
+  # them. This dependent: :destroy is their only cleanup on node destroy.
   belongs_to  :autosave, :class_name => "Page", :foreign_key => :autosave_id, :dependent => :destroy, optional: true
 
   has_many    :events, :dependent => :destroy
@@ -44,8 +44,8 @@ class Node < ApplicationRecord
             :if          => :default_template_name_changed?
 
   # Everything outside the Trash subtree, the Trash node included.
-  # Relies on unique_name being authoritative for tree position --
-  # the same trust public routing places in it.
+  # Relies on unique_name being authoritative for tree position.
+  # The same trust public routing places in it.
   scope :not_in_trash, -> {
     where.not(:unique_name => CccConventions::TRASH_SLUG)
       .where("unique_name NOT LIKE ?", "#{CccConventions::TRASH_SLUG}/%")
@@ -93,7 +93,7 @@ class Node < ApplicationRecord
   # Instance Methods
 
   # Acquires (or reaffirms) the editing lock without creating a draft or
-  # an autosave -- both are now deferred until there is real content to
+  # an autosave, both are now deferred until there is real content to
   # hold.
   def lock_for_editing! current_user
     if self.lock_owner.nil? || self.lock_owner == current_user
@@ -133,11 +133,11 @@ class Node < ApplicationRecord
 
   # Promotes the current autosave into the draft (creating the draft if
   # none exists yet) and destroys the autosave afterward. This is what
-  # the explicit "Save" action does; it never creates a new revision --
+  # the explicit "Save" action does; it never creates a new revision,
   # same as any other in-place draft edit. The new draft is created via
   # self.pages.create! rather than by repointing the autosave's own
   # node_id, because acts_as_list assigns the revision number at create
-  # time, scoped to node_id -- a page created with node_id nil and
+  # time, scoped to node_id, a page created with node_id nil and
   # reassigned afterward would carry a wrong or missing revision number.
   def save_draft! current_user
     assert_locked_by! current_user
@@ -178,7 +178,7 @@ class Node < ApplicationRecord
 
   # Which layer-pairs are meaningful to compare right now, given this
   # node's actual state. Head vs autosave only shows up when no draft
-  # sits between them -- with a draft present, autosave is compared
+  # sits between them, with a draft present, autosave is compared
   # against the draft, never past it straight to head.
   def available_layer_pairs
     pairs = []
@@ -201,8 +201,8 @@ class Node < ApplicationRecord
     self.draft.reload
   end
 
-  # Discards exactly the topmost non-empty layer -- autosave if present,
-  # else draft -- and reveals whatever's beneath it. Releases the lock
+  # Discards exactly the topmost non-empty layer: autosave if present,
+  # else draft, and reveals whatever's beneath it. Releases the lock
   # only once nothing is left to protect (no draft survives); leaves it
   # alone whenever a draft remains, since #edit still has real content
   # open.
@@ -313,7 +313,7 @@ class Node < ApplicationRecord
   # Moves this node and its subtree into the Trash. Demotes every head
   # in the subtree first (aggregators and search operate on heads
   # regardless of tree position); where a node has no draft, the former
-  # head becomes its draft so content stays editable and restorable --
+  # head becomes its draft so content stays editable and restorable,
   # otherwise the former head remains a plain revision. One log entry,
   # at the root, carrying the leaving-public-view snapshot.
   def trash! current_user = nil
@@ -475,28 +475,17 @@ class Node < ApplicationRecord
     end
   end
 
-  # Attaches an asset to every current lifecycle row -- head, draft and
-  # autosave -- that does not already carry it. Attachments are page-
-  # scoped content (RelatedAsset belongs_to :page; drafts and autosaves
-  # are wholesale clones), so attaching to a single layer is how an
-  # attachment gets silently lost when another layer replaces it at
-  # publish or save. This is the out-of-band counterpart to the
-  # in-editor attach UI; it refuses when someone else holds the editing
-  # lock. Attaching to a head row changes the public page immediately,
-  # by design -- same reasoning as formalizing an already-existing
-  # editorial link.
+  # Attaches an asset to the node's draft, creating one from the head if
+  # none exists.
   #
-  # headline is a node-level decision: the flag is set on the newly
-  # created joins only when no current row has a headline yet and the
-  # asset is eligible; otherwise the asset is attached plain and the
-  # result says why, so the caller can point the editor at the star in
-  # the editor instead.
+  # Refuses when an autosave exists: it predates this attach and would
+  # overwrite the draft at save_draft!, silently dropping the join.
+  # Refuses when someone else holds the lock, so an editor's work is not
+  # altered under them.
   #
-  # Returns { :attached => n, :already => n,
+  # Returns { :attached => n, :already => n, :draft_created => bool,
   #           :headline => nil | :set | :kept_existing | :not_eligible }
   def attach_asset! asset, user:, headline: false
-    guard_live_change!(user)
-
     if in_trash? || trash_node?
       errors.add(:base, :attach_in_trash)
       raise ActiveRecord::RecordInvalid.new(self)
@@ -510,37 +499,43 @@ class Node < ApplicationRecord
       )
     end
 
-    rows      = [head, draft, autosave].compact
-    to_attach = rows.reject { |row| row.related_assets.exists?(:asset_id => asset.id) }
-
-    headline_state =
-      if headline && to_attach.any?
-        if !(asset.image? || asset.pdf?)
-          :not_eligible
-        elsif rows.any? { |row| row.headline_asset.present? }
-          :kept_existing
-        else
-          :set
-        end
-      end
-
-    ActiveRecord::Base.transaction do
-      to_attach.each do |row|
-        row.related_assets.create!(:asset => asset, :headline => headline_state == :set)
-      end
-
-      if to_attach.any?
-        metadata = { :asset_name => asset.name,
-                     :path       => asset.upload.url.sub(/\?\d+$/, "") }
-        metadata[:headline] = true if headline_state == :set
-        NodeAction.record!(:node => self, :participants => [self, asset],
-                            :user => user, :action => "asset_attach", **metadata)
-      end
+    if autosave
+      errors.add(:base, :attach_with_autosave)
+      raise ActiveRecord::RecordInvalid.new(self)
     end
 
-    { :attached => to_attach.size,
-      :already  => rows.size - to_attach.size,
-      :headline => headline_state }
+    source = draft || head
+    if source && source.related_assets.exists?(:asset_id => asset.id)
+      return { :attached      => 0,
+               :already       => 1,
+               :draft_created => false,
+               :headline      => nil }
+    end
+
+    draft_created = draft.nil?
+
+    ActiveRecord::Base.transaction do
+      create_new_draft(user) if draft_created
+      page = draft.reload
+
+      headline_state =
+        if headline
+          if !(asset.image? || asset.pdf?)
+            :not_eligible
+          elsif page.headline_asset.present?
+            :kept_existing
+          else
+            :set
+          end
+        end
+
+      page.related_assets.create!(:asset => asset, :headline => headline_state == :set)
+
+      { :attached      => 1,
+        :already       => 0,
+        :draft_created => draft_created,
+        :headline      => headline_state }
+    end
   end
 
   def title

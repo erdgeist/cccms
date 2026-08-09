@@ -14,7 +14,6 @@ module NodeActionsHelper
     "discard_autosave"   => "eraser",
     "destroy_draft"      => "eraser",
     "asset_create"       => "upload",
-    "asset_attach"       => "paperclip",
     "asset_destroy"      => "file-x",
     "otp_enroll"         => "shield-lock",
     "otp_disable"        => "shield-off",
