@@ -109,8 +109,6 @@ ALTER ROLE rails CREATEDB;
 
 CREATE DATABASE cccms_dev OWNER rails ENCODING 'UTF8'
   LC_COLLATE 'en_US.UTF-8' LC_CTYPE 'en_US.UTF-8' TEMPLATE template0;
-CREATE DATABASE psql_test OWNER rails ENCODING 'UTF8'
-  LC_COLLATE 'en_US.UTF-8' LC_CTYPE 'en_US.UTF-8' TEMPLATE template0;
 ```
 
 `CREATEDB` is needed because the test suite creates and drops its own
@@ -153,18 +151,25 @@ production:
 Cccms::Application.config.secret_key_base = "<64 hex chars, e.g. from `rails secret`>"
 ```
 
-### 4a. Migrate. Never load the schema.
+### 4a. Load the schema
 
-    bundle exec rails db:migrate
+    bundle exec rails db:schema:load
 
-Do not run `db:setup` or `db:schema:load`.
+`db/schema.rb` is in the repository and is the authoritative description
+of the database. Replaying the migration chain is not a supported route:
+the oldest migrations predate Rails 4, and some columns were only ever
+applied by hand. `db:setup` and `db:reset` are safe.
 
-`db/schema.rb` is gitignored, and it could not be used even if it were
-present: the full-text `search_vector` column is maintained by a PostgreSQL
-trigger, and Ruby's schema format cannot express triggers. A schema-loaded
-database gets the column and its GIN index with nothing populating them,
-and site search then silently returns no results. Migrations are the only
-complete record of the structure.
+`bundle exec rails db:migrate` is for an existing installation — see the
+deploy sequence in §7.
+
+The full-text `search_vector` column is maintained by a PostgreSQL trigger,
+which Ruby's schema format cannot express. `db:schema:load` reinstalls it
+through a rake hook, and the application reinstalls it at boot, so a fresh
+install needs nothing further. A database restored from a dump taken before
+the trigger existed has rows it cannot repair, because the trigger fires
+only on insert or update. You have to run `pages:backfill_search_vector`
+once after such a restore.
 
 ## 5. First start
 
@@ -296,6 +301,9 @@ old Ruby.
   second factor from the shell when every administrator is locked out.
   Deliberately unwitnessed — there is no actor to attribute a shell
   command to.
+- `pages:backfill_search_vector` fills `search_vector` for rows that have
+  none, and installs the trigger first. Needed after restoring a dump that
+  predates the trigger; harmless otherwise, since it only fills nulls.
 
 Logs are in `log/`, gitignored. The action log inside the application at
 `/admin/log` records who changed what; `log/production.log` records
