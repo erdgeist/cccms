@@ -6,16 +6,33 @@
     <div class="layout_row_content info_group">
       <div class="info_group_items">
         <div class="info_item">
-        <%= link_to edit_asset_path(@asset), class: 'action_button' do %>
-          <%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.edit") %>
-        <% end %>
+          <%= link_to edit_asset_path(@asset), class: 'action_button' do %>
+            <%= icon("edit", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.edit") %>
+          <% end %>
+        </div>
+        <div class="info_item">
+          <%= link_to admin_log_path(:asset_id => @asset.id), :class => "action_button" do %>
+            <%= icon("history", library: "tabler", "aria-hidden": true) %> <%= t("node_actions.asset_history") %>
+          <% end %>
+        </div>
+        <div class="info_item">
+          <% if @asset.attached_nodes.any? %>
+            <span class="disabled_action">
+              <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+              <%= t("admin.common.destroy") %>
+            </span>
+            <span class="field_hint"><%= t(".destroy_blocked") %></span>
+          <% else %>
+            <%= button_to asset_path(@asset), method: :delete,
+                  form: { data: { confirm: t("admin.common.confirm_sure") },
+                          class: 'button_to destructive' } do %>
+              <%= icon("trash", library: "tabler", "aria-hidden": true) %> <%= t("admin.common.destroy") %>
+            <% end %>
+          <% end %>
         </div>
         <div class="info_item">
           <%= link_to t("admin.common.back"), assets_path %>
         </div>
-        <%= link_to admin_log_path(:asset_id => @asset.id), :class => "action_button" do %>
-          <%= icon("history", library: "tabler", "aria-hidden": true) %> <%= t("node_actions.asset_history") %>
-        <% end %>
       </div>
     </div>
 

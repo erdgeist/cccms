@@ -714,6 +714,7 @@ de:
       license: "Lizenz"
       content_type: "Content-Type"
       size: "Größe"
+      destroy_blocked: "Vor dem Löschen zuerst von den unten genannten Seiten entfernen."
     new:
       title: "Neues Asset"
     edit:

@@ -682,6 +682,7 @@ en:
       license: "License"
       content_type: "Content Type"
       size: "Size"
+      destroy_blocked: "Remove it from the pages listed below before destroying it."
     new:
       title: "New asset"
     edit:
