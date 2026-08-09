@@ -155,7 +155,7 @@ de:
         asset:
           attributes:
             base:
-              not_permitted: "Dieses Asset ist an geschützte Seiten angehängt; nur die Redaktion darf es löschen"
+              destroy_while_attached: "Ein Asset, das noch an Seiten angehängt ist, kann nicht gelöscht werden. Bitte entferne es zuerst im Editor"
             upload:
               unreadable_image: "konnte nicht als Bild gelesen werden. Möglicherweise ist sie beschädigt oder hat ein anderes Format, als der Name vermuten lässt."
         event:
@@ -218,11 +218,7 @@ de:
     revision_restored: "wiederhergestellt am %{date} von %{actor}"
     asset_history: "Chronik"
     asset_create: "%{actor} hat das Asset „%{asset}“ hochgeladen"
-    asset_attach: "%{actor} hat „%{asset}“ an %{subject} angehängt"
-    asset_attach_headline: "%{actor} hat „%{asset}“ als Aufmacher an %{subject} angehängt"
     asset_destroy: "%{actor} hat das Asset „%{asset}“ gelöscht"
-    asset_destroy_detached: "— entfernt von %{paths}"
-    asset_destroy_headlines: "(war Aufmacher von %{paths})"
     detail_assets_added: "Anhänge hinzugefügt: %{names}"
     detail_assets_removed: "Anhänge entfernt: %{names}"
     assets_reordered: "Anhänge umsortiert"
@@ -814,6 +810,7 @@ de:
       locked_prefix: "Die Seite ist von %{login} gesperrt —"
       locked_link: "dort entsperren"
       locked_suffix: ", dann von der Asset-Seite aus erneut anhängen."
+      resolve_link: "Seite öffnen, um den Bearbeitungskonflikt zu lösen"
       headline_prefix: "Der bestehende Aufmacher der Seite wurde behalten —"
       headline_link: "dort ändern"
       headline_suffix: ", falls gewünscht."

@@ -106,7 +106,7 @@ en:
         asset:
           attributes:
             base:
-              not_permitted: "Only Redaktion members may change assets related to nodes in this section"
+              destroy_while_attached: "Cannot destroy an asset that is still attached to pages; remove it in each page's editor first"
             upload:
               unreadable_image: "could not be read as an image. It may be damaged, or not the format its name suggests."
         event:
@@ -170,11 +170,7 @@ en:
     revision_restored: "restored %{date} by %{actor}"
     asset_history: "History"
     asset_destroy: "%{actor} destroyed asset “%{asset}”"
-    asset_destroy_detached: "— detached from %{paths}"
-    asset_destroy_headlines: "(was the headline of %{paths})"
     asset_create: "%{actor} uploaded asset “%{asset}”"
-    asset_attach: "%{actor} attached “%{asset}” to %{subject}"
-    asset_attach_headline: "%{actor} attached “%{asset}” to %{subject} as its headline"
     detail_assets_added: "attachments added: %{names}"
     detail_assets_removed: "attachments removed: %{names}"
     assets_reordered: "attachments reordered"
@@ -766,6 +762,7 @@ en:
       locked_prefix: "The page is locked by %{login} —"
       locked_link: "unlock it there"
       locked_suffix: " first, then attach from this asset's page."
+      resolve_link: "Open the page to resolve this"
       headline_prefix: "The page's existing headline was kept —"
       headline_link: "change it there"
       headline_suffix: " if needed."

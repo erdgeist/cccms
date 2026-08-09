@@ -330,22 +330,9 @@ module NodeActionsHelper
        :asset => asset_ref(action)).html_safe
   end
 
-  def summarize_asset_attach action
-    m = action.metadata
-    key = m["headline"] ? "node_actions.asset_attach_headline" : "node_actions.asset_attach"
-    t(key, :actor => actor_ref(action), :subject => subject_ref(action),
-       :asset => asset_ref(action)).html_safe
-  end
-
   def summarize_asset_destroy action
-    m = action.metadata
-    parts = [t("node_actions.asset_destroy", :actor => actor_ref(action),
-                :asset => asset_ref(action))]
-    parts << t("node_actions.asset_destroy_detached",
-                :paths => h(Array(m["detached_from"]).join(", "))) if m["detached_from"].present?
-    parts << t("node_actions.asset_destroy_headlines",
-                :paths => h(Array(m["headline_removed_from"]).join(", "))) if m["headline_removed_from"].present?
-    safe_join(parts, " ")
+    t("node_actions.asset_destroy", :actor => actor_ref(action),
+       :asset => asset_ref(action)).html_safe
   end
 
   def summarize_otp_enroll action

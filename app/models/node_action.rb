@@ -82,22 +82,13 @@ class NodeAction < ApplicationRecord
   # "asset_create" (witnessed upload; participants: the asset alone):
   #   "asset_name", "content_type", "path" -- flat strings
   #
-  # "asset_attach" (out-of-band attach via Node#attach_asset!; written
-  # only when at least one new join was created, per the tandem rule --
-  # in-editor curation stays draft-scoped and surfaces at publish.
-  # participants: the node (primary) and the asset):
-  #   "asset_name", "path" -- flat strings
-  #   "headline"           -- boolean, only when set by this attach
-  #
-  # "asset_destroy" (witnessed asset deletion; always written, even for
-  # unattached assets -- the files were publicly reachable; node column
-  # nil, subjects via participants: the asset plus every then-attached
-  # node):
-  #   "asset_name"            -- flat string
-  #   "content_type"          -- flat string
-  #   "path"                  -- public original path, flat string
-  #   "detached_from"         -- array of unique_names, only when any
-  #   "headline_removed_from" -- array of unique_names, only when any
+  # "asset_destroy" (witnessed asset deletion; the files were publicly
+  # reachable, so an entry is always written. Destruction is refused
+  # while the asset is attached to any current row, so no node is ever
+  # affected: node column nil, the asset the sole participant):
+  #   "asset_name"   -- flat string
+  #   "content_type" -- flat string
+  #   "path"         -- public original path, flat string
   #
   # "otp_enroll" / "otp_disable" / "otp_reset" (second-factor
   # lifecycle) and "user_create" / "user_deactivate" /

@@ -8,29 +8,6 @@ class AssetDestroyTest < ActiveSupport::TestCase
                             :upload_content_type => "image/png")
   end
 
-  test "destroying an attached asset logs nodes and asset as participants" do
-    node = Node.root.children.create!(:slug => "asset_destroy_attached")
-    node.attach_asset!(@asset, :user => @user)
-
-    @asset.destroy_witnessed!(:user => @user)
-
-    action = NodeAction.where(:action => "asset_destroy").last
-    subjects = action.action_participants.map { |p| [p.subject_type, p.subject_id] }
-    assert_includes subjects, ["Asset", @asset.id]
-    assert_includes subjects, ["Node", node.id]
-    assert_equal [node.unique_name], action.metadata["detached_from"]
-  end
-
-  test "records which nodes lost their headline" do
-    node = Node.root.children.create!(:slug => "asset_destroy_headline")
-    node.attach_asset!(@asset, :user => @user, :headline => true)
-
-    @asset.destroy_witnessed!(:user => @user)
-
-    action = NodeAction.where(:action => "asset_destroy").last
-    assert_equal [node.unique_name], action.metadata["headline_removed_from"]
-  end
-
   test "an unattached asset is still witnessed" do
     @asset.destroy_witnessed!(:user => @user)
 
@@ -49,16 +26,24 @@ class AssetDestroyTest < ActiveSupport::TestCase
     assert_nil action.action_participants.first.subject
   end
 
-  test "destroying an asset attached to a restricted node needs the redaktion role" do
-    editor = User.create!(:login => "asset_gate", :email => "ag@example.com",
-                          :password => "secret", :password_confirmation => "secret")
-    updates = Node.root.children.create!(:slug => "updates")
-    node    = updates.children.create!(:slug => "gated-attachment")
-    node.reload.attach_asset!(@asset, :user => nil)
+  test "destruction is refused while the asset is attached" do
+    node = Node.root.children.create!(:slug => "asset_destroy_attached")
+    node.attach_asset!(@asset, :user => @user)
 
-    error = assert_raises(ActiveRecord::RecordInvalid) { @asset.destroy_witnessed!(:user => editor) }
-    assert_includes error.message,
-                    I18n.t("activerecord.errors.models.asset.attributes.base.not_permitted")
+    assert_raises(ActiveRecord::RecordInvalid) { @asset.destroy_witnessed!(:user => @user) }
+    assert Asset.exists?(@asset.id)
+    assert_equal 0, NodeAction.where(:action => "asset_destroy").count
+  end
+
+  test "an attachment on a draft alone is enough to refuse" do
+    node = Node.root.children.create!(:slug => "asset_destroy_draft_only")
+    node.attach_asset!(@asset, :user => @user)
+    node.publish_draft!(@user)
+    node.lock_for_editing!(@user)
+    node.create_new_draft(@user)
+    node.head.related_assets.destroy_all
+
+    assert_raises(ActiveRecord::RecordInvalid) { @asset.destroy_witnessed!(:user => @user) }
     assert Asset.exists?(@asset.id)
   end
 end

@@ -41,44 +41,23 @@ class Asset < ApplicationRecord
                :ids => page_ids).distinct
   end
 
-  # An asset's reach is the reach of the pages carrying it: destroying one
-  # removes it from every live page at once, so a single restricted
-  # attachment makes the destruction a restricted act.
-  def restricted?
-    attached_nodes.any?(&:restricted?)
-  end
-
-  # Witnessed destruction. Destroying an asset is a public-facing act
-  # even when unattached. The original and its variants are publicly
-  # reachable under /system/uploads, so an entry is always written,
-  # before the row and its files die. Every currently-attached node
-  # participates so its zoomed history shows the loss; the asset itself
-  # participates as the first non-Node subject (its participant row
-  # dangles after destroy, by design, the name lives on in metadata).
+  # Witnessed destruction, refused while the asset is attached to any
+  # current row. Detaching stays an in-editor act, so nothing
+  # destroyed here is carried by a page. The entry is still warranted:
+  # the original and its variants are reachable under /system/uploads
+  # until the row and its files die.
   def destroy_witnessed! user:
-    if user && !user.may_change_live?(self)
-      errors.add(:base, :not_permitted)
+    if attached_nodes.any?
+      errors.add(:base, :destroy_while_attached)
       raise ActiveRecord::RecordInvalid.new(self)
     end
 
     ActiveRecord::Base.transaction do
-      affected = attached_nodes.to_a
-      headline_losses = affected.select do |node|
-        [node.head, node.draft, node.autosave].compact.any? do |row|
-          row.related_assets.exists?(:asset_id => id, :headline => true)
-        end
-      end
-
-      metadata = {
-        :asset_name   => name,
-        :content_type => upload_content_type,
-        :path         => upload.url.sub(/\?\d+$/, ""),
-      }
-      metadata[:detached_from]         = affected.map(&:unique_name)        if affected.any?
-      metadata[:headline_removed_from] = headline_losses.map(&:unique_name) if headline_losses.any?
-
-      NodeAction.record!(:participants => [self] + affected, :user => user,
-                          :action => "asset_destroy", **metadata)
+      NodeAction.record!(:participants => [self], :user => user,
+                          :action       => "asset_destroy",
+                          :asset_name   => name,
+                          :content_type => upload_content_type,
+                          :path         => upload.url.sub(/\?\d+$/, ""))
       destroy!
     end
   end
