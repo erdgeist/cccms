@@ -78,6 +78,28 @@ namespace :cccms do
   end
 end
 
+namespace :pages do
+  desc "Populate search_vector for rows that have none. The trigger " \
+       "maintains it from then on, but fires only on insert or update, " \
+       "so rows that predate it -- a restore from a dump taken before " \
+       "the trigger existed, or a seed run against a database whose " \
+       "trigger had been dropped -- stay unsearchable until this runs."
+  task :backfill_search_vector => :environment do
+    Page.ensure_search_vector_trigger!
+    count = ActiveRecord::Base.connection.update(<<~SQL)
+      UPDATE page_translations
+         SET search_vector = to_tsvector(
+               'simple',
+               coalesce(title, '') || ' ' ||
+               coalesce(abstract, '') || ' ' ||
+               coalesce(body, '')
+             )
+       WHERE search_vector IS NULL
+    SQL
+    puts "populated #{count} translations"
+  end
+end
+
 Rake::Task["db:schema:load"].enhance do
   Page.ensure_search_vector_trigger!
 end
