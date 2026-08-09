@@ -151,17 +151,33 @@ class RevisionsControllerTest < ActionController::TestCase
     assert_select "input[type='hidden'][name='end_revision'][value='draft']"
   end
 
-  test "diffing two revisions also shows tag, template, and asset changes" do
+  test "diffing shows tag, template, external URL and asset changes" do
     login_as :quentin
     find_or_create_draft(@node, @user)
-    @node.draft.tag_list = "update"
-    @node.draft.save!
+    draft = @node.draft
+    draft.tag_list      = "update"
+    draft.template_name = "title_only"
+    draft.external_url  = "https://example.org/"
+    draft.save!
+    draft.related_assets.create!(:asset => Asset.create!(:name => "diffed",
+                                  :upload_file_name => "diffed.png",
+                                  :upload_content_type => "image/png"))
 
     post(:diff, params: { :node_id => @node.id, :start_revision => @node.pages.first.revision, :end_revision => @node.pages.last.revision })
     assert_response :success
     assert_select "h3", Page.human_attribute_name(:tag_list)
     assert_select "h3", Page.human_attribute_name(:template_name)
+    assert_select "h3", Page.human_attribute_name(:external_url)
     assert_select "h3", Page.human_attribute_name(:assets)
+  end
+
+  test "a diff with no metadata changes says so once" do
+    login_as :quentin
+
+    post(:diff, params: { :node_id => @node.id, :start_revision => @node.pages.first.revision, :end_revision => @node.pages.last.revision })
+    assert_response :success
+    assert_select ".diff_meta .diff_unchanged"
+    assert_select ".diff_meta h3", false
   end
 
   test "revisions#index links back to the node" do

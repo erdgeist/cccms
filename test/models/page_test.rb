@@ -302,6 +302,34 @@ class PageTest < ActiveSupport::TestCase
     assert_equal "title_only", diff[:template_name][:to]
   end
 
+  test "diff_against reports external URL, publication date and author changes" do
+    n = Node.root.children.create! :slug => "meta_diff_test"
+    d = find_or_create_draft(n, @user1)
+    d.external_url = "https://old.example.org/"
+    d.published_at = Time.utc(2026, 1, 1, 12, 0, 0)
+    d.save!
+    n.publish_draft!
+
+    new_author = User.where.not(:id => n.head.user_id).first
+    d2 = find_or_create_draft(n, @user1)
+    d2.external_url = "https://new.example.org/"
+    d2.published_at = Time.utc(2026, 3, 1, 12, 0, 0)
+    d2.user         = new_author
+    d2.save!
+
+    diff = d2.diff_against(n.head)
+
+    assert diff[:external_url][:changed]
+    assert_equal "https://old.example.org/", diff[:external_url][:from]
+    assert_equal "https://new.example.org/", diff[:external_url][:to]
+
+    assert diff[:published_at][:changed]
+    assert_equal Time.utc(2026, 3, 1, 12, 0, 0).to_i, diff[:published_at][:to].to_i
+
+    assert diff[:user][:changed]
+    assert_equal new_author.login, diff[:user][:to].login
+  end
+
   test "diff_against reports added and removed assets by filename" do
     n = Node.root.children.create! :slug => "asset_diff_test"
     d = find_or_create_draft(n, @user1)

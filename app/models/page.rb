@@ -277,6 +277,12 @@ class Page < ApplicationRecord
 
     text_diffs.merge(
       address:       address_diff_against(other),
+      external_url:  { from: other.external_url, to: external_url,
+                       changed: external_url.presence != other.external_url.presence },
+      published_at:  { from: other.published_at, to: published_at,
+                       changed: published_at != other.published_at },
+      user:          { from: other.user, to: user,
+                       changed: user_id != other.user_id },
       tags:          { added: tag_list.to_a - other.tag_list.to_a, removed: other.tag_list.to_a - tag_list.to_a },
       template_name: { from: other.template_name, to: template_name, changed: template_name != other.template_name },
       assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a }

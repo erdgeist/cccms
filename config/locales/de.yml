@@ -106,6 +106,9 @@ de:
         tag_list: "Tags"
         template_name: "Template"
         assets: "Anhänge"
+        external_url: "Externe Homepage"
+        published_at: "Veröffentlichungsdatum"
+        user: "Autor"
       menu_item:
         node_id: "Node-ID"
         path: "Pfad"
@@ -744,7 +747,7 @@ de:
       revisions_link: "Alle Revisionen"
       compare_numbered: "Stattdessen zwei nummerierte Revisionen vergleichen"
       none_marker: "(keins)"
-      no_change: "Keine Änderung."
+      no_metadata_change: "Keine Änderungen an den Metadaten."
       unchanged_here_html: "Keine Änderung in der Übersetzung %{lang} zwischen diesen Revisionen — geändert wurde %{others}."
       unchanged_anywhere: "Zwischen diesen Revisionen wurde keine Übersetzung geändert."
       address: "Adresse"

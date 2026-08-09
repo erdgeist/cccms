@@ -799,6 +799,12 @@ table.revisions_table tr:hover {
   margin: 0;
 }
 
+.diff_preamble {
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .user_table {
   width: 100%;
   max-width: 44rem;
