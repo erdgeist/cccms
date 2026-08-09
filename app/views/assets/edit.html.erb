@@ -36,23 +36,6 @@
               ) %>
       </div>
 
-      <div class="layout_row_label"><%= t("assets.form.attach_to_page") %></div>
-      <div class="layout_row_content">
-        <div class="restore_picker">
-          <%= text_field_tag :asset_node_search_term, @attach_node&.title,
-                :placeholder => t("assets.form.attach_search_placeholder"), :autocomplete => "off" %>
-          <div id="asset_node_search_results" class="search_results" style="display: none"></div>
-        </div>
-        <%= hidden_field_tag :node_id, @attach_node&.id %>
-        <span class="field_hint"><%= t("assets.form.attach_hint") %></span>
-      </div>
-
-      <div class="layout_row_label"></div>
-      <div class="layout_row_content">
-        <label><%= check_box_tag :headline, "1" %> <%= t("assets.form.as_headline") %></label>
-        <span class="field_hint"><%= t("assets.form.headline_hint") %></span>
-      </div>
-
       <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">

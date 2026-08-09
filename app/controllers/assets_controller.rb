@@ -38,7 +38,6 @@ class AssetsController < ApplicationController
   # GET /assets/1/edit
   def edit
     @asset = Asset.find(params[:id])
-    @attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
   end
 
   # POST /assets
@@ -69,7 +68,6 @@ class AssetsController < ApplicationController
   # PUT /assets/1.xml
   def update
     @asset = Asset.find(params[:id])
-    @attach_node = Node.not_in_trash.find_by(:id => params[:node_id]) if params[:node_id].present?
 
     respond_to do |format|
       if @asset.update(asset_params)
@@ -100,6 +98,20 @@ class AssetsController < ApplicationController
       format.html { redirect_to(asset_path(@asset)) }
       format.xml  { head :forbidden }
     end
+  end
+
+  # POST /assets/1/attach_to_node
+  def attach_to_node
+    @asset = Asset.find(params[:id])
+    node   = Node.not_in_trash.find_by(:id => params[:node_id])
+
+    if node
+      attach_to(node)
+    else
+      flash[:error] = t("flash.assets.attach_no_node")
+    end
+
+    redirect_to(asset_path(@asset))
   end
 
   private

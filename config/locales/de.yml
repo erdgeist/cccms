@@ -659,6 +659,7 @@ de:
       already_attached: "Es war bereits an „%{title}“ angehängt."
       attached_to_draft: "Zum Entwurf von %{title} hinzugefügt. Zum Veröffentlichen den Entwurf freigeben."
       attached_new_draft: "Entwurf von %{title} mit diesem Anhang angelegt. Zum Veröffentlichen den Entwurf freigeben."
+      attach_no_node: "Es wurde keine Seite ausgewählt, es wurde nichts angehängt."
     events:
       created: "Termin wurde angelegt."
       updated: "Termin wurde aktualisiert."
@@ -703,6 +704,7 @@ de:
       pending_only: "nur in ausstehenden Versionen"
       not_attached: "— an keine Seite angehängt —"
       new_page_with_attachment: "Neue Seite mit diesem Anhang"
+      attach_button: "Anhängen"
       public_path: "Öffentlicher Pfad"
       copy_url: "URL kopieren"
       creator: "Urheber"

@@ -26,7 +26,12 @@ Cccms::Application.routes.draw do
 
     scope '/admin' do
       resources :events
-      resources :assets
+
+      resources :assets do
+        member do
+          post :attach_to_node
+        end
+      end
 
       resources :nodes do
         collection do

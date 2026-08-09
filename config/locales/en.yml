@@ -627,6 +627,7 @@ en:
       already_attached: "It was already attached to “%{title}”."
       attached_to_draft: "Attached to the draft of %{title}. Publish it to make the change live."
       attached_new_draft: "Created a draft of %{title} with this attachment. Publish it to make the change live."
+      attach_no_node: "No page was chosen, so nothing was attached."
     events:
       created: "Event was successfully created."
       updated: "Event was successfully updated."
@@ -670,6 +671,7 @@ en:
       attached_to: "Attached to"
       pending_only: "pending versions only"
       not_attached: "— not attached to any page —"
+      attach_button: "Attach"
       new_page_with_attachment: "New page with this attachment"
       public_path: "Public Path"
       copy_url: "Copy URL"

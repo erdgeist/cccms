@@ -163,19 +163,6 @@ class AssetsControllerTest < ActionController::TestCase
     assert_equal users(:quentin), action.user
   end
 
-  test "update with node_id attaches the asset to the node's draft" do
-    node  = Node.root.children.create!(:slug => "asset_update_attach")
-    asset = Asset.create!(:name => "Existing", :upload_content_type => "image/png")
-
-    put :update, params: { id: asset.id, asset: { name: "Existing" }, node_id: node.id }
-
-    assert_response :redirect
-    assert_includes node.draft.assets.reload, asset
-    assert_equal [I18n.t("flash.assets.updated"),
-                  I18n.t("flash.assets.attached_to_draft", :title => node.title)].join(" "),
-                 flash[:notice]
-  end
-
   # --- edit ---
 
   test "get edit" do
@@ -233,6 +220,27 @@ class AssetsControllerTest < ActionController::TestCase
       delete :destroy, params: { id: asset.id }
     end
     assert_equal users(:quentin), NodeAction.last.user
+  end
+
+  test "attach_to_node attaches the asset to the node's draft" do
+    node  = Node.root.children.create!(:slug => "asset_show_attach")
+    asset = Asset.create!(:name => "From the asset page", :upload_content_type => "image/png")
+
+    post :attach_to_node, params: { id: asset.id, node_id: node.id }
+
+    assert_redirected_to asset_path(asset)
+    assert_includes node.draft.assets.reload, asset
+    assert_equal I18n.t("flash.assets.attached_to_draft", :title => node.title), flash[:notice]
+  end
+
+  test "attach_to_node without a node says so and attaches nothing" do
+    asset = Asset.create!(:name => "Unpicked", :upload_content_type => "image/png")
+
+    post :attach_to_node, params: { id: asset.id }
+
+    assert_redirected_to asset_path(asset)
+    assert_equal I18n.t("flash.assets.attach_no_node"), flash[:error]
+    assert_empty asset.related_assets.reload
   end
 
   # --- URL helpers ---
