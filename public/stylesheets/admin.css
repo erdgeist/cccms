@@ -965,7 +965,7 @@ table.revisions_table tr:hover {
   align-items: center;
   justify-content: center;
   padding: 0.3rem;
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
   border-radius: 2px;
   background-color: var(--surface-raised);
   color: var(--text);
@@ -990,7 +990,7 @@ table.revisions_table tr:hover {
 .action_item .disabled_action {
   color: var(--text-muted);
   background-color: transparent;
-  border-color: var(--border);
+  border-color: transparent;
   cursor: not-allowed;
 }
 
@@ -1342,13 +1342,15 @@ form.button_to button[type="submit"] {
   border: 1px solid var(--border);
   border-radius: 2px;
   background-color: var(--surface);
+  -webkit-appearance: none;
+  appearance: none;
   color: var(--text-heavy);
   line-height: 1;
   text-decoration: none;
 }
 
 .link_icon_button:hover {
-  color: var(--on-solid);
+  color: var(--surface);
   background-color: var(--text);
   border-color: var(--text);
 }
@@ -1612,7 +1614,8 @@ div#admin_layout {
   margin-bottom: 1rem;
   background: none;
   cursor: pointer;
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 #admin_layout a.action_button:hover,
