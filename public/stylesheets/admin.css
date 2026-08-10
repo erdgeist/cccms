@@ -95,20 +95,11 @@ th {
   text-transform: lowercase;
 }
 
-td {
-  padding-top: 10px;
-  padding-bottom: 5px;
-  padding-right: 10px;
-}
-/* table#revisions td only overrides padding-right, so its rows still
-   depend on this rule for vertical padding. table.node_table td resets
-   padding-top/bottom to 0 explicitly and does not depend on it. */
-
 input[type=text],
 input[type=password],
 textarea {
   font-size: 1rem;
-  font-family: Helvetica;
+  font-family: Helvetica, Arial, sans-serif;
   border: 1px solid var(--field-border);
   border-radius: 2px;
 }
@@ -378,15 +369,20 @@ form.button_to {
 form.button_to input[type="submit"],
 form.button_to button[type="submit"] {
   display: inline-flex;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 2px;
   align-items: center;
   gap: 0.5rem;
   -webkit-appearance: none;
   appearance: none;
   background: none;
-  border: none;
-  padding: 0;
+  padding: 4px 12px;
   margin: 0;
-  font: inherit;
+  line-height: 1.2;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
   color: inherit;
   cursor: pointer;
   text-decoration: none;
@@ -410,6 +406,7 @@ form.button_to.destructive button[type="submit"] {
   background-color: var(--danger-surface);
 }
 
+#main_navigation form.button_to.session_ending button[type="submit"]:hover,
 form.button_to.destructive input[type="submit"]:hover,
 form.button_to.destructive button[type="submit"]:hover {
   color: var(--on-solid);
@@ -484,8 +481,7 @@ input[type="submit"]:hover {
 }
 
 #main_navigation a:hover,
-#main_navigation label.nav_toggle:hover,
-#main_navigation form.button_to button:hover {
+#main_navigation label.nav_toggle:hover {
   color: var(--surface);
   background-color: var(--text);
 }
@@ -536,11 +532,6 @@ form.button_to svg  {
 #main_navigation input.nav_toggle_input:checked + label.nav_toggle {
   color: var(--accent);
   background-color: var(--accent-surface);
-}
-
-#main_navigation form.button_to button:hover {
-  color: var(--on-solid);
-  background-color: var(--danger-solid);
 }
 
 #main_navigation a.nav_locale {
@@ -635,10 +626,6 @@ form.button_to svg  {
    Tables
    ============================================================ */
 
-/* Generic fallback header row. Shadowed by table.node_table's own
-   tr.header (2rem) and duplicated (same values) by table#revisions's
-   own tr.header below. Applies as-is to #menu_item_list, and
-   table.user_table, none of which define their own tr.header. */
 table tr.header {
   height: 20px;
   text-align: left;
@@ -662,9 +649,6 @@ table.node_table th.revision {
   min-width: 4rem;
 }
 
-/* th.title's min-width is set to 4rem above and 12rem here -- the
-   later, equally-specific rule wins, so th.title ends up at 12rem and
-   the 4rem entry for it above is dead. Likely a copy/paste leftover. */
 table.node_table th.editor,
 table.node_table th.title {
   min-width: 12rem;
@@ -682,8 +666,8 @@ table.node_table td,
 table.assets_table td,
 table.user_table td,
 table.events_table td {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   padding-right: 25px;
   padding-left: 0px;
   min-width: 2rem;
@@ -1018,11 +1002,6 @@ table.revisions_table tr:hover {
 .flag_stack .flag_attention svg { color: var(--accent); }
 .flag_stack .flag_alert svg     { color: var(--danger); }
 
-table.node_table td {
-  padding-top: 0.8rem;
-  padding-bottom: 0.8rem;
-}
-
 .title_with_flags {
   display: flex;
   align-items: flex-start;
@@ -1211,18 +1190,10 @@ div.layout_row_content {
   margin: 0.5rem 0;
 }
 
-.action_button,
-form.button_to input[type="submit"],
-form.button_to button[type="submit"] {
+.action_button {
   padding: 4px 12px;
   line-height: 1.2;
   box-sizing: border-box;
-}
-
-form.button_to input[type="submit"],
-form.button_to button[type="submit"] {
-  border: 1px solid transparent;
-  border-radius: 2px;
 }
 
 .field_hint {
@@ -1607,7 +1578,6 @@ div#admin_layout {
   appearance: none;
   border: 1px solid var(--text);
   border-radius: 2px;
-  padding: 4px 12px;
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
@@ -2006,12 +1976,6 @@ input#menu_item_title {
   cursor: default;
   background-color: transparent;
   color: var(--text-muted);
-}
-
-#menu_item_list td.menu_sort_handle svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  vertical-align: middle;
 }
 
 #menu_item_list td.menu_sort_handle:active {

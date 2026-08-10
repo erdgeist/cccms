@@ -36,7 +36,8 @@
 <% end %>
 
 <% if current_user %>
-  <%= button_to logout_path, method: :delete, aria: { label: t(".log_out") }, title: t(".log_out") do %>
+  <%= button_to logout_path, method: :delete, form: { class: "button_to session_ending" },
+      aria: { label: t(".log_out") }, title: t(".log_out") do %>
     <%= icon("logout", library: "tabler", "aria-hidden": true) %>
   <% end %>
 <% end %>
