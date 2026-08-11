@@ -626,120 +626,99 @@ form.button_to svg  {
    Tables
    ============================================================ */
 
-table tr.header {
-  height: 20px;
-  text-align: left;
-}
-
-table.node_table,
-table.assets_table,
-table.user_table,
-table.events_table {
+.admin_table {
   border-collapse: collapse;
 }
 
-table.node_table tr,
-table.assets_table tr,
-table.user_table tr,
-table.events_table tr {
-  border-bottom: 1px solid var(--hairline);
-}
-
-table.node_table th.revision {
-  min-width: 4rem;
-}
-
-table.node_table th.editor,
-table.node_table th.title {
-  min-width: 12rem;
-}
-
-table.node_table tr.header,
-table.assets_table tr.header,
-table.user_table tr.header,
-table.events_table tr.header {
-  height: 2rem;
+.admin_table thead {
   text-align: left;
 }
 
-table.node_table td,
-table.assets_table td,
-table.user_table td,
-table.events_table td {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-right: 25px;
-  padding-left: 0px;
+.admin_table thead tr {
+  height: 2rem;
+}
+
+.admin_table th,
+.admin_table td {
+  padding: 0.75rem;
   min-width: 2rem;
 }
 
-table.node_table tr.header:hover,
-table.assets_table tr.header:hover,
-table.user_table tr.header:hover,
-table.events_table tr.header:hover {
-  background-color: var(--surface);
+.admin_table th:first-child,
+.admin_table td:first-child {
+  padding-left: 0;
 }
 
-table.node_table tr:hover,
-table.assets_table tr:hover,
-table.user_table tr:hover,
-table.events_table tr:hover {
+.admin_table tbody tr {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.admin_table tbody tr:hover {
   background-color: var(--surface-tint);
 }
 
-table.revisions_table {
-  border-collapse: collapse;
+.node_table th.revision {
+  min-width: 4rem;
 }
 
-table.revisions_table thead {
+.node_table th.editor,
+.node_table th.title {
+  min-width: 12rem;
+}
+
+.revisions_table thead {
   position: sticky;
   top: 0;
   z-index: 1;
-}
-
-table.revisions_table th,
-table.revisions_table td {
-  padding: 0.4rem 0.75rem;
-  text-align: left;
-}
-
-table.revisions_table thead tr.header,
-table.revisions_table thead tr.diff_sticky_bar {
   background-color: var(--surface);
 }
 
-table.revisions_table .diff_sticky_bar td {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+.revisions_table th,
+.revisions_table td {
+  padding: 0.4rem 0.75rem;
+}
+
+.revisions_table .diff_sticky_bar td {
   border-bottom: 1px solid var(--hairline);
+}
+
+.row_primary {
+  font-weight: bold;
+}
+
+.row_secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.row_secondary a {
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.row_secondary svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
 }
 
 #diff_selection_label {
   margin-left: 0.75rem;
   color: var(--text-muted);
 }
-table.revisions_table td.title {
-  width: 450px;
-}
 
-table.revisions_table td.date {
-  width: 175px;
-}
+@media (min-width: 1016px) {
+  .revisions_table td.title {
+    min-width: 28rem;
+  }
 
-table.revisions_table tr:not(.header):not(.no_hover) {
-  border-bottom: 1px solid var(--hairline);
-}
-
-table.revisions_table tr.header:hover {
-  background-color: var(--surface);
-}
-
-table.revisions_table tr.no_hover:hover {
-  background-color: var(--surface);
-}
-
-table.revisions_table tr:hover {
-  background-color: var(--surface-tint);
+  .revisions_table td.date {
+    min-width: 11rem;
+  }
 }
 
 #diffview del {
@@ -795,44 +774,14 @@ table.revisions_table tr:hover {
   margin-bottom: 1.5rem;
 }
 
-.user_table td.actions,
-.node_table td.actions,
-.assets_table td.actions {
+.admin-table td.actions {
   width: 1px;
   white-space: nowrap;
-  padding-right: 0;
 }
 
 .events_table td.title,
 .events_table th.title {
   padding-right: 0.75rem;
-}
-
-.assets_table .asset_name,
-.events_table .event_title {
-  font-weight: bold;
-}
-
-.assets_table .asset_meta,
-.events_table .event_meta {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-top: 0.35rem;
-  font-size: 0.875rem;
-}
-
-.assets_table .asset_meta svg,
-.events_table .event_meta svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  flex-shrink: 0;
-}
-
-.assets_table .asset_meta a,
-.events_table .event_meta a {
-  overflow-wrap: anywhere;
-  color: var(--text-muted);
 }
 
 .events_table .event_when {
@@ -843,12 +792,6 @@ table.revisions_table tr:hover {
 
 .events_table .event_when .rrule_raw {
   overflow-wrap: anywhere;
-}
-
-.events_table td.actions {
-  width: 1px;
-  white-space: nowrap;
-  padding-right: 0;
 }
 
 .assets_table .asset_thumb img {
@@ -869,8 +812,8 @@ table.revisions_table tr:hover {
     display: block;
   }
 
-  .events_table tr.header,
-  .assets_table tr.header {
+  .events_table thead,
+  .assets_table thead {
     display: none;
   }
 
@@ -1010,20 +953,6 @@ table.revisions_table tr:hover {
 .title_body {
   min-width: 0;
 }
-
-.node_table .node_title {
-  font-weight: bold;
-}
-
-.node_table .node_path {
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-}
-
-.node_table .node_path a {
-  color: var(--text-muted);
-}
-
 
 .user_group_heading {
   margin-top: 1.5rem;
@@ -1430,36 +1359,12 @@ div.layout_row_content {
   max-width: 60rem;
 }
 
-#sitemap .node_title a {
-  font-weight: bold;
-}
-
 #sitemap .title_with_flags {
   align-items: start;
 }
 
 #sitemap .title_body {
   flex: 1;
-}
-
-#sitemap .node_path {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-#sitemap .node_path svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  flex-shrink: 0;
-}
-
-#sitemap .node_path a {
-  color: var(--text-muted);
-  overflow-wrap: anywhere;
 }
 
 #sitemap .action_grid {

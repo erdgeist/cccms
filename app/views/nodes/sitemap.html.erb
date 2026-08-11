@@ -26,8 +26,8 @@
           <%= flag("file-text-shield", t(".flag_restricted"), :tier => :attention) if node.restricted? %>
         </span>
         <div class="title_body">
-          <div class="node_title"><%= link_to title_for_node(node), node_path(node) %></div>
-          <div class="node_path">
+          <div class="row_primary node_title"><%= link_to title_for_node(node), node_path(node) %></div>
+          <div class="row_secondary node_path">
             <%= world_icon %>
             <%= link_to_path(node.unique_name, node.unique_name) %>
           </div>

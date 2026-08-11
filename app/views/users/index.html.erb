@@ -13,15 +13,17 @@
     <span class="dashboard_widget_meta"><%= members.size %></span>
   </h2>
   <% if members.any? %>
-    <table class="user_table <%= "user_table_alumni" if group == :alumni %>">
-      <tr class="header">
-        <th><%= t("users.labels.login") %></th>
-        <th><%= t("users.labels.roles") %></th>
-        <th></th>
-        <th></th>
-        <th></th>
-      </tr>
-      <%= render :partial => "user", :locals => { :users => members } %>
+    <table class="admin_table user_table <%= "user_table_alumni" if group == :alumni %>">
+      <thead>
+        <tr class="header">
+          <th><%= t("users.labels.login") %></th>
+          <th><%= t("users.labels.roles") %></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render :partial => "user", :locals => { :users => members } %>
+      </tbody>
     </table>
   <% else %>
     <p class="field_hint"><%= t(".group_empty") %></p>

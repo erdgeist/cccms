@@ -18,7 +18,7 @@
   </p>
 <% end %>
 
-<table id="revisions" class="revisions_table">
+<table id="revisions" class="admin_table revisions_table">
   <thead>
     <tr class="header">
       <th><%= t(".first") %></th>
@@ -30,7 +30,7 @@
       <th></th>
       <th></th>
     </tr>
-    <tr class="no_hover diff_sticky_bar">
+    <tr class="diff_sticky_bar">
       <td colspan="8">
         <%= button_to t(".diff_revisions"), diff_node_revisions_path(@node),
               method: :post,
@@ -64,7 +64,7 @@
   </tbody>
 </table>
 
-<script>
+<%= javascript_tag nonce: true do %>
   function update_diff_button_state() {
     var start = document.querySelector('input[name="start_revision"]:checked');
     var end = document.querySelector('input[name="end_revision"]:checked');
@@ -106,4 +106,4 @@
       this.appendChild(v);
     }
   });
-</script>
+<% end %>

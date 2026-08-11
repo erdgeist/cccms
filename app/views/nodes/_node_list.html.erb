@@ -4,43 +4,45 @@
                  (params[:tags].present? ? [["tags", params[:tags]]] : []) %>
 
 <%= will_paginate @nodes %>
-<table class="node_table">
-  <% @nodes.each do |node| %>
-  <tr class="<%= cycle("even", "odd") %>">
-    <td class="title">
-      <div class="title_with_flags">
-        <span class="flag_stack">
-          <%= flag("lock", t(".flag_locked", :login => node.lock_owner.login),
-                   :tier => :attention) if node.lock_owner %>
-          <%= flag("calendar-clock",
-                   t(".flag_embargo", :date => admin_datetime(node.head.published_at)),
-                   :tier => :attention) if node.embargoed? %>
-          <%= flag("file-pencil", t(".flag_draft")) if node.draft %>
-          <%= flag("world-off", t(".flag_no_head")) unless node.head %>
-        </span>
-        <div class="title_body">
-          <div class="node_title"><%= link_to title_for_node(node), node_path(node) %></div>
-          <div class="node_path"><%= link_to_path(node.unique_name, node.unique_name) %></div>
+<table class="admin_table node_table">
+  <tbody>
+    <% @nodes.each do |node| %>
+    <tr class="<%= cycle("even", "odd") %>">
+      <td class="title">
+        <div class="title_with_flags">
+          <span class="flag_stack">
+            <%= flag("lock", t(".flag_locked", :login => node.lock_owner.login),
+                     :tier => :attention) if node.lock_owner %>
+            <%= flag("calendar-clock",
+                     t(".flag_embargo", :date => admin_datetime(node.head.published_at)),
+                     :tier => :attention) if node.embargoed? %>
+            <%= flag("file-pencil", t(".flag_draft")) if node.draft %>
+            <%= flag("world-off", t(".flag_no_head")) unless node.head %>
+          </span>
+          <div class="title_body">
+            <div class="row_primary node_title"><%= link_to title_for_node(node), node_path(node) %></div>
+            <div class="row_secondary node_path"><%= link_to_path(node.unique_name, node.unique_name) %></div>
+          </div>
         </div>
-      </div>
-    </td>
-    <td class="actions">
-      <div class="action_grid">
-        <span class="action_item">
-          <%= link_to node_path(node), "aria-label" => t("admin.common.show"),
-                title: t("admin.common.show") do %>
-            <%= icon("eye", library: "tabler", "aria-hidden": true) %>
-          <% end %>
-        </span>
-        <span class="action_item">
-          <%= link_to node_revisions_path(node), "aria-label" => t("admin.common.revisions"),
-                title: t("admin.common.revisions") do %>
-            <%= icon("history", library: "tabler", "aria-hidden": true) %>
-          <% end %>
-        </span>
-      </div>
-    </td>
-  </tr>
-  <% end %>
+      </td>
+      <td class="actions">
+        <div class="action_grid">
+          <span class="action_item">
+            <%= link_to node_path(node), "aria-label" => t("admin.common.show"),
+                  title: t("admin.common.show") do %>
+              <%= icon("eye", library: "tabler", "aria-hidden": true) %>
+            <% end %>
+          </span>
+          <span class="action_item">
+            <%= link_to node_revisions_path(node), "aria-label" => t("admin.common.revisions"),
+                  title: t("admin.common.revisions") do %>
+              <%= icon("history", library: "tabler", "aria-hidden": true) %>
+            <% end %>
+          </span>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
 </table>
 <%= will_paginate @nodes %>
