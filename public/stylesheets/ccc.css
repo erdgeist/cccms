@@ -574,7 +574,6 @@ div#frontpage_calendar h2, div#tags h2, div#featured_articles h2, div#open_erfas
 
 div#frontpage_calendar h2 {
   display: none;
-  border-top: none;
   margin-left: auto;
   margin-right: auto;
   padding-left: 0.5em;
@@ -607,8 +606,11 @@ div#open_erfas_today .event_time {
 
 }
 
-div#frontpage_calendar ul, div#tags ul, div#featured_articles ul, div#open_erfas_today ul {
-  padding: 0px;
+div#frontpage_calendar ul,
+div#tags ul,
+div#featured_articles ul,
+div#open_erfas_today ul {
+  padding: 0;
   font-size: 0.9rem;
   line-height: 1.5em;
 }
@@ -618,7 +620,6 @@ div#featured_articles ul {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  padding: 0;
 }
 
 div#featured_articles li {
@@ -668,7 +669,6 @@ div#tags ul {
 }
 
 div#tags li {
-  list-style-type: none;
   margin: 0;
   line-height: 1.4;
 }
@@ -720,11 +720,6 @@ div#center_column .article_partial h2.headline {
   border-top: 1px solid color-mix(in srgb, CanvasText, Canvas 70%);
   padding-top: 30px;
   margin-bottom: 0.3rem;
-}
-
-/* except for erfa list */
-div#center_column .chapter_partial h2.headline {
-  border-top: none;
 }
 
 div#center_column .date_and_title_partial h2.headline {
