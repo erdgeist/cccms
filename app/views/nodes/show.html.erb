@@ -2,7 +2,8 @@
 <% may_change_live = current_user.may_change_live?(@node) %>
 <div id="admin_layout" class="show_node">
   <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
-  <div id="content">
+
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".status") %></div>
     <div class="layout_row_content info_group node_status">
       <div class="info_group_items">
@@ -97,8 +98,10 @@
         <span class="field_hint"><%= t(".restricted_hint") %></span>
       <% end %>
     </div>
+  </div>
 
-    <% if @node.in_trash? %>
+  <% if @node.in_trash? %>
+    <div class="layout_row">
       <div class="layout_row_label"><%= t(".trash") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">
@@ -136,8 +139,10 @@
           </div>
         </div>
       </div>
-    <% end %>
+    </div>
+  <% end %>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".translations") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -173,7 +178,9 @@
         <% end %>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".people") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -194,7 +201,9 @@
         <% end %>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".dates") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -210,7 +219,9 @@
         <% end %>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".links") %></div>
     <div class="layout_row_content info_group">
       <%
@@ -325,7 +336,9 @@
         <% end %>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".history") %></div>
     <div class="layout_row_content info_group">
       <details>
@@ -343,8 +356,9 @@
       </details>
       <p class="revisions_full_history_link"><%= link_to t(".revision_history"), node_revisions_path(@node) %> | <%= link_to t("node_actions.heading"), admin_log_path(:node_id => @node.id) %></p>
     </div>
+  </div>
 
-
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".tags") %></div>
     <div class="layout_row_content info_group">
       <% if @page.tag_list.any? %>
@@ -357,7 +371,9 @@
         <span class="field_hint"><%= t(".no_tags") %></span>
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".attachments") %></div>
     <div class="layout_row_content info_group">
       <% if @page.assets.any? %>
@@ -382,7 +398,9 @@
         <span class="field_hint"><%= t(".attachments_hint") %></span>
       </p>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".events") %></div>
     <div class="layout_row_content info_group">
       <ul>
@@ -401,9 +419,11 @@
         <% end %>
       </p>
     </div>
+  </div>
 
-    <% matches = matching_node_kinds(@node) %>
-    <% if @node.children.any? || matches.any? %>
+  <% matches = matching_node_kinds(@node) %>
+  <% if @node.children.any? || matches.any? %>
+    <div class="layout_row">
       <div class="layout_row_label"><%= t(".children") %></div>
       <div class="layout_row_content info_group">
         <% if @node.children.any? %>
@@ -428,13 +448,16 @@
           </p>
         <% end %>
       </div>
-    <% end %>
+    </div>
+  <% end %>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".abstract_locale", :lang => I18n.default_locale.to_s.upcase) %></div>
     <div class="layout_row_content"><%= sanitize(@page.abstract) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".body_locale", :lang => I18n.default_locale.to_s.upcase) %></div>
     <div class="layout_row_content"><%= sanitize(@page.body) %></div>
-
   </div>
 </div>

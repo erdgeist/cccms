@@ -2,7 +2,7 @@
 <div id="admin_layout" class="show_node">
   <h1><%= t(".title", :rev => @page.revision) %>: <%= translation&.title %> <small>(<%= @translation_locale.to_s.upcase %>)</small></h1>
 
-  <div id="content">
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -11,28 +11,44 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.path") %></div>
     <div class="layout_row_content"><%= @page.public_link %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.author") %></div>
     <div class="layout_row_content"><%= @page.user.try(:login) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.editor") %></div>
     <div class="layout_row_content"><%= @page.editor.try(:login) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("nodes.show.last_updated") %></div>
     <div class="layout_row_content"><%= admin_datetime(@page.updated_at) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("nodes.show.published_at") %></div>
     <div class="layout_row_content"><%= admin_datetime(@page.published_at) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
     <div class="layout_row_content"><%= translation&.title %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
     <div class="layout_row_content"><%= translation&.abstract %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
     <div class="layout_row_content"><%= raw translation&.body %></div>
   </div>

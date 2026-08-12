@@ -1,174 +1,197 @@
 <h1><%= title_for_node(@node) %></h1>
 
-<div class="node_action_bar">
-  <%= button_to t(".unlock_back"), unlock_node_path(@node), method: :put,
-        form: { class: 'button_to state_changing' },
-        disabled: @node.autosave.present? %>
-
-  <% if @node.autosave || (@node.draft && @node.head) %>
-    <%= button_to revert_node_path(@node), method: :put,
-              form: { data: { confirm: t(".confirm_discard") }, class: 'button_to destructive' } do %>
-      <%= icon("trash", library: "tabler", "aria-hidden": true) %>
-      <%= @node.draft && !@node.autosave ? t(".destroy_draft") : t(".discard_autosave") %>
-    <% end %>
-    <% if pair = @node.available_layer_pairs.find { |p| p.include?(:autosave) } %>
-      <%= button_to t(".what_changed"),
-            diff_node_revisions_path(@node),
-            method: :get,
-            params: { start_revision: pair.first, end_revision: pair.last },
-            form: { class: 'button_to computation' } %>
-    <% end %>
-  <% end %>
-
-  <%= submit_tag t(".save_draft"), form: dom_id(@node, :edit) %>
-  <%= submit_tag t(".save_unlock_exit"), name: "unlock_exit", form: dom_id(@node, :edit) %>
-  <%= link_to t(".preview"), preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
-</div>
-
 <div id="admin_layout">
-  <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
-  <% if @node.errors.any? %>
-    <div class="error_messages">
-      <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
-    </div>
-  <% end %>
-
-  <%= fields_for @page do |d| %>
-  <div id="edit_grid">
-
-    <div id="main_fields">
-      <div class="layout_row_label"><%= t("admin.columns.title") %></div>
-      <div class="layout_row_content"><%= d.text_field :title %></div>
-
-      <div class="layout_row_label"><%= t(".abstract") %></div>
-      <div class="layout_row_content"><%= d.text_area :abstract %></div>
-
-      <div class="layout_row_label"><%= t(".attachments") %></div>
-      <div class="layout_row_content">
-        <div id="related_assets"
-             data-search-url="<%= search_node_related_assets_path(@node) %>"
-             data-create-url="<%= node_related_assets_path(@node) %>">
-          <ul id="related_asset_list" class="thumbnail_list">
-            <% @page.related_assets.includes(:asset).each do |related| %>
-              <li data-url="<%= node_related_asset_path(@node, related) %>"
-                  data-asset-id="<%= related.asset.id %>"
-                  data-large-url="<%= related.asset.upload.url(:large) %>"
-                  data-original-url="<%= related.asset.upload.url %>"
-                  data-name="<%= related.asset.name %>"
-                  data-has-credit="<%= related.asset.show_credit? %>"
-                  data-headline="<%= related.headline? %>"
-                  class="<%= "is_headline" if related.headline? %>">
-                <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
-                <%= image_tag related.asset.upload.url(:thumb) %>
-                <button type="button" class="related_asset_set_headline"
-                        aria-pressed="<%= related.headline? %>" aria-label="<%= t('.set_headline_label') %>"
-                        title="<%= t(".set_headline_title") %>">
-                  <%= icon("star", library: "tabler", "aria-hidden": true) %>
-                </button>
-                <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
-                  <%= icon("x", library: "tabler", "aria-hidden": true) %>
-                </button>
-              </li>
-            <% end %>
-          </ul>
-          <p class="field_hint"><%= t(".headline_hint") %></p>
-          <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: t(".attach_search_placeholder"), autocomplete: "off" %>
-          <div id="related_asset_search_results" class="search_results"></div>
-        </div>
-      </div>
-
-      <template id="related_asset_template">
-        <li>
-          <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
-          <img src="">
-          <button type="button" class="related_asset_set_headline" aria-pressed="false" aria-label="<%= t('.set_headline_label') %>">
-            <%= icon("star", library: "tabler", "aria-hidden": true) %>
-          </button>
-          <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
-            <%= icon("x", library: "tabler", "aria-hidden": true) %>
-          </button>
-        </li>
-      </template>
-    </div>
-
-    <details id="metadata_details">
-      <summary><%= t(".metadata_summary") %></summary>
-      <div id="metadata">
-        <div class="layout_row_label"><%= t(".slug") %></div>
-        <div class="layout_row_content">
-          <%= d.text_field(
-                :slug, :value => @page.slug || @node.slug
-              )
-            %>
-        </div>
-
-        <div class="layout_row_label"><%= t(".parent") %></div>
-        <div class="layout_row_content">
-          <%= text_field_tag :move_to_search_term, (Node.find_by(:id => @page.parent_node_id) || @node.parent)&.title %>
-          <p class="field_hint"><%= t(".parent_hint") %></p>
-          <div id="move_to_search_results" class="search_results"></div>
-          <%= d.hidden_field(
-                :parent_node_id,
-                :value => @page.parent_node_id || @node.parent_id
-              )
-           %>
-        </div>
-
-        <div class="layout_row_label"><%= t(".external_url") %></div>
-        <div class="layout_row_content">
-          <%= d.text_field :external_url %>
-        </div>
-
-        <div class="layout_row_label"><%= t(".tags") %></div>
-        <div class="layout_row_content">
-          <%= text_field_tag :tag_list, @page.tag_list.join(', ') %>
-          <span class="field_hint"><%= t(".tags_hint") %></span>
-        </div>
-
-        <div class="layout_row_label"><%= t(".publish_at") %></div>
-        <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
-
-        <div class="layout_row_label"><%= t(".template") %></div>
-        <div class="layout_row_content">
-        <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
-        <span class="field_hint"><%= t(".template_hint") %></span>
-        </div>
-
-        <div class="layout_row_label"><%= t(".author") %></div>
-        <div class="layout_row_content">
-          <%= d.select :user_id, user_list,
-                :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
-        </div>
-
-      </div>
-    </details>
-
-    <div id="content">
-      <div class="layout_row_label"><%= t(".body") %></div>
-      <div class="body_toolbar_row">
-        <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t('admin.common.toggle_preview') %>" title="<%= t('admin.common.toggle_preview') %>">
-          <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t(".live_preview") %></span>
-        </button>
-        <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t('admin.common.force_render') %>" title="<%= t('admin.common.force_render') %>">
-          <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t(".force_refresh") %></span>
-        </button>
-      </div>
-
-      <div id="editor_and_preview">
-        <div class="preview_content">
-          <div class="layout_row_content"><%= d.text_area :body, :class => 'with_editor' %></div>
-        </div>
-        <div id="preview_panel" style="display:none">
-          <iframe id="live_preview_iframe" title="<%= t('.live_preview') %>" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% end %>
-
   <div class="node_action_bar">
-    <%= f.submit t(".save_draft") %>
-    <%= f.submit t(".save_unlock_exit"), name: "unlock_exit"%>
+    <%= button_to t(".unlock_back"), unlock_node_path(@node), method: :put,
+          form: { class: 'button_to state_changing' },
+          disabled: @node.autosave.present? %>
+
+    <% if @node.autosave || (@node.draft && @node.head) %>
+      <%= button_to revert_node_path(@node), method: :put,
+                form: { data: { confirm: t(".confirm_discard") }, class: 'button_to destructive' } do %>
+        <%= icon("trash", library: "tabler", "aria-hidden": true) %>
+        <%= @node.draft && !@node.autosave ? t(".destroy_draft") : t(".discard_autosave") %>
+      <% end %>
+      <% if pair = @node.available_layer_pairs.find { |p| p.include?(:autosave) } %>
+        <%= button_to t(".what_changed"),
+              diff_node_revisions_path(@node),
+              method: :get,
+              params: { start_revision: pair.first, end_revision: pair.last },
+              form: { class: 'button_to computation' } %>
+      <% end %>
+    <% end %>
+
+    <%= submit_tag t(".save_draft"), form: dom_id(@node, :edit) %>
+    <%= submit_tag t(".save_unlock_exit"), name: "unlock_exit", form: dom_id(@node, :edit) %>
+    <%= link_to t(".preview"), preview_page_path(@page), target: "_blank", rel: "noopener", class: "preview_link" %>
   </div>
+
+  <%= form_for(@node, html: { data: { autosave_url: autosave_node_path(@node), show_url: node_path(@node) } }) do |f| %>
+    <% if @node.errors.any? %>
+      <div class="error_messages">
+        <ul><% @node.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+      </div>
+    <% end %>
+
+    <%= fields_for @page do |d| %>
+      <div id="edit_grid">
+
+        <div id="main_fields">
+          <div class="layout_row">
+            <div class="layout_row_label"><%= t("admin.columns.title") %></div>
+            <div class="layout_row_content"><%= d.text_field :title %></div>
+          </div>
+
+          <div class="layout_row">
+            <div class="layout_row_label"><%= t(".abstract") %></div>
+            <div class="layout_row_content"><%= d.text_area :abstract %></div>
+          </div>
+
+          <div class="layout_row">
+            <div class="layout_row_label"><%= t(".attachments") %></div>
+            <div class="layout_row_content">
+              <div id="related_assets"
+                   data-search-url="<%= search_node_related_assets_path(@node) %>"
+                   data-create-url="<%= node_related_assets_path(@node) %>">
+                <ul id="related_asset_list" class="thumbnail_list">
+                  <% @page.related_assets.includes(:asset).each do |related| %>
+                    <li data-url="<%= node_related_asset_path(@node, related) %>"
+                        data-asset-id="<%= related.asset.id %>"
+                        data-large-url="<%= related.asset.upload.url(:large) %>"
+                        data-original-url="<%= related.asset.upload.url %>"
+                        data-name="<%= related.asset.name %>"
+                        data-has-credit="<%= related.asset.show_credit? %>"
+                        data-headline="<%= related.headline? %>"
+                        class="<%= "is_headline" if related.headline? %>">
+                      <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
+                      <%= image_tag related.asset.upload.url(:thumb) %>
+                      <button type="button" class="related_asset_set_headline"
+                              aria-pressed="<%= related.headline? %>" aria-label="<%= t('.set_headline_label') %>"
+                              title="<%= t(".set_headline_title") %>">
+                        <%= icon("star", library: "tabler", "aria-hidden": true) %>
+                      </button>
+                      <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
+                        <%= icon("x", library: "tabler", "aria-hidden": true) %>
+                      </button>
+                    </li>
+                  <% end %>
+                </ul>
+                <p class="field_hint"><%= t(".headline_hint") %></p>
+                <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: t(".attach_search_placeholder"), autocomplete: "off" %>
+                <div id="related_asset_search_results" class="search_results"></div>
+              </div>
+            </div>
+          </div>
+
+          <template id="related_asset_template">
+            <li>
+              <span class="related_asset_handle"><%= icon("grip-vertical", library: "tabler", "aria-hidden": true) %></span>
+              <img src="">
+              <button type="button" class="related_asset_set_headline" aria-pressed="false" aria-label="<%= t('.set_headline_label') %>">
+                <%= icon("star", library: "tabler", "aria-hidden": true) %>
+              </button>
+              <button type="button" class="related_asset_remove" aria-label="<%= t('.remove_image_label') %>">
+                <%= icon("x", library: "tabler", "aria-hidden": true) %>
+              </button>
+            </li>
+          </template>
+        </div>
+
+        <details id="metadata_details">
+          <summary><%= t(".metadata_summary") %></summary>
+          <div id="metadata">
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".slug") %></div>
+              <div class="layout_row_content">
+                <%= d.text_field(
+                      :slug, :value => @page.slug || @node.slug
+                    )
+                  %>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".parent") %></div>
+              <div class="layout_row_content">
+                <%= text_field_tag :move_to_search_term, (Node.find_by(:id => @page.parent_node_id) || @node.parent)&.title %>
+                <p class="field_hint"><%= t(".parent_hint") %></p>
+                <div id="move_to_search_results" class="search_results"></div>
+                <%= d.hidden_field(
+                      :parent_node_id,
+                      :value => @page.parent_node_id || @node.parent_id
+                    )
+                 %>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".external_url") %></div>
+              <div class="layout_row_content">
+                <%= d.text_field :external_url %>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".tags") %></div>
+              <div class="layout_row_content">
+                <%= text_field_tag :tag_list, @page.tag_list.join(', ') %>
+                <span class="field_hint"><%= t(".tags_hint") %></span>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".publish_at") %></div>
+              <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".template") %></div>
+              <div class="layout_row_content">
+              <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
+              <span class="field_hint"><%= t(".template_hint") %></span>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".author") %></div>
+              <div class="layout_row_content">
+                <%= d.select :user_id, user_list,
+                      :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div id="body_field">
+          <div class="layout_row">
+            <div class="layout_row_label"><%= t(".body") %></div>
+            <div class="layout_row_content">
+              <div class="body_toolbar_row">
+                <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t('admin.common.toggle_preview') %>" title="<%= t('admin.common.toggle_preview') %>">
+                  <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t(".live_preview") %></span>
+                </button>
+                <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t('admin.common.force_render') %>" title="<%= t('admin.common.force_render') %>">
+                  <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t(".force_refresh") %></span>
+                </button>
+              </div>
+
+              <div id="editor_and_preview">
+                <div class="preview_content">
+                  <%= d.text_area :body, :class => 'with_editor' %>
+                </div>
+                <div id="preview_panel" style="display:none">
+                  <iframe id="live_preview_iframe" title="<%= t('.live_preview') %>" data-src="<%= preview_page_path(@page, :locale => I18n.default_locale) %>"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="node_action_bar">
+      <%= f.submit t(".save_draft") %>
+      <%= f.submit t(".save_unlock_exit"), name: "unlock_exit"%>
+    </div>
   <% end %>
 </div>

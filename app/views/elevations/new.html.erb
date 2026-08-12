@@ -6,13 +6,18 @@
       <%= t(".hint", :minutes => AuthenticatedSystem::ELEVATION_MAX_AGE.in_minutes.to_i) %>
     </p>
     <%= form_tag elevation_path do %>
-      <div class="layout_row_label"><%= t(".code") %></div>
-      <div class="layout_row_content">
-        <%= text_field_tag :code, nil, :autocomplete => "one-time-code",
-              :inputmode => "numeric", :autofocus => true %>
+      <div class="layout_row">
+        <div class="layout_row_label"><%= t(".code") %></div>
+        <div class="layout_row_content">
+          <%= text_field_tag :code, nil, :autocomplete => "one-time-code",
+                :inputmode => "numeric", :autofocus => true %>
+        </div>
       </div>
-      <div class="layout_row_label"></div>
-      <div class="layout_row_content"><%= submit_tag t(".elevate") %></div>
+
+      <div class="layout_row">
+        <div class="layout_row_label"></div>
+        <div class="layout_row_content"><%= submit_tag t(".elevate") %></div>
+      </div>
     <% end %>
   <% else %>
     <%# An admin without an enrolled factor cannot elevate at all. Say so and

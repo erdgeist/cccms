@@ -9,69 +9,80 @@
 <%= form_tag nodes_path do %>
 <div id="new_node">
 
-  <div class="layout_row_label"><%= t(".type") %></div>
-  <div class="layout_row_content">
-    <% CccConventions::NODE_KINDS.each do |kind, config| %>
-      <% prefix = resolve_kind_text(config[:path_prefix]) %>
-      <p>
-        <%= radio_button_tag :kind, kind, kind == @selected_kind,
-          data: { path_prefix: prefix } %>
-        <%= resolve_kind_text(config[:label]) %>
-        <% if config[:hint] %>
-          <span class="field_hint"><%= resolve_kind_text(config[:hint]) %></span>
-        <% end %>
-        <% unless current_user.may_change_live_at?(prefix) %>
-          <span class="field_hint restricted_kind_hint"><%= t(".restricted_kind") %></span>
-        <% end %>
-      </p>
-    <% end %>
+  <div class="layout_row">
+    <div class="layout_row_label"><%= t(".type") %></div>
+    <div class="layout_row_content">
+      <% CccConventions::NODE_KINDS.each do |kind, config| %>
+        <% prefix = resolve_kind_text(config[:path_prefix]) %>
+        <p>
+          <%= radio_button_tag :kind, kind, kind == @selected_kind,
+            data: { path_prefix: prefix } %>
+          <%= resolve_kind_text(config[:label]) %>
+          <% if config[:hint] %>
+            <span class="field_hint"><%= resolve_kind_text(config[:hint]) %></span>
+          <% end %>
+          <% unless current_user.may_change_live_at?(prefix) %>
+            <span class="field_hint restricted_kind_hint"><%= t(".restricted_kind") %></span>
+          <% end %>
+        </p>
+      <% end %>
+    </div>
   </div>
 
-  <div class="layout_row_label"><%= t("admin.columns.title") %></div>
-  <div class="layout_row_content">
-    <%= text_field_tag :title, nil, required: true %>
-    <span class="field_hint"><%= t(".slug_hint") %></span>
+  <div class="layout_row">
+    <div class="layout_row_label"><%= t("admin.columns.title") %></div>
+    <div class="layout_row_content">
+      <%= text_field_tag :title, nil, required: true %>
+      <span class="field_hint"><%= t(".slug_hint") %></span>
+    </div>
   </div>
 
   <div id="parent_search_field" style="<%= @selected_kind == "generic" ? "" : "display: none;" %>">
-    <div class="layout_row_label"><%= t(".parent") %></div>
-    <div class="layout_row_content">
-      <%= text_field_tag :parent_search_term, @parent&.title %>
-      <%= hidden_field_tag :parent_id, @parent&.id, data: { unique_name: @parent&.computed_unique_name } %>
-      <div id="parent_search_results" class="search_results"></div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= t(".parent") %></div>
+      <div class="layout_row_content">
+        <%= text_field_tag :parent_search_term, @parent&.title %>
+        <%= hidden_field_tag :parent_id, @parent&.id, data: { unique_name: @parent&.computed_unique_name } %>
+        <div id="parent_search_results" class="search_results"></div>
+      </div>
     </div>
   </div>
 
-  <div class="layout_row_label"><%= t(".resulting_path") %></div>
-  <div class="layout_row_content">
-    <span id="resulting_path">—</span>
-    <button type="button" id="copy_resulting_path" class="unselected copy_button" data-copy-target="#resulting_path">
-      <span class="copy_button_label"><%= t(".copy") %></span>
-    </button>
+  <div class="layout_row">
+    <div class="layout_row_label"><%= t(".resulting_path") %></div>
+    <div class="layout_row_content">
+      <span id="resulting_path">—</span>
+      <button type="button" id="copy_resulting_path" class="unselected copy_button" data-copy-target="#resulting_path">
+        <span class="copy_button_label"><%= t(".copy") %></span>
+      </button>
 
-    <span class="field_hint"><%= t(".path_hint") %></span>
+      <span class="field_hint"><%= t(".path_hint") %></span>
+    </div>
   </div>
 
   <% if @attach_asset %>
-    <div class="layout_row_label"><%= t(".attachment") %></div>
-    <div class="layout_row_content">
-      <ul class="thumbnail_list">
-        <li>
-          <% if @attach_asset.has_variant?(:thumb) %>
-            <%= image_tag @attach_asset.upload.url(:thumb) %>
-          <% end %>
-          <%= link_to @attach_asset.name, asset_path(@attach_asset),
-                :target => "_blank", :rel => "noopener" %>
-        </li>
-      </ul>
-      <span class="field_hint"><%= t(".attach_hint") %></span>
-      <label><%= check_box_tag :asset_headline, "1" %> <%= t(".as_headline") %></label>
-      <%= hidden_field_tag :asset_id, @attach_asset.id %>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= t(".attachment") %></div>
+      <div class="layout_row_content">
+        <ul class="thumbnail_list">
+          <li>
+            <% if @attach_asset.has_variant?(:thumb) %>
+              <%= image_tag @attach_asset.upload.url(:thumb) %>
+            <% end %>
+            <%= link_to @attach_asset.name, asset_path(@attach_asset),
+                  :target => "_blank", :rel => "noopener" %>
+          </li>
+        </ul>
+        <span class="field_hint"><%= t(".attach_hint") %></span>
+        <label><%= check_box_tag :asset_headline, "1" %> <%= t(".as_headline") %></label>
+        <%= hidden_field_tag :asset_id, @attach_asset.id %>
+      </div>
     </div>
   <% end %>
 
-  <div class="layout_row_label"></div>
-  <div class="layout_row_content"><%= submit_tag t("admin.common.create") %></div>
-
+  <div class="layout_row">
+    <div class="layout_row_label"></div>
+    <div class="layout_row_content"><%= submit_tag t("admin.common.create") %></div>
+  </div>
 </div>
 <% end %>

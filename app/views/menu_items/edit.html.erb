@@ -2,23 +2,29 @@
 
 <div id="admin_layout">
   <%= form_for @menu_item do |f| %>
-  <div id="content">
-    <div class="layout_row_label"><%= t("admin.common.search") %></div>
-    <div class="layout_row_content">
-      <%= text_field_tag :menu_search_term %>
-      <div id="menu_item_search_results" class="search_results"></div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= t("admin.common.search") %></div>
+      <div class="layout_row_content">
+        <%= text_field_tag :menu_search_term %>
+        <div id="menu_item_search_results" class="search_results"></div>
+      </div>
     </div>
 
-    <div class="layout_row_label"><%= MenuItem.human_attribute_name(:node_id) %></div>
-    <div class="layout_row_content"><%= f.text_field :node_id %></div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= MenuItem.human_attribute_name(:node_id) %></div>
+      <div class="layout_row_content"><%= f.text_field :node_id %></div>
+    </div>
 
-    <div class="layout_row_label"><%= MenuItem.human_attribute_name(:path) %></div>
-    <div class="layout_row_content"><%= f.text_field :path %></div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= MenuItem.human_attribute_name(:path) %></div>
+      <div class="layout_row_content"><%= f.text_field :path %></div>
+    </div>
 
     <%= render "title_fields", :menu_item => @menu_item %>
 
-    <div class="layout_row_label"></div>
-    <div class="layout_row_content"><%= f.submit t("admin.common.update") %></div>
+    <div class="layout_row">
+      <div class="layout_row_label"></div>
+      <div class="layout_row_content"><%= f.submit t("admin.common.update") %></div>
+    </div>
   <% end %>
-  </div>
 </div>

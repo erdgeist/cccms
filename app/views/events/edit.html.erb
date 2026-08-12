@@ -1,6 +1,6 @@
 <h1><%= t(".title") %></h1>
 
-<div class="node_action_bar standalone_action_bar">
+<div class="node_action_bar">
   <%= link_to t("admin.common.back"), safe_return_to(params[:return_to] || events_path) %>
   <%= button_to event_path(@event), method: :delete,
         form: { data: { confirm: t("events.confirm_delete") }, class: 'button_to destructive' } do %>
@@ -13,7 +13,7 @@
   <%= form_error_messages(f) %>
 
   <div id="admin_layout">
-    <div id="content">
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:node) %> </div>
       <div class="layout_row_content">
         <% if @event.node %>
@@ -31,39 +31,59 @@
         <% end %>
         <%= f.hidden_field :node_id %>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:start_time) %></div>
       <div class="layout_row_content"><%= f.datetime_select :start_time %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:end_time) %></div>
       <div class="layout_row_content"><%= f.datetime_select :end_time %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= t("events.form.recurrence") %></div>
       <div class="layout_row_content">
         <%= render "rrule_builder", f: f %>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:title) %></div>
       <div class="layout_row_content">
         <%= f.text_field :title %>
         <span id="event_title_hint" class="field_hint"><%= t("events.form.title_hint") %></span>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:tags) %></div>
       <div class="layout_row_content"><%= f.text_field :tag_list %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:allday) %></div>
       <div class="layout_row_content"><%= f.check_box :allday %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:url) %></div>
       <div class="layout_row_content"><%= f.text_field :url %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:latitude) %></div>
       <div class="layout_row_content"><%= f.text_field :latitude %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:longitude) %></div>
       <div class="layout_row_content"><%= f.text_field :longitude %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"></div>
       <div class="layout_row_content"><%= f.submit t("admin.common.update") %></div>
     </div>

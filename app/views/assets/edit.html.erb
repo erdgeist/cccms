@@ -4,15 +4,19 @@
   <%= form_for(@asset, html: { multipart: true }) do |f| %>
     <%= form_error_messages(f) %>
 
-    <div id="content">
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :name %></div>
       <div class="layout_row_content"><%= f.text_field :name %></div>
+    </div>
 
-      <% if @asset.upload.present? %>
+    <% if @asset.upload.present? %>
+      <div class="layout_row">
         <div class="layout_row_label"><%= t(".current_file") %></div>
         <div class="layout_row_content"><%= @asset.upload.url %> (<%= number_to_human_size(@asset.upload.size) %>)</div>
-      <% end %>
+      </div>
+    <% end %>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :upload, t(".replace_file") %></div>
       <div class="layout_row_content">
         <div id="asset_dropzone">
@@ -20,13 +24,19 @@
           <p class="field_hint"><%= t("assets.form.drop_hint") %></p>
         </div>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :creator %></div>
       <div class="layout_row_content"><%= f.text_field :creator %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :source_url %></div>
       <div class="layout_row_content"><%= f.text_field :source_url %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :license_key %></div>
       <div class="layout_row_content">
         <%= f.select :license_key,
@@ -35,7 +45,9 @@
                 @asset.license_key
               ) %>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">

@@ -1,7 +1,7 @@
 <div id="admin_layout">
   <h1><%= @asset.name %></h1>
 
-  <div id="content">
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -35,12 +35,16 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <% if @asset.has_variant?(:medium) %>
+  <% if @asset.has_variant?(:medium) %>
+    <div class="layout_row">
       <div class="layout_row_label"><%= t(".thumbnail") %></div>
       <div class="layout_row_content"><%= image_tag @asset.upload.url(:medium), style: "max-width: 300px; max-height: 300px;" %></div>
-    <% end %>
+    </div>
+  <% end %>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".attached_to") %></div>
     <div class="layout_row_content">
       <% nodes = @asset.attached_nodes %>
@@ -62,7 +66,9 @@
         <%= t(".not_attached") %>
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("assets.form.attach_to_page") %></div>
     <div class="layout_row_content">
       <%= form_tag attach_to_node_asset_path(@asset), :class => "asset_attach_form" do %>
@@ -78,14 +84,18 @@
         <span class="field_hint"><%= t(".attach_hint") %></span>
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".new_page") %></div>
     <div class="layout_row_content">
       <%= link_to new_node_path(:asset_id => @asset.id), :class => "action_button" do %>
         <%= icon("file-plus", library: "tabler", "aria-hidden": true) %> <%= t(".new_page_with_attachment") %>
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".public_path") %></div>
     <div class="layout_row_content">
       <% public_path = @asset.upload.url.sub(/\?\d+$/, "") %>
@@ -96,10 +106,14 @@
         <span class="copy_button_label"><%= t(".copy_url") %></span>
       </button>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".creator") %></div>
     <div class="layout_row_content"><%= @asset.creator.presence || "—" %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".source") %></div>
     <div class="layout_row_content">
       <% if @asset.source_url.present? %>
@@ -108,7 +122,9 @@
         —
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".license") %></div>
     <div class="layout_row_content">
       <% if (license = AssetLicense.find(@asset.license_key)) %>
@@ -117,10 +133,14 @@
         —
       <% end %>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".content_type") %></div>
     <div class="layout_row_content"><%= @asset.upload.content_type %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t(".size") %></div>
     <div class="layout_row_content"><%= "#{@asset.upload.size/1024} KB" %></div>
   </div>

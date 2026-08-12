@@ -6,7 +6,7 @@
   <%= form_error_messages(f) %>
 
   <div id="admin_layout">
-    <div id="content">
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:node) %></div>
       <div class="layout_row_content">
         <%= text_field_tag :event_node_search_term %>
@@ -14,40 +14,62 @@
         <%= f.hidden_field :node_id %>
         <span class="field_hint"><%= t("events.form.node_hint") %></span>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:start_time) %></div>
       <div class="layout_row_content"><%= f.datetime_select :start_time %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:end_time) %></div>
       <div class="layout_row_content"><%= f.datetime_select :end_time %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= t("events.form.recurrence") %></div>
       <div class="layout_row_content"><%= render "rrule_builder", f: f %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:title) %></div>
       <div class="layout_row_content">
         <%= f.text_field :title %>
         <span id="event_title_hint" class="field_hint"><%= t("events.form.title_hint") %></span>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:tag_list) %></div>
       <div class="layout_row_content"><%= f.text_field :tag_list %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:allday) %></div>
       <div class="layout_row_content"><%= f.check_box :allday %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:url) %></div>
       <div class="layout_row_content"><%= f.text_field :url %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:latitude) %></div>
       <div class="layout_row_content"><%= f.text_field :latitude %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= Event.human_attribute_name(:longitude) %></div>
       <div class="layout_row_content"><%= f.text_field :longitude %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"></div>
       <div class="layout_row_content"><%= hidden_field_tag :return_to, params[:return_to] %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"></div>
       <div class="layout_row_content"><%= f.submit t("admin.common.create") %></div>
     </div>

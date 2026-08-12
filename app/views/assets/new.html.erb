@@ -4,10 +4,12 @@
   <%= form_for(@asset, :html => { :multipart => true }) do |f| %>
     <%= form_error_messages(f) %>
 
-    <div id="content">
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :name %></div>
       <div class="layout_row_content"><%= f.text_field :name %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :upload %></div>
       <div class="layout_row_content">
         <div id="asset_dropzone">
@@ -15,13 +17,19 @@
           <p class="field_hint"><%= t("assets.form.drop_hint") %></p>
         </div>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :creator %></div>
       <div class="layout_row_content"><%= f.text_field :creator %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :source_url %></div>
       <div class="layout_row_content"><%= f.text_field :source_url %></div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= f.label :license_key %></div>
       <div class="layout_row_content">
         <%= f.select :license_key,
@@ -30,7 +38,9 @@
                 @asset.license_key
               ) %>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= t("assets.form.attach_to_page") %></div>
       <div class="layout_row_content">
         <div class="restore_picker">
@@ -41,13 +51,17 @@
         <%= hidden_field_tag :node_id, @attach_node&.id %>
         <span class="field_hint"><%= t("assets.form.attach_hint") %></span>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"></div>
       <div class="layout_row_content">
         <label><%= check_box_tag :headline, "1" %> <%= t("assets.form.as_headline") %></label>
         <span class="field_hint"><%= t("assets.form.headline_hint") %></span>
       </div>
+    </div>
 
+    <div class="layout_row">
       <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
       <div class="layout_row_content info_group">
         <div class="info_group_items">

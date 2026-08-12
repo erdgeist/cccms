@@ -2,7 +2,7 @@
   <%= t(".editing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_of") %> <strong><%= title_for_node(@node) %></strong>.
 </div>
 
-<p class="node_action_bar standalone_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :translation_locale => @locale) %></p>
+<p class="node_action_bar"><%= link_to t("page_translations.revision_history_link"), node_revisions_path(@node, :translation_locale => @locale) %></p>
 
 <p class="field_hint">
   <%= t(".metadata_hint_prefix") %> <%= link_to t(".metadata_hint_link"), edit_node_path(@node) %>.
@@ -27,38 +27,45 @@
       </li>
     <% end %>
   </ul>
+
   <%= form_with url: node_translation_path(@node, @locale), method: :patch, local: true, id: "translation_edit_form",
         data: { autosave_url: autosave_node_translation_path(@node, @locale), show_url: node_path(@node) } do |f| %>
-    <div id="edit_grid">
-      <div id="content">
-        <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
-        <div class="layout_row_content">
-          <%= text_field_tag "page[title]", @translation&.title %>
-        </div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= Page.human_attribute_name(:title) %></div>
+      <div class="layout_row_content">
+        <%= text_field_tag "page[title]", @translation&.title %>
+      </div>
+    </div>
 
-        <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
-        <div class="layout_row_content">
-          <%= text_area_tag "page[abstract]", @translation&.abstract %>
-        </div>
+    <div class="layout_row">
+      <div class="layout_row_label"><%= Page.human_attribute_name(:abstract) %></div>
+      <div class="layout_row_content">
+        <%= text_area_tag "page[abstract]", @translation&.abstract %>
+      </div>
+    </div>
 
+    <div id="body_field">
+      <div class="layout_row">
         <div class="layout_row_label"><%= Page.human_attribute_name(:body) %></div>
-        <div class="body_toolbar_row">
-          <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t("admin.common.toggle_preview") %>" title="<%= t("admin.common.toggle_preview") %>">
-            <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.live_preview") %></span>
-          </button>
-          <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t("admin.common.force_render") %>" title="<%= t("admin.common.force_render") %>">
-            <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.force_refresh") %></span>
-          </button>
-        </div>
-
-        <div id="editor_and_preview">
-          <div class="preview_content">
-            <div class="layout_row_content">
-              <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
-            </div>
+        <div class="layout_row_content">
+          <div class="body_toolbar_row">
+            <button type="button" id="preview_toggle" class="view_toggle" aria-pressed="false" aria-label="<%= t("admin.common.toggle_preview") %>" title="<%= t("admin.common.toggle_preview") %>">
+              <%= icon("layout-sidebar-right", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.live_preview") %></span>
+            </button>
+            <button type="button" id="preview_force_render" class="view_toggle" style="display:none" aria-label="<%= t("admin.common.force_render") %>" title="<%= t("admin.common.force_render") %>">
+              <%= icon("refresh", library: "tabler", "aria-hidden": true) %> <span><%= t("nodes.edit.force_refresh") %></span>
+            </button>
           </div>
-          <div id="preview_panel" style="display:none">
-            <iframe id="live_preview_iframe" title="<%= t("nodes.edit.live_preview") %>" data-src="<%= preview_page_path(@page, :locale => @locale) %>"></iframe>
+
+          <div id="editor_and_preview">
+            <div class="preview_content">
+              <div class="layout_row_content">
+                <%= text_area_tag "page[body]", @translation&.body, :class => 'with_editor' %>
+              </div>
+            </div>
+            <div id="preview_panel" style="display:none">
+              <iframe id="live_preview_iframe" title="<%= t("nodes.edit.live_preview") %>" data-src="<%= preview_page_path(@page, :locale => @locale) %>"></iframe>
+            </div>
           </div>
         </div>
       </div>

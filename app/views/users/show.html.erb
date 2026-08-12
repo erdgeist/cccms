@@ -1,7 +1,7 @@
 <div id="admin_layout">
   <h1><%= @user.login %></h1>
 
-  <div id="content">
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -12,25 +12,33 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("users.labels.login") %></div>
     <div class="layout_row_content"><%= @user.login %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("users.labels.email") %></div>
     <div class="layout_row_content"><%= @user.email %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("users.labels.roles") %></div>
     <div class="layout_row_content">
       <%= @user.roles.any? ? @user.role_labels.join(", ") : t("users.no_roles") %>
     </div>
   </div>
 
-  <div class="layout_row_label"><%= t("users.labels.last_login") %></div>
-  <div class="layout_row_content">
-    <% if @user.last_login_at %>
-      <%= admin_date(@user.last_login_at) %>
-    <% else %>
-      <%= t("users.never_signed_in") %>
-    <% end %>
+  <div class="layout_row">
+    <div class="layout_row_label"><%= t("users.labels.last_login") %></div>
+    <div class="layout_row_content">
+      <% if @user.last_login_at %>
+        <%= admin_date(@user.last_login_at) %>
+      <% else %>
+        <%= t("users.never_signed_in") %>
+      <% end %>
+    </div>
   </div>
 </div>

@@ -1,7 +1,7 @@
 <div id="admin_layout" class="show_node">
   <h1><%= @event.node ? t(".title_for_node", :path => @event.node.unique_name) : t(".title") %></h1>
 
-  <div id="content">
+  <div class="layout_row">
     <div class="layout_row_label"><%= t("admin.columns.actions") %></div>
     <div class="layout_row_content info_group">
       <div class="info_group_items">
@@ -22,33 +22,51 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:start_time) %></div>
     <div class="layout_row_content"><%= admin_datetime(@event.start_time) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:end_time) %></div>
     <div class="layout_row_content"><%= admin_datetime(@event.end_time) %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:rrule) %></div>
     <div class="layout_row_content"><%=h @event.rrule %></div>
+  </div>
 
-    <% if (human = @event.humanize_rrule(I18n.locale)) %>
+  <% if (human = @event.humanize_rrule(I18n.locale)) %>
+    <div class="layout_row">
       <div class="layout_row_label"><%= t(".recurrence") %></div>
       <div class="layout_row_content"><em><%= human %></em></div>
-    <% end %>
+    </div>
+  <% end %>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:tag_list) %></div>
     <div class="layout_row_content"><%=h @event.tag_list %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:allday) %></div>
     <div class="layout_row_content"><%= @event.allday ? t("admin.common.yes") : t("admin.common.no") %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:url) %></div>
     <div class="layout_row_content"><%=h @event.url %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:latitude) %></div>
     <div class="layout_row_content"><%=h @event.latitude %></div>
+  </div>
 
+  <div class="layout_row">
     <div class="layout_row_label"><%= Event.human_attribute_name(:longitude) %></div>
     <div class="layout_row_content"><%=h @event.longitude %></div>
   </div>

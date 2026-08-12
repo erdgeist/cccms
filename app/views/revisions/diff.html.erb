@@ -1,6 +1,6 @@
 <h1><%= t(".title") %></h1>
 
-<p class="node_action_bar standalone_action_bar">
+<p class="node_action_bar">
   <%= link_to t(".revisions_link"), node_revisions_path(@node) %>
 </p>
 
@@ -23,7 +23,7 @@
     <%= t(".comparing_html", :start => start_control, :end => end_control,
           :lang => locale_control, :view => view_control) %>
   </p>
-  <p class="node_action_bar standalone_action_bar diff_step_bar">
+  <p class="node_action_bar diff_step_bar">
     <% if earlier %>
       <%= link_to t(".pair_link", :from => earlier.first, :to => earlier.last), diff_node_revisions_path(@node,
             start_revision: earlier.first, end_revision: earlier.last,
@@ -43,13 +43,13 @@
 <% end %>
 
 <% unless numeric_comparison %>
-  <p class="node_action_bar standalone_action_bar">
+  <p class="node_action_bar">
     <%= link_to t(".compare_numbered"), node_revisions_path(@node) %>
   </p>
 <% end %>
 
 <% if @available_layer_pairs.present? %>
-  <div class="node_action_bar standalone_action_bar">
+  <div class="node_action_bar">
     <% @available_layer_pairs.each do |pair| %>
       <% next if [params[:start_revision].to_s, params[:end_revision].to_s].sort == pair.map(&:to_s).sort %>
       <%= button_to t("nodes.show.diff_layers", :from => t("nodes.show.layer_#{pair.first}"), :to => t("nodes.show.layer_#{pair.last}")),
