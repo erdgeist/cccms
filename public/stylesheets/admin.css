@@ -565,11 +565,6 @@ form.button_to svg  {
   align-items: center;
 }
 
-.button_row .action_button,
-.search_form .action_button {
-  margin-bottom: 0;
-}
-
 #dashboard_signposts {
   margin-bottom: 2rem;
 }
@@ -1431,17 +1426,8 @@ form.button_to svg  {
 .aligned_action_row {
   display: flex;
   flex-wrap: wrap;
-  align-items: start;
+  align-items: baseline;
   gap: 0.5rem;
-}
-
-.aligned_action_row .action_button,
-.aligned_action_row form.button_to {
-  margin-top: -5px;
-}
-
-.aligned_action_row .action_button.action_button_no_margin_top {
-  margin-top: 0;
 }
 
 /* ============================================================
@@ -1490,7 +1476,6 @@ div#admin_layout {
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
-  margin-bottom: 1rem;
   background: none;
   cursor: pointer;
   font-family: inherit;
@@ -2242,10 +2227,6 @@ input#menu_item_title {
 .asset_attach_form label {
   display: block;
   margin: 0.5rem 0;
-}
-
-.asset_attach_form .action_button {
-  margin-bottom: 0;
 }
 
 .asset_attach_form .action_button + .field_hint {
