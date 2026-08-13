@@ -1,23 +1,23 @@
 <h1><%= t(".title") %></h1>
 
-<div id="admin_layout">
+<div class="admin_layout">
   <%= form_for @menu_item do |f| %>
     <div class="layout_row">
       <div class="layout_row_label"><%= t("admin.common.search") %></div>
       <div class="layout_row_content">
-        <%= text_field_tag :menu_search_term %>
+        <%= text_field_tag :menu_search_term, nil, :class => "menu_field" %>
         <div id="menu_item_search_results" class="search_results"></div>
       </div>
     </div>
 
     <div class="layout_row">
       <div class="layout_row_label"><%= MenuItem.human_attribute_name(:node_id) %></div>
-      <div class="layout_row_content"><%= f.text_field :node_id %></div>
+      <div class="layout_row_content"><%= f.text_field :node_id, :class => "menu_field" %></div>
     </div>
 
     <div class="layout_row">
       <div class="layout_row_label"><%= MenuItem.human_attribute_name(:path) %></div>
-      <div class="layout_row_content"><%= f.text_field :path %></div>
+      <div class="layout_row_content"><%= f.text_field :path, :class => "menu_field" %></div>
     </div>
 
     <%= render "title_fields", :menu_item => @menu_item %>

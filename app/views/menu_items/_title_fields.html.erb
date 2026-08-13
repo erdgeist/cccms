@@ -6,6 +6,7 @@
     <div class="layout_row_content">
       <%= text_field_tag "menu_item[titles][#{locale}]",
             menu_item.translations.find_by(:locale => locale)&.title,
+            :class => "menu_field",
             :placeholder => (locale == I18n.default_locale ? nil : t(".falls_back")) %>
     </div>
   </div>
