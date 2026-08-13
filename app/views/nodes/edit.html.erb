@@ -1,6 +1,6 @@
 <h1><%= title_for_node(@node) %></h1>
 
-<div id="admin_layout">
+<div class="admin_layout">
   <div class="node_action_bar">
     <%= button_to t(".unlock_back"), unlock_node_path(@node), method: :put,
           form: { class: 'button_to state_changing' },

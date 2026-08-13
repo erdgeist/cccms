@@ -17,7 +17,7 @@
   <%= link_to t("nodes.edit.preview"), preview_page_path(@page, :locale => @locale), target: "_blank", rel: "noopener", class: "preview_link" %>
 </div>
 
-<div id="admin_layout">
+<div class="admin_layout">
   <ul id="related_asset_list" style="display:none">
     <% @page.related_assets.includes(:asset).each do |related| %>
       <li data-large-url="<%= related.asset.upload.url(:large) %>"

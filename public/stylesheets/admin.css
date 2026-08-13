@@ -1454,17 +1454,10 @@ form.button_to svg  {
   #metadata_details[open] > summary { display: none; }
 }
 
-input[type=text]#tag_list,
-input[type=text]#page_slug,
-input#move_to_search_term {
-  padding: 5px;
-}
-
-div#admin_layout {
+.admin_layout {
   margin-top: 0;
 }
 
-#admin_layout a.action_button,
 .action_button {
   display: inline-flex;
   align-items: center;
@@ -1482,15 +1475,16 @@ div#admin_layout {
   font-size: inherit;
 }
 
-#admin_layout a.action_button:hover,
 .action_button:hover {
   color: var(--surface);
   background-color: var(--text);
 }
 
-#admin_layout input[type=text],
-#admin_layout input[type=password],
-#admin_layout textarea {
+.admin_layout input[type=text],
+.admin_layout input[type=password],
+.admin_layout textarea {
+  box-sizing: border-box;
+  width: 100%;
   padding: 5px;
 }
 
@@ -1498,50 +1492,25 @@ input#tag_list {
   text-transform: lowercase;
 }
 
-#admin_layout input[type=text],
-#admin_layout input[type=password],
-#admin_layout textarea {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-input[type=text]#page_title {
-  box-sizing: border-box;
-  width: 100%;
+.admin_layout input[type=text]#page_title {
   padding: 6px 5px 4px;
   font-weight: bold;
 }
 
-#admin_layout textarea#page_abstract {
-  width: 100%;
-  box-sizing: border-box;
+.admin_layout textarea#page_abstract {
   height: 8rem;
 }
 
-#admin_layout textarea#page_body {
-  box-sizing: border-box;
-  width: 100%;
+.admin_layout textarea#page_body {
   height: 60vh;
 }
 
-input#tag_list,
-input#page_slug,
-input#move_to_search_term {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-input#menu_search_term,
-input#menu_item_node_id,
-input#menu_item_path,
-input#menu_item_title {
-  width: 100%;
+.admin_layout .menu_field {
   max-width: 44rem;
 }
 
 @media(min-width:1016px) {
-  #admin_layout textarea#page_abstract {
-    padding: 5px;
+  .admin_layout textarea#page_abstract {
     height: 250px;
   }
 }

@@ -1,5 +1,5 @@
 <% translation = @page.translations.find_by(:locale => @translation_locale) %>
-<div id="admin_layout" class="show_node">
+<div class="admin_layout show_node">
   <h1><%= t(".title", :rev => @page.revision) %>: <%= translation&.title %> <small>(<%= @translation_locale.to_s.upcase %>)</small></h1>
 
   <div class="layout_row">

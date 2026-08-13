@@ -1,6 +1,6 @@
 <% locked_by_other = @node.locked? && @node.lock_owner != current_user %>
 <% may_change_live = current_user.may_change_live?(@node) %>
-<div id="admin_layout" class="show_node">
+<div class="admin_layout show_node">
   <h1><%= title_for_node(@node) %> <small>(<%= I18n.default_locale.to_s.upcase %>)</small></h1>
 
   <div class="layout_row">

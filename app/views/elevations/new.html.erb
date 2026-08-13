@@ -1,6 +1,6 @@
 <h1><%= t(".title") %></h1>
 
-<div id="admin_layout">
+<div class="admin_layout">
   <% if current_user.otp_enrolled? %>
     <p class="field_hint">
       <%= t(".hint", :minutes => AuthenticatedSystem::ELEVATION_MAX_AGE.in_minutes.to_i) %>

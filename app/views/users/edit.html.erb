@@ -1,4 +1,4 @@
-<div id="admin_layout">
+<div class="admin_layout">
   <h1><%= @user == current_user ? t(".my_account") : t(".edit_user", :login => @user.login) %></h1>
 
   <% if @user.errors.any? %>
