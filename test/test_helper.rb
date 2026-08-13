@@ -78,4 +78,25 @@ class ActiveSupport::TestCase
     node.lock_for_editing!(user)
     node.draft || node.create_new_draft(user)
   end
+
+  def assert_well_formed
+    body = @response.body
+    doc = if body.lstrip.start_with?("<!DOCTYPE", "<html")
+            Nokogiri::HTML5(body, max_errors: -1)
+          else
+            Nokogiri::HTML5.fragment(body, max_errors: -1)
+          end
+    assert_empty doc.errors,
+      "Malformed markup:\n#{doc.errors.map(&:to_s).join("\n")}"
+  end
+end
+
+class ActionController::TestCase
+  def process(*args, **kwargs)
+    super.tap do
+      if @response&.successful? && @response.media_type == "text/html"
+        assert_well_formed
+      end
+    end
+  end
 end
