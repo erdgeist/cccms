@@ -56,6 +56,14 @@
 
   --radius:                6px;
 
+  /* The desktop label band: #wrapper's left gutter, which row labels reach
+     back into. --label-column plus --label-gap must equal --page-gutter, or
+     a row's content no longer starts where the page's other elements do. */
+  --page-gutter:           125px;
+  --page-gutter-neg:      -125px;
+  --label-column:          115px;
+  --label-gap:             10px;
+
   /* Type scale. Everything secondary is --text-sm; --text-xs is for hints
      and paths. */
   --text-xs:               0.75rem;
@@ -141,7 +149,7 @@ input[type=radio] {
 
 @media(min-width:1016px) {
   #wrapper {
-    margin: 0 125px;
+    margin: 0 var(--page-gutter);
   }
 }
 
@@ -1014,9 +1022,9 @@ form.button_to svg  {
 @media(min-width:1016px) {
   .layout_row {
     display: grid;
-    grid-template-columns: 115px 1fr;
-    column-gap: 10px;
-    margin-left: -125px;
+    grid-template-columns: var(--label-column) 1fr;
+    column-gap: var(--label-gap);
+    margin-left: var(--page-gutter-neg);
   }
 
   #edit_grid .layout_row {
@@ -1449,7 +1457,7 @@ form.button_to svg  {
       "body body";
     column-gap: 2rem;
     align-items: start;
-    margin-left: -125px;
+    margin-left: var(--page-gutter-neg);
   }
   #main_fields           { grid-area: main; }
   #metadata_details      { grid-area: meta; }
@@ -1550,10 +1558,6 @@ input#menu_item_title {
   #admin_layout textarea#page_abstract {
     padding: 5px;
     height: 250px;
-  }
-
-  #admin_overview {
-    margin-left: -125px;
   }
 }
 
