@@ -235,19 +235,24 @@ input[type=radio] {
   text-transform: lowercase;
 }
 
+#flash span#flash_error,
+#flash span.warning {
+  color: var(--accent);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
 #flash img {
   height: 12px;
   width: 12px;
 }
 
-span#flash_error, span.warning {
-  color: var(--on-solid);
+span.warning {
+  color: var(--accent);
+  background-color: var(--accent-surface);
   letter-spacing: 1px;
-  background-color: var(--accent);
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 1px;
-  padding-bottom: 1px;
+  padding: 1px 5px;
+  border-radius: 2px;
 }
 
 span.warning a {
