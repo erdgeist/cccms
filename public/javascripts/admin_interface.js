@@ -86,6 +86,10 @@ $(document).ready(function () {
     cccms.preview.initialize();
   }
 
+  if (document.getElementById('revisions')) {
+    initialize_revision_diff_picker.initialize();
+  }
+
   var metadata_details = document.getElementById('metadata_details');
   if (metadata_details) {
     var desktop_mq = window.matchMedia('(min-width: 1016px)');
@@ -557,5 +561,71 @@ rrule_builder = {
         $("#rrule_excluded_month").val(missing[0]).show();
       }
     }
+  }
+};
+
+initialize_revision_diff_picker = {
+  initialize : function() {
+    let table = document.getElementById('revisions');
+    let rows = table.querySelectorAll('tbody tr');
+    let form  = document.getElementById('diff_form');
+    let from_field = form.querySelector('input[name="start_revision"]');
+    let to_field = form.querySelector('input[name="end_revision"]');
+
+    // Two-slot FIFO: the newest pick becomes the target and the previous
+    // target becomes the source, so two taps anywhere give any pair.
+    // Picking the current target is a no-op, picking the current source
+    // swaps them.
+    this.stack = [from_field.value, to_field.value].filter(function (v) { return v !== ''; });
+
+    rows.forEach(function (row) {
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('a, button, input, label')) { return; }
+        initialize_revision_diff_picker.pick(row.dataset.revision);
+      });
+      row.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          initialize_revision_diff_picker.pick(row.dataset.revision);
+        }
+      });
+    });
+
+    this.render();
+  },
+
+  render : function() {
+    let table = document.getElementById('revisions');
+    let rows = table.querySelectorAll('tbody tr');
+    let form = document.getElementById('diff_form');
+    let from_field = form.querySelector('input[name="start_revision"]');
+    let to_field = form.querySelector('input[name="end_revision"]');
+    let submit = form.querySelector('input[type="submit"]');
+    let readout = document.getElementById('diff_selection_label');
+    let from_label = document.getElementById('diff_from');
+    let to_label = document.getElementById('diff_to');
+
+    let from = this.stack[0] || '';
+    let to = this.stack[1] || '';
+    from_field.value = from;
+    from_label.textContent = from;
+    to_field.value = to;
+    to_label.textContent = to;
+    readout.hidden = !(from && to);
+    submit.disabled = !(from && to && from !== to);
+
+    rows.forEach(function (row) {
+      var rev = row.dataset.revision;
+      row.classList.toggle('diff_source', rev === from);
+      row.classList.toggle('diff_target', rev === to);
+      row.setAttribute('aria-pressed', (rev === from || rev === to) ? 'true' : 'false');
+    });
+  },
+
+  pick : function(rev) {
+    if (rev === this.stack[1]) { return; }
+    this.stack.push(rev);
+    if (this.stack.length > 2) { this.stack.shift(); }
+    this.render();
   }
 };
