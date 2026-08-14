@@ -4,37 +4,67 @@
   <p class="field_hint"><%= t(".empty") %></p>
 <% else %>
   <%= will_paginate @nodes %>
-  <table id="trashed_node_list">
-    <tr>
-      <th><%= t("admin.columns.title") %></th>
-      <th><%= t(".was_at") %></th>
-      <th><%= t(".trashed") %></th>
-      <th><%= t("admin.columns.actions") %></th>
-    </tr>
+  <table class="admin_table trashed_node_list">
+    <tbody>
     <% @nodes.each do |node| %>
       <% entry = node.last_trash_entry %>
+      <% doomed_below = node.descendants.count %>
+      <% title = node.draft&.title || node.slug %>
+      <% target_missing = (node.draft || node.head)&.parent_node_missing? %>
       <tr>
-        <% doomed_below = node.descendants.count %>
-        <td>
-          <%= link_to (node.draft&.title || node.slug), node_path(node) %><%= " " + t(".beneath", :count => doomed_below) if doomed_below > 0 %>
-        </td>
-        <td><%= entry&.metadata&.dig("path", "from") %></td>
-        <td>
+        <td class="title">
+          <div class="row_primary">
+            <%= link_to title, node_path(node) %><%= " " + t(".beneath", :count => doomed_below) if doomed_below > 0 %>
+          </div>
+          <div class="row_secondary">
+            <%= t(".was_at") %> <%= entry&.metadata&.dig("path", "from") %>
+          </div>
           <% if entry %>
-            <%= t(".trashed_by", :time => entry.occurred_at.strftime("%Y-%m-%d %H:%M"), :actor => entry.actor_name) %> 
+            <div class="row_secondary">
+              <%= t(".trashed_by", :time => admin_datetime(entry.occurred_at),
+                                   :actor => entry.actor_name) %>
+            </div>
           <% end %>
         </td>
-        <td>
-          <%= button_to node_path(node), method: :delete,
-                        form: { data: { confirm: t(".confirm_delete", :title => (node.draft&.title || node.slug), :count => doomed_below) },
-                        class: 'button_to destructive' } do %>
-            <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
-            <%= t(".delete_permanently") %>
-          <% end %>
+        <td class="actions">
+          <div class="action_grid">
+            <span class="action_item">
+              <%= link_to node_path(node), "aria-label" => t("admin.common.show"),
+                    title: t("admin.common.show") do %>
+                <%= icon("eye", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+            </span>
+            <span class="action_item">
+              <% if target_missing %>
+                <span class="disabled_action" title="<%= t(".restore_target_missing") %>"
+                      aria-label="<%= t(".restore_target_missing") %>">
+                  <%= icon("arrow-back-up", library: "tabler", "aria-hidden": true) %>
+                </span>
+              <% else %>
+                <%= button_to restore_from_trash_node_path(node), method: :put,
+                      form: { class: 'button_to state_changing' },
+                      "aria-label" => t(".restore_here"), title: t(".restore_here") do %>
+                  <%= icon("arrow-back-up", library: "tabler", "aria-hidden": true) %>
+                <% end %>
+              <% end %>
+            </span>
+            <span class="action_item">
+              <%= button_to node_path(node), method: :delete,
+                    form: { data: { confirm: t(".confirm_delete", :title => title, :count => doomed_below) },
+                            class: 'button_to destructive' },
+                    "aria-label" => t(".delete_permanently"),
+                    title: t(".delete_permanently") do %>
+                <%= icon("trash-x", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+            </span>
+          </div>
         </td>
       </tr>
     <% end %>
+    </tbody>
   </table>
   <%= will_paginate @nodes %>
-  <p class="field_hint"><%= t(".restore_hint") %></p>
+  <% if @nodes.any? { |n| (n.draft || n.head)&.parent_node_missing? } %>
+    <p class="field_hint"><%= t(".restore_hint") %></p>
+  <% end %>
 <% end %>

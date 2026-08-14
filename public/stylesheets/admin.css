@@ -888,6 +888,7 @@ form.button_to svg  {
 .events_table .action_grid { grid-template-columns: repeat(2, auto); }
 .assets_table .action_grid { grid-template-columns: repeat(3, auto); }
 .revisions_table .action_grid { grid-template-columns: repeat(2, auto); }
+.trashed_node_list .action_grid { grid-template-columns: repeat(3, auto); }
 
 /* min-height keeps a row the same height whether or not the viewer may see
    the lower controls. */

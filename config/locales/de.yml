@@ -562,6 +562,8 @@ de:
       empty: "Der Papierkorb ist leer."
       was_at: "War unter"
       trashed: "Gelöscht"
+      restore_here: "Hierhin wiederherstellen"
+      restore_target_missing: "Kann nicht von hier aus wiederhergestellt werden, das der alte Eltern-Node nicht mehr existiert."
       beneath:
         one: "(+ 1 darunter)"
         other: "(+ %{count} darunter)"

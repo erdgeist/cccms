@@ -514,6 +514,8 @@ en:
       empty: "The Trash is empty."
       was_at: "Was at"
       trashed: "Trashed"
+      restore_here: "Restore here"
+      restore_target_missing: "Can not restore from here. Old parent is gone."
       beneath:
         one: "(+ 1 beneath)"
         other: "(+ %{count} beneath)"
