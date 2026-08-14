@@ -700,6 +700,22 @@ class NodesControllerTest < ActionController::TestCase
     assert node.reload.in_trash?
   end
 
+  test "a trashed row offers a restore, and refuses when the parent is gone" do
+    login_as :quentin
+    parent = Node.root.children.create!(:slug => "restore_parent")
+    node   = parent.children.create!(:slug => "restorable")
+    node.trash!(users(:quentin))
+
+    get :trashed
+    assert_select "form[action=?]", restore_from_trash_node_path(node), count: 1
+    assert_select ".disabled_action", count: 0
+
+    parent.destroy
+    get :trashed
+    assert_select "form[action=?]", restore_from_trash_node_path(node), count: 0
+    assert_select ".disabled_action", count: 1
+  end
+
   test "trashing the Trash node itself is refused" do
     login_as :quentin
 
