@@ -54,7 +54,12 @@
   --shadow-widget:         3px 3px 5px light-dark(#b1b1b1, rgba(0, 0, 0, 0.7));
   --shadow-modal:          0 4px 16px light-dark(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7));
 
-  --radius:                6px;
+  /* Radius scale. Controls are nearly square. Images are softer because a
+     photo's own edge is the shape. Cards are the largest. */
+  --radius-control: 2px;
+  --radius-image:   4px;
+  --radius-card:    6px;
+  --radius-pill:    999px;
 
   /* The desktop label band: #wrapper's left gutter, which row labels reach
      back into. --label-column plus --label-gap must equal --page-gutter, or
@@ -118,7 +123,7 @@ textarea {
   font-size: var(--text-base);
   font-family: Helvetica, Arial, sans-serif;
   border: 1px solid var(--field-border);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 select {
@@ -164,7 +169,7 @@ input[type=radio] {
   margin: 2rem auto;
   padding: 1.25rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 }
 
 #login_form input[type=submit] {
@@ -252,7 +257,7 @@ span.warning {
   background-color: var(--accent-surface);
   letter-spacing: 1px;
   padding: 1px 5px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 span.warning a {
@@ -280,7 +285,7 @@ span.warning a {
   margin-bottom: 1rem;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--accent);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   background-color: var(--accent-surface);
 }
 
@@ -334,7 +339,7 @@ div.pagination span.gap {
   min-width: 1.75rem;
   height: 1.75rem;
   padding: 0 0.2rem;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   font-style: normal;
 }
 
@@ -380,7 +385,7 @@ form.button_to button[type="submit"] {
   display: inline-flex;
   box-sizing: border-box;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   align-items: center;
   gap: 0.5rem;
   -webkit-appearance: none;
@@ -451,7 +456,7 @@ input[type="submit"] {
   appearance: none;
   background: none;
   border: 1px solid var(--text);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   padding: 4px 12px;
   font: inherit;
   font-weight: bold;
@@ -486,7 +491,7 @@ input[type="submit"]:hover {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 #main_navigation a:hover,
@@ -559,7 +564,7 @@ form.button_to svg  {
   box-sizing: border-box;
   padding: 10px 14px;
   font-size: var(--text-lg);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 .button_row {
@@ -589,7 +594,7 @@ form.button_to svg  {
   min-width: 0;
   box-sizing: border-box;
   border: 1px solid var(--hairline);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: 0.5rem 0.75rem;
 }
 
@@ -746,7 +751,7 @@ form.button_to svg  {
   color: var(--diff-del-fg);
   text-decoration: line-through;
   padding: 0 2px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 #diffview ins {
@@ -754,7 +759,7 @@ form.button_to svg  {
   color: var(--diff-ins-fg);
   text-decoration: none;
   padding: 0 2px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 #diffview .diff_side_by_side {
@@ -915,7 +920,7 @@ form.button_to svg  {
   justify-content: center;
   padding: 0.3rem;
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   background-color: var(--surface-raised);
   color: var(--text);
   text-decoration: none;
@@ -1055,7 +1060,7 @@ form.button_to svg  {
 
 .layout_row_content.info_group {
   border: 1px solid var(--hairline);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: 0.5rem 0.75rem;
 }
 
@@ -1064,7 +1069,7 @@ form.button_to svg  {
   align-items: center;
   gap: 0.35rem;
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   padding: 4px 12px;
   font-weight: bold;
   color: var(--text-muted);
@@ -1186,7 +1191,7 @@ form.button_to svg  {
   height: 2.25rem;
   width: 100%;
   max-width: 22rem;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
 }
 
 .search_form .action_button {
@@ -1266,7 +1271,7 @@ form.button_to svg  {
   align-items: center;
   padding: 0.3rem;
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   background-color: var(--surface);
   -webkit-appearance: none;
   appearance: none;
@@ -1487,7 +1492,7 @@ form.button_to svg  {
   -webkit-appearance: none;
   appearance: none;
   border: 1px solid var(--text);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
@@ -1584,7 +1589,7 @@ input#tag_list {
   padding: 0.5rem;
   background-color: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 }
 
 .action_hint > summary {
@@ -1615,7 +1620,7 @@ input#tag_list {
   color: var(--text-muted);
   background-color: var(--surface-raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 }
 
 /* ============================================================
@@ -1644,7 +1649,7 @@ input#tag_list {
 .search_tag_pill {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background-color: var(--surface-tint);
   font-size: var(--text-sm);
   text-decoration: none;
@@ -1661,7 +1666,7 @@ input#tag_list {
 
 .tag_pill {
   background: var(--surface-tint);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.15rem 0.75rem;
   font-size: var(--text-sm);
 }
@@ -1675,7 +1680,7 @@ input#tag_list {
   top: 3.5rem;
   left: 0;
   width: min(520px, 90vw);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   border: 1px solid var(--text);
   box-shadow: var(--shadow-widget);
   background-color: var(--surface);
@@ -1687,7 +1692,7 @@ input#tag_list {
   width: 100%;
   box-sizing: border-box;
   padding: 8px 12px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   font-size: var(--text-lg);
 }
 
@@ -1749,7 +1754,7 @@ input#tag_list {
   max-width: 44rem;
 
   border: 1px solid var(--hairline);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 
   padding: 0.5rem;
 }
@@ -1900,7 +1905,7 @@ input#tag_list {
   align-items: center;
   gap: 0.25rem;
   border: 1px solid var(--hairline);
-  border-radius: 6px;
+  border-radius: var(--radius-card);
   padding: 4px;
 }
 
@@ -1909,7 +1914,7 @@ input#tag_list {
   width: 60px;
   height: 60px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-image);
 }
 
 .thumbnail_list li .headline_indicator {
@@ -1976,7 +1981,7 @@ input#tag_list {
   width: 40px;
   height: 40px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-image);
 }
 
 .related_asset_set_headline {
@@ -2011,7 +2016,7 @@ input#tag_list {
 
 #asset_dropzone {
   border: 2px dashed var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
 }
 
@@ -2051,7 +2056,7 @@ input#tag_list {
   width: 100%;
   height: 612px;
   border: 0.5px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 }
 
 .body_toolbar_row {
@@ -2072,7 +2077,7 @@ input#tag_list {
   transform: translateX(-50%);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-card);
   padding: 1rem;
   max-width: 480px;
   max-height: 70vh;
@@ -2096,7 +2101,7 @@ input#tag_list {
   width: 80px;
   height: 80px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-image);
   cursor: pointer;
   border: 2px solid transparent;
   display: block;
@@ -2111,7 +2116,7 @@ input#tag_list {
   color: var(--headline-badge-fg);
   font-size: var(--badge-text);
   text-align: center;
-  border-radius: 3px;
+  border-radius: var(--radius-image);
   padding: 1px 0;
   pointer-events: none;
 }
