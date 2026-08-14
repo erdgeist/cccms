@@ -398,10 +398,6 @@ de:
       housekeeping: "Verwaltung"
       my_account: "Mein Konto"
       navigation: "Navigation"
-    conventions:
-      title: "Konventionen beim Anlegen von Nodes"
-      kind: "Art"
-      what_happens: "Was passiert"
     search_results:
       title: "Suchergebnisse"
 

@@ -12,10 +12,6 @@ class AdminController < ApplicationController
     @actions = NodeAction.order(:occurred_at => :desc, :id => :desc).limit(5)
   end
 
-  def conventions
-    @node_kinds = CccConventions::NODE_KINDS
-  end
-
   def search
     @results = Node.editor_search(params[:search_term])
 

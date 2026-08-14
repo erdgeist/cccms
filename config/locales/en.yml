@@ -351,10 +351,6 @@ en:
       housekeeping: "Housekeeping"
       my_account: "My account"
       navigation: "Navigation"
-    conventions:
-      title: "Node creation conventions"
-      kind: "Kind"
-      what_happens: "What happens"
     search_results:
       title: "Search Results"
   nodes:
