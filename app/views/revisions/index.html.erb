@@ -18,11 +18,11 @@
   </p>
 <% end %>
 
+<% pages = (@pages || @node.pages.all).reverse %>
+
 <table id="revisions" class="admin_table revisions_table">
   <thead>
     <tr class="header">
-      <th><%= t(".first") %></th>
-      <th><%= t(".last") %></th>
       <th><%= t("admin.columns.rev") %></th>
       <th><%= t("admin.columns.title") %></th>
       <th><%= t("admin.columns.editor") %></th>
@@ -31,24 +31,27 @@
       <th></th>
     </tr>
     <tr class="diff_sticky_bar">
-      <td colspan="8">
-        <%= button_to t(".diff_revisions"), diff_node_revisions_path(@node),
-              method: :post,
-              params: { translation_locale: @translation_locale },
-              form: { id: 'diff_form', class: 'button_to computation' },
-              disabled: true %>
-        <span id="diff_selection_label" data-against="<%= t(".against_word") %>" data-selected="<%= t(".selected_word") %>"></span>
-        <label><%= radio_button_tag :view, 'inline', true %> <%= t("revisions.inline") %></label>
-        <label><%= radio_button_tag :view, 'side_by_side', false %> <%= t("revisions.side_by_side") %></label>
+      <td colspan="6">
+        <%= form_tag diff_node_revisions_path(@node), :method => :post,
+              :id => "diff_form", :class => "button_to computation" do %>
+          <%= hidden_field_tag :translation_locale, @translation_locale %>
+          <%= hidden_field_tag :start_revision, pages[1]&.revision %>
+          <%= hidden_field_tag :end_revision,   pages[0]&.revision %>
+          <%= submit_tag t(".diff_revisions") %>
+          <span id="diff_selection_label" aria-live="polite">
+            <%= t(".diff_selection_html",
+                  :from => tag.span(:id => "diff_from"),
+                  :to   => tag.span(:id => "diff_to")) %>
+          </span>
+          <label><%= radio_button_tag :view, 'inline', true %> <%= t("revisions.inline") %></label>
+          <label><%= radio_button_tag :view, 'side_by_side', false %> <%= t("revisions.side_by_side") %></label>
+        <% end %>
       </td>
     </tr>
   </thead>
   <tbody>
-  <% pages = (@pages || @node.pages.all).reverse %>
-  <% pages.each_with_index do |page, index| %>
-    <tr>
-      <td><%= radio_button_tag :start_revision, page.revision, index == 1 %></td>
-      <td><%= radio_button_tag :end_revision, page.revision, index == 0 %></td>
+  <% pages.each do |page| %>
+    <tr data-revision="<%= page.revision %>" tabindex="0" aria-pressed="false">
       <td class="revision"><%= page.revision %></td>
       <td class="title"><%= page.translations.find_by(:locale => @translation_locale)&.title || "—" %></td>
       <td class="user"><%= page.editor.try(:login) %></td>
@@ -65,45 +68,63 @@
 </table>
 
 <%= javascript_tag nonce: true do %>
-  function update_diff_button_state() {
-    var start = document.querySelector('input[name="start_revision"]:checked');
-    var end = document.querySelector('input[name="end_revision"]:checked');
-    var valid = start && end && start.value !== end.value;
-    document.querySelector('#diff_form button[type="submit"]').disabled = !valid;
+  (function () {
+    var table = document.getElementById('revisions');
+    var form  = document.getElementById('diff_form');
+    if (!table || !form) { return; }
 
-    var label = document.getElementById('diff_selection_label');
-    if (start && end) {
-      label.textContent = start.value + ' ' + label.dataset.against + ' ' + end.value;
-    } else if (start || end) {
-      label.textContent = (start || end).value + ' ' + label.dataset.selected;
-    } else {
-      label.textContent = '';
-    }
-  }
+    var from_field = form.querySelector('input[name="start_revision"]');
+    var to_field   = form.querySelector('input[name="end_revision"]');
+    var from_label = document.getElementById('diff_from');
+    var to_label   = document.getElementById('diff_to');
+    var readout    = document.getElementById('diff_selection_label');
+    var submit     = form.querySelector('input[type="submit"]');
+    var rows       = table.querySelectorAll('tbody tr');
 
-  document.querySelectorAll('input[name="start_revision"], input[name="end_revision"]')
-    .forEach(function(radio) { radio.addEventListener('change', update_diff_button_state); });
+    // Two-slot FIFO: the newest pick becomes the target and the previous
+    // target becomes the source, so two taps anywhere give any pair.
+    // Picking the current target is a no-op; picking the current source
+    // swaps them.
+    var stack = [from_field.value, to_field.value].filter(function (v) { return v !== ''; });
 
-  update_diff_button_state();
+    function render() {
+      var from = stack[0] || '';
+      var to   = stack[1] || '';
+      from_field.value = from;
+      to_field.value   = to;
+      from_label.textContent = from;
+      to_label.textContent   = to;
+      readout.hidden  = !(from && to);
+      submit.disabled = !(from && to && from !== to);
 
-  document.getElementById('diff_form').addEventListener('submit', function(e) {
-    var start = document.querySelector('input[name="start_revision"]:checked');
-    var end = document.querySelector('input[name="end_revision"]:checked');
-    var view = document.querySelector('input[name="view"]:checked');
-    if (start) {
-      var s = document.createElement('input');
-      s.type = 'hidden'; s.name = 'start_revision'; s.value = start.value;
-      this.appendChild(s);
+      rows.forEach(function (row) {
+        var rev = row.dataset.revision;
+        row.classList.toggle('diff_source', rev === from);
+        row.classList.toggle('diff_target', rev === to);
+        row.setAttribute('aria-pressed', (rev === from || rev === to) ? 'true' : 'false');
+      });
     }
-    if (end) {
-      var en = document.createElement('input');
-      en.type = 'hidden'; en.name = 'end_revision'; en.value = end.value;
-      this.appendChild(en);
+
+    function pick(rev) {
+      if (rev === stack[1]) { return; }
+      stack.push(rev);
+      if (stack.length > 2) { stack.shift(); }
+      render();
     }
-    if (view) {
-      var v = document.createElement('input');
-      v.type = 'hidden'; v.name = 'view'; v.value = view.value;
-      this.appendChild(v);
-    }
-  });
+
+    rows.forEach(function (row) {
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('a, button, input, label')) { return; }
+        pick(row.dataset.revision);
+      });
+      row.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          pick(row.dataset.revision);
+        }
+      });
+    });
+
+    render();
+  })();
 <% end %>

@@ -686,6 +686,28 @@ form.button_to svg  {
   border-bottom: 1px solid var(--hairline);
 }
 
+.revisions_table tbody tr {
+  cursor: pointer;
+}
+
+.revisions_table tbody tr.diff_source {
+  background-color: var(--diff-del-bg);
+}
+
+.revisions_table tbody tr.diff_target {
+  background-color: var(--diff-ins-bg);
+}
+
+#diff_selection_label #diff_from {
+  color: var(--diff-del-fg);
+  font-weight: bold;
+}
+
+#diff_selection_label #diff_to {
+  color: var(--diff-ins-fg);
+  font-weight: bold;
+}
+
 .row_primary {
   font-weight: bold;
 }
