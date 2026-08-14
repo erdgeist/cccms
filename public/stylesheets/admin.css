@@ -160,15 +160,19 @@ input[type=radio] {
 .right { text-align: right; }
 
 #login_form {
-  max-width: 22rem;
+  max-width: 18rem;
   margin: 2rem auto;
   padding: 1.25rem;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
+#login_form input[type=submit] {
+  margin-top: 1.5rem;
+}
+
 #login_form h1 {
-  margin-top: 0;
+  margin: 0 auto 1.5rem auto;
   font-size: var(--text-xl);
 }
 
@@ -186,11 +190,6 @@ input[type=radio] {
 #login_form input[type=password] {
   width: 100%;
   box-sizing: border-box;
-}
-
-#login_form input[type=submit] {
-  width: 100%;
-  padding: 0.6rem 1rem;
 }
 
 /* ============================================================
