@@ -26,7 +26,7 @@ class RevisionsControllerTest < ActionController::TestCase
     login_as :quentin
     get :index, params: { :node_id => @node.id }
     assert_response :success
-    assert_select ".revision", 2
+    assert_select "tbody tr[data-revision]", 2
   end
 
    test "showing one revision" do

@@ -682,6 +682,10 @@ form.button_to svg  {
   padding: 0.4rem 0.75rem;
 }
 
+.revisions_table tbody td:first-child {
+  padding-left: 0.75rem;
+}
+
 .revisions_table .diff_sticky_bar td {
   border-bottom: 1px solid var(--hairline);
 }
@@ -735,16 +739,6 @@ form.button_to svg  {
 #diff_selection_label {
   margin-left: 0.75rem;
   color: var(--text-muted);
-}
-
-@media (min-width: 1016px) {
-  .revisions_table td.title {
-    min-width: 28rem;
-  }
-
-  .revisions_table td.date {
-    min-width: 11rem;
-  }
 }
 
 #diffview del {
@@ -893,6 +887,7 @@ form.button_to svg  {
 .node_table .action_grid { grid-template-columns: repeat(2, auto); }
 .events_table .action_grid { grid-template-columns: repeat(2, auto); }
 .assets_table .action_grid { grid-template-columns: repeat(3, auto); }
+.revisions_table .action_grid { grid-template-columns: repeat(2, auto); }
 
 /* min-height keeps a row the same height whether or not the viewer may see
    the lower controls. */

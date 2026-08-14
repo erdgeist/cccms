@@ -758,6 +758,7 @@ de:
       last: "Bis"
       diff_revisions: "Revisionen vergleichen"
       diff_selection_html: "Vergleicht %{from} mit %{to}"
+      row_meta: "%{date}, Rev %{rev}, von %{editor}"
       show_link: "anzeigen"
       restore_link: "wiederherstellen"
       confirm_restore: "Diese Revision wiederherstellen?"

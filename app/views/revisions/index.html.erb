@@ -1,68 +1,80 @@
-<h2><%= t(".title", :path => @node.unique_name) %></h2>
+<div class="admin_layout">
+  <h1><%= t(".title", :path => @node.unique_name) %></h1>
 
-<p class="node_action_bar">
-  <%= link_to t(".back_to_node"), node_path(@node) %>
-</p>
-
-<% if Page.non_default_locales.any? %>
-  <p class="diff_locale_toggle">
-    <%= t("revisions.locale_label") %>
-    <% ([I18n.default_locale] + Page.non_default_locales).each_with_index do |locale, i| %>
-      <%= " &middot; ".html_safe if i > 0 %>
-      <% if locale == @translation_locale %>
-        <strong><%= locale.to_s.upcase %></strong>
-      <% else %>
-        <%= link_to locale.to_s.upcase, node_revisions_path(@node, :translation_locale => locale) %>
-      <% end %>
-    <% end %>
+  <p class="node_action_bar">
+    <%= link_to t(".back_to_node"), node_path(@node) %>
   </p>
-<% end %>
 
-<% pages = (@pages || @node.pages.all).reverse %>
-
-<table id="revisions" class="admin_table revisions_table">
-  <thead>
-    <tr class="header">
-      <th><%= t("admin.columns.rev") %></th>
-      <th><%= t("admin.columns.title") %></th>
-      <th><%= t("admin.columns.editor") %></th>
-      <th><%= t("admin.columns.date") %></th>
-      <th></th>
-      <th></th>
-    </tr>
-    <tr class="diff_sticky_bar">
-      <td colspan="6">
-        <%= form_tag diff_node_revisions_path(@node), :method => :post,
-              :id => "diff_form", :class => "button_to computation" do %>
-          <%= hidden_field_tag :translation_locale, @translation_locale %>
-          <%= hidden_field_tag :start_revision, pages[1]&.revision %>
-          <%= hidden_field_tag :end_revision,   pages[0]&.revision %>
-          <%= submit_tag t(".diff_revisions") %>
-          <span id="diff_selection_label" aria-live="polite">
-            <%= t(".diff_selection_html",
-                  :from => tag.span(:id => "diff_from"),
-                  :to   => tag.span(:id => "diff_to")) %>
-          </span>
-          <label><%= radio_button_tag :view, 'inline', true %> <%= t("revisions.inline") %></label>
-          <label><%= radio_button_tag :view, 'side_by_side', false %> <%= t("revisions.side_by_side") %></label>
+  <% if Page.non_default_locales.any? %>
+    <p class="diff_locale_toggle">
+      <%= t("revisions.locale_label") %>
+      <% ([I18n.default_locale] + Page.non_default_locales).each_with_index do |locale, i| %>
+        <%= " &middot; ".html_safe if i > 0 %>
+        <% if locale == @translation_locale %>
+          <strong><%= locale.to_s.upcase %></strong>
+        <% else %>
+          <%= link_to locale.to_s.upcase, node_revisions_path(@node, :translation_locale => locale) %>
         <% end %>
-      </td>
-    </tr>
-  </thead>
-  <tbody>
-  <% pages.each do |page| %>
-    <tr data-revision="<%= page.revision %>" tabindex="0" aria-pressed="false">
-      <td class="revision"><%= page.revision %></td>
-      <td class="title"><%= page.translations.find_by(:locale => @translation_locale)&.title || "—" %></td>
-      <td class="user"><%= page.editor.try(:login) %></td>
-      <td class="date"><%= admin_datetime(page.updated_at) %></td>
-      <td><%= link_to t(".show_link"), node_revision_path(@node, page, :translation_locale => @translation_locale) %></td>
-      <td>
-        <%= button_to t(".restore_link"), restore_node_revision_path(@node, page),
-              method: :put,
-              form: { data: { confirm: t(".confirm_restore") }, class: 'button_to state_changing' } %>
-      </td>
-    </tr>
+      <% end %>
+    </p>
   <% end %>
-  </tbody>
-</table>
+
+  <% pages = (@pages || @node.pages.all).reverse %>
+
+  <table id="revisions" class="admin_table revisions_table">
+    <thead>
+      <tr class="diff_sticky_bar">
+        <td colspan="2">
+          <%= form_tag diff_node_revisions_path(@node), :method => :post,
+                :id => "diff_form", :class => "button_to computation" do %>
+            <%= hidden_field_tag :translation_locale, @translation_locale %>
+            <%= hidden_field_tag :start_revision, pages[1]&.revision %>
+            <%= hidden_field_tag :end_revision,   pages[0]&.revision %>
+            <%= submit_tag t(".diff_revisions") %>
+            <span id="diff_selection_label" aria-live="polite">
+              <%= t(".diff_selection_html",
+                    :from => tag.span(:id => "diff_from"),
+                    :to   => tag.span(:id => "diff_to")) %>
+            </span>
+            <label><%= radio_button_tag :view, 'inline', true %> <%= t("revisions.inline") %></label>
+            <label><%= radio_button_tag :view, 'side_by_side', false %> <%= t("revisions.side_by_side") %></label>
+          <% end %>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+    <% pages.each do |page| %>
+      <tr data-revision="<%= page.revision %>" tabindex="0" aria-pressed="false">
+        <td class="title">
+          <div class="row_primary">
+            <%= page.translations.find_by(:locale => @translation_locale)&.title || "—" %>
+          </div>
+          <div class="row_secondary">
+            <%= t(".row_meta", :date => admin_datetime(page.updated_at),
+                               :rev => page.revision,
+                               :editor => page.editor.try(:login) || t("admin.common.unknown")) %>
+          </div>
+        </td>
+        <td class="actions">
+          <div class="action_grid">
+            <span class="action_item">
+              <%= link_to node_revision_path(@node, page, :translation_locale => @translation_locale),
+                    "aria-label" => t(".show_link"), title: t(".show_link") do %>
+                <%= icon("eye", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+            </span>
+            <span class="action_item">
+              <%= button_to restore_node_revision_path(@node, page), method: :put,
+                    form: { data: { confirm: t(".confirm_restore") },
+                            class: 'button_to state_changing' },
+                    "aria-label" => t(".restore_link"), title: t(".restore_link") do %>
+                <%= icon("arrow-back-up", library: "tabler", "aria-hidden": true) %>
+              <% end %>
+            </span>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

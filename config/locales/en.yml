@@ -726,6 +726,7 @@ en:
       last: "Last"
       diff_revisions: "Diff revisions"
       diff_selection_html: "Comparing %{to} against %{from}"
+      row_meta: "%{date}, rev %{rev}, by %{editor}"
       show_link: "show"
       restore_link: "restore"
       confirm_restore: "Restore this revision?"
