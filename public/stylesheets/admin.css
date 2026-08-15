@@ -2245,6 +2245,24 @@ form.otp_form input[type=text] {
   margin-bottom: 0.5rem;
 }
 
+input[type=text].otp_code {
+  font-family: monospace;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: 2rem;
+  letter-spacing: 0.75em;
+  text-align: left;
+
+  padding: 0.75rem 0 0.75rem 1.75rem;
+  box-sizing: border-box;
+  max-width: 18.5rem;
+  background-color: var(--surface);
+  background-image: repeating-linear-gradient(to right, var(--surface) 0 1ch, var(--surface-tint) 1ch calc(1ch + 0.75em));
+  background-repeat: no-repeat;
+  background-position: 0.45rem;
+  background-size: calc(6ch + 4.5em) calc(100% - 1.25rem);
+}
+
 .otp_qr svg {
   width: 220px;
   height: auto;

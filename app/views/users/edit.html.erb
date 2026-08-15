@@ -59,8 +59,9 @@
           <p><%= t(".enabled") %></p>
           <%= form_tag otp_enrollment_path, :method => :delete, :class => "otp_form" do %>
             <%= password_field_tag :current_password, nil, :placeholder => t(".current_password"), :autocomplete => "current-password" %>
-            <%= text_field_tag :code, nil, :placeholder => t(".current_code"),
-                  :autocomplete => "one-time-code", :inputmode => "numeric" %>
+            <%= text_field_tag :code, nil, :autocomplete => "one-time-code", :inputmode => "numeric",
+                  :maxlength => 6, :pattern => "[0-9]{6}", :class => "otp_code" %>
+            <span class="field_hint"> <%= t(".reset_hint") %> </span>
             <%= button_tag :type => "submit", :class => "action_button" do %>
               <%= icon("shield-off", library: "tabler", "aria-hidden": true) %> <%= t(".disable_second_factor") %>
             <% end %>

@@ -303,6 +303,7 @@ de:
       enable_second_factor: "Zweiten Faktor aktivieren"
       disable_second_factor: "Zweiten Faktor entfernen"
       reset_second_factor: "Zweiten Faktor zurücksetzen"
+      reset_hint: "Gib den sechsstelligen Code aus deiner Authenticator-App ein."
       reset_confirm: "Zweiten Faktor von %{login} zurücksetzen? Die Anmeldung ist danach nur mit Passwort möglich."
     labels:
       login: "Anmeldename"

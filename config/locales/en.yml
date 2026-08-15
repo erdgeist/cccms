@@ -255,6 +255,7 @@ en:
       enable_second_factor: "Enable second factor"
       disable_second_factor: "Disable second factor"
       reset_second_factor: "Reset second factor"
+      reset_hint: "Enter the six-digit code from your authenticator app."
       reset_confirm: "Reset %{login}'s second factor? They will log in with password only afterwards."
     labels:
       login: "login"

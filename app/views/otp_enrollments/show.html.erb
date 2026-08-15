@@ -18,12 +18,13 @@
     <div class="layout_row_content">
       <%= form_tag otp_enrollment_path, :method => :put, :class => "otp_form" do %>
         <%= text_field_tag :code, nil, :autofocus => true,
-              :autocomplete => "one-time-code", :inputmode => "numeric" %>
+              :autocomplete => "one-time-code", :inputmode => "numeric",
+              :maxlength => 6, :pattern => "[0-9]{6}", :class => "otp_code" %>
+        <span class="field_hint"> <%= t(".app_hint", :issuer => OTP_ISSUER) %></span>
         <%= button_tag :type => "submit", :class => "action_button" do %>
           <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> <%= t(".confirm") %>
         <% end %>
       <% end %>
-      <span class="field_hint"> <%= t(".app_hint", :issuer => OTP_ISSUER) %></span>
     </div>
   </div>
 </div>

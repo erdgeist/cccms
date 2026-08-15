@@ -10,7 +10,8 @@
         <div class="layout_row_label"><%= t(".code") %></div>
         <div class="layout_row_content">
           <%= text_field_tag :code, nil, :autocomplete => "one-time-code",
-                :inputmode => "numeric", :autofocus => true %>
+                :inputmode => "numeric", :autofocus => true, :maxlength => 6,
+                :pattern => "[0-9]{6}", :class => "otp_code" %>
         </div>
       </div>
 

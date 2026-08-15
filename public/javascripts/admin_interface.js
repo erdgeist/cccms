@@ -90,6 +90,15 @@ $(document).ready(function () {
     initialize_revision_diff_picker.initialize();
   }
 
+  if (document.querySelector('.otp_code')) {
+    document.querySelectorAll('.otp_code').forEach(function (field) {
+      field.addEventListener('input', function () {
+        var digits = field.value.replace(/\D/g, '').slice(0, 6);
+        if (field.value !== digits) { field.value = digits; }
+      });
+    });
+  }
+
   var metadata_details = document.getElementById('metadata_details');
   if (metadata_details) {
     var desktop_mq = window.matchMedia('(min-width: 1016px)');
