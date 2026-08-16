@@ -16,7 +16,7 @@ $(document).ready(function () {
     promotion: false,
     menubar: false,
     plugins: 'code link lists visualblocks',
-    toolbar: 'bold italic underline | bullist numlist | link unlink | insertpageimage | blocks | code',
+    toolbar: 'bold italic underline | bullist numlist | link unlink | insertpageimage | importmarkdown | blocks | code',
     extended_valid_elements: 'aggregate[children|tags|limit|order_by|order_direction|partial|conditions],a[href|title|target|rel|class|data-gallery],img[class|src|alt|title|width|height|style|border]',
     relative_urls: false,
     entity_encoding: 'raw',
@@ -39,6 +39,16 @@ $(document).ready(function () {
           cccms.inline_images.open(editor);
         }
       });
+
+      if (typeof marked !== 'undefined') {
+        editor.ui.registry.addButton('importmarkdown', {
+          text: ADMIN_STRINGS.import_markdown,
+          tooltip: ADMIN_STRINGS.import_markdown_tooltip,
+          onAction: function() {
+            cccms.markdown_import.open(editor);
+          }
+        });
+      }
     }
   });
 
@@ -290,6 +300,33 @@ cccms = {
 
     refresh_if_open : function() {
       if (cccms.preview.is_open) cccms.preview.refresh();
+    }
+  },
+
+  markdown_import : {
+    open : function(editor) {
+      editor.windowManager.open({
+        title: ADMIN_STRINGS.import_markdown,
+        size: 'large',
+        body: {
+          type: 'panel',
+          items: [
+            { type: 'textarea', name: 'source', maximized: true,
+              placeholder: ADMIN_STRINGS.import_markdown_placeholder }
+          ]
+        },
+        buttons: [
+          { type: 'cancel', text: ADMIN_STRINGS.cancel },
+          { type: 'submit', text: ADMIN_STRINGS.insert, primary: true }
+        ],
+        onSubmit: function(api) {
+          var source = api.getData().source;
+          if (source.trim() !== '') {
+            editor.insertContent(marked.parse(source));
+          }
+          api.close();
+        }
+      });
     }
   },
 

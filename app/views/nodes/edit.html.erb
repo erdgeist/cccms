@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <script src="<%= mtime_busted_path('/javascripts/marked.18.0.9.umd.js') %>"></script>
+<% end %>
+
 <h1><%= title_for_node(@node) %></h1>
 
 <div class="admin_layout">

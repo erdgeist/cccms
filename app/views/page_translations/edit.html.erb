@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <script src="<%= mtime_busted_path('/javascripts/marked.18.0.9.umd.js') %>"></script>
+<% end %>
+
 <div class="translation_banner">
   <%= t(".editing_prefix") %> <strong><%= @locale.to_s.upcase %></strong> <%= t(".translation_of") %> <strong><%= title_for_node(@node) %></strong>.
 </div>

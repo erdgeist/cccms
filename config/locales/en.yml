@@ -319,6 +319,7 @@ en:
       show: "Show"
       back: "Back"
       update: "Update"
+      cancel: "Cancel"
       confirm_sure: "Are you sure?"
       confirm_irreversible: "This cannot be undone. Continue?"
       unlock_confirm: "Are you sure you want to unlock?\nLocked by %{login}\nLast modified %{time}"
@@ -779,6 +780,10 @@ en:
       lock_lost_link: "return to the published page"
       insert_image: "Insert image"
       insert_image_tooltip: "Insert one of this page's attached images"
+      import_markdown: "Markdown"
+      import_markdown_tooltip: "Insert Markdown formatted text"
+      import_markdown_placeholder: "Insert Markdown here…"
+      insert: "Insert"
       copied: "Copied!"
       needs_redaktion: "Redaktion required"
     nav_controls:
