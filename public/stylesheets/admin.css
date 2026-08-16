@@ -6,7 +6,7 @@
   --surface:               Canvas;
   --surface-raised:        color-mix(in srgb, CanvasText, Canvas 97%);  /* #f7f7f7 */
   --surface-tint:          color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1 */
-  --hairline:              color-mix(in srgb, CanvasText, Canvas 91%);  /* #e8e8e8 */
+  --hairline:              light-dark(color-mix(in srgb, CanvasText, Canvas 91%), color-mix(in srgb, CanvasText, Canvas 80%));
   --hairline-faint:        color-mix(in srgb, CanvasText, Canvas 94%);  /* #f1f1f1 */
   --border:                color-mix(in srgb, CanvasText, Canvas 87%);  /* #ddd */
   --field-border:          color-mix(in srgb, CanvasText, Canvas 60%);  /* #989898 */
