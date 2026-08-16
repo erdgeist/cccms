@@ -164,35 +164,35 @@ input[type=radio] {
 
 .right { text-align: right; }
 
-#login_form {
-  max-width: 18rem;
+.auth_card {
+  max-width: 21rem;
   margin: 2rem auto;
   padding: 1.25rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
 }
 
-#login_form input[type=submit] {
+.auth_card input[type=submit] {
   margin-top: 1.5rem;
 }
 
-#login_form h1 {
+.auth_card h1 {
   margin: 0 auto 1.5rem auto;
   font-size: var(--text-xl);
 }
 
-#login_form label {
+.auth_card label {
   display: block;
   margin-bottom: 0.25rem;
   text-transform: lowercase;
 }
 
-#login_form .login_field {
+.auth_card .login_field {
   margin-bottom: 1rem;
 }
 
-#login_form input[type=text],
-#login_form input[type=password] {
+.auth_card input[type=text],
+.auth_card input[type=password] {
   width: 100%;
   box-sizing: border-box;
 }

@@ -1,18 +1,16 @@
-<h1><%= t(".title") %></h1>
+<div class="auth_card">
+  <h1><%= t(".title") %></h1>
 
-<div class="admin_layout">
-  <div class="layout_row">
-    <div class="layout_row_label"> <%= t(".code") %> </div>
-    <div class="layout_row_content">
-      <%= form_tag otp_challenge_path, :method => :post, :class => "otp_form" do %>
-        <%= text_field_tag :code, nil, :autofocus => true,
-              :autocomplete => "one-time-code", :inputmode => "numeric",
-              :maxlength => 6, :pattern => "[0-9]{6}", :class => "otp_code" %>
-        <span class="field_hint"> <%= t(".hint") %> </span>
-        <%= button_tag :type => "submit", :class => "action_button" do %>
-          <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> <%= t(".log_in") %>
-        <% end %>
-      <% end %>
+  <%= form_tag otp_challenge_path, :method => :post, :class => "otp_form" do %>
+    <div class="login_field">
+      <%= label_tag :code, t(".code") %>
+      <%= text_field_tag :code, nil, :autofocus => true,
+            :autocomplete => "one-time-code", :inputmode => "numeric",
+            :maxlength => 6, :pattern => "[0-9]{6}", :class => "otp_code" %>
     </div>
-  </div>
+    <span class="field_hint"><%= t(".hint") %></span>
+    <%= button_tag :type => "submit", :class => "action_button" do %>
+      <%= icon("shield-check", library: "tabler", "aria-hidden": true) %> <%= t(".log_in") %>
+    <% end %>
+  <% end %>
 </div>
