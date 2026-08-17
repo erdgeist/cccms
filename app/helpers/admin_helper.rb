@@ -14,4 +14,28 @@ module AdminHelper
                 :role => "img", :class => classes,
                 :title => hint, "aria-label" => hint)
   end
+
+  def admin_bridge
+    {
+      :urls => {
+        :search           => admin_search_path,
+        :menu_search      => admin_menu_search_path,
+        :dashboard_search => admin_dashboard_search_path,
+        :parameterize_preview => parameterize_preview_nodes_path
+      },
+      :strings => {
+        :lock_lost_prefix => t("layouts.admin.lock_lost_prefix"),
+        :lock_lost_link   => t("layouts.admin.lock_lost_link"),
+        :insert_image     => t("layouts.admin.insert_image"),
+        :insert_image_tooltip => t("layouts.admin.insert_image_tooltip"),
+        :copied           => t("layouts.admin.copied"),
+        :needs_redaktion  => t("layouts.admin.needs_redaktion"),
+        :import_markdown  => t("layouts.admin.import_markdown"),
+        :import_markdown_tooltip => t("layouts.admin.import_markdown_tooltip"),
+        :import_markdown_placeholder => t("layouts.admin.import_markdown_placeholder"),
+        :cancel           => t("admin.common.cancel"),
+        :insert           => t("layouts.admin.insert")
+      }
+    }.to_json
+  end
 end

@@ -1,4 +1,10 @@
+var CCCMS_CONFIG;
+var ADMIN_STRINGS;
+
 $(document).ready(function () {
+  CCCMS_CONFIG = JSON.parse(document.getElementById('cccms_config').textContent);
+  ADMIN_STRINGS = CCCMS_CONFIG.strings;
+
   admin_search.initialize();
 
   function effective_scheme() {

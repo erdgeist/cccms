@@ -22,7 +22,7 @@ admin_search = {
     initSearchPicker({
       inputSelector: "#search_term",
       resultsSelector: "#menu_search_results",
-      url: ADMIN_SEARCH_URL,
+      url: CCCMS_CONFIG.urls.search,
       isActive: function() { return $('#search_widget').is(':visible'); },
       resultsHeaderHtml: "<p class='search_more'>Press Enter to see all results ⏎</p>"
     });
@@ -41,7 +41,7 @@ admin_search = {
 function initSearchPicker(options) {
   var inputSelector = options.inputSelector;
   var resultsSelector = options.resultsSelector;
-  var url = options.url || ADMIN_MENU_SEARCH_URL;
+  var url = options.url || CCCMS_CONFIG.urls.menu_search;
   var onSelect = options.onSelect;
   var isActive = options.isActive;
   var resultsHeaderHtml = options.resultsHeaderHtml;
@@ -138,7 +138,7 @@ dashboard_search = {
     initSearchPicker({
       inputSelector: "#dashboard_search_term",
       resultsSelector: "#dashboard_search_results",
-      url: DASHBOARD_SEARCH_URL,
+      url: CCCMS_CONFIG.urls.dashboard_search,
       resultsHeaderHtml: "<p class='search_more'>Press Enter to see all results ⏎</p>",
       renderResults: function(data, results, resultsHeaderHtml) {
         var found = false;
@@ -225,7 +225,7 @@ parent_search = {
 
     clearTimeout(parent_search.path_timeout);
     parent_search.path_timeout = setTimeout(function() {
-        $.get(PARAMETERIZE_PREVIEW_URL, { title: title }, function(slug) {
+        $.get(CCCMS_CONFIG.urls.parameterize_preview, { title: title }, function(slug) {
         $("#resulting_path").text(window.location.origin + "/" + (prefix ? prefix + "/" : "") + slug);
       });
     }, 300);
