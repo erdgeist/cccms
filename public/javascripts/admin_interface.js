@@ -58,6 +58,15 @@ $(document).ready(function () {
     }
   });
 
+  if ($("#search_toggle").length != 0) {
+    var search_toggle = document.getElementById('search_toggle');
+    search_toggle.addEventListener('click', function (e) {
+      admin_search.display_toggle();
+      e.preventDefault();
+      console.log("Toggle");
+    });
+  }
+
   if ($("#dashboard_search_term").length != 0) {
     dashboard_search.initialize();
   }

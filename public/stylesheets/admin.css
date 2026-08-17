@@ -481,6 +481,7 @@ input[type="submit"]:hover {
 }
 
 #main_navigation a,
+#main_navigation button,
 #main_navigation label.nav_toggle,
 #main_navigation form.button_to button {
   display: inline-flex;
@@ -491,10 +492,12 @@ input[type="submit"]:hover {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
+  border-color: transparent;
   border-radius: var(--radius-control);
 }
 
 #main_navigation a:hover,
+#main_navigation button:hover,
 #main_navigation label.nav_toggle:hover {
   color: var(--surface);
   background-color: var(--text);
@@ -502,6 +505,10 @@ input[type="submit"]:hover {
 
 #main_navigation label.nav_toggle {
   cursor: pointer;
+}
+
+#main_navigation button#search_toggle {
+  cursor: zoom-in;
 }
 
 #main_navigation svg {

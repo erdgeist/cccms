@@ -14,7 +14,7 @@ admin_search = {
     $(document).bind("click", function(e) {
       if ($('#search_widget').is(':visible') &&
           !$(e.target).closest('#search_widget').length &&
-          !$(e.target).closest('a[onclick*="display_toggle"]').length) {
+          !$(e.target).closest('#search_toggle').length) {
         $('#search_widget').fadeOut();
       }
     });

@@ -1,7 +1,9 @@
 
 <% if current_user %>
   <%= link_to icon("home", library: "tabler", "aria-hidden": true), admin_path, "aria-label": t(".dashboard"), title: t(".dashboard") %>
-  <a href="#" onclick="admin_search.display_toggle(); return false;" aria-label="<%= t(".search") %>" title="<%= t(".search") %>"><%= icon("search", library: "tabler", "aria-hidden": true) %></a>
+  <button type="button" id="search_toggle" class="nav_toggle" aria-label="<%= t(".search") %>" title="<%= t(".search") %>">
+    <%= icon("search", library: "tabler", "aria-hidden": true) %>
+  </button>
 <% end %>
 <%= link_to root_path, class: "nav_toggle",
       "aria-label" => t(".public_site"), title: t(".public_site") do %>
