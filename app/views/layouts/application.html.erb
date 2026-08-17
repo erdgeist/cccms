@@ -22,8 +22,10 @@
 
     <%= javascript_tag nonce: true do %>
       document.addEventListener("DOMContentLoaded", function() {
-        if (localStorage.getItem('override-prefers-color-scheme'))
-          document.getElementById("light-mode").checked = true;
+        try {
+          if (localStorage.getItem('override-prefers-color-scheme'))
+            document.getElementById("light-mode").checked = true;
+        } catch (e) {}
       });
     <% end %>
 
