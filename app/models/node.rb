@@ -236,6 +236,32 @@ class Node < ApplicationRecord
       raise ActiveRecord::RecordInvalid.new(self)
     end
 
+    if self.draft.redirect.present?
+      if self.draft.redirect_node_id == self.id
+        errors.add(:base, :redirect_to_self)
+        raise ActiveRecord::RecordInvalid.new(self)
+      end
+
+      if self.draft.redirect_node_id.present?
+        target = Node.find_by(:id => self.draft.redirect_node_id)
+
+        unless target
+          errors.add(:base, :redirect_target_missing)
+          raise ActiveRecord::RecordInvalid.new(self)
+        end
+
+        if target.head&.redirect.present?
+          errors.add(:base, :redirect_to_redirect)
+          raise ActiveRecord::RecordInvalid.new(self)
+        end
+      end
+
+      if Page.redirecting_to(self.id).exists?
+        errors.add(:base, :redirect_would_chain)
+        raise ActiveRecord::RecordInvalid.new(self)
+      end
+    end
+
     path_before = self.unique_name
 
     ActiveRecord::Base.transaction do
@@ -602,6 +628,7 @@ class Node < ApplicationRecord
   def self.search(term, _ = {})
     joins(head: :translations)
       .where("page_translations.search_vector @@ plainto_tsquery('simple', ?)", term)
+      .where(:pages => { :redirect => nil })
       .distinct
   end
 

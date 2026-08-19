@@ -140,6 +140,10 @@ de:
               attach_in_trash: "An einen Node im Papierkorb können keine Assets angehängt werden"
               not_permitted: "In diesem Bereich dürfen nur Mitglieder der Redaktion veröffentlichte Inhalte ändern"
               attach_with_autosave: "An einen Node mit ungespeicherten Änderungen im Editor können keine Assets angehängt werden"
+              redirect_to_self: "Eine Seite kann nicht auf sich selbst weiterleiten"
+              redirect_target_missing: "Die Seite, auf die weitergeleitet werden sollte, gibt es nicht mehr."
+              redirect_to_redirect: "Auf eine Seite, die selbst weiterleitet, kann nicht weitergeleitet werden"
+              redirect_would_chain: "Eine andere Seite leitet bereits hierher weiter, daher kann diese Seite nicht weiterleiten"
         page:
           attributes:
             slug:

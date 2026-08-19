@@ -91,6 +91,10 @@ en:
               attach_in_trash: "Cannot attach assets to a node in the Trash"
               not_permitted: "Only Redaktion members may change published content in this section"
               attach_with_autosave: "Cannot attach assets to a node with unsaved changes in the editor"
+              redirect_to_self: "A page cannot redirect to itself"
+              redirect_target_missing: "The page this was to redirect to no longer exists."
+              redirect_to_redirect: "Cannot redirect to a page that itself redirects"
+              redirect_would_chain: "Another page already redirects here, so this page cannot redirect onward"
         page:
           attributes:
             slug:

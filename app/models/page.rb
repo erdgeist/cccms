@@ -4,6 +4,7 @@ class Page < ApplicationRecord
 
   PUBLIC_TEMPLATE_PATH = File.join(%w(custom page_templates public))
   FULL_PUBLIC_TEMPLATE_PATH = Rails.root.join('app', 'views', PUBLIC_TEMPLATE_PATH)
+  REDIRECT_MODES = %w[temporary permanent].freeze
 
   # Mixins and Plugins
   acts_as_taggable
@@ -23,6 +24,7 @@ class Page < ApplicationRecord
   validates :external_url, :format => { :with => %r{\Ahttps?://}i,
                                       :allow_blank => true,
                                       :message => :must_be_http }
+  validates :redirect, :inclusion => { :in => REDIRECT_MODES }, :allow_nil => true
   validates_format_of   :slug, :with => /\A[A-Za-z0-9][A-Za-z0-9_-]*\z/,
                         :unless => -> { slug.blank? }
   validate :page_slug_not_reserved
@@ -181,7 +183,6 @@ class Page < ApplicationRecord
   end
 
   def valid_template
-
     if template_name && template_exists?
       public_template_path
     else
@@ -212,15 +213,16 @@ class Page < ApplicationRecord
     self.slug             = page.slug
     self.parent_node_id   = page.parent_node_id
     self.external_url     = page.external_url
+    self.redirect         = page.redirect
+    self.redirect_node_id = page.redirect_node_id
     self.tag_list         = page.tag_list
     self.template_name  ||= page.template_name
     self.published_at     = page.published_at
 
-    # Clone translated attributes -- update each locale in place rather
+    # Clone translated attributes, update each locale in place rather
     # than delete-and-recreate, so a locale whose content is genuinely
     # unchanged keeps its real created_at/updated_at instead of looking
-    # freshly touched on every single save (which was silently defeating
-    # Page.find_with_outdated_translations' whole staleness comparison).
+    # freshly touched on every single save.
     # search_vector is excluded deliberately: it's DB-trigger-maintained
     # from title/abstract, not real content, and comparing a precomputed
     # tsvector risked a false "changed" from representation noise alone.
@@ -307,6 +309,32 @@ class Page < ApplicationRecord
 
   def public?
     published_at.nil? ? true : published_at < Time.now
+  end
+
+  # The destination this page sends visitors to, or nil. An internal target
+  # wins over an external one. A target that is restricted or has no head is
+  # no destination at all, so the page renders itself rather than linking to
+  # nothing. The banner partial calls this too, so the precedence cannot
+  # drift between the redirect and the link.
+  def redirect_target
+    return nil if redirect.blank?
+
+    if redirect_node_id.present?
+      node = Node.find_by(:id => redirect_node_id)
+      return nil unless node&.head && !node.restricted?
+      return node.unique_name
+    end
+
+    external_url.presence
+  end
+
+  def redirect_status
+    redirect == "permanent" ? :moved_permanently : :found
+  end
+
+  # Nodes whose published page redirects here
+  def self.redirecting_to(node_id)
+    Node.where(:head_id => where(:redirect_node_id => node_id).select(:id))
   end
 
   # The address this page will have once published.
