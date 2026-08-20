@@ -325,7 +325,7 @@ class Page < ApplicationRecord
 
     if redirect_node_id.present?
       target = Node.find_by(:id => redirect_node_id)
-      return nil unless target&.head && !target.restricted?
+      return nil unless target&.head
       return RedirectTarget.new(target, nil)
     end
 
