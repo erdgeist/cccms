@@ -1157,4 +1157,91 @@ class NodeTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) { node.reload.publish_draft! }
     assert_nil node.reload.head
   end
+
+  test "publishing a redirect to a page that itself redirects is refused" do
+    final  = Node.root.children.create!(:slug => "chain_final")
+    final.publish_draft!
+
+    middle = Node.root.children.create!(:slug => "chain_middle")
+    middle.draft.update!(:redirect => "temporary", :redirect_node_id => final.id)
+    middle.publish_draft!
+
+    first = Node.root.children.create!(:slug => "chain_first")
+    first.draft.update!(:redirect => "temporary", :redirect_node_id => middle.id)
+
+    assert_raises(ActiveRecord::RecordInvalid) { first.reload.publish_draft! }
+    assert_nil first.reload.head
+  end
+
+  test "publishing a redirect is refused when something already redirects here" do
+    target = Node.root.children.create!(:slug => "chain_target")
+    target.publish_draft!
+
+    source = Node.root.children.create!(:slug => "chain_source")
+    source.draft.update!(:redirect => "temporary", :redirect_node_id => target.id)
+    source.publish_draft!
+
+    onward = Node.root.children.create!(:slug => "chain_onward")
+    onward.publish_draft!
+
+    target.reload
+    find_or_create_draft(target, @user1)
+    target.draft.update!(:redirect => "temporary", :redirect_node_id => onward.id)
+
+    assert_raises(ActiveRecord::RecordInvalid) { target.reload.publish_draft! }
+    assert_nil target.reload.head.redirect
+  end
+
+  test "a draft redirect elsewhere does not block publishing a redirect here" do
+    target = Node.root.children.create!(:slug => "draft_chain_target")
+    target.publish_draft!
+
+    onward = Node.root.children.create!(:slug => "draft_chain_onward")
+    onward.publish_draft!
+
+    source = Node.root.children.create!(:slug => "draft_chain_source")
+    source.draft.update!(:redirect => "temporary", :redirect_node_id => target.id)
+    # deliberately not published: only live redirects count
+
+    target.reload
+    find_or_create_draft(target, @user1)
+    target.draft.update!(:redirect => "temporary", :redirect_node_id => onward.id)
+    target.reload.publish_draft!
+
+    assert_equal "temporary", target.reload.head.redirect
+  end
+
+  test "publishing a page that redirects to itself is refused" do
+    node = Node.root.children.create!(:slug => "self_redirect")
+    node.draft.update!(:redirect => "temporary", :redirect_node_id => node.id)
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.reload.publish_draft! }
+    assert_nil node.reload.head
+  end
+
+  test "publishing a redirect to a node that no longer exists is refused" do
+    doomed = Node.root.children.create!(:slug => "doomed_redirect_target")
+    node   = Node.root.children.create!(:slug => "dangling_redirect")
+    node.draft.update!(:redirect => "temporary", :redirect_node_id => doomed.id)
+    doomed.destroy!
+
+    assert_raises(ActiveRecord::RecordInvalid) { node.reload.publish_draft! }
+    assert_nil node.reload.head
+  end
+
+  test "the public search excludes a redirecting page" do
+    found  = Node.root.children.create!(:slug => "search_visible")
+    found.draft.update!(:title => "Wachhund")
+    found.publish_draft!
+
+    hidden = Node.root.children.create!(:slug => "search_hidden")
+    hidden.draft.update!(:title => "Wachhund", :redirect => "temporary",
+                         :redirect_node_id => found.id)
+    hidden.publish_draft!
+
+    results = Node.search("Wachhund")
+
+    assert_includes     results, found
+    assert_not_includes results, hidden
+  end
 end

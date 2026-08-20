@@ -466,4 +466,29 @@ class PageTest < ActiveSupport::TestCase
                              :order_by => "slug" }).map { |p| p.node.slug }
     assert_equal %w[alpha Mike zulu], names
   end
+
+  test "redirect_target prefers an internal node over an external url" do
+    target = Node.root.children.create!(:slug => "redirect_precedence_target")
+    target.publish_draft!
+
+    node = Node.root.children.create!(:slug => "redirect_precedence")
+    page = node.draft
+    page.update!(:redirect => "temporary", :redirect_node_id => target.id,
+                 :external_url => "https://example.org/")
+
+    resolved = page.redirect_target
+    assert resolved.internal?
+    assert_equal target, resolved.node
+  end
+
+  test "redirect_target is nil when the target has no head" do
+    target = Node.root.children.create!(:slug => "redirect_unpublished_target")
+    assert_nil target.head
+
+    node = Node.root.children.create!(:slug => "redirect_to_unpublished")
+    page = node.draft
+    page.update!(:redirect => "temporary", :redirect_node_id => target.id)
+
+    assert_nil page.redirect_target
+  end
 end
