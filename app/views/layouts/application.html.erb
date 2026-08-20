@@ -64,6 +64,9 @@
   	<%= calendar %>
       </div>
       <div id="center_column">
+        <% if @banners&.any? %>
+          <%= render "content/banner", :banner => @banners.first %>
+        <% end %>
         <%= yield :layout %>
         <div id="footer">
           <p style="text-align: center">

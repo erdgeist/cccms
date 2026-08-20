@@ -327,17 +327,16 @@ class Page < ApplicationRecord
     end
   end
 
-  def redirect_target
-    return nil if redirect.blank?
-
-    if redirect_node_id.present?
-      return nil unless redirect_node&.head
-      return RedirectTarget.new(redirect_node, nil)
+  def link_target
+    if redirect_node_id.present? && redirect_node&.head
+      RedirectTarget.new(redirect_node, nil)
+    elsif external_url.present?
+      RedirectTarget.new(nil, external_url)
     end
+  end
 
-    return RedirectTarget.new(nil, external_url) if external_url.present?
-
-    nil
+  def redirect_target
+    redirect.present? ? link_target : nil
   end
 
   def redirect_status

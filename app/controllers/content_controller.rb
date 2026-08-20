@@ -19,6 +19,7 @@ class ContentController < ApplicationController
                            :status => @page.redirect_status)
       end
 
+      @banners = Node.current_banners.to_a
       render(
         :template => @page.valid_template,
         :layout => true

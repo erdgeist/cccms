@@ -632,6 +632,17 @@ class Node < ApplicationRecord
       .distinct
   end
 
+  def self.current_banners
+    parent = Node.find_by(:unique_name => CccConventions::BANNER_PARENT_NAME)
+    return Node.none unless parent
+
+    parent.children
+          .joins(:head)
+          .where("pages.published_at IS NULL OR pages.published_at <= ?", Time.now)
+          .order("pages.published_at DESC")
+          .includes(:head => { :related_assets => :asset })
+  end
+
   # This one is for admin-only views, where finding a draft is the point.
   # Substring match on whichever of head/draft is present.
   def self.editor_search(term)
