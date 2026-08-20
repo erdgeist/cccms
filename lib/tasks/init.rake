@@ -51,6 +51,7 @@ namespace :cccms do
       '[aggregate tags="update" limit="30" order_by="published_at" order_direction="DESC"]')
 
     ensure_node.(root, "disclosure", "Disclosure", "")
+    ensure_node.(root, "banner", "Banner", "")
 
     club = ensure_node.(root, "club", "Chaos Computer Club", "")
     ensure_node.(club, "erfas", "Erfa-Kreise",

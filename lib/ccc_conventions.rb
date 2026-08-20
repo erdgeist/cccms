@@ -2,7 +2,8 @@ module CccConventions
   TRASH_SLUG              = "trash"
   ERFA_PARENT_NAME        = "club/erfas"
   CHAOSTREFF_PARENT_NAME  = "club/chaostreffs"
-  RESTRICTED_SUBTREES     = %w[updates disclosure].freeze
+  BANNER_PARENT_NAME      = "banner"
+  RESTRICTED_SUBTREES     = %w[updates disclosure banner].freeze
 
   NODE_KINDS = {
     "top_level" => {
@@ -49,6 +50,13 @@ module CccConventions
       path_prefix:  CHAOSTREFF_PARENT_NAME,
       label:        "Chaostreff",
       hint:         "Automatically created under the Chaostreffs overview page, gets tag \"chaostreff-detail\", and uses the chapter detail template."
+    },
+    "banner" => {
+      parent:       -> { Node.find_by_unique_name!(BANNER_PARENT_NAME) },
+      parent_match: ->(path) { path == ["banner"] },
+      path_prefix:  BANNER_PARENT_NAME,
+      label:        "Banner",
+      hint:         "Appears on top of every public page. Needs headline image, banner will redirect to internal redirect target or external url."
     }
   }.freeze
 
