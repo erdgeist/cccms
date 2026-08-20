@@ -63,7 +63,6 @@ $(document).ready(function () {
     search_toggle.addEventListener('click', function (e) {
       admin_search.display_toggle();
       e.preventDefault();
-      console.log("Toggle");
     });
   }
 
@@ -121,6 +120,32 @@ $(document).ready(function () {
         var digits = field.value.replace(/\D/g, '').slice(0, 6);
         if (field.value !== digits) { field.value = digits; }
       });
+    });
+  }
+
+  document.querySelectorAll('.field_clear').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wrap = btn.closest('.input_group');
+      wrap.querySelector('input[type=text]').value = '';
+      var hidden = wrap.dataset.clears;
+      if (hidden) { document.getElementById(hidden).value = ''; }
+    });
+  });
+
+  if (document.getElementById('redirect_search_term')) {
+    redirect_search.initialize_search();
+
+    var mode = document.getElementById('page_redirect');
+    var field = document.getElementById('redirect_target_field');
+    mode.addEventListener('change', function () {
+      field.style.display = mode.checked ? '' : 'none';
+    });
+
+    var term = document.getElementById('redirect_search_term');
+    term.addEventListener('input', function () {
+      if (term.value === '') {
+        document.getElementById('page_redirect_node_id').value = '';
+      }
     });
   }
 

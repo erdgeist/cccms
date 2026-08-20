@@ -14,6 +14,11 @@ class ContentController < ApplicationController
     expires_in 20.minutes, :public => true
 
     if @page and @page.public?
+      if (target = @page.redirect_target)
+        return redirect_to(target.internal? ? content_path(target.node.unique_name) : target.url,
+                           :status => @page.redirect_status)
+      end
+
       render(
         :template => @page.valid_template,
         :layout => true

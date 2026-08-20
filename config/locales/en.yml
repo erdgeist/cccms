@@ -406,6 +406,11 @@ en:
       set_headline_title: "Use this photo as the page's headline image"
       remove_image_label: "Remove image"
       external_url: "External homepage"
+      redirect: "Redirect"
+      redirect_enable: "This page redirects"
+      redirect_hint: "If the taget node is empty, the external url will be used."
+      redirect_target_hint: "Disabling does not clear the destination"
+      redirect_clear: "Clear redirect"
     show:
       status: "Status"
       head: "Head"

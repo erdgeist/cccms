@@ -454,6 +454,11 @@ de:
       set_headline_title: "Dieses Foto als Aufmacherbild der Seite verwenden"
       remove_image_label: "Bild entfernen"
       external_url: "Externe Homepage"
+      redirect: "Weiterleitung"
+      redirect_enable: "Diese Seite leitet weiter"
+      redirect_hint: "Ohne Ziel-Node wird auf die externe Homepage weitergeleitet."
+      redirect_target_hint: "Bleibt erhalten, wenn die Weiterleitung abgeschaltet wird."
+      redirect_clear: "Ziel entfernen"
     show:
       status: "Status"
       head: "Head"

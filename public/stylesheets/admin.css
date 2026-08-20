@@ -446,11 +446,8 @@ form.button_to.computation button[type="submit"]:disabled {
   pointer-events: none;
 }
 
-/* Native (non-button_to) submit buttons -- Create/Save/Publish forms.
-   Lower specificity than form.button_to's own rule, so button_to forms
-   are correctly unaffected. If a button_to output ever loses its class
-   wrapper, it will silently fall through to this bordered style instead
-   of rendering as a plain link -- worth knowing, not necessarily fixing. */
+/* Native (non-button_to) submit buttons used for Create/Save/Publish
+   forms. */
 input[type="submit"] {
   -webkit-appearance: none;
   appearance: none;
@@ -468,6 +465,44 @@ input[type="submit"] {
 input[type="submit"]:hover {
   color: var(--surface);
   background-color: var(--text);
+}
+
+.input_group {
+  width: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+.input_group .field_search_icon {
+  position: absolute;
+  left: 0.5rem;
+  top: 55%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input_group .field_search_icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.input_group input[type="text"].clearable_input {
+  padding-left: 2rem;
+  padding-right: 1.75rem;
+}
+
+.field_clear {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  appearance: none;
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
 }
 
 /* ============================================================

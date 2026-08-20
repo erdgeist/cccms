@@ -263,6 +263,20 @@ move_to_search = {
   }
 };
 
+redirect_search = {
+  initialize_search : function() {
+    initSearchPicker({
+      inputSelector: "#redirect_search_term",
+      resultsSelector: "#redirect_search_results",
+      showRestricted: true,
+      onSelect: function(node) {
+        $("#redirect_search_term").val(node.title);
+        $("#page_redirect_node_id").val(node.node_id);
+      }
+    });
+  }
+};
+
 restore_search = {
   initialize_search : function() {
     initSearchPicker({

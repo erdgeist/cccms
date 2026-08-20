@@ -80,7 +80,7 @@
                     </li>
                   <% end %>
                 </ul>
-                <p class="field_hint"><%= t(".headline_hint") %></p>
+                <span class="field_hint"><%= t(".headline_hint") %></span>
                 <%= text_field_tag nil, nil, id: "related_asset_search_term", placeholder: t(".attach_search_placeholder"), autocomplete: "off" %>
                 <div id="related_asset_search_results" class="search_results"></div>
               </div>
@@ -118,13 +118,50 @@
               <div class="layout_row_label"><%= t(".parent") %></div>
               <div class="layout_row_content">
                 <%= text_field_tag :move_to_search_term, (Node.find_by(:id => @page.parent_node_id) || @node.parent)&.title %>
-                <p class="field_hint"><%= t(".parent_hint") %></p>
+                <span class="field_hint"><%= t(".parent_hint") %></span>
                 <div id="move_to_search_results" class="search_results"></div>
                 <%= d.hidden_field(
                       :parent_node_id,
                       :value => @page.parent_node_id || @node.parent_id
                     )
                  %>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".author") %></div>
+              <div class="layout_row_content">
+                <%= d.select :user_id, user_list,
+                      :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
+              </div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".publish_at") %></div>
+              <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
+            </div>
+
+            <div class="layout_row">
+              <div class="layout_row_label"><%= t(".redirect") %></div>
+              <div class="layout_row_content">
+                <label>
+                  <%= d.check_box :redirect, { :checked => @page.redirect.present? },
+                        "temporary", "" %>
+                  <%= t(".redirect_enable") %>
+                </label>
+                <span class="field_hint"><%= t(".redirect_hint") %></span>
+
+                <div id="redirect_target_field" style="<%= "display: none;" unless @page.redirect.present? %>">
+                  <div class="input_group" data-clears="page_redirect_node_id">
+                    <span class="field_search_icon"><%= icon("search", library: "tabler", "aria-hidden": true) %></span>
+                    <%= text_field_tag :redirect_search_term,
+                          Node.find_by(:id => @page.redirect_node_id)&.title,
+                          :placeholder => "—", :class => "clearable_input" %>
+                    <div id="redirect_search_results" class="search_results"></div>
+                    <button type="button" class="field_clear" aria-label="clear input">×</button>
+                    <%= d.hidden_field :redirect_node_id %>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -144,11 +181,6 @@
             </div>
 
             <div class="layout_row">
-              <div class="layout_row_label"><%= t(".publish_at") %></div>
-              <div class="layout_row_content"><%= d.datetime_select :published_at, :value => @page.published_at %></div>
-            </div>
-
-            <div class="layout_row">
               <div class="layout_row_label"><%= t(".template") %></div>
               <div class="layout_row_content">
               <%= d.select :template_name, custom_page_templates, {:prompt => 'Select Template'} %>
@@ -156,13 +188,6 @@
               </div>
             </div>
 
-            <div class="layout_row">
-              <div class="layout_row_label"><%= t(".author") %></div>
-              <div class="layout_row_content">
-                <%= d.select :user_id, user_list,
-                      :selected => @page.user_id || @node.draft&.user_id || @node.head&.user_id %>
-              </div>
-            </div>
           </div>
         </details>
 

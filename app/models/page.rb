@@ -124,7 +124,7 @@ class Page < ApplicationRecord
   end
 
   # One row per non-default locale, read from the actual translation
-  # row -- never through the locale-dependent accessor, so a locale
+  # row, never through the locale-dependent accessor, so a locale
   # with no real translation yet reports as absent rather than quietly
   # showing a fallback value borrowed from another locale.
   def translation_summary
@@ -311,21 +311,27 @@ class Page < ApplicationRecord
     published_at.nil? ? true : published_at < Time.now
   end
 
-  # The destination this page sends visitors to, or nil. An internal target
-  # wins over an external one. A target that is restricted or has no head is
-  # no destination at all, so the page renders itself rather than linking to
-  # nothing. The banner partial calls this too, so the precedence cannot
-  # drift between the redirect and the link.
+  # Where this page sends visitors, or nil. Internal wins over external. A
+  # node that is restricted or has no head is no destination at all, so the
+  # page renders itself rather than pointing at nothing.
+  RedirectTarget = Struct.new(:node, :url) do
+    def internal?
+      node.present?
+    end
+  end
+
   def redirect_target
     return nil if redirect.blank?
 
     if redirect_node_id.present?
-      node = Node.find_by(:id => redirect_node_id)
-      return nil unless node&.head && !node.restricted?
-      return node.unique_name
+      target = Node.find_by(:id => redirect_node_id)
+      return nil unless target&.head && !target.restricted?
+      return RedirectTarget.new(target, nil)
     end
 
-    external_url.presence
+    return RedirectTarget.new(nil, external_url) if external_url.present?
+
+    nil
   end
 
   def redirect_status
