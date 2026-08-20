@@ -12,6 +12,8 @@ class Page < ApplicationRecord
 
   translates :title, :abstract, :body # Globalize2
 
+  before_validation { self.redirect = nil if redirect.blank? }
+
   # Template names render as filesystem paths; only names actually
   # present in the public template directory are acceptable. Validated
   # only on change so legacy rows whose template file has since
