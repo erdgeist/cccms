@@ -9,14 +9,35 @@
       <div class="info_group_items">
         <div class="info_item">
           <span class="info_label"><%= t(".head") %></span>
+          <% if @node.head&.redirect.present? %>
+            <span class="flag_stack">
+              <%= flag("arrow-ramp-right",
+                       redirect_flag_hint(@node.head),
+                       :tier => :attention) %>
+            </span>
+          <% end %>
           <%= @node.head ? t(".head_line", :title => @node.head.title, :rev => @node.head.revision, :time => @node.head.updated_at) : t(".never_published") %>
         </div>
         <div class="info_item">
           <span class="info_label"><%= t(".draft") %></span>
+          <% if @node.draft&.redirect.present? %>
+            <span class="flag_stack">
+              <%= flag("arrow-ramp-right",
+                       redirect_flag_hint(@node.draft),
+                       :tier => :attention) %>
+            </span>
+          <% end %>
           <%= @node.draft ? t(".draft_line", :title => @node.draft.title, :rev => @node.draft.revision, :time => @node.draft.updated_at) : t(".none") %>
         </div>
         <div class="info_item">
           <span class="info_label"><%= t(".autosave") %></span>
+          <% if @node.autosave&.redirect.present? %>
+            <span class="flag_stack">
+              <%= flag("arrow-ramp-right",
+                       redirect_flag_hint(@node.autosave),
+                       :tier => :attention) %>
+            </span>
+          <% end %>
           <%= @node.autosave ? t(".autosave_line", :title => @node.autosave.title, :time => @node.autosave.updated_at) : t(".none") %>
         </div>
       </div>
@@ -55,6 +76,11 @@
                 <% if @node.prospective_unique_name != @node.unique_name %>
                   <% confirm += " " + t(".confirm_publish_moves",
                                         :path => @node.prospective_unique_name) %>
+                <% end %>
+                <% if @node.draft.redirect.present? && @node.head&.redirect.blank? %>
+                  <% confirm += " " + t(".confirm_publish_redirects") %>
+                <% elsif @node.draft.redirect.present? && @node.draft.redirect_differs_from?(@node.head) %>
+                  <% confirm += " " + t(".confirm_publish_redirect_changes") %>
                 <% end %>
                 <%= button_to t(".publish"), publish_node_path(@node), method: :put,
                       form: { data: { confirm: confirm }, class: 'button_to state_changing' } %>
@@ -243,6 +269,17 @@
         <p class="pending_address">
           <%= icon("arrow-move-right", library: "tabler", "aria-hidden": true) %>
           <%= t(".pending_address", :path => @node.prospective_unique_name) %>
+        </p>
+      <% end %>
+
+      <% if (redirect = @node.head&.redirect_target) %>
+        <p class="pending_address">
+          <%= icon("arrow-right", library: "tabler", "aria-hidden": true) %>
+          <% if redirect.internal? %>
+            <%= t(".redirects_to", :path => redirect.node.unique_name) %>
+          <% else %>
+            <%= t(".redirects_to_url", :url => redirect.url) %>
+          <% end %>
         </p>
       <% end %>
 

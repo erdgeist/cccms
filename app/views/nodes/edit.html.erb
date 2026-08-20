@@ -154,8 +154,7 @@
                 <div id="redirect_target_field" style="<%= "display: none;" unless @page.redirect.present? %>">
                   <div class="input_group" data-clears="page_redirect_node_id">
                     <span class="field_search_icon"><%= icon("search", library: "tabler", "aria-hidden": true) %></span>
-                    <%= text_field_tag :redirect_search_term,
-                          Node.find_by(:id => @page.redirect_node_id)&.title,
+                    <%= text_field_tag :redirect_search_term, @page.redirect_node&.title,
                           :placeholder => "—", :class => "clearable_input" %>
                     <div id="redirect_search_results" class="search_results"></div>
                     <button type="button" class="field_clear" aria-label="clear input">×</button>

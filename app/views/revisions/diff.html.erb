@@ -74,7 +74,8 @@
                     @diff[:template_name][:changed] ||
                     @diff[:published_at][:changed] || @diff[:user][:changed] ||
                     @diff[:tags][:added].any?   || @diff[:tags][:removed].any? ||
-                    @diff[:assets][:added].any? || @diff[:assets][:removed].any? %>
+                    @diff[:assets][:added].any? || @diff[:assets][:removed].any? ||
+                    @diff[:redirect][:changed] || @diff[:redirect_node][:changed] %>
 
   <div class="diff_preamble">
     <div class="diff_meta">
@@ -95,6 +96,22 @@
         <p>
           <del><%= @diff[:external_url][:from].presence || t(".none_marker") %></del>
           <ins><%= @diff[:external_url][:to].presence || t(".none_marker") %></ins>
+        </p>
+      <% end %>
+
+      <% if @diff[:redirect][:changed] %>
+        <h3><%= Page.human_attribute_name(:redirect) %></h3>
+        <p>
+          <del><%= @diff[:redirect][:from] ? t("nodes.edit.redirect_mode_#{@diff[:redirect][:from]}") : t(".none_marker") %></del>
+          <ins><%= @diff[:redirect][:to]   ? t("nodes.edit.redirect_mode_#{@diff[:redirect][:to]}")   : t(".none_marker") %></ins>
+        </p>
+      <% end %>
+
+      <% if @diff[:redirect_node][:changed] %>
+        <h3><%= Page.human_attribute_name(:redirect_node) %></h3>
+        <p>
+          <del><%= @diff[:redirect_node][:from]&.unique_name || t(".none_marker") %></del>
+          <ins><%= @diff[:redirect_node][:to]&.unique_name   || t(".none_marker") %></ins>
         </p>
       <% end %>
 

@@ -243,7 +243,7 @@ class Node < ApplicationRecord
       end
 
       if self.draft.redirect_node_id.present?
-        target = Node.find_by(:id => self.draft.redirect_node_id)
+        target = self.draft.redirect_node
 
         unless target
           errors.add(:base, :redirect_target_missing)

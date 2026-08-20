@@ -38,4 +38,12 @@ module AdminHelper
       }
     }.to_json
   end
+
+  def redirect_flag_hint page
+    target = page.redirect_target
+    return t("nodes.show.redirect_flag_broken") unless target
+
+    target.internal? ? t("nodes.show.redirect_flag", :path => target.node.unique_name)
+                     : t("nodes.show.redirect_flag_url", :url => target.url)
+  end
 end

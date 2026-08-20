@@ -200,6 +200,12 @@ class NodeAction < ApplicationRecord
     old_url, new_url = old_page.external_url, new_page.external_url
     diff[:external_url] = { "from" => old_url, "to" => new_url } if old_url != new_url
 
+    old_redirect, new_redirect = old_page.redirect, new_page.redirect
+    diff[:redirect] = { "from" => old_redirect, "to" => new_redirect } if old_redirect != new_redirect
+
+    old_target, new_target = old_page.redirect_node&.unique_name, new_page.redirect_node&.unique_name
+    diff[:redirect_target] = { "from" => old_target, "to" => new_target } if old_target != new_target
+
     old_tags, new_tags = old_page.tag_list.sort, new_page.tag_list.sort
     diff[:tags] = { "from" => old_tags, "to" => new_tags } if old_tags != new_tags
 

@@ -36,6 +36,7 @@ class Page < ApplicationRecord
   belongs_to :parent_node, :class_name => "Node", :optional => true
   belongs_to :user, optional: true
   belongs_to :editor, :class_name => "User", optional: true
+  belongs_to :redirect_node, :class_name => "Node", :optional => true
   has_many   :related_assets, :dependent => :destroy
   has_many   :assets, -> { order("position ASC") }, :through => :related_assets
 
@@ -289,7 +290,11 @@ class Page < ApplicationRecord
                        changed: user_id != other.user_id },
       tags:          { added: tag_list.to_a - other.tag_list.to_a, removed: other.tag_list.to_a - tag_list.to_a },
       template_name: { from: other.template_name, to: template_name, changed: template_name != other.template_name },
-      assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a }
+      assets:        { added: assets.to_a - other.assets.to_a, removed: other.assets.to_a - assets.to_a },
+      redirect:      { from: other.redirect, to: redirect,
+                       changed: redirect != other.redirect },
+      redirect_node: { from: other.redirect_node, to: redirect_node,
+                       changed: redirect_node_id != other.redirect_node_id }
     )
   end
 
@@ -326,9 +331,8 @@ class Page < ApplicationRecord
     return nil if redirect.blank?
 
     if redirect_node_id.present?
-      target = Node.find_by(:id => redirect_node_id)
-      return nil unless target&.head
-      return RedirectTarget.new(target, nil)
+      return nil unless redirect_node&.head
+      return RedirectTarget.new(redirect_node, nil)
     end
 
     return RedirectTarget.new(nil, external_url) if external_url.present?
@@ -343,6 +347,11 @@ class Page < ApplicationRecord
   # Nodes whose published page redirects here
   def self.redirecting_to(node_id)
     Node.where(:head_id => where(:redirect_node_id => node_id).select(:id))
+  end
+
+  def redirect_differs_from? other
+    mine, theirs = redirect_target, other&.redirect_target
+    mine&.url != theirs&.url || mine&.node != theirs&.node
   end
 
   # The address this page will have once published.
