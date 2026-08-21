@@ -1,0 +1,5 @@
+<% if image %>
+  <%= image_tag image.upload.url(:large), :alt => banner.head.title.to_s, :class => "banner_image" %>
+<% else %>
+  <span class="banner_title"><%= banner.head.title %></span>
+<% end %>

@@ -1,0 +1,13 @@
+<% target = banner.head.link_target %>
+<% image  = banner.head.headline_asset %>
+
+<div class="banner">
+  <% if target %>
+    <%= link_to(target.internal? ? content_path(target.node.unique_name) : target.url,
+                target.internal? ? {} : { :target => "_blank", :rel => "noopener" }) do %>
+      <%= render "content/banner_body", :banner => banner, :image => image %>
+    <% end %>
+  <% else %>
+    <%= render "content/banner_body", :banner => banner, :image => image %>
+  <% end %>
+</div>
