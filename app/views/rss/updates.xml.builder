@@ -2,13 +2,13 @@ xml.instruct!
 
 xml.feed(:xmlns => "http://www.w3.org/2005/Atom", "xml:base" => @host) do
   xml.title("Chaos Computer Club Updates")
-  xml.link(:href => "https://www.ccc.de/")
+  xml.link(:href => "#{@host}")
   xml.link(:rel => "self", :href => "#{@host}/rss/updates.xml")
   xml.updated((@items.map(&:updated_at).compact.max || Time.now).xmlschema)
   xml.author do
     xml.name("Chaos Computer Club e.V.")
   end
-  xml.id("https://www.ccc.de/rss/updates")
+  xml.id("#{@host}/rss/updates")
   
   @items.each do |item|
     xml.entry do
