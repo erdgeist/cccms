@@ -32,6 +32,43 @@ $(document).ready(function () {
       'img': 'inline-image inline-image--full inline-image--half inline-image--left inline-image--right',
       'a': 'glightbox'
     },
+    paste_preprocess: function (editor, args) {
+      var doc = new DOMParser().parseFromString(args.content, 'text/html');
+      var blocks = 'p,h1,h2,h3,h4,h5,h6,ul,ol,li,blockquote,table,pre,div';
+
+      // Innermost first, so a nested div is resolved before its parent.
+      Array.from(doc.querySelectorAll('div')).reverse().forEach(function (div) {
+        if (div.textContent.trim() === '' && !div.querySelector('img')) {
+          div.remove();
+        } else if (div.querySelector(blocks)) {
+          div.replaceWith.apply(div, Array.from(div.childNodes));
+        } else {
+          var p = doc.createElement('p');
+          while (div.firstChild) { p.appendChild(div.firstChild); }
+          div.replaceWith(p);
+        }
+      });
+
+      doc.querySelectorAll('strong,em,b,i,span,u').forEach(function (el) {
+        if (el.textContent.trim() === '' && !el.querySelector('img')) {
+          el.replaceWith.apply(el, Array.from(el.childNodes));
+        }
+      });
+
+      ['strong', 'em', 'b', 'i', 'u'].forEach(function (tag) {
+        doc.querySelectorAll(tag).forEach(function (el) {
+          var next = el.nextSibling;
+          while (next && next.nodeName && next.nodeName.toLowerCase() === tag) {
+            while (next.firstChild) { el.appendChild(next.firstChild); }
+            var after = next.nextSibling;
+            next.remove();
+            next = after;
+          }
+        });
+      });
+
+      args.content = doc.body.innerHTML;
+    },
     setup: function(editor) {
       editor.on('init', function() {
         cccms.setup_autosave();
