@@ -107,7 +107,7 @@ module ContentHelper
     options = {}
 
     cccms_attributes = ActionView::Base.sanitized_allowed_attributes +
-                       %w[lang target rel data-gallery]
+                       %w[lang target rel data-gallery id]
 
     begin
       if content =~ /\[aggregate([^\]]*)\]/
